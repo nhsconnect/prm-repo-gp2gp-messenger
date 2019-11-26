@@ -5,8 +5,44 @@
     "version": "1.0.0",
     "title": "GP2GP Adaptor"
   },
-  "tags": [],
-  "paths": {},
-  "securityDefinitions": {},
+  "tags": [
+    {
+      "name": "ehr-request",
+      "description": "Send EHR request"
+    }
+  ],
+  "paths": {
+    "/ehr-request": {
+      "post": {
+        "tags": [
+          "ehr-request"
+        ],
+        "summary": "Sends EHR request",
+        "responses": {
+          "202": {
+            "description": "Successful retrieval"
+          },
+          "401": {
+            "description": "Authorization header missing"
+          },
+          "403": {
+            "description": "Authorization key invalid"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "definitions": {}
 }

@@ -3,6 +3,7 @@ import { errorLogger, logger as requestLogger } from 'express-winston';
 import httpContext from 'express-http-context';
 import { options } from './config/logging';
 import { addCorrelationInfo } from './middleware/correlation';
+import ehrRequest from './api/ehr-request';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
 
@@ -15,6 +16,8 @@ app.use(requestLogger(options));
 app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
+
+app.use('/ehr-request', ehrRequest);
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

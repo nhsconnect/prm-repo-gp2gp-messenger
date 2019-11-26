@@ -8,6 +8,8 @@
 
 Run `npm install` to install all node dependencies.
 
+Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list.
+
 ## Running the tests
 
 Run the tests with `npm test`.
