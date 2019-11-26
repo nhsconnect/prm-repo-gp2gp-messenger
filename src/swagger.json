@@ -33,7 +33,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Successful retrieval"
+            "description": "Successfully requested"
           },
           "401": {
             "description": "Authorization header missing"
@@ -45,6 +45,12 @@
             "description": "Validation failed",
             "schema": {
               "$ref": "#/definitions/ValidationErrors"
+            }
+          },
+          "503": {
+            "description": "Downstream error when sending EHR request",
+            "schema": {
+              "$ref": "#/definitions/ServerError"
             }
           }
         },
@@ -98,6 +104,14 @@
               }
             }
           }
+        }
+      }
+    },
+    "ServerError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
         }
       }
     }

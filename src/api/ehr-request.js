@@ -2,6 +2,8 @@ import express from 'express';
 import { body } from 'express-validator';
 import { checkIsAuthenticated } from '../middleware/auth';
 import { validate } from '../middleware/validation';
+import sendEhrRequest from '../services/ehr-request';
+import MhsError from '../services/MhsError';
 
 const router = express.Router();
 
@@ -11,8 +13,16 @@ const ehrRequestValidationRules = [
   body('partyKey').notEmpty()
 ];
 
-router.post('/', checkIsAuthenticated, ehrRequestValidationRules, validate, (req, res) => {
-  res.sendStatus(202);
+router.post('/', checkIsAuthenticated, ehrRequestValidationRules, validate, (req, res, next) => {
+  sendEhrRequest(req.body.nhsNumber, req.body.asid, req.body.partyKey)
+    .then(() => res.sendStatus(202))
+    .catch(err => {
+      if (err instanceof MhsError) {
+        return res.status(503).json({ error: err.message });
+      }
+
+      next(err);
+    });
 });
 
 export default router;

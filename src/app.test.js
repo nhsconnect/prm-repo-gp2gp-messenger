@@ -1,6 +1,9 @@
 import request from 'supertest';
 import app from './app';
+import sendEhrRequest from './services/ehr-request';
+import MhsError from './services/MhsError';
 
+jest.mock('./services/ehr-request');
 jest.mock('express-winston', () => ({
   errorLogger: () => (req, res, next) => next(),
   logger: () => (req, res, next) => next()
@@ -25,6 +28,7 @@ describe('app', () => {
 
     beforeEach(() => {
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+      sendEhrRequest.mockResolvedValue();
     });
 
     it('should return a 202 status code', done => {
@@ -87,6 +91,34 @@ describe('app', () => {
         .post('/ehr-request')
         .set('Authorization', 'incorrect-key')
         .expect(403)
+        .end(done);
+    });
+
+    it('should return a 503 when sending the EHR request is unsuccessful', done => {
+      sendEhrRequest.mockRejectedValue(new MhsError('there was an error!'));
+
+      request(app)
+        .post('/ehr-request')
+        .send(validRequestBody)
+        .set('Authorization', 'correct-key')
+        .expect(503)
+        .expect(res => {
+          expect(res.body).toEqual({ error: 'there was an error!' });
+        })
+        .end(done);
+    });
+
+    it('should return a 500 for any unexpected error', done => {
+      sendEhrRequest.mockRejectedValue(new Error('there was an error!'));
+
+      request(app)
+        .post('/ehr-request')
+        .send(validRequestBody)
+        .set('Authorization', 'correct-key')
+        .expect(500)
+        .expect(res => {
+          expect(res.body).toEqual({ error: 'there was an error!' });
+        })
         .end(done);
     });
   });
