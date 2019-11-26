@@ -9,6 +9,7 @@ import swaggerDocument from './swagger.json';
 
 const app = express();
 
+app.use(express.json());
 app.use(httpContext.middleware);
 app.use(addCorrelationInfo);
 app.use(requestLogger(options));

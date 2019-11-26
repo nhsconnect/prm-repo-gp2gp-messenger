@@ -18,6 +18,19 @@
           "ehr-request"
         ],
         "summary": "Sends EHR request",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "patient details",
+            "description": "Data about the patient whose EHR is being requested",
+            "schema": {
+              "$ref": "#/definitions/EhrRequest"
+            }
+          }
+        ],
         "responses": {
           "202": {
             "description": "Successful retrieval"
@@ -27,6 +40,12 @@
           },
           "403": {
             "description": "Authorization key invalid"
+          },
+          "422": {
+            "description": "Validation failed",
+            "schema": {
+              "$ref": "#/definitions/ValidationErrors"
+            }
           }
         },
         "security": [
@@ -44,5 +63,43 @@
       "in": "header"
     }
   },
-  "definitions": {}
+  "definitions": {
+    "EhrRequest": {
+      "type": "object",
+      "properties": {
+        "nhsNumber": {
+          "type": "string"
+        },
+        "asid": {
+          "type": "string"
+        },
+        "partyKey": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "nhsNumber",
+        "asid",
+        "partyKey"
+      ]
+    },
+    "ValidationErrors": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "An object with the name of the field in error as the key and the error message as the value",
+            "properties": {
+              "nhsNumber": {
+                "type": "string",
+                "description": "Error message for the provided NHS number"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
