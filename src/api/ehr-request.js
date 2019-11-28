@@ -7,14 +7,10 @@ import MhsError from '../services/MhsError';
 
 const router = express.Router();
 
-const ehrRequestValidationRules = [
-  body('nhsNumber').notEmpty(),
-  body('asid').notEmpty(),
-  body('partyKey').notEmpty()
-];
+const ehrRequestValidationRules = [body('nhsNumber').notEmpty(), body('odsCode').notEmpty()];
 
 router.post('/', checkIsAuthenticated, ehrRequestValidationRules, validate, (req, res, next) => {
-  sendEhrRequest(req.body.nhsNumber, req.body.asid, req.body.partyKey)
+  sendEhrRequest(req.body.nhsNumber, req.body.odsCode)
     .then(() => res.sendStatus(202))
     .catch(err => {
       if (err instanceof MhsError) {

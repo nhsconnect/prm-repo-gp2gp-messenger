@@ -76,17 +76,13 @@
         "nhsNumber": {
           "type": "string"
         },
-        "asid": {
-          "type": "string"
-        },
-        "partyKey": {
+        "odsCode": {
           "type": "string"
         }
       },
       "required": [
         "nhsNumber",
-        "asid",
-        "partyKey"
+        "odsCode"
       ]
     },
     "ValidationErrors": {

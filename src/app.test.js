@@ -20,11 +20,7 @@ describe('app', () => {
   });
 
   describe('POST /ehr-request', () => {
-    const validRequestBody = {
-      nhsNumber: 'some-nhs-number',
-      asid: 'some-asid',
-      partyKey: 'some-party-key'
-    };
+    const validRequestBody = { nhsNumber: 'some-nhs-number', odsCode: 'some-odsCode' };
 
     beforeEach(() => {
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
@@ -43,7 +39,7 @@ describe('app', () => {
     it('should return a 422 and error when NHS number was not provided', done => {
       request(app)
         .post('/ehr-request')
-        .send({ ...validRequestBody, nhsNumber: undefined })
+        .send({ odsCode: 'some-odsCode' })
         .set('Authorization', 'correct-key')
         .expect(422)
         .expect('Content-Type', /json/)
@@ -53,28 +49,15 @@ describe('app', () => {
         .end(done);
     });
 
-    it('should return a 422 and error when ASID was not provided', done => {
+    it('should return a 422 and error when ODS code was not provided', done => {
       request(app)
         .post('/ehr-request')
-        .send({ ...validRequestBody, asid: undefined })
+        .send({ nhsNumber: 'some-nhs-number' })
         .set('Authorization', 'correct-key')
         .expect(422)
         .expect('Content-Type', /json/)
         .expect(res => {
-          expect(res.body).toEqual({ errors: [{ asid: 'Invalid value' }] });
-        })
-        .end(done);
-    });
-
-    it('should return a 422 and error when party key was not provided', done => {
-      request(app)
-        .post('/ehr-request')
-        .send({ ...validRequestBody, partyKey: undefined })
-        .set('Authorization', 'correct-key')
-        .expect(422)
-        .expect('Content-Type', /json/)
-        .expect(res => {
-          expect(res.body).toEqual({ errors: [{ partyKey: 'Invalid value' }] });
+          expect(res.body).toEqual({ errors: [{ odsCode: 'Invalid value' }] });
         })
         .end(done);
     });
