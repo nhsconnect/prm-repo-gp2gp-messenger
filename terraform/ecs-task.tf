@@ -23,6 +23,6 @@ resource "aws_ecs_task_definition" "task" {
         container_port        = var.task_container_port,
         host_port             = var.task_host_port,
         log_region            = var.region,
-        log_group             = local.task_log_group,
+        log_group             = local.task_log_group
     })
 }
