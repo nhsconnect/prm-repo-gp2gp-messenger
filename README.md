@@ -8,7 +8,8 @@
 
 Run `npm install` to install all node dependencies.
 
-Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list.
+Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list. The app will 
+use a fake MHS when `NODE_ENV` is set to `local` or `dev`.
 
 ## Running the tests
 

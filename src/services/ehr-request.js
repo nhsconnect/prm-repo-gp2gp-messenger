@@ -1,6 +1,7 @@
 import moment from 'moment';
 import uuid from 'uuid/v4';
-import { getRoutingInformation, sendMessage } from '../fake-mhs';
+import * as mhsGatewayFake from './mhs-gateway-fake';
+import * as mhsGateway from './mhs-gateway';
 import { generateEhrRequestQuery } from '../templates/ehr-request-template';
 import config from '../config';
 import logger from '../config/logging';
@@ -8,7 +9,10 @@ import logger from '../config/logging';
 const sendEhrRequest = (nhsNumber, odsCode) => {
   logger.info(`Requesting EHR of patient with NHS number ${nhsNumber} and ODS code ${odsCode}`);
 
-  return getRoutingInformation(odsCode)
+  const mhs = config.isPTL ? mhsGateway : mhsGatewayFake;
+
+  return mhs
+    .getRoutingInformation(odsCode)
     .then(({ asid }) => {
       const timestamp = moment().format('YYYYMMDDHHmmss');
       const ehrRequestQuery = generateEhrRequestQuery(
@@ -20,7 +24,7 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
         config.deductionsOdsCode,
         nhsNumber
       );
-      return sendMessage(ehrRequestQuery);
+      return mhs.sendMessage(ehrRequestQuery);
     })
     .then(() =>
       logger.info(
