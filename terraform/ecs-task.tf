@@ -2,6 +2,14 @@ locals {
     task_execution_role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.task_execution_role}"
     task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
     task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.task_family}"
+    environment_variables        = [
+      { name = "DEDUCTIONS_ODS_CODE", value = data.aws_ssm_parameter.deductions_ods_code.value },
+      { name = "DEDUCTIONS_ASID", value = data.aws_ssm_parameter.deductions_asid.value },
+      { name = "NODE_ENV", value = var.environment },
+    ]
+    secret_environment_variables = [
+      { name = "AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.authorization_keys.arn },
+    ]
 }
 
 resource "aws_ecs_task_definition" "task" {
@@ -23,6 +31,8 @@ resource "aws_ecs_task_definition" "task" {
         container_port        = var.task_container_port,
         host_port             = var.task_host_port,
         log_region            = var.region,
-        log_group             = local.task_log_group
+        log_group             = local.task_log_group,
+        environment_variables = jsonencode(local.environment_variables),
+        secrets               = jsonencode(local.secret_environment_variables)
     })
 }
