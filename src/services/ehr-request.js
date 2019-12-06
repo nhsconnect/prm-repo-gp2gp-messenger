@@ -4,16 +4,21 @@ import * as mhsGatewayFake from './mhs-gateway-fake';
 import * as mhsGateway from './mhs-gateway';
 import { generateEhrRequestQuery } from '../templates/ehr-request-template';
 import config from '../config';
-import logger from '../config/logging';
+import { updateLogEvent } from '../middleware/logging';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
-  logger.info(`Requesting EHR of patient with NHS number ${nhsNumber} and ODS code ${odsCode}`);
-
   const mhs = config.isPTL ? mhsGateway : mhsGatewayFake;
+
+  updateLogEvent({
+    status: 'fetching-routing-info',
+    ehrRequest: { nhsNumber, odsCode, isPtl: config.isPTL }
+  });
 
   return mhs
     .getRoutingInformation(odsCode)
     .then(({ asid }) => {
+      updateLogEvent({ status: 'requesting-ehr', ehrRequest: { asid } });
+
       const timestamp = moment().format('YYYYMMDDHHmmss');
       const ehrRequestQuery = generateEhrRequestQuery(
         uuid(),
@@ -26,11 +31,7 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
       );
       return mhs.sendMessage(ehrRequestQuery);
     })
-    .then(() =>
-      logger.info(
-        `Successfully requested EHR of patient with NHS number ${nhsNumber} and ODS code ${odsCode}`
-      )
-    );
+    .then(() => updateLogEvent({ status: 'requested-ehr' }));
 };
 
 export default sendEhrRequest;

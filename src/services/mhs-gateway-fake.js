@@ -6,6 +6,7 @@ import { generateFirstFragmentResponse } from '../templates/fragment-1-template'
 import { generateSecondFragmentResponse } from '../templates/fragment-2-template';
 import { generateThirdFragmentResponse } from '../templates/fragment-3-template';
 import { generateAcknowledgementResponse } from '../templates/ack-template';
+import { updateLogEvent } from '../middleware/logging';
 
 const generateQueueConfig = url => {
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
@@ -31,16 +32,20 @@ const putResponseOnQueue = (client, response) => {
 
 export const sendMessage = () =>
   new Promise((resolve, reject) => {
-    const queue = new ConnectFailover([
-      generateQueueConfig(config.queueUrl1),
-      generateQueueConfig(config.queueUrl2)
-    ]);
+    const queue = new ConnectFailover(
+      [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
+      { maxReconnects: 10 }
+    );
+
     queue.on('error', error =>
       logger.debug(`There was an error when connecting to the queue broker: ${error.message}`)
     );
 
     queue.connect((err, client) => {
-      if (err) return reject(err);
+      if (err) {
+        updateLogEvent({ mhs: { status: 'connection-failed' } });
+        return reject(err);
+      }
 
       putResponseOnQueue(client, generateEhrExtractResponse());
       putResponseOnQueue(client, generateFirstFragmentResponse());

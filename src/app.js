@@ -6,6 +6,7 @@ import { addCorrelationInfo } from './middleware/correlation';
 import ehrRequest from './api/ehr-request';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
+import { sendLogEventOnResponse } from './middleware/logging';
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.get('/health', (req, res) => {
   res.sendStatus(200);
 });
 
-app.use('/ehr-request', ehrRequest);
+app.use('/ehr-request', sendLogEventOnResponse, ehrRequest);
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

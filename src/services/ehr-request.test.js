@@ -4,10 +4,11 @@ import * as mhsGateway from './mhs-gateway';
 import { generateEhrRequestQuery } from '../templates/ehr-request-template';
 import { when } from 'jest-when';
 import config from '../config';
+import { updateLogEvent } from '../middleware/logging';
 
 jest.mock('./mhs-gateway-fake');
 jest.mock('./mhs-gateway');
-jest.mock('../config/logging');
+jest.mock('../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 
@@ -55,6 +56,22 @@ describe('sendEhrRequest', () => {
         nhsNumber
       );
       expect(mhsGatewayFake.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
+    });
+  });
+
+  it('should update log event for each stage', () => {
+    mhsGatewayFake.getRoutingInformation.mockResolvedValue({ asid: 'some-asid' });
+
+    return sendEhrRequest(nhsNumber, odsCode).then(() => {
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        status: 'fetching-routing-info',
+        ehrRequest: { nhsNumber, odsCode, isPtl: false }
+      });
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        status: 'requesting-ehr',
+        ehrRequest: { asid: 'some-asid' }
+      });
+      expect(updateLogEvent).toHaveBeenCalledWith({ status: 'requested-ehr' });
     });
   });
 });
