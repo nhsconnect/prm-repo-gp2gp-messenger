@@ -8,6 +8,9 @@ import { generateThirdFragmentResponse } from '../templates/fragment-3-template'
 import { generateAcknowledgementResponse } from '../templates/ack-template';
 import { updateLogEvent } from '../middleware/logging';
 
+const EHR_REQUEST_MESSAGE_ACTION = 'RCMR_IN010000UK05';
+const CONTINUE_MESSAGE_ACTION = 'COPC_IN000001UK01';
+
 const generateQueueConfig = url => {
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
   if (!urlParts || urlParts.length < 4)
@@ -30,7 +33,12 @@ const putResponseOnQueue = (client, response) => {
   frame.end();
 };
 
-export const sendMessage = () =>
+const extractInteractionId = message => {
+  const matches = message.match(/<interactionId[\s\S]*?extension="(.*?)"/);
+  return matches[1];
+};
+
+export const sendMessage = message =>
   new Promise((resolve, reject) => {
     const queue = new ConnectFailover(
       [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
@@ -47,11 +55,19 @@ export const sendMessage = () =>
         return reject(err);
       }
 
-      putResponseOnQueue(client, generateEhrExtractResponse());
-      putResponseOnQueue(client, generateFirstFragmentResponse());
-      putResponseOnQueue(client, generateSecondFragmentResponse());
-      putResponseOnQueue(client, generateThirdFragmentResponse());
-      putResponseOnQueue(client, generateAcknowledgementResponse());
+      const interactionId = extractInteractionId(message);
+      updateLogEvent({ mhs: { interactionId } });
+
+      if (interactionId === EHR_REQUEST_MESSAGE_ACTION) {
+        putResponseOnQueue(client, generateEhrExtractResponse());
+      }
+
+      if (interactionId === CONTINUE_MESSAGE_ACTION) {
+        putResponseOnQueue(client, generateFirstFragmentResponse());
+        putResponseOnQueue(client, generateSecondFragmentResponse());
+        putResponseOnQueue(client, generateThirdFragmentResponse());
+        putResponseOnQueue(client, generateAcknowledgementResponse());
+      }
 
       resolve();
       client.disconnect();
