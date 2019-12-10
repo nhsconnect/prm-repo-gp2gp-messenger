@@ -36,7 +36,9 @@ const initialiseConsumer = () => {
 
       msg.readString('UTF-8', (err, body) => {
         if (err) throw err;
-        handleMessage(body);
+        handleMessage(body).catch(err =>
+          logger.error('Error occurred when consuming message', err)
+        );
       });
     });
   });

@@ -5,7 +5,7 @@ import handleMessage from './message-handler';
 
 jest.mock('stompit');
 jest.mock('../config/logging');
-jest.mock('./message-handler');
+jest.mock('./message-handler', () => jest.fn().mockResolvedValue());
 
 describe('initialiseConsumer', () => {
   const readString = jest.fn();
