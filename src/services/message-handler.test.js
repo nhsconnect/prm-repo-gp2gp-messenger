@@ -6,8 +6,8 @@ import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
 
-jest.mock('../storage/file-system');
-jest.mock('../storage/s3');
+jest.mock('../storage/file-system', () => jest.fn().mockResolvedValue());
+jest.mock('../storage/s3', () => jest.fn().mockResolvedValue());
 jest.mock('./mhs-gateway', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
 jest.mock('./mhs-gateway-fake', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
 jest.mock('uuid/v4', () => () => 'some-uuid');

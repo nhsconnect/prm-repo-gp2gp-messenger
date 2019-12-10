@@ -7,9 +7,11 @@ import { generateSecondFragmentResponse } from '../templates/fragment-2-template
 import { generateThirdFragmentResponse } from '../templates/fragment-3-template';
 import { generateAcknowledgementResponse } from '../templates/ack-template';
 import { updateLogEvent } from '../middleware/logging';
-
-const EHR_REQUEST_MESSAGE_ACTION = 'RCMR_IN010000UK05';
-const CONTINUE_MESSAGE_ACTION = 'COPC_IN000001UK01';
+import {
+  CONTINUE_MESSAGE_ACTION,
+  EHR_REQUEST_MESSAGE_ACTION,
+  extractInteractionId
+} from './message-parser';
 
 const generateQueueConfig = url => {
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
@@ -31,11 +33,6 @@ const putResponseOnQueue = (client, response) => {
   const frame = client.send({ destination: config.queueName });
   frame.write(response);
   frame.end();
-};
-
-const extractInteractionId = message => {
-  const matches = message.match(/<interactionId[\s\S]*?extension="(.*?)"/);
-  return matches[1];
 };
 
 export const sendMessage = message =>
