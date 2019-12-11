@@ -6,8 +6,8 @@ import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
 
-jest.mock('../storage/file-system', () => jest.fn().mockResolvedValue());
-jest.mock('../storage/s3', () => jest.fn().mockResolvedValue());
+jest.mock('../storage/file-system');
+jest.mock('../storage/s3');
 jest.mock('./mhs-gateway', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
 jest.mock('./mhs-gateway-fake', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
 jest.mock('uuid/v4', () => () => 'some-uuid');
@@ -53,6 +53,9 @@ describe('handleMessage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    fileSave.mockResolvedValue();
+    s3Save.mockResolvedValue();
   });
 
   it('should store the message in local storage if environment is local', () => {
@@ -122,5 +125,133 @@ describe('handleMessage', () => {
       expect(mhsGatewayFake.sendMessage).not.toHaveBeenCalled();
       expect(mhsGateway.sendMessage).not.toHaveBeenCalled();
     });
+  });
+
+  it('should reject the promise if message does not contain a conversation id', () => {
+    const messageWithoutConversationId = `
+    <SOAP-ENV:Envelope>
+      <SOAP-ENV:Header>
+        <eb:CPAId>S2036482A2160104</eb:CPAId>
+        <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+        <eb:Action>COPC_IN000001UK01</eb:Action>
+        <eb:MessageData>
+            <eb:MessageId>${messageId}</eb:MessageId>
+            <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+        </eb:MessageData>
+      </SOAP-ENV:Header>
+      <SOAP-ENV:Body>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>`;
+
+    return expect(handleMessage(messageWithoutConversationId)).rejects.toEqual(
+      new Error('Message does not contain conversation id')
+    );
+  });
+
+  it('should reject the promise if message does not contain a message id', () => {
+    const messageWithoutMessageId = `
+    <SOAP-ENV:Envelope>
+      <SOAP-ENV:Header>
+        <eb:CPAId>S2036482A2160104</eb:CPAId>
+        <eb:ConversationId>${conversationId}</eb:ConversationId>
+        <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+        <eb:Action>COPC_IN000001UK01</eb:Action>
+        <eb:MessageData>
+            <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+        </eb:MessageData>
+      </SOAP-ENV:Header>
+      <SOAP-ENV:Body>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>`;
+
+    return expect(handleMessage(messageWithoutMessageId)).rejects.toEqual(
+      new Error('Message does not contain message id')
+    );
+  });
+
+  it('should reject the promise if message does not contain a action', () => {
+    const messageWithoutAction = `
+    <SOAP-ENV:Envelope>
+      <SOAP-ENV:Header>
+        <eb:CPAId>S2036482A2160104</eb:CPAId>
+        <eb:ConversationId>${conversationId}</eb:ConversationId>
+        <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+        <eb:MessageData>
+            <eb:MessageId>${messageId}</eb:MessageId>
+            <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+        </eb:MessageData>
+      </SOAP-ENV:Header>
+      <SOAP-ENV:Body>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>`;
+
+    return expect(handleMessage(messageWithoutAction)).rejects.toEqual(
+      new Error('Message does not contain action')
+    );
+  });
+
+  it('should reject the promise if message does not contain foundation supplier asid', () => {
+    const messageWithoutFoundationSupplierAsid = `
+    <SOAP-ENV:Envelope>
+      <SOAP-ENV:Header>
+        <eb:CPAId>S2036482A2160104</eb:CPAId>
+        <eb:ConversationId>${conversationId}</eb:ConversationId>
+        <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+        <eb:Action>RCMR_IN030000UK06</eb:Action>
+        <eb:MessageData>
+            <eb:MessageId>${messageId}</eb:MessageId>
+            <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+        </eb:MessageData>
+      </SOAP-ENV:Header>
+      <SOAP-ENV:Body>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>
+   ------=_Part_33_26096504.1528792157887
+  Content-Type: application/xml
+  Content-ID: <50D33D75-04C6-40AF-947D-E6E9656C1EEB@inps.co.uk/Vision/3>
+  Content-Transfer-Encoding: 8bit
+  <RCMR_IN030000UK06>
+    <id root="${messageId}"/>
+    <communicationFunctionRcv typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id extension="${config.deductionsAsid}" root="1.2.826.0.1285.0.2.0.107"/>
+        </device>
+    </communicationFunctionRcv>
+    <communicationFunctionSnd typeCode="SND">
+        <device classCode="DEV" determinerCode="INSTANCE">
+        </device>
+    </communicationFunctionSnd>
+  </RCMR_IN030000UK06>`;
+
+    return expect(handleMessage(messageWithoutFoundationSupplierAsid)).rejects.toEqual(
+      new Error('Message does not contain foundation supplier ASID')
+    );
+  });
+
+  it('should reject the promise if saving to local storage fails', () => {
+    config.isLocal = true;
+
+    const error = new Error('saving failed');
+    fileSave.mockRejectedValue(error);
+
+    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
+  });
+
+  it('should reject the promise if saving to s3 fails', () => {
+    config.isLocal = false;
+
+    const error = new Error('saving failed');
+    s3Save.mockRejectedValue(error);
+
+    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
+  });
+
+  it('should reject the promise if sending continue message fails', () => {
+    config.isPTL = true;
+
+    const error = new Error('sending failed');
+    mhsGateway.sendMessage.mockRejectedValue(error);
+
+    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
   });
 });

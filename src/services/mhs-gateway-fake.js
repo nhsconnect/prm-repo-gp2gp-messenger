@@ -43,7 +43,7 @@ export const sendMessage = message =>
     );
 
     queue.on('error', error =>
-      logger.debug(`There was an error when connecting to the queue broker: ${error.message}`)
+      logger.debug(`Failover url could not connect to the queue broker: ${error.message}`)
     );
 
     queue.connect((err, client) => {

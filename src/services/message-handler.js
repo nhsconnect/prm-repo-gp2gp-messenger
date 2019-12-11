@@ -14,12 +14,13 @@ import {
   extractMessageId
 } from './message-parser';
 
-const sendContinueMessage = (message, messageId) => {
+const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');
+  const foundationSupplierAsid = await extractFoundationSupplierAsid(message);
   const continueRequest = generateContinueRequest(
     uuid(),
     timestamp,
-    extractFoundationSupplierAsid(message),
+    foundationSupplierAsid,
     config.deductionsAsid,
     messageId
   );
@@ -34,10 +35,10 @@ const storeMessage = (message, conversationId, messageId) =>
     ? fileSave(message, conversationId, messageId)
     : s3Save(message, conversationId, messageId);
 
-const handleMessage = message => {
-  const conversationId = extractConversationId(message);
-  const messageId = extractMessageId(message);
-  const action = extractAction(message);
+const handleMessage = async message => {
+  const conversationId = await extractConversationId(message);
+  const messageId = await extractMessageId(message);
+  const action = await extractAction(message);
 
   return storeMessage(message, conversationId, messageId).then(() => {
     if (action === EHR_EXTRACT_MESSAGE_ACTION) {

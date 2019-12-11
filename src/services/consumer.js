@@ -19,26 +19,50 @@ const generateQueueConfig = url => {
   };
 };
 
+const sendMessageToDlq = (client, body, error) => {
+  const frame = client.send({
+    destination: config.dlqName,
+    errorMessage: error.message,
+    stackTrace: error.stack
+  });
+  frame.write(body);
+  frame.end();
+};
+
+const streamMessageToDlq = (client, msg, error) => {
+  const frame = client.send({
+    destination: config.dlqName,
+    errorMessage: error.message,
+    stackTrace: error.stack
+  });
+  msg.pipe(frame);
+};
+
 const initialiseConsumer = () => {
-  const queue = new ConnectFailover([
-    generateQueueConfig(config.queueUrl1),
-    generateQueueConfig(config.queueUrl2)
-  ]);
+  const queue = new ConnectFailover(
+    [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
+    { maxReconnects: 10 }
+  );
+
   queue.on('error', error =>
-    logger.debug(`There was an error when connecting to the queue broker: ${error.message}`)
+    logger.debug(`Failover url could not connect to the queue broker: ${error.message}`)
   );
 
   queue.connect((err, client) => {
     if (err) throw err;
 
     client.subscribe({ destination: config.queueName }, (err, msg) => {
-      if (err) throw err;
+      if (err) {
+        if (!msg) throw err;
+        return streamMessageToDlq(client, msg, err);
+      }
 
       msg.readString('UTF-8', (err, body) => {
-        if (err) throw err;
-        handleMessage(body).catch(err =>
-          logger.error('Error occurred when consuming message', err)
-        );
+        if (err) {
+          return body ? sendMessageToDlq(client, body, err) : streamMessageToDlq(client, msg, err);
+        }
+
+        handleMessage(body).catch(err => sendMessageToDlq(client, body, err));
       });
     });
   });
