@@ -1,4 +1,11 @@
 # Deductions GP2GP adaptor
+This is a Proof of Concept implementation of a component to handle the sending and receiving of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
+
+The goal is to confirm the GP2GP message format can be used to transfer Orphan and Standard Records into a secure NHS repository.
+
+This component will communicate with the Message Handler Service (MHS) [GitHub nhsconnect/integration-adaptors](https://github.com/nhsconnect/integration-adaptors) and other components being developed by the Orphan and Stranded Record programme.
+
+The initial version will send and receive health records that are encoded in the HL7 format. A subsequent enhancement will be access to the components of the Health Record so that other services can use this component to send and receive Health Records with the need to implement the encoding and fragmentation strategies of the [GP2GP v2.2a](https://data.developer.nhs.uk/dms/mim/6.3.01/Domains/GP2GP/Document%20files/GP2GP%20IM.htm) message specification .
 
 ## Prerequisites
 
@@ -36,6 +43,7 @@ MHS_QUEUE_USERNAME=
 MHS_QUEUE_PASSWORD=
 S3_BUCKET_NAME=
 ```
+A template enviroment variables file is available as .env.sample
 
 ### Run dev mode
 set your `NODE_ENV=dev`
