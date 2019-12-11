@@ -10,7 +10,7 @@ jest.mock('./message-handler');
 describe('initialiseConsumer', () => {
   const queue = { connect: jest.fn(), on: () => {} };
   const client = { subscribe: jest.fn(), send: jest.fn() };
-  const msg = { readString: jest.fn(), pipe: jest.fn() };
+  const message = { readString: jest.fn(), pipe: jest.fn(), ack: jest.fn(), nack: jest.fn() };
   const frame = { write: jest.fn(), end: jest.fn() };
 
   beforeEach(() => {
@@ -22,8 +22,10 @@ describe('initialiseConsumer', () => {
     jest.clearAllMocks();
 
     client.send.mockReturnValue(frame);
-    msg.readString.mockImplementation((encoding, callback) => callback(null, 'some-message-body'));
-    client.subscribe.mockImplementation((config, callback) => callback(null, msg));
+    message.readString.mockImplementation((encoding, callback) =>
+      callback(null, 'some-message-body')
+    );
+    client.subscribe.mockImplementation((config, callback) => callback(null, message));
     queue.connect.mockImplementation(callback => callback(null, client));
     ConnectFailover.mockImplementation(() => queue);
 
@@ -83,7 +85,7 @@ describe('initialiseConsumer', () => {
 
   it('should put the message on dlq when there is an error subscribing to the queue', () => {
     const error = new Error('some-error-happened');
-    client.subscribe.mockImplementation((config, callback) => callback(error, msg));
+    client.subscribe.mockImplementation((config, callback) => callback(error, message));
 
     initialiseConsumer();
 
@@ -92,7 +94,7 @@ describe('initialiseConsumer', () => {
       errorMessage: error.message,
       stackTrace: error.stack
     });
-    expect(msg.pipe).toHaveBeenCalledWith(frame);
+    expect(message.pipe).toHaveBeenCalledWith(frame);
   });
 
   it('should throw when there is an error subscribing to the queue but no message', () => {
@@ -104,12 +106,12 @@ describe('initialiseConsumer', () => {
 
   it('should read the message from the queue with the correct encoding', () => {
     initialiseConsumer();
-    expect(msg.readString).toHaveBeenCalledWith('UTF-8', expect.anything());
+    expect(message.readString).toHaveBeenCalledWith('UTF-8', expect.anything());
   });
 
   it('should put the message stream on dlq when there is an error reading the message', () => {
     const error = new Error('some-error-happened');
-    msg.readString.mockImplementation((encoding, callback) => callback(error));
+    message.readString.mockImplementation((encoding, callback) => callback(error));
 
     initialiseConsumer();
 
@@ -118,12 +120,14 @@ describe('initialiseConsumer', () => {
       errorMessage: error.message,
       stackTrace: error.stack
     });
-    expect(msg.pipe).toHaveBeenCalledWith(frame);
+    expect(message.pipe).toHaveBeenCalledWith(frame);
   });
 
   it('should put the message body on dlq when there is an error reading the message', () => {
     const error = new Error('some-error-happened');
-    msg.readString.mockImplementation((encoding, callback) => callback(error, 'some-message-body'));
+    message.readString.mockImplementation((encoding, callback) =>
+      callback(error, 'some-message-body')
+    );
 
     initialiseConsumer();
 
@@ -141,6 +145,15 @@ describe('initialiseConsumer', () => {
     expect(handleMessage).toHaveBeenCalledWith('some-message-body');
   });
 
+  it('should acknowledge the message after handling', done => {
+    initialiseConsumer();
+
+    setImmediate(() => {
+      expect(message.ack).toHaveBeenCalled();
+      done();
+    });
+  });
+
   it('should put the message on the DLQ if handling the message fails', done => {
     const error = new Error('handling message failed');
     handleMessage.mockRejectedValue(error);
@@ -155,6 +168,18 @@ describe('initialiseConsumer', () => {
       });
       expect(frame.write).toHaveBeenCalledWith('some-message-body');
       expect(frame.end).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should send a negative acknowledgement if handling the message fails', done => {
+    const error = new Error('handling message failed');
+    handleMessage.mockRejectedValue(error);
+
+    initialiseConsumer();
+
+    setImmediate(() => {
+      expect(message.nack).toHaveBeenCalled();
       done();
     });
   });

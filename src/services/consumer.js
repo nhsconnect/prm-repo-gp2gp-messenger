@@ -51,18 +51,25 @@ const initialiseConsumer = () => {
   queue.connect((err, client) => {
     if (err) throw err;
 
-    client.subscribe({ destination: config.queueName }, (err, msg) => {
+    client.subscribe({ destination: config.queueName }, (err, message) => {
       if (err) {
-        if (!msg) throw err;
-        return streamMessageToDlq(client, msg, err);
+        if (!message) throw err;
+        return streamMessageToDlq(client, message, err);
       }
 
-      msg.readString('UTF-8', (err, body) => {
+      message.readString('UTF-8', (err, body) => {
         if (err) {
-          return body ? sendMessageToDlq(client, body, err) : streamMessageToDlq(client, msg, err);
+          return body
+            ? sendMessageToDlq(client, body, err)
+            : streamMessageToDlq(client, message, err);
         }
 
-        handleMessage(body).catch(err => sendMessageToDlq(client, body, err));
+        handleMessage(body)
+          .then(() => message.ack())
+          .catch(err => {
+            sendMessageToDlq(client, body, err);
+            message.nack();
+          });
       });
     });
   });
