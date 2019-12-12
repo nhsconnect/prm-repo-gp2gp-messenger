@@ -11,7 +11,8 @@ import {
   extractAction,
   extractConversationId,
   extractFoundationSupplierAsid,
-  extractMessageId
+  extractMessageId,
+  containsNegativeAcknowledgement
 } from './message-parser';
 import { updateLogEvent } from '../middleware/logging';
 
@@ -42,8 +43,21 @@ const handleMessage = async message => {
   const conversationId = await extractConversationId(message);
   const messageId = await extractMessageId(message);
   const action = await extractAction(message);
+  const isNegativeAcknowledgement = containsNegativeAcknowledgement(message);
 
-  updateLogEvent({ message: { conversationId, messageId, action, isLocal: config.isLocal } });
+  updateLogEvent({
+    message: {
+      conversationId,
+      messageId,
+      action,
+      isLocal: config.isLocal,
+      isNegativeAcknowledgement
+    }
+  });
+
+  if (isNegativeAcknowledgement) {
+    throw new Error('Message is a negative acknowledgement');
+  }
 
   return storeMessage(message, conversationId, messageId).then(() => {
     if (action === EHR_EXTRACT_MESSAGE_ACTION) {

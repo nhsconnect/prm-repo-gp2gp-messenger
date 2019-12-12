@@ -43,3 +43,7 @@ export const extractInteractionId = message => {
   }
   return matches[1];
 };
+
+export const containsNegativeAcknowledgement = message =>
+  message.includes('<acknowledgement typeCode="AR">') ||
+  message.includes('<acknowledgement typeCode="AE">');

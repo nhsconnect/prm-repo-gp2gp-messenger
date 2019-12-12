@@ -9,8 +9,8 @@ import { updateLogEvent } from '../middleware/logging';
 
 jest.mock('../storage/file-system');
 jest.mock('../storage/s3');
-jest.mock('./mhs-gateway', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
-jest.mock('./mhs-gateway-fake', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
+jest.mock('./mhs-gateway');
+jest.mock('./mhs-gateway-fake');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 jest.mock('../middleware/logging');
@@ -58,6 +58,8 @@ describe('handleMessage', () => {
 
     fileSave.mockResolvedValue();
     s3Save.mockResolvedValue();
+    mhsGateway.sendMessage.mockResolvedValue();
+    mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 
   it('should store the message in local storage if environment is local', () => {
@@ -80,7 +82,13 @@ describe('handleMessage', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
       expect(updateLogEvent).toHaveBeenCalledWith({
-        message: { conversationId, messageId, action: 'RCMR_IN030000UK06', isLocal: config.isLocal }
+        message: {
+          conversationId,
+          messageId,
+          action: 'RCMR_IN030000UK06',
+          isLocal: config.isLocal,
+          isNegativeAcknowledgement: false
+        }
       });
     });
   });
@@ -264,5 +272,53 @@ describe('handleMessage', () => {
     mhsGateway.sendMessage.mockRejectedValue(error);
 
     return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
+  });
+
+  it('should reject the promise if message is negative acknowledgement', () => {
+    const negativeAcknowledgement = `
+    <SOAP-ENV:Envelope>
+      <SOAP-ENV:Header>
+        <eb:CPAId>S2036482A2160104</eb:CPAId>
+        <eb:ConversationId>${conversationId}</eb:ConversationId>
+        <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+        <eb:Action>MCCI_IN010000UK13</eb:Action>
+        <eb:MessageData>
+            <eb:MessageId>${messageId}</eb:MessageId>
+            <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+        </eb:MessageData>
+      </SOAP-ENV:Header>
+      <SOAP-ENV:Body>
+      </SOAP-ENV:Body>
+    </SOAP-ENV:Envelope>
+   ------=_Part_33_26096504.1528792157887
+  Content-Type: application/xml
+  Content-ID: <50D33D75-04C6-40AF-947D-E6E9656C1EEB@inps.co.uk/Vision/3>
+  Content-Transfer-Encoding: 8bit
+  <MCCI_IN010000UK13>
+    <id root="${messageId}"/>
+    <acknowledgement typeCode="AR">
+        <acknowledgementDetail typeCode="ER">
+            <code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.32" code="519"
+                  displayName="hl7:{interactionId}/hl7:communicationFunctionRcv/hl7:device/hl7:id[@root=2.16.840.1.113883.2.1.3.2.4.10] is not [1..1], or is inconsistent with the SOAP:Header"/>
+        </acknowledgementDetail>
+        <messageRef>
+            <id root="kjhidsfg-fdgdfg-dfgdg"/>
+        </messageRef>
+    </acknowledgement>
+    <communicationFunctionRcv typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id extension="${config.deductionsAsid}" root="1.2.826.0.1285.0.2.0.107"/>
+        </device>
+    </communicationFunctionRcv>
+    <communicationFunctionSnd typeCode="SND">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id extension="${foundationSupplierAsid}" root="1.2.826.0.1285.0.2.0.107"/>
+        </device>
+    </communicationFunctionSnd>
+  </MCCI_IN010000UK13>`;
+
+    return expect(handleMessage(negativeAcknowledgement)).rejects.toEqual(
+      new Error('Message is a negative acknowledgement')
+    );
   });
 });
