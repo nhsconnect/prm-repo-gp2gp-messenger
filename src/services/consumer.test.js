@@ -2,8 +2,10 @@ import { ConnectFailover } from 'stompit';
 import initialiseConsumer from './consumer';
 import config from '../config';
 import handleMessage from './message-handler';
+import logger from '../config/logging';
 
 jest.mock('stompit');
+jest.mock('uuid/v4', () => () => 'some-correlation-id');
 jest.mock('../config/logging');
 jest.mock('./message-handler');
 
@@ -92,9 +94,27 @@ describe('initialiseConsumer', () => {
     expect(client.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
-      stackTrace: error.stack
+      stackTrace: error.stack,
+      correlationId: 'some-correlation-id'
     });
     expect(message.pipe).toHaveBeenCalledWith(frame);
+  });
+
+  it('should update the log event when there is an error subscribing to the queue', () => {
+    const error = new Error('some-error-happened');
+    client.subscribe.mockImplementation((config, callback) => callback(error, message));
+
+    initialiseConsumer();
+
+    expect(logger.info).toHaveBeenCalledWith('Event finished', {
+      event: {
+        status: 'message-sent-to-dlq',
+        error: {
+          message: 'some-error-happened',
+          stack: expect.any(String)
+        }
+      }
+    });
   });
 
   it('should throw when there is an error subscribing to the queue but no message', () => {
@@ -118,7 +138,8 @@ describe('initialiseConsumer', () => {
     expect(client.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
-      stackTrace: error.stack
+      stackTrace: error.stack,
+      correlationId: 'some-correlation-id'
     });
     expect(message.pipe).toHaveBeenCalledWith(frame);
   });
@@ -134,10 +155,30 @@ describe('initialiseConsumer', () => {
     expect(client.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
-      stackTrace: error.stack
+      stackTrace: error.stack,
+      correlationId: 'some-correlation-id'
     });
     expect(frame.write).toHaveBeenCalledWith('some-message-body');
     expect(frame.end).toHaveBeenCalled();
+  });
+
+  it('should update log event when there is an error reading the message', () => {
+    const error = new Error('some-error-happened');
+    message.readString.mockImplementation((encoding, callback) =>
+      callback(error, 'some-message-body')
+    );
+
+    initialiseConsumer();
+
+    expect(logger.info).toHaveBeenCalledWith('Event finished', {
+      event: {
+        status: 'message-sent-to-dlq',
+        error: {
+          message: 'some-error-happened',
+          stack: expect.any(String)
+        }
+      }
+    });
   });
 
   it('should pass the message to the handler', () => {
@@ -154,6 +195,19 @@ describe('initialiseConsumer', () => {
     });
   });
 
+  it('should log the event after handling', done => {
+    initialiseConsumer();
+
+    setImmediate(() => {
+      expect(logger.info).toHaveBeenCalledWith('Event finished', {
+        event: {
+          status: 'message-handled'
+        }
+      });
+      done();
+    });
+  });
+
   it('should put the message on the DLQ if handling the message fails', done => {
     const error = new Error('handling message failed');
     handleMessage.mockRejectedValue(error);
@@ -164,7 +218,8 @@ describe('initialiseConsumer', () => {
       expect(client.send).toHaveBeenCalledWith({
         destination: config.dlqName,
         errorMessage: error.message,
-        stackTrace: error.stack
+        stackTrace: error.stack,
+        correlationId: 'some-correlation-id'
       });
       expect(frame.write).toHaveBeenCalledWith('some-message-body');
       expect(frame.end).toHaveBeenCalled();
@@ -180,6 +235,26 @@ describe('initialiseConsumer', () => {
 
     setImmediate(() => {
       expect(message.nack).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should log the error event if handling the message fails', done => {
+    const error = new Error('handling message failed');
+    handleMessage.mockRejectedValue(error);
+
+    initialiseConsumer();
+
+    setImmediate(() => {
+      expect(logger.info).toHaveBeenCalledWith('Event finished', {
+        event: {
+          status: 'message-sent-to-dlq',
+          error: {
+            message: 'handling message failed',
+            stack: expect.any(String)
+          }
+        }
+      });
       done();
     });
   });

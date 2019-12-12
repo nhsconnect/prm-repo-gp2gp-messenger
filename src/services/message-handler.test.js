@@ -5,6 +5,7 @@ import s3Save from '../storage/s3';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
+import { updateLogEvent } from '../middleware/logging';
 
 jest.mock('../storage/file-system');
 jest.mock('../storage/s3');
@@ -12,6 +13,7 @@ jest.mock('./mhs-gateway', () => ({ sendMessage: jest.fn().mockResolvedValue() }
 jest.mock('./mhs-gateway-fake', () => ({ sendMessage: jest.fn().mockResolvedValue() }));
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
+jest.mock('../middleware/logging');
 
 describe('handleMessage', () => {
   const conversationId = 'some-conversation-id-123';
@@ -71,6 +73,15 @@ describe('handleMessage', () => {
 
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(s3Save).toHaveBeenCalledWith(ehrRequestCompletedMessage, conversationId, messageId);
+    });
+  });
+
+  it('should update the log event at each stage', () => {
+    return handleMessage(ehrRequestCompletedMessage).then(() => {
+      expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        message: { conversationId, messageId, action: 'RCMR_IN030000UK06', isLocal: config.isLocal }
+      });
     });
   });
 

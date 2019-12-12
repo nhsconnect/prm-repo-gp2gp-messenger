@@ -2,7 +2,7 @@ import express from 'express';
 import { errorLogger, logger as requestLogger } from 'express-winston';
 import httpContext from 'express-http-context';
 import { options } from './config/logging';
-import { addCorrelationInfo } from './middleware/correlation';
+import * as correlationInfo from './middleware/correlation';
 import ehrRequest from './api/ehr-request';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
@@ -12,7 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(httpContext.middleware);
-app.use(addCorrelationInfo);
+app.use(correlationInfo.middleware);
 app.use(requestLogger(options));
 
 app.get('/health', (req, res) => {

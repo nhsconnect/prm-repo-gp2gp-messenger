@@ -13,6 +13,7 @@ import {
   extractFoundationSupplierAsid,
   extractMessageId
 } from './message-parser';
+import { updateLogEvent } from '../middleware/logging';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');
@@ -36,9 +37,13 @@ const storeMessage = (message, conversationId, messageId) =>
     : s3Save(message, conversationId, messageId);
 
 const handleMessage = async message => {
+  updateLogEvent({ status: 'handling-message' });
+
   const conversationId = await extractConversationId(message);
   const messageId = await extractMessageId(message);
   const action = await extractAction(message);
+
+  updateLogEvent({ message: { conversationId, messageId, action, isLocal: config.isLocal } });
 
   return storeMessage(message, conversationId, messageId).then(() => {
     if (action === EHR_EXTRACT_MESSAGE_ACTION) {

@@ -4,7 +4,7 @@ import { checkIsAuthenticated } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import sendEhrRequest from '../services/ehr-request';
 import MhsError from '../services/MhsError';
-import { updateLogEvent } from '../middleware/logging';
+import { updateLogEventWithError } from '../middleware/logging';
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.post('/', checkIsAuthenticated, ehrRequestValidationRules, validate, (req
   sendEhrRequest(req.body.nhsNumber, req.body.odsCode)
     .then(() => res.sendStatus(202))
     .catch(err => {
-      updateLogEvent({ error: { ...err, message: err.message, stack: err.stack } });
+      updateLogEventWithError(err);
 
       if (err instanceof MhsError) {
         return res.status(503).json({ error: err.message });

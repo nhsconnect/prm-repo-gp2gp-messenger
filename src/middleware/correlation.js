@@ -1,9 +1,12 @@
 import httpContext from 'express-http-context';
 import uuid from 'uuid/v4';
 
-export const getCorrelationId = () => httpContext.get('correlationId');
+const CORRELATION_ID_KEY = 'correlationId';
 
-export const addCorrelationInfo = (req, res, next) => {
-  httpContext.set('correlationId', uuid());
+export const getCorrelationId = () => httpContext.get(CORRELATION_ID_KEY);
+export const setCorrelationInfo = () => httpContext.set(CORRELATION_ID_KEY, uuid());
+
+export const middleware = (req, res, next) => {
+  setCorrelationInfo();
   next();
 };

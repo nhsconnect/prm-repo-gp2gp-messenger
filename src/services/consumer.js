@@ -2,6 +2,13 @@ import { ConnectFailover } from 'stompit';
 import config from '../config';
 import logger from '../config/logging';
 import handleMessage from './message-handler';
+import {
+  eventFinished,
+  updateLogEvent,
+  updateLogEventWithError,
+  withContext
+} from '../middleware/logging';
+import { getCorrelationId } from '../middleware/correlation';
 
 const generateQueueConfig = url => {
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
@@ -20,20 +27,26 @@ const generateQueueConfig = url => {
 };
 
 const sendMessageToDlq = (client, body, error) => {
+  updateLogEvent({ status: 'message-sent-to-dlq' });
+
   const frame = client.send({
     destination: config.dlqName,
     errorMessage: error.message,
-    stackTrace: error.stack
+    stackTrace: error.stack,
+    correlationId: getCorrelationId()
   });
   frame.write(body);
   frame.end();
 };
 
 const streamMessageToDlq = (client, msg, error) => {
+  updateLogEvent({ status: 'message-sent-to-dlq' });
+
   const frame = client.send({
     destination: config.dlqName,
     errorMessage: error.message,
-    stackTrace: error.stack
+    stackTrace: error.stack,
+    correlationId: getCorrelationId()
   });
   msg.pipe(frame);
 };
@@ -52,24 +65,37 @@ const initialiseConsumer = () => {
     if (err) throw err;
 
     client.subscribe({ destination: config.queueName }, (err, message) => {
-      if (err) {
-        if (!message) throw err;
-        return streamMessageToDlq(client, message, err);
-      }
+      withContext(() => {
+        updateLogEvent({ status: 'consuming-message' });
 
-      message.readString('UTF-8', (err, body) => {
         if (err) {
-          return body
-            ? sendMessageToDlq(client, body, err)
-            : streamMessageToDlq(client, message, err);
+          updateLogEventWithError(err);
+          if (!message) throw err;
+          streamMessageToDlq(client, message, err);
+          eventFinished();
+          return;
         }
 
-        handleMessage(body)
-          .then(() => message.ack())
-          .catch(err => {
-            sendMessageToDlq(client, body, err);
-            message.nack();
-          });
+        message.readString('UTF-8', (err, body) => {
+          if (err) {
+            updateLogEventWithError(err);
+            body ? sendMessageToDlq(client, body, err) : streamMessageToDlq(client, message, err);
+            eventFinished();
+            return;
+          }
+
+          handleMessage(body)
+            .then(() => {
+              message.ack();
+              updateLogEvent({ status: 'message-handled' });
+            })
+            .catch(err => {
+              updateLogEventWithError(err);
+              sendMessageToDlq(client, body, err);
+              message.nack();
+            })
+            .then(eventFinished);
+        });
       });
     });
   });

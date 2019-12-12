@@ -1,5 +1,6 @@
 import { S3 } from 'aws-sdk';
 import config from '../config';
+import { updateLogEvent } from '../middleware/logging';
 
 const save = (data, conversationId, messageId) =>
   new Promise((resolve, reject) => {
@@ -13,6 +14,7 @@ const save = (data, conversationId, messageId) =>
 
     s3.putObject(parameters, err => {
       if (err) return reject(err);
+      updateLogEvent({ storage: { path: `${config.awsS3BucketName}/${key}` } });
       resolve();
     });
   });
