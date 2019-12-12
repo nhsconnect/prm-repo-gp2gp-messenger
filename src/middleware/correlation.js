@@ -1,4 +1,4 @@
-import httpContext from 'express-http-context';
+import httpContext from 'async-local-storage';
 import uuid from 'uuid/v4';
 
 const CORRELATION_ID_KEY = 'correlationId';

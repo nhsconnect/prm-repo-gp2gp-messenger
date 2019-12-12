@@ -94,7 +94,7 @@ const initialiseConsumer = () => {
               sendMessageToDlq(client, body, err);
               message.nack();
             })
-            .then(eventFinished);
+            .finally(eventFinished);
         });
       });
     });
