@@ -1,6 +1,7 @@
 environment          = "dev"
 component_name       = "gp2gp-adaptor"
 
+s3_bucket_name       = "dev-gp2gp-bucket"
 task_execution_role  = "ecsTaskExecutionRole"
 task_family          = "gp2gp-adaptor"
 
