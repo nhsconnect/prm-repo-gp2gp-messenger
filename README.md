@@ -33,7 +33,7 @@ MHS_QUEUE_USERNAME=
 MHS_QUEUE_PASSWORD=
 S3_BUCKET_NAME=
 ```
-A template enviroment variables file is available as .env.sample
+A template environment variables file is available as .env.sample
 
 Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set 
 to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at 
