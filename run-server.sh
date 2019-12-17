@@ -22,6 +22,10 @@ while ! nc -z ${MQ_HOST_1} ${MQ_PORT_1} && ! nc -z ${MQ_HOST_2} ${MQ_PORT_2}; do
   fi
 done
 
+echo "MQ is availabe. Waiting 5 seconds before connecting"
+sleep 5
+# After tcp port is open, it takes a moment for server to be ready
+
 echo "MQ is availabe. Starting node.js server"
 set -e
 exec node server.js
