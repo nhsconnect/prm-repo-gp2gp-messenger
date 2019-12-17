@@ -14,7 +14,7 @@ import {
   extractMessageId,
   containsNegativeAcknowledgement
 } from './message-parser';
-import { updateLogEvent } from '../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');
@@ -29,7 +29,10 @@ const sendContinueMessage = async (message, messageId) => {
 
   return config.isPTL
     ? mhsGateway.sendMessage(continueRequest)
-    : mhsGatewayFake.sendMessage(continueRequest);
+    : mhsGatewayFake.sendMessage(continueRequest).catch(err => {
+        updateLogEventWithError(err);
+        return Promise.reject(err);
+      });
 };
 
 const storeMessage = (message, conversationId, messageId) =>

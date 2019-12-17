@@ -4,7 +4,7 @@ import * as mhsGatewayFake from './mhs-gateway-fake';
 import * as mhsGateway from './mhs-gateway';
 import { generateEhrRequestQuery } from '../templates/ehr-request-template';
 import config from '../config';
-import { updateLogEvent } from '../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
   const mhs = config.isPTL ? mhsGateway : mhsGatewayFake;
@@ -29,7 +29,10 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
         config.deductionsOdsCode,
         nhsNumber
       );
-      return mhs.sendMessage(ehrRequestQuery);
+      return mhs.sendMessage(ehrRequestQuery).catch(err => {
+        updateLogEventWithError(err);
+        return Promise.reject(err);
+      });
     })
     .then(() => updateLogEvent({ status: 'requested-ehr' }));
 };

@@ -1,6 +1,7 @@
 import { ConnectFailover } from 'stompit';
 import logger from '../config/logging';
 import config from '../config';
+//import MhsError from './MhsError';
 import { generateEhrExtractResponse } from '../templates/ehr-extract-template';
 import { generateFirstFragmentResponse } from '../templates/fragment-1-template';
 import { generateSecondFragmentResponse } from '../templates/fragment-2-template';
@@ -37,6 +38,7 @@ const putResponseOnQueue = (client, response) => {
 
 export const sendMessage = message =>
   new Promise((resolve, reject) => {
+    //setTimeout(() => reject(new MhsError('MHS Adaptor is not responding')), 3000);
     const queue = new ConnectFailover(
       [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
       { maxReconnects: 10 }

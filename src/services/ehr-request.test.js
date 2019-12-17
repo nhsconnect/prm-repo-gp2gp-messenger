@@ -16,6 +16,15 @@ describe('sendEhrRequest', () => {
   const odsCode = 'some-ods-code';
   const receivingAsid = 'some-asid';
   const nhsNumber = 'some-nhs-number';
+  const ehrRequestQuery = generateEhrRequestQuery(
+    'some-uuid',
+    '20190228112548',
+    receivingAsid,
+    config.deductionsAsid,
+    odsCode,
+    config.deductionsOdsCode,
+    nhsNumber
+  );
 
   it('should send generated EHR request message to real MHS when environment is PTL', () => {
     config.isPTL = true;
@@ -23,17 +32,10 @@ describe('sendEhrRequest', () => {
     when(mhsGateway.getRoutingInformation)
       .calledWith(odsCode)
       .mockResolvedValue({ asid: receivingAsid });
-
+    when(mhsGateway.sendMessage)
+      .calledWith(ehrRequestQuery)
+      .mockResolvedValue();
     return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      const ehrRequestQuery = generateEhrRequestQuery(
-        'some-uuid',
-        '20190228112548',
-        receivingAsid,
-        config.deductionsAsid,
-        odsCode,
-        config.deductionsOdsCode,
-        nhsNumber
-      );
       expect(mhsGateway.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
     });
   });
@@ -44,17 +46,11 @@ describe('sendEhrRequest', () => {
     when(mhsGatewayFake.getRoutingInformation)
       .calledWith(odsCode)
       .mockResolvedValue({ asid: receivingAsid });
+    when(mhsGatewayFake.sendMessage)
+      .calledWith(ehrRequestQuery)
+      .mockResolvedValue();
 
     return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      const ehrRequestQuery = generateEhrRequestQuery(
-        'some-uuid',
-        '20190228112548',
-        receivingAsid,
-        config.deductionsAsid,
-        odsCode,
-        config.deductionsOdsCode,
-        nhsNumber
-      );
       expect(mhsGatewayFake.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
     });
   });
