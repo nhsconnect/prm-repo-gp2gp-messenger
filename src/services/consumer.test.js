@@ -58,7 +58,26 @@ describe('initialiseConsumer', () => {
           ssl: false
         }
       ],
-      { maxReconnects: 10 }
+      { maxReconnects: 10, initialReconnectDelay: 100 }
+    );
+  });
+
+  it('should connect to the broker when there is no failover', () => {
+    config.queueUrl2 = '';
+    initialiseConsumer();
+    expect(ConnectFailover).toHaveBeenCalledWith(
+      [
+        {
+          connectHeaders: {
+            login: 'some-username',
+            passcode: 'some-password'
+          },
+          host: 'some-url',
+          port: 'some-port',
+          ssl: true
+        }
+      ],
+      { maxReconnects: 10, initialReconnectDelay: 100 }
     );
   });
 

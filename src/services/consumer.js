@@ -52,10 +52,11 @@ const streamMessageToDlq = (client, msg, error) => {
 };
 
 const initialiseConsumer = () => {
-  const queue = new ConnectFailover(
-    [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
-    { maxReconnects: 10 }
-  );
+  const hosts = [generateQueueConfig(config.queueUrl1)];
+  if (config.queueUrl2) {
+    hosts.push(generateQueueConfig(config.queueUrl2));
+  }
+  const queue = new ConnectFailover(hosts, { maxReconnects: 10, initialReconnectDelay: 100 });
 
   queue.on('error', error =>
     logger.debug(`Failover url could not connect to the queue broker: ${error.message}`)

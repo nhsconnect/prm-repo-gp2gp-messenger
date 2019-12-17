@@ -141,7 +141,7 @@ case "${command}" in
       export GP2GP_URL="http://gp2gp:3000"
       export NHS_ENVIRONMENT=test
       export MHS_QUEUE_URL_1=tcp://mq:61613
-      export MHS_QUEUE_URL_2=tcp://mq:61613
+      export MHS_QUEUE_URL_2=""
       export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
       dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
