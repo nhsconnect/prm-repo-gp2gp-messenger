@@ -1,0 +1,13 @@
+version: '2'
+services:
+  default:
+    links:
+      - gp2gp:gp2gp
+      - mq:mq
+  gp2gp:
+    container_name: gp2gp
+    image: ${G2P_ADAPTOR_DOCKER_IMAGE}
+    links:
+      - mq:mq
+  mq:
+    image: resilva87/docker-rabbitmq-stomp:3.0.0
