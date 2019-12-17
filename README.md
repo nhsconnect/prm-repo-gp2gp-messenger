@@ -15,13 +15,14 @@ The initial version will send and receive health records that are encoded in the
 
 Run `npm install` to install all node dependencies.
 
-Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list. The app will 
-use a fake MHS when `NODE_ENV` is set to `local` or `dev`. 
+Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list. The app will
+use a fake MHS when `NODE_ENV` is set to `local` or `dev`.
 
 Here is an example for your local environment:
 
 ```
 AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+MHS_STOMP_VIRTUAL_HOST="/"
 DEDUCTIONS_ASID=deduction-asid
 DEDUCTIONS_ODS_CODE=deduction-ods
 NODE_ENV=local
@@ -35,9 +36,10 @@ S3_BUCKET_NAME=
 ```
 A template environment variables file is available as .env.sample
 
-Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set 
-to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at 
+Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
+to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at
 all.
+`MHS_STOMP_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
 
 ## Running the tests
 
@@ -49,7 +51,7 @@ Run a development server with `npm run start-local`.
 
 ### Swagger
 
-The swagger documentation for the app can be found at http://localhost:3000/. To update it, change the 
+The swagger documentation for the app can be found at http://localhost:3000/. To update it, change the
 `src/swagger.json` file. You can use the editor https://editor.swagger.io/ which will validate your changes.
 
 ### Example request

@@ -20,6 +20,7 @@ describe('initialiseConsumer', () => {
     config.queueUrl2 = 'tcp://other-url:other-port';
     config.queueUsername = 'some-username';
     config.queuePassword = 'some-password';
+    config.stompVirtualHost = '/';
 
     jest.clearAllMocks();
 
@@ -42,7 +43,8 @@ describe('initialiseConsumer', () => {
         {
           connectHeaders: {
             login: 'some-username',
-            passcode: 'some-password'
+            passcode: 'some-password',
+            host: '/'
           },
           host: 'some-url',
           port: 'some-port',
@@ -51,7 +53,8 @@ describe('initialiseConsumer', () => {
         {
           connectHeaders: {
             login: 'some-username',
-            passcode: 'some-password'
+            passcode: 'some-password',
+            host: '/'
           },
           host: 'other-url',
           port: 'other-port',
@@ -70,7 +73,8 @@ describe('initialiseConsumer', () => {
         {
           connectHeaders: {
             login: 'some-username',
-            passcode: 'some-password'
+            passcode: 'some-password',
+            host: '/'
           },
           host: 'some-url',
           port: 'some-port',

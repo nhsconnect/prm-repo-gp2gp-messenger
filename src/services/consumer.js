@@ -15,7 +15,7 @@ const generateQueueConfig = url => {
   if (!urlParts || urlParts.length < 4)
     throw new Error('Queue url should have the format protocol://host:port');
 
-  return {
+  const connectionConfig = {
     host: urlParts[2],
     port: urlParts[3],
     ssl: urlParts[1].includes('ssl'),
@@ -24,6 +24,10 @@ const generateQueueConfig = url => {
       passcode: config.queuePassword
     }
   };
+  if (config.stompVirtualHost) {
+    connectionConfig.connectHeaders.host = config.stompVirtualHost;
+  }
+  return connectionConfig;
 };
 
 const sendMessageToDlq = (client, body, error) => {
