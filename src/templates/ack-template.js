@@ -21,13 +21,15 @@ export const generateAcknowledgementResponse = () =>
             </eb:MessageData>
             <eb:DuplicateElimination>always</eb:DuplicateElimination>
         </eb:MessageHeader>
-        <eb:Acknowledgment eb:version="2.0" soap-env:actor="urn:oasis:names:tc:ebxml-msg:actor:nextMSH" soap-env:mustUnderstand="1">
-            <eb:Timestamp>2018-06-12T08:29:20Z</eb:Timestamp>
-            <eb:RefToMessageId>BC35C075-A538-4B5F-965D-F8B8E3D582F5</eb:RefToMessageId>
-            <eb:From>
-                <eb:PartyId eb:type="urn:nhs:names:partyType:ocs+serviceInstance">A28009-821605</eb:PartyId>
-            </eb:From>
-        </eb:Acknowledgment>
+       <eb:acknowledgement typeCode="AA">
+        <eb:acknowledgementDetail typeCode="ER">
+            <eb:code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.32" code="519"
+                  displayName="hl7:{interactionId}/hl7:communicationFunctionRcv/hl7:device/hl7:id[@root=2.16.840.1.113883.2.1.3.2.4.10] is not [1..1], or is inconsistent with the SOAP:Header"/>
+        </eb:acknowledgementDetail>
+        <eb:messageRef>
+            <eb:id root="kjhidsfg-fdgdfg-dfgdg"/>
+        </eb:messageRef>
+    </eb:acknowledgement>
     </SOAP-ENV:Header>
     <SOAP-ENV:Body/>
 </SOAP-ENV:Envelope>`;

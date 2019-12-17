@@ -295,26 +295,26 @@ describe('handleMessage', () => {
   Content-ID: <50D33D75-04C6-40AF-947D-E6E9656C1EEB@inps.co.uk/Vision/3>
   Content-Transfer-Encoding: 8bit
   <MCCI_IN010000UK13>
-    <id root="${messageId}"/>
-    <acknowledgement typeCode="AR">
-        <acknowledgementDetail typeCode="ER">
-            <code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.32" code="519"
+    <eb:id root="${messageId}"/>
+    <eb:acknowledgement typeCode="AR">
+        <eb:acknowledgementDetail typeCode="ER">
+            <eb:code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.32" code="519"
                   displayName="hl7:{interactionId}/hl7:communicationFunctionRcv/hl7:device/hl7:id[@root=2.16.840.1.113883.2.1.3.2.4.10] is not [1..1], or is inconsistent with the SOAP:Header"/>
-        </acknowledgementDetail>
-        <messageRef>
-            <id root="kjhidsfg-fdgdfg-dfgdg"/>
-        </messageRef>
-    </acknowledgement>
-    <communicationFunctionRcv typeCode="RCV">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id extension="${config.deductionsAsid}" root="1.2.826.0.1285.0.2.0.107"/>
-        </device>
-    </communicationFunctionRcv>
-    <communicationFunctionSnd typeCode="SND">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id extension="${foundationSupplierAsid}" root="1.2.826.0.1285.0.2.0.107"/>
-        </device>
-    </communicationFunctionSnd>
+        </eb:acknowledgementDetail>
+        <eb:messageRef>
+            <eb:id root="kjhidsfg-fdgdfg-dfgdg"/>
+        </eb:messageRef>
+    </eb:acknowledgement>
+    <eb:communicationFunctionRcv typeCode="RCV">
+        <eb:device classCode="DEV" determinerCode="INSTANCE">
+            <eb:id extension="${config.deductionsAsid}" root="1.2.826.0.1285.0.2.0.107"/>
+        </eb:device>
+    </eb:communicationFunctionRcv>
+    <eb:communicationFunctionSnd typeCode="SND">
+        <eb:device classCode="DEV" determinerCode="INSTANCE">
+            <eb:id extension="${foundationSupplierAsid}" root="1.2.826.0.1285.0.2.0.107"/>
+        </eb:device>
+    </eb:communicationFunctionSnd>
   </MCCI_IN010000UK13>`;
 
     return expect(handleMessage(negativeAcknowledgement)).rejects.toEqual(
