@@ -117,10 +117,9 @@ case "${command}" in
       dojo -c Dojofile-infra "./tasks _tf_apply"
       ;;
   _wait_ecs)
-      aws ecs wait services-stable \
-        --region $AWS_DEFAULT_REGION \
+      aws ecs wait services-stable --region $AWS_DEFAULT_REGION \
         --cluster $NHS_ENVIRONMENT-deductions-private-ecs-cluster \
-        --services "${NHS_ENVIRONMENT}-${NHS_COMPONENT}-service"
+        --service $NHS_ENVIRONMENT-gp2gp-adaptor-service
       ;;
   wait_ecs)
       dojo -c Dojofile-infra "./tasks _wait_ecs"
