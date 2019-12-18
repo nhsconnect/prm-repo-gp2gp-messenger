@@ -20,7 +20,8 @@ const addCorrelationInfo = format(info => {
 });
 
 export const options = {
-  level: 'debug',
+  level: 'error',
+  exitOnError: false,
   format: format.combine(
     addCorrelationInfo(),
     format.timestamp(),
