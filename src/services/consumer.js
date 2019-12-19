@@ -62,9 +62,9 @@ const initialiseConsumer = () => {
   }
   const queue = new ConnectFailover(hosts, { maxReconnects: 10, initialReconnectDelay: 100 });
 
-  queue.on('error', error => {
-    logger.error(`Failover url could not connect to the queue broker: ${error}`, error);
-  });
+  queue.on('error', error =>
+    logger.error(`Failover url could not connect to the queue broker: ${error}`, error)
+  );
 
   queue.connect((err, client) => {
     if (err) throw err;

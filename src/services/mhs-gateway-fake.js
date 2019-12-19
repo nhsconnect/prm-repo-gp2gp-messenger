@@ -44,9 +44,9 @@ export const sendMessage = message =>
       { maxReconnects: 10 }
     );
 
-    queue.on('error', error => {
-      logger.error(`Failover url could not connect to the queue broker: ${error}`, error);
-    });
+    queue.on('error', error =>
+      logger.error(`Failover url could not connect to the queue broker: ${error}`, error)
+    );
 
     queue.connect((err, client) => {
       if (err) {

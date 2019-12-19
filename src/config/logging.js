@@ -20,7 +20,6 @@ const addCorrelationInfo = format(info => {
 });
 
 export const options = {
-  level: 'error',
   exitOnError: false,
   format: format.combine(
     addCorrelationInfo(),
