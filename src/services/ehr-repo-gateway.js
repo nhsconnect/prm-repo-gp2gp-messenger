@@ -6,5 +6,12 @@ const fetchStorageUrl = (conversationId, messageId) =>
     .post(`${config.ehrRepoUrl}/health-record/${conversationId}/message`, { messageId })
     .then(response => response.data);
 
+const setTransferComplete = (conversationId, messageId) =>
+  axios.put(`${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`, {
+    transferComplete: true
+  });
+
 export const storeMessageInEhrRepo = (message, conversationId, messageId) =>
-  fetchStorageUrl(conversationId, messageId).then(url => axios.put(url, message));
+  fetchStorageUrl(conversationId, messageId)
+    .then(url => axios.put(url, message))
+    .then(() => setTransferComplete(conversationId, messageId));

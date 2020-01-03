@@ -10,6 +10,10 @@ describe('ehr-repo-gateway', () => {
     const conversationId = 'some-conversation-id';
     const messageId = 'some-message-id';
 
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should make request with conversation id and message id', () => {
       axios.post.mockResolvedValue({});
 
@@ -29,6 +33,27 @@ describe('ehr-repo-gateway', () => {
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(axios.put).toHaveBeenCalledWith('some-url', message);
       });
+    });
+
+    it('should make put request to ehr repo service with transfer complete flag', () => {
+      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
+        expect(
+          axios.put
+        ).toHaveBeenCalledWith(
+          `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
+          { transferComplete: true }
+        );
+      });
+    });
+
+    it('should not make put request to ehr repo service when storing message fails', () => {
+      axios.put.mockRejectedValue('some-error');
+
+      return expect(storeMessageInEhrRepo(message, conversationId, messageId))
+        .rejects.toBeTruthy()
+        .then(() => {
+          expect(axios.put).toHaveBeenCalledTimes(1);
+        });
     });
   });
 });
