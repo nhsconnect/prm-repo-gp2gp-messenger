@@ -5,7 +5,6 @@ services:
       - gp2gp:gp2gp
       - mq:mq
   gp2gp:
-    container_name: gp2gp
     image: ${G2P_ADAPTOR_DOCKER_IMAGE}
     links:
       - mq:mq
