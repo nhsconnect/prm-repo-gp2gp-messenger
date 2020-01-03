@@ -160,7 +160,7 @@ case "${command}" in
       ;;
   _run_local)
       sleep 10
-      npm run start-local
+      npm run start-local-nodemon
       ;;
   run_local)
       configure_local_envs

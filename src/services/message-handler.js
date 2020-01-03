@@ -7,15 +7,15 @@ import { generateContinueRequest } from '../templates/continue-template';
 import uuid from 'uuid/v4';
 import moment from 'moment';
 import {
+  containsNegativeAcknowledgement,
   EHR_EXTRACT_MESSAGE_ACTION,
   extractAction,
   extractConversationId,
   extractFoundationSupplierAsid,
-  extractMessageId,
-  containsNegativeAcknowledgement
+  extractMessageId
 } from './message-parser';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
-import { fetchStorageUrl } from './ehr-repo-gateway';
+import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');
@@ -64,9 +64,7 @@ const handleMessage = async message => {
   }
 
   return storeMessage(message, conversationId, messageId)
-    .then(() => {
-      fetchStorageUrl(conversationId, messageId);
-    })
+    .then(() => storeMessageInEhrRepo(message, conversationId, messageId))
     .then(() => {
       if (action === EHR_EXTRACT_MESSAGE_ACTION) {
         return sendContinueMessage(message, messageId);

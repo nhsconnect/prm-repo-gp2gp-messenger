@@ -6,7 +6,7 @@ import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
 import { updateLogEvent } from '../middleware/logging';
-import { fetchStorageUrl } from './ehr-repo-gateway';
+import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 
 jest.mock('../storage/file-system');
 jest.mock('../storage/s3');
@@ -80,9 +80,13 @@ describe('handleMessage', () => {
     });
   });
 
-  it('should request the storage url from ehr repo gateway', () => {
+  it('should store the message in the ehr repo', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(fetchStorageUrl).toHaveBeenCalledWith(conversationId, messageId);
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+        ehrRequestCompletedMessage,
+        conversationId,
+        messageId
+      );
     });
   });
 
