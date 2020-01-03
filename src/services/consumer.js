@@ -1,6 +1,4 @@
-import { ConnectFailover } from 'stompit';
 import config from '../config';
-import logger from '../config/logging';
 import handleMessage from './message-handler';
 import {
   eventFinished,
@@ -9,26 +7,7 @@ import {
   withContext
 } from '../middleware/logging';
 import { getCorrelationId } from '../middleware/correlation';
-
-const generateQueueConfig = url => {
-  const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
-  if (!urlParts || urlParts.length < 4)
-    throw new Error('Queue url should have the format protocol://host:port');
-
-  const connectionConfig = {
-    host: urlParts[2],
-    port: urlParts[3],
-    ssl: urlParts[1].includes('ssl'),
-    connectHeaders: {
-      login: config.queueUsername,
-      passcode: config.queuePassword
-    }
-  };
-  if (config.stompVirtualHost) {
-    connectionConfig.connectHeaders.host = config.stompVirtualHost;
-  }
-  return connectionConfig;
-};
+import { connectToQueue } from '../config/queue';
 
 const sendMessageToDlq = (client, body, error) => {
   updateLogEvent({ status: 'message-sent-to-dlq' });
@@ -56,17 +35,7 @@ const streamMessageToDlq = (client, msg, error) => {
 };
 
 const initialiseConsumer = () => {
-  const hosts = [generateQueueConfig(config.queueUrl1)];
-  if (config.queueUrl2) {
-    hosts.push(generateQueueConfig(config.queueUrl2));
-  }
-  const queue = new ConnectFailover(hosts, { maxReconnects: 10, initialReconnectDelay: 100 });
-
-  queue.on('error', error =>
-    logger.error(`Failover url could not connect to the queue broker: ${error}`, error)
-  );
-
-  queue.connect((err, client) => {
+  connectToQueue((err, client) => {
     if (err) throw err;
 
     client.subscribe({ destination: config.queueName }, (err, message) => {

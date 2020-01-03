@@ -1,7 +1,4 @@
-import { ConnectFailover } from 'stompit';
-import logger from '../config/logging';
 import config from '../config';
-//import MhsError from './MhsError';
 import { generateEhrExtractResponse } from '../templates/ehr-extract-template';
 import { generateFirstFragmentResponse } from '../templates/fragment-1-template';
 import { generateSecondFragmentResponse } from '../templates/fragment-2-template';
@@ -13,22 +10,7 @@ import {
   EHR_REQUEST_MESSAGE_ACTION,
   extractInteractionId
 } from './message-parser';
-
-const generateQueueConfig = url => {
-  const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
-  if (!urlParts || urlParts.length < 4)
-    throw new Error('Queue url should have the format protocol://host:port');
-
-  return {
-    host: urlParts[2],
-    port: urlParts[3],
-    ssl: urlParts[1].includes('ssl'),
-    connectHeaders: {
-      login: config.queueUsername,
-      passcode: config.queuePassword
-    }
-  };
-};
+import { connectToQueue } from '../config/queue';
 
 const putResponseOnQueue = (client, response) => {
   const frame = client.send({ destination: config.queueName });
@@ -38,17 +20,7 @@ const putResponseOnQueue = (client, response) => {
 
 export const sendMessage = message =>
   new Promise((resolve, reject) => {
-    //setTimeout(() => reject(new MhsError('MHS Adaptor is not responding')), 3000);
-    const queue = new ConnectFailover(
-      [generateQueueConfig(config.queueUrl1), generateQueueConfig(config.queueUrl2)],
-      { maxReconnects: 10 }
-    );
-
-    queue.on('error', error =>
-      logger.error(`Failover url could not connect to the queue broker: ${error}`, error)
-    );
-
-    queue.connect((err, client) => {
+    connectToQueue((err, client) => {
       if (err) {
         updateLogEvent({ mhs: { status: 'connection-failed' } });
         return reject(err);

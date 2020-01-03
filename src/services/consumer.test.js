@@ -67,7 +67,9 @@ describe('initialiseConsumer', () => {
 
   it('should connect to the broker when there is no failover', () => {
     config.queueUrl2 = '';
+
     initialiseConsumer();
+
     expect(ConnectFailover).toHaveBeenCalledWith(
       [
         {
@@ -102,6 +104,7 @@ describe('initialiseConsumer', () => {
 
   it('should subscribe to the queue with the correct config', () => {
     initialiseConsumer();
+
     expect(client.subscribe).toHaveBeenCalledWith(
       { destination: config.queueName },
       expect.anything()
@@ -149,6 +152,7 @@ describe('initialiseConsumer', () => {
 
   it('should read the message from the queue with the correct encoding', () => {
     initialiseConsumer();
+
     expect(message.readString).toHaveBeenCalledWith('UTF-8', expect.anything());
   });
 
