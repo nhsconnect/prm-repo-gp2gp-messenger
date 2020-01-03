@@ -1,0 +1,10 @@
+version: '2'
+# Please use this with ./tasks run_local
+services:
+  default:
+    links:
+      - mq:mq
+    ports:
+      - 3000:3000
+  mq:
+    image: resilva87/docker-rabbitmq-stomp:3.0.0
