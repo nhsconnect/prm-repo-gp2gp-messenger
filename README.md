@@ -50,6 +50,11 @@ Run the tests with `npm test`.
 
 Run a development server with `npm run start-local`.
 
+Or to start together with a linked MQ server.
+```
+./tasks run_local
+```
+
 ### Swagger
 
 The swagger documentation for the app can be found at http://localhost:3000/. To update it, change the

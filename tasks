@@ -49,6 +49,20 @@ function get_aws_secret {
   echo $json | jq -r ".Parameter.Value"
 }
 
+function configure_local_envs {
+  export GP2GP_URL="http://gp2gp:3000"
+  export NHS_ENVIRONMENT=test
+  export MHS_QUEUE_URL_1="tcp://mq:61613"
+  export MHS_QUEUE_URL_2="tcp://mq:61613"
+  export MHS_QUEUE_USERNAME=guest
+  export MHS_QUEUE_PASSWORD=guest
+  export MHS_QUEUE_NAME=gp2gp-test
+  export MHS_DLQ_NAME=gp2gp-test.dlq
+  export MHS_STOMP_VIRTUAL_HOST="/"
+  export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
+  export NODE_ENV=local
+}
+
 command="$1"
 case "${command}" in
   login)
@@ -141,16 +155,16 @@ case "${command}" in
       echo "GP2GP endpoint at ${GP2GP_URL} is healthy"
       ;;
   test_docker_local)
-      export GP2GP_URL="http://gp2gp:3000"
-      export NHS_ENVIRONMENT=test
-      export MHS_QUEUE_URL_1=tcp://mq:61613
-      export MHS_QUEUE_URL_2=""
-      export MHS_QUEUE_USERNAME=guest
-      export MHS_QUEUE_PASSWORD=guest
-      export MHS_STOMP_VIRTUAL_HOST="/"
-      export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
-      export NODE_ENV=local
+      configure_local_envs
       dojo -c Dojofile-dtest "./tasks _test_docker"
+      ;;
+  _run_local)
+      sleep 10
+      npm run start-local
+      ;;
+  run_local)
+      configure_local_envs
+      dojo -c Dojofile-compose "./tasks _run_local"
       ;;
   test_docker)
       # Tests that image uses variables for config and runs migration on start
