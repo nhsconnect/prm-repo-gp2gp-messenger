@@ -1,5 +1,5 @@
 import fileSave from '../storage/file-system';
-import s3Save from '../storage/s3';
+import S3Service from '../storage/s3';
 import config from '../config';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
@@ -36,10 +36,14 @@ const sendContinueMessage = async (message, messageId) => {
       });
 };
 
-const storeMessage = (message, conversationId, messageId) =>
-  config.isLocal
-    ? fileSave(message, conversationId, messageId)
-    : s3Save(message, conversationId, messageId);
+const storeMessage = (message, conversationId, messageId) => {
+  if (config.isLocal) {
+    return fileSave(message, conversationId, messageId);
+  }
+
+  const s3Service = new S3Service(conversationId, messageId);
+  return s3Service.save(message);
+};
 
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });

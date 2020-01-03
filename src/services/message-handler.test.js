@@ -1,7 +1,7 @@
 import handleMessage from './message-handler';
 import fileSave from '../storage/file-system';
 import config from '../config';
-import s3Save from '../storage/s3';
+import S3Service from '../storage/s3';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
@@ -18,6 +18,8 @@ jest.mock('../middleware/logging');
 jest.mock('./ehr-repo-gateway');
 
 describe('handleMessage', () => {
+  const mockSave = jest.fn();
+
   const conversationId = 'some-conversation-id-123';
   const messageId = 'some-message-id-456';
   const foundationSupplierAsid = 'foundation-supplier-asid';
@@ -58,8 +60,10 @@ describe('handleMessage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    S3Service.mockImplementation(() => ({ save: mockSave }));
+
     fileSave.mockResolvedValue();
-    s3Save.mockResolvedValue();
+    mockSave.mockResolvedValue();
     mhsGateway.sendMessage.mockResolvedValue();
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
@@ -76,7 +80,7 @@ describe('handleMessage', () => {
     config.isLocal = false;
 
     return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(s3Save).toHaveBeenCalledWith(ehrRequestCompletedMessage, conversationId, messageId);
+      expect(mockSave).toHaveBeenCalledWith(ehrRequestCompletedMessage);
     });
   });
 
@@ -272,7 +276,7 @@ describe('handleMessage', () => {
     config.isLocal = false;
 
     const error = new Error('saving failed');
-    s3Save.mockRejectedValue(error);
+    mockSave.mockRejectedValue(error);
 
     return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
   });
