@@ -34,6 +34,7 @@ MHS_QUEUE_USERNAME=
 MHS_QUEUE_PASSWORD=
 S3_BUCKET_NAME=
 EHR_REPO_URL=http://ehr-repo.com
+LOCALSTACK_URL=
 ```
 A template environment variables file is available as .env.sample
 
@@ -50,7 +51,8 @@ Run the tests with `npm test`.
 
 Run a development server with `npm run start-local`.
 
-Or to start together with a linked MQ server.
+Or to start together with a linked MQ server and S3 mocked with localstack, creates a test bucket.
+
 ```
 ./tasks run_local
 ```

@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import { Endpoint, S3 } from 'aws-sdk';
 import config from '../config';
 import { updateLogEvent } from '../middleware/logging';
 import S3Service from './s3';
@@ -24,6 +24,25 @@ describe('s3', () => {
     }));
 
     s3Service = new S3Service(conversationId, messageId);
+  });
+
+  it('should construct the s3 service without config when is not local', () => {
+    config.isLocal = false;
+
+    new S3Service(conversationId, messageId);
+    expect(S3).toHaveBeenCalledWith({});
+  });
+
+  it('should construct the s3 service with config when is local', () => {
+    config.isLocal = true;
+
+    new S3Service(conversationId, messageId);
+    expect(S3).toHaveBeenCalledWith({
+      accessKeyId: 'test-access-key',
+      secretAccessKey: 'test-secret-key',
+      endpoint: new Endpoint('http://localstack:4572'),
+      s3ForcePathStyle: true
+    });
   });
 
   describe('save', () => {

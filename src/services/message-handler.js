@@ -1,4 +1,3 @@
-import fileSave from '../storage/file-system';
 import S3Service from '../storage/s3';
 import config from '../config';
 import * as mhsGateway from './mhs-gateway';
@@ -37,10 +36,6 @@ const sendContinueMessage = async (message, messageId) => {
 };
 
 const storeMessage = (message, conversationId, messageId) => {
-  if (config.isLocal) {
-    return fileSave(message, conversationId, messageId);
-  }
-
   const s3Service = new S3Service(conversationId, messageId);
   return s3Service.save(message);
 };
@@ -58,7 +53,6 @@ const handleMessage = async message => {
       conversationId,
       messageId,
       action,
-      isLocal: config.isLocal,
       isNegativeAcknowledgement
     }
   });

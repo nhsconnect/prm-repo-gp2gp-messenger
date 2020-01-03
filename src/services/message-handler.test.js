@@ -1,5 +1,4 @@
 import handleMessage from './message-handler';
-import fileSave from '../storage/file-system';
 import config from '../config';
 import S3Service from '../storage/s3';
 import * as mhsGateway from './mhs-gateway';
@@ -8,7 +7,6 @@ import { generateContinueRequest } from '../templates/continue-template';
 import { updateLogEvent } from '../middleware/logging';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 
-jest.mock('../storage/file-system');
 jest.mock('../storage/s3');
 jest.mock('./mhs-gateway');
 jest.mock('./mhs-gateway-fake');
@@ -62,23 +60,12 @@ describe('handleMessage', () => {
 
     S3Service.mockImplementation(() => ({ save: mockSave }));
 
-    fileSave.mockResolvedValue();
     mockSave.mockResolvedValue();
     mhsGateway.sendMessage.mockResolvedValue();
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 
-  it('should store the message in local storage if environment is local', () => {
-    config.isLocal = true;
-
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(fileSave).toHaveBeenCalledWith(ehrRequestCompletedMessage, conversationId, messageId);
-    });
-  });
-
-  it('should store the message in s3 if environment is not local', () => {
-    config.isLocal = false;
-
+  it('should store the message in s3l', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(mockSave).toHaveBeenCalledWith(ehrRequestCompletedMessage);
     });
@@ -102,7 +89,6 @@ describe('handleMessage', () => {
           conversationId,
           messageId,
           action: 'RCMR_IN030000UK06',
-          isLocal: config.isLocal,
           isNegativeAcknowledgement: false
         }
       });
@@ -263,18 +249,7 @@ describe('handleMessage', () => {
     );
   });
 
-  it('should reject the promise if saving to local storage fails', () => {
-    config.isLocal = true;
-
-    const error = new Error('saving failed');
-    fileSave.mockRejectedValue(error);
-
-    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
-  });
-
   it('should reject the promise if saving to s3 fails', () => {
-    config.isLocal = false;
-
     const error = new Error('saving failed');
     mockSave.mockRejectedValue(error);
 
