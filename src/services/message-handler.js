@@ -15,6 +15,7 @@ import {
   containsNegativeAcknowledgement
 } from './message-parser';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
+import { fetchStorageUrl } from './ehr-repo-gateway';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');
@@ -62,11 +63,15 @@ const handleMessage = async message => {
     throw new Error('Message is a negative acknowledgement');
   }
 
-  return storeMessage(message, conversationId, messageId).then(() => {
-    if (action === EHR_EXTRACT_MESSAGE_ACTION) {
-      return sendContinueMessage(message, messageId);
-    }
-  });
+  return storeMessage(message, conversationId, messageId)
+    .then(() => {
+      fetchStorageUrl(conversationId, messageId);
+    })
+    .then(() => {
+      if (action === EHR_EXTRACT_MESSAGE_ACTION) {
+        return sendContinueMessage(message, messageId);
+      }
+    });
 };
 
 export default handleMessage;

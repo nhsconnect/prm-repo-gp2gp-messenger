@@ -6,6 +6,7 @@ import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
 import { updateLogEvent } from '../middleware/logging';
+import { fetchStorageUrl } from './ehr-repo-gateway';
 
 jest.mock('../storage/file-system');
 jest.mock('../storage/s3');
@@ -14,6 +15,7 @@ jest.mock('./mhs-gateway-fake');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 jest.mock('../middleware/logging');
+jest.mock('./ehr-repo-gateway');
 
 describe('handleMessage', () => {
   const conversationId = 'some-conversation-id-123';
@@ -75,6 +77,12 @@ describe('handleMessage', () => {
 
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(s3Save).toHaveBeenCalledWith(ehrRequestCompletedMessage, conversationId, messageId);
+    });
+  });
+
+  it('should request the storage url from ehr repo gateway', () => {
+    return handleMessage(ehrRequestCompletedMessage).then(() => {
+      expect(fetchStorageUrl).toHaveBeenCalledWith(conversationId, messageId);
     });
   });
 

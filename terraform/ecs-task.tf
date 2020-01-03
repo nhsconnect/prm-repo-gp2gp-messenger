@@ -12,6 +12,7 @@ locals {
       { name = "MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
       { name = "MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
       { name = "S3_BUCKET_NAME", value = var.s3_bucket_name },
+      { name = "EHR_REPO_URL", value = "http://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
     ]
     secret_environment_variables = [
       { name = "AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.authorization_keys.arn },

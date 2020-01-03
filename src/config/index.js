@@ -10,7 +10,8 @@ const config = {
   stompVirtualHost: process.env.MHS_STOMP_VIRTUAL_HOST,
   queueUsername: process.env.MHS_QUEUE_USERNAME,
   queuePassword: process.env.MHS_QUEUE_PASSWORD,
-  awsS3BucketName: process.env.S3_BUCKET_NAME
+  awsS3BucketName: process.env.S3_BUCKET_NAME,
+  ehrRepoUrl: process.env.EHR_REPO_URL
 };
 
 export default config;

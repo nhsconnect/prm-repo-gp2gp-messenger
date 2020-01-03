@@ -33,6 +33,7 @@ MHS_QUEUE_URL_2=tcp://localhost:61613
 MHS_QUEUE_USERNAME=
 MHS_QUEUE_PASSWORD=
 S3_BUCKET_NAME=
+EHR_REPO_URL=http://ehr-repo.com
 ```
 A template environment variables file is available as .env.sample
 
