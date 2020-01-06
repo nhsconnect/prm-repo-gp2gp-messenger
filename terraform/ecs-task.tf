@@ -16,8 +16,8 @@ locals {
     ]
     secret_environment_variables = [
       { name = "AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.authorization_keys.arn },
-      { name = "MHS_QUEUE_USERNAME", valueFrom = data.aws_secretsmanager_secret.amq-username.arn },
-      { name = "MHS_QUEUE_PASSWORD", valueFrom = data.aws_secretsmanager_secret.amq-password.arn },
+      { name = "MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },
+      { name = "MHS_QUEUE_PASSWORD", valueFrom = data.aws_ssm_parameter.amq-password.arn },
     ]
 }
 

@@ -1,16 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-data "terraform_remote_state" "prm-deductions-infra" {
-  backend = "s3"
-
-  config = {
-        bucket  = "prm-327778747031-terraform-states"
-        key     = "gpportal/terraform.tfstate"
-        region  = "eu-west-2"
-        encrypt = true
-  }
-}
-
 data "aws_ssm_parameter" "root_zone_id" {
   name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/root_zone_id"
 }
@@ -35,10 +24,34 @@ data "aws_ssm_parameter" "stomp-endpoint_1" {
   name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/stomp-endpoint/1"
 }
 
-data "aws_secretsmanager_secret" "amq-username" {
+data "aws_ssm_parameter" "amq-username" {
   name = "/nhs/${var.environment}/mq/app-username"
 }
 
-data "aws_secretsmanager_secret" "amq-password" {
+data "aws_ssm_parameter" "amq-password" {
   name = "/nhs/${var.environment}/mq/app-password"
+}
+
+data "aws_ssm_parameter" "deductions_private_ecs_cluster_id" {
+  name = "/nhs/${var.environment}/deductions_private_ecs_cluster_id"
+}
+
+data "aws_ssm_parameter" "deductions_private_ecs_tasks_sg_id" {
+  name = "/nhs/${var.environment}/deductions_private_ecs_tasks_sg_id"
+}
+
+data "aws_ssm_parameter" "deductions_private_private_subnets" {
+  name = "/nhs/${var.environment}/deductions_private_private_subnets"
+}
+
+data "aws_ssm_parameter" "deductions_private_gp2gp_a_alb_tg_arn" {
+  name = "/nhs/${var.environment}/deductions_private_gp2gp_a_alb_tg_arn"
+}
+
+data "aws_ssm_parameter" "deductions_private_pds_a_alb_tg_arn" {
+  name = "/nhs/${var.environment}/deductions_private_pds_a_alb_tg_arn"
+}
+
+data "aws_ssm_parameter" "deductions_private_alb_dns" {
+  name = "/nhs/${var.environment}/deductions_private_alb_dns"
 }
