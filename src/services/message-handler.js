@@ -35,11 +35,6 @@ const sendContinueMessage = async (message, messageId) => {
       });
 };
 
-const storeMessage = (message, conversationId, messageId) => {
-  const s3Service = new S3Service(conversationId, messageId);
-  return s3Service.save(message);
-};
-
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });
 
@@ -61,8 +56,12 @@ const handleMessage = async message => {
     throw new Error('Message is a negative acknowledgement');
   }
 
-  return storeMessage(message, conversationId, messageId)
+  const s3Service = new S3Service(conversationId, messageId);
+
+  return s3Service
+    .save(message)
     .then(() => storeMessageInEhrRepo(message, conversationId, messageId))
+    .then(() => s3Service.remove())
     .then(() => {
       if (action === EHR_EXTRACT_MESSAGE_ACTION) {
         return sendContinueMessage(message, messageId);

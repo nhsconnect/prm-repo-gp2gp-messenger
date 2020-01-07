@@ -83,6 +83,14 @@ describe('s3', () => {
       });
     });
 
+    it('should update the log event on success', () => {
+      return s3Service.remove().then(() => {
+        expect(updateLogEvent).toHaveBeenCalledWith({
+          storage: { removed: true }
+        });
+      });
+    });
+
     it('should reject the promise if s3 returns an error', () => {
       mockDeleteObject.mockImplementation((config, callback) => callback(error));
 
