@@ -3,8 +3,6 @@ import merge from 'lodash.merge';
 import logger from '../config/logging';
 import { setCorrelationInfo } from './correlation';
 
-httpContext.enable();
-
 const LOG_EVENT_KEY = 'logEvent';
 
 export const updateLogEvent = event =>

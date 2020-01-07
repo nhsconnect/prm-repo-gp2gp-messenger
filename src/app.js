@@ -1,11 +1,14 @@
 import express from 'express';
 import { errorLogger, logger as requestLogger } from 'express-winston';
+import httpContext from 'async-local-storage';
 import { options } from './config/logging';
 import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import ehrRequest from './api/ehr-request';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
+
+httpContext.enable();
 
 const app = express();
 

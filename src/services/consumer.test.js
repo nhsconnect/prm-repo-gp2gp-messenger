@@ -3,6 +3,9 @@ import initialiseConsumer from './consumer';
 import config from '../config';
 import handleMessage from './message-handler';
 import logger from '../config/logging';
+import httpContext from 'async-local-storage';
+
+httpContext.enable();
 
 jest.mock('stompit');
 jest.mock('uuid/v4', () => () => 'some-correlation-id');
