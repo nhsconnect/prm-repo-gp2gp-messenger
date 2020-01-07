@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import { updateLogEvent } from '../middleware/logging';
 
 const fetchStorageUrl = (conversationId, messageId) =>
   axios
@@ -14,4 +15,5 @@ const setTransferComplete = (conversationId, messageId) =>
 export const storeMessageInEhrRepo = (message, conversationId, messageId) =>
   fetchStorageUrl(conversationId, messageId)
     .then(url => axios.put(url, message))
-    .then(() => setTransferComplete(conversationId, messageId));
+    .then(() => setTransferComplete(conversationId, messageId))
+    .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }));

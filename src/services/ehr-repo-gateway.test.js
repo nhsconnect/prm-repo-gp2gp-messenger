@@ -1,8 +1,10 @@
 import axios from 'axios';
 import config from '../config';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
+import { updateLogEvent } from '../middleware/logging';
 
 jest.mock('axios');
+jest.mock('../middleware/logging');
 
 describe('ehr-repo-gateway', () => {
   describe('storeMessageInEhrRepo', () => {
@@ -11,12 +13,13 @@ describe('ehr-repo-gateway', () => {
     const messageId = 'some-message-id';
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
+
+      axios.post.mockResolvedValue({ data: 'some-url' });
+      axios.put.mockResolvedValue();
     });
 
     it('should make request with conversation id and message id', () => {
-      axios.post.mockResolvedValue({});
-
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(axios.post).toHaveBeenCalledWith(
           `${config.ehrRepoUrl}/health-record/${conversationId}/message`,
@@ -28,8 +31,6 @@ describe('ehr-repo-gateway', () => {
     });
 
     it('should make put request using the url from the response body', () => {
-      axios.post.mockResolvedValue({ data: 'some-url' });
-
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(axios.put).toHaveBeenCalledWith('some-url', message);
       });
@@ -54,6 +55,14 @@ describe('ehr-repo-gateway', () => {
         .then(() => {
           expect(axios.put).toHaveBeenCalledTimes(1);
         });
+    });
+
+    it('should update the log event when the transfer has completed successfully', () => {
+      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
+        expect(updateLogEvent).toHaveBeenCalledWith({
+          ehrRepository: { transferSuccessful: true }
+        });
+      });
     });
   });
 });
