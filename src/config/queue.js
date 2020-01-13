@@ -3,6 +3,7 @@ import config from './index';
 import logger from './logging';
 
 const generateQueueConfig = url => {
+  console.log(url);
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
   if (!urlParts || urlParts.length < 4)
     throw new Error('Queue url should have the format protocol://host:port');

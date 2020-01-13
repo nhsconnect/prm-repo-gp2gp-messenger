@@ -59,8 +59,8 @@ function configure_local_envs {
   export GP2GP_URL="http://gp2gp:3000"
   export LOCALSTACK_URL="http://localstack:4572"
   export NHS_ENVIRONMENT=test
-  export MHS_QUEUE_URL_1="tcp://mq-1:61613"
-  export MHS_QUEUE_URL_2="tcp://mq-2:61613"
+  export MHS_QUEUE_URL_1=tcp://mq-1:61613
+  export MHS_QUEUE_URL_2=tcp://mq-2:61613
   export MHS_QUEUE_USERNAME=guest
   export MHS_QUEUE_PASSWORD=guest
   export MHS_QUEUE_NAME=gp2gp-test
@@ -176,7 +176,7 @@ case "${command}" in
       ;;
   run_local)
       configure_local_envs
-      dojo -c Dojofile-compose "./tasks _run_local"
+      dojo -c Dojofile-compose #"./tasks _run_local"
       ;;
   test_docker)
       # Tests that image uses variables for config and runs migration on start
