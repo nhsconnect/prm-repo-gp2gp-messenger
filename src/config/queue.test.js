@@ -47,20 +47,20 @@ describe('queue', () => {
       mockConnect.mockImplementation(callback => callback(mockErrorResponse));
 
       return checkMHSHealth().then(result => {
-        return expect(result).toStrictEqual(getExpectedResults(false, true));
+        return expect(result).toStrictEqual(getExpectedResults(false));
       });
     });
   });
 });
 
-export const getExpectedResults = (isWritable, error) => {
+export const getExpectedResults = isWritable => {
   const baseConf = {
     options: mockOptionsResponse,
     headers: mockHeadersResponse,
-    connected: false
+    connected: isWritable
   };
 
-  return error
+  return !isWritable
     ? {
         ...baseConf,
         headers: {},

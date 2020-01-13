@@ -3,6 +3,7 @@ import app from './app';
 import sendEhrRequest from './services/ehr-request';
 import MhsError from './services/MhsError';
 import logger from './config/logging';
+import { getHealthCheck } from './services/get-health-check';
 
 jest.mock('./services/ehr-request');
 jest.mock('express-winston', () => ({
@@ -11,8 +12,27 @@ jest.mock('express-winston', () => ({
 }));
 jest.mock('./config/logging');
 
+jest.mock('./services/get-health-check');
+
 describe('app', () => {
   describe('GET /health', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      getHealthCheck.mockReturnValue(
+        Promise.resolve({
+          details: {
+            filestore: {
+              writable: true
+            },
+            mhs: {
+              connected: true
+            }
+          }
+        })
+      );
+    });
+
     it('should return a 200 status code', done => {
       request(app)
         .get('/health')

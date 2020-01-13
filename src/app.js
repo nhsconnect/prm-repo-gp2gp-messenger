@@ -6,6 +6,7 @@ import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import ehrRequest from './api/ehr-request';
 import swaggerUi from 'swagger-ui-express';
+import healthCheck from './api/health';
 import swaggerDocument from './swagger.json';
 
 httpContext.enable();
@@ -16,10 +17,7 @@ app.use(express.json());
 app.use(correlationInfo.middleware);
 app.use(requestLogger(options));
 
-app.get('/health', (req, res) => {
-  res.sendStatus(200);
-});
-
+app.use('/health', logging.middleware, healthCheck);
 app.use('/ehr-request', logging.middleware, ehrRequest);
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

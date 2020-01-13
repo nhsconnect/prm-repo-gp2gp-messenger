@@ -31,7 +31,7 @@ describe('get-health-check', () => {
     it('should resolve when both checks are ok', () => {
       mockConnect.mockImplementation(callback => callback(false, mockClient));
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true, true, false));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(true, true));
       });
     });
 
@@ -40,7 +40,7 @@ describe('get-health-check', () => {
       mockConnect.mockImplementation(callback => callback(false, mockClient));
 
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(false, true, true));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(false, true));
       });
     });
 
@@ -49,20 +49,20 @@ describe('get-health-check', () => {
       mockConnect.mockImplementation(callback => callback(mockErrorResponse, null));
 
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true, false, false, true));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(true, false));
       });
     });
   });
 });
 
-const expectedS3Base = (isWritable, is_error) => {
+const expectedS3Base = isWritable => {
   const s3Base = {
     type: 's3',
     bucketName: config.awsS3BucketName,
     available: true,
     writable: isWritable
   };
-  return is_error
+  return !isWritable
     ? {
         ...s3Base,
         error: mockErrorResponse
@@ -70,17 +70,12 @@ const expectedS3Base = (isWritable, is_error) => {
     : s3Base;
 };
 
-export const expectedHealthCheckBase = (
-  s3_writable,
-  mhs_connected,
-  s3_error = false,
-  mhs_error = false
-) => ({
+const expectedHealthCheckBase = (s3_writable, mhs_connected) => ({
   version: '1',
   description: 'Health of GP2GP Adapter service',
   node_env: process.env.NODE_ENV,
   details: {
-    filestore: expectedS3Base(s3_writable, s3_error),
-    mhs: getExpectedResults(mhs_connected, mhs_error)
+    filestore: expectedS3Base(s3_writable),
+    mhs: getExpectedResults(mhs_connected)
   }
 });
