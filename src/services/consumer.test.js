@@ -14,8 +14,18 @@ jest.mock('./message-handler');
 
 describe('initialiseConsumer', () => {
   const queue = { connect: jest.fn(), on: () => {} };
-  const client = { subscribe: jest.fn(), send: jest.fn() };
-  const message = { readString: jest.fn(), pipe: jest.fn(), ack: jest.fn(), nack: jest.fn() };
+  const mockTransaction = {
+    send: jest.fn(),
+    commit: jest.fn(),
+    abort: jest.fn()
+  };
+  const client = {
+    subscribe: jest.fn(),
+    begin: jest.fn(),
+    ack: jest.fn(),
+    nack: jest.fn()
+  };
+  const message = { readString: jest.fn(), pipe: jest.fn() };
   const frame = { write: jest.fn(), end: jest.fn() };
 
   beforeEach(() => {
@@ -27,11 +37,14 @@ describe('initialiseConsumer', () => {
 
     jest.clearAllMocks();
 
-    client.send.mockReturnValue(frame);
+    client.begin.mockReturnValue(mockTransaction);
+    mockTransaction.send.mockReturnValue(frame);
     message.readString.mockImplementation((encoding, callback) =>
       callback(null, 'some-message-body')
     );
     client.subscribe.mockImplementation((config, callback) => callback(null, message));
+    client.ack.mockReturnValue(Promise.resolve());
+    client.nack.mockReturnValue(Promise.resolve());
     queue.connect.mockImplementation(callback => callback(null, client));
     ConnectFailover.mockImplementation(() => queue);
 
@@ -109,7 +122,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     expect(client.subscribe).toHaveBeenCalledWith(
-      { destination: config.queueName },
+      { destination: config.queueName, ack: 'client-individual' },
       expect.anything()
     );
   });
@@ -120,13 +133,14 @@ describe('initialiseConsumer', () => {
 
     initialiseConsumer();
 
-    expect(client.send).toHaveBeenCalledWith({
+    expect(mockTransaction.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
       stackTrace: error.stack,
       correlationId: 'some-correlation-id'
     });
     expect(message.pipe).toHaveBeenCalledWith(frame);
+    expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 
   it('should update the log event when there is an error subscribing to the queue', () => {
@@ -165,13 +179,14 @@ describe('initialiseConsumer', () => {
 
     initialiseConsumer();
 
-    expect(client.send).toHaveBeenCalledWith({
+    expect(mockTransaction.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
       stackTrace: error.stack,
       correlationId: 'some-correlation-id'
     });
     expect(message.pipe).toHaveBeenCalledWith(frame);
+    expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 
   it('should put the message body on dlq when there is an error reading the message', () => {
@@ -182,7 +197,7 @@ describe('initialiseConsumer', () => {
 
     initialiseConsumer();
 
-    expect(client.send).toHaveBeenCalledWith({
+    expect(mockTransaction.send).toHaveBeenCalledWith({
       destination: config.dlqName,
       errorMessage: error.message,
       stackTrace: error.stack,
@@ -190,6 +205,7 @@ describe('initialiseConsumer', () => {
     });
     expect(frame.write).toHaveBeenCalledWith('some-message-body');
     expect(frame.end).toHaveBeenCalled();
+    expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 
   it('should update log event when there is an error reading the message', () => {
@@ -220,7 +236,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     setImmediate(() => {
-      expect(message.ack).toHaveBeenCalled();
+      expect(client.ack).toHaveBeenCalled();
       done();
     });
   });
@@ -245,7 +261,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     setImmediate(() => {
-      expect(client.send).toHaveBeenCalledWith({
+      expect(mockTransaction.send).toHaveBeenCalledWith({
         destination: config.dlqName,
         errorMessage: error.message,
         stackTrace: error.stack,
@@ -253,6 +269,7 @@ describe('initialiseConsumer', () => {
       });
       expect(frame.write).toHaveBeenCalledWith('some-message-body');
       expect(frame.end).toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
       done();
     });
   });
@@ -264,7 +281,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     setImmediate(() => {
-      expect(message.nack).toHaveBeenCalled();
+      expect(client.nack).toHaveBeenCalled();
       done();
     });
   });

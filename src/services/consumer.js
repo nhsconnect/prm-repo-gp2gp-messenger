@@ -16,42 +16,38 @@ import {
 // option: onReceipt get confirmation from the server that this transaction was successfully committed.
 // The server may terminate the connection with an error frame if it cannot commit the transaction. In this case, an error event would be emitted from the client object.
 // transaction.abort([options])
-
 const sendMessageToDlq = (client, body, error) => {
   updateLogEvent({ status: 'message-sent-to-dlq' });
 
   // client.send(headers, [options]) stream.Writable
   // alt = client.sendFrame(command, headers, [options]): stream.Writable
   // ack: set the message acknowledgment mode, having value 'auto', 'client' or 'client-individual'
-  const frame = client.send(getHeaders(error));
+  const transaction = client.begin();
+
+  const frame = transaction.send(getHeaders(error));
   frame.write(body);
   frame.end();
+  transaction.commit();
 };
 
 const streamMessageToDlq = (client, message, error) => {
   updateLogEvent({ status: 'message-sent-to-dlq' });
-
-  const frame = client.send(getHeaders(error));
+  const transaction = client.begin();
+  const frame = transaction.send(getHeaders(error));
   message.pipe(frame);
+  transaction.commit();
 };
 
-const getHeaders = (error, transaction) => {
-  const standardSendHeaders = {
+const getHeaders = error => {
+  return {
     destination: config.dlqName,
     errorMessage: error.message,
     stackTrace: error.stack,
     correlationId: getCorrelationId()
   };
-
-  return transaction
-    ? {
-        ...standardSendHeaders,
-        transation: transaction.id
-      }
-    : standardSendHeaders;
 };
 
-const readMessageCallback = (client, message) => (err, body) => {
+const onMessageCallback = (client, message) => (err, body) => {
   if (err) {
     updateLogEventWithError(err);
     body ? sendMessageToDlq(client, body, err) : streamMessageToDlq(client, message, err);
@@ -61,16 +57,18 @@ const readMessageCallback = (client, message) => (err, body) => {
 
   handleMessage(body)
     .then(() => {
-      // Acknowledges - no body
-      message.ack();
+      return client.ack(message);
+    })
+    .then(() => {
       updateLogEvent({ status: 'message-handled' });
     })
     .catch(err => {
-      updateLogEventWithError(err);
       sendMessageToDlq(client, body, err);
+      updateLogEventWithError(err);
+
       // Not Acknowledges - no body
       // If you can't read message use client.destroy
-      message.nack();
+      return client.nack(message);
     })
     .finally(eventFinished);
 };
@@ -86,7 +84,7 @@ const subscribeCallback = client => (err, message) => {
       eventFinished();
       return;
     }
-    message.readString('UTF-8', readMessageCallback(client, message));
+    message.readString('UTF-8', onMessageCallback(client, message));
   });
 };
 
@@ -97,7 +95,10 @@ const initialiseConsumer = () => {
     // client.subscribe(headers, onMessageCallback)
     // onMessageCallback(error, message)
     // message<T extends stream.Readable>
-    client.subscribe({ destination: config.queueName }, subscribeCallback(client));
+    client.subscribe(
+      { destination: config.queueName, ack: 'client-individual' },
+      subscribeCallback(client)
+    );
   });
 };
 
