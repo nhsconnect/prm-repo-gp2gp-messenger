@@ -28,6 +28,14 @@ describe('initialiseConsumer', () => {
   const message = { readString: jest.fn(), pipe: jest.fn() };
   const frame = { write: jest.fn(), end: jest.fn() };
 
+  afterAll(() => {
+    config.queueUrl1 = process.env.MHS_QUEUE_URL_1;
+    config.queueUrl2 = process.env.MHS_QUEUE_URL_2;
+    config.queueUsername = process.env.MHS_QUEUE_USERNAME;
+    config.queuePassword = process.env.MHS_QUEUE_PASSWORD;
+    config.stompVirtualHost = process.env.MHS_STOMP_VIRTUAL_HOST;
+  });
+
   beforeEach(() => {
     config.queueUrl1 = 'stomp+ssl://some-url:some-port';
     config.queueUrl2 = 'tcp://other-url:other-port';
