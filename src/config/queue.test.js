@@ -46,8 +46,8 @@ describe('queue', () => {
     it('should return writable false with an error if it can not connect to MHS', () => {
       mockConnect.mockImplementation(callback => callback(mockErrorResponse));
 
-      return checkMHSHealth().catch(err => {
-        return expect(err).toStrictEqual(getExpectedResults(false, true));
+      return checkMHSHealth().then(result => {
+        return expect(result).toStrictEqual(getExpectedResults(false, true));
       });
     });
   });

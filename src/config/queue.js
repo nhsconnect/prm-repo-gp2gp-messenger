@@ -3,7 +3,6 @@ import config from './index';
 import logger from './logging';
 
 const generateQueueConfig = url => {
-  console.log(url);
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
   if (!urlParts || urlParts.length < 4)
     throw new Error('Queue url should have the format protocol://host:port');
@@ -32,7 +31,7 @@ const removePasscode = options => {
 
 const connectToQueueCallback = (resolve, reject) => (err, client) => {
   if (err) {
-    reject({
+    resolve({
       options: removePasscode(generateQueueConfig(config.queueUrl1)),
       headers: {},
       connected: false,
@@ -46,6 +45,7 @@ const connectToQueueCallback = (resolve, reject) => (err, client) => {
       connected: true
     });
   }
+  reject(err);
 };
 
 export const checkMHSHealth = () => {
