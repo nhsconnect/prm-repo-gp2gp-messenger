@@ -22,7 +22,7 @@ const mockOptionsResponse = {
 
 const mockErrorResponse = 'Error: exhausted connection failover';
 
-const mockClient = {
+export const mockClient = {
   headers: mockHeadersResponse,
   _options: mockOptionsResponse,
   disconnect: jest.fn()
@@ -32,11 +32,7 @@ describe('queue', () => {
   describe('checkMHSHealth', () => {
     beforeEach(() => {
       jest.clearAllMocks();
-
-      ConnectFailover.mockImplementation(() => ({
-        on: mockOn,
-        connect: mockConnect
-      }));
+      mockStompit(mockOn, mockConnect);
     });
 
     it('should return writable true if it can connect and write to MHS queue', () => {
@@ -57,7 +53,7 @@ describe('queue', () => {
   });
 });
 
-const getExpectedResults = (isWritable, error) => {
+export const getExpectedResults = (isWritable, error) => {
   const baseConf = {
     options: mockOptionsResponse,
     headers: mockHeadersResponse,
@@ -74,4 +70,11 @@ const getExpectedResults = (isWritable, error) => {
         ...baseConf,
         connected: true
       };
+};
+
+export const mockStompit = (on, connect) => {
+  ConnectFailover.mockImplementation(() => ({
+    on,
+    connect
+  }));
 };

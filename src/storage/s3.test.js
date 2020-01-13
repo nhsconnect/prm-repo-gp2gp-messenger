@@ -111,6 +111,8 @@ describe('s3', () => {
     });
 
     it('should return writable true if you can save to S3', () => {
+      mockPutObject.mockImplementation((config, callback) => callback());
+
       return s3Service.checkS3Health().then(result => {
         expect(result).toStrictEqual({
           ...expectedResultBase,

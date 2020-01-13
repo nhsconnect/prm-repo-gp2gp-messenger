@@ -1,6 +1,7 @@
 const axios = require('axios');
 
-axios.get(process.env.GP2GP_URL + '/health')
+axios
+  .get(process.env.GP2GP_URL + '/health')
   .then(response => {
     console.log(response);
     if (response.status !== 200) {
