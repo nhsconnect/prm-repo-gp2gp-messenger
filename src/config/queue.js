@@ -19,6 +19,40 @@ const generateQueueConfig = url => {
   };
 };
 
+const removePasscode = options => {
+  return {
+    ...options,
+    connectHeaders: {
+      ...options.connectHeaders,
+      passcode: '*****'
+    }
+  };
+};
+
+const connectToQueueCallback = (resolve, reject) => (err, client) => {
+  if (err) {
+    reject({
+      options: removePasscode(generateQueueConfig(config.queueUrl1)),
+      headers: {},
+      connected: false,
+      error: err
+    });
+  } else {
+    client.disconnect();
+    resolve({
+      options: removePasscode(client._options),
+      headers: client.headers,
+      connected: true
+    });
+  }
+};
+
+export const checkMHSHealth = () => {
+  return new Promise((resolve, reject) => {
+    connectToQueue(connectToQueueCallback(resolve, reject));
+  });
+};
+
 export const connectToQueue = callback => {
   const hosts = [
     generateQueueConfig(config.queueUrl1),
