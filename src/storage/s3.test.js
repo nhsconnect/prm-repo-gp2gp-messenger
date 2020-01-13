@@ -97,4 +97,37 @@ describe('s3', () => {
       return expect(s3Service.remove()).rejects.toEqual(error);
     });
   });
+
+  describe('checkHealth', () => {
+    const expectedResultBase = {
+      type: 's3',
+      bucketName: config.awsS3BucketName,
+      available: true,
+      writable: false
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return writable true if you can save to S3', () => {
+      return s3Service.checkS3Health().then(result => {
+        expect(result).toStrictEqual({
+          ...expectedResultBase,
+          writable: true
+        });
+      });
+    });
+
+    it('should return writable false if you can not save to S3', () => {
+      mockPutObject.mockImplementation((config, callback) => callback(error));
+
+      return s3Service.checkS3Health().then(result => {
+        expect(result).toStrictEqual({
+          ...expectedResultBase,
+          error: 'some-error'
+        });
+      });
+    });
+  });
 });
