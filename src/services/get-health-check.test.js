@@ -16,7 +16,21 @@ const mockDeleteObject = jest.fn().mockImplementation((config, callback) => call
 const mockErrorResponse = 'Error: exhausted connection failover';
 
 describe('get-health-check', () => {
+  afterAll(() => {
+    config.queueUrl1 = process.env.MHS_QUEUE_URL_1;
+    config.queueUrl2 = process.env.MHS_QUEUE_URL_2;
+    config.queueUsername = process.env.MHS_QUEUE_USERNAME;
+    config.queuePassword = process.env.MHS_QUEUE_PASSWORD;
+    config.stompVirtualHost = process.env.MHS_STOMP_VIRTUAL_HOST;
+  });
+
   beforeEach(() => {
+    config.queueUrl1 = 'tcp://mq-1:61613';
+    config.queueUrl2 = 'tcp://mq-2:61613';
+    config.queueUsername = 'guest';
+    config.queuePassword = 'guest';
+    config.stompVirtualHost = '/';
+
     jest.clearAllMocks();
 
     S3.mockImplementation(() => ({
