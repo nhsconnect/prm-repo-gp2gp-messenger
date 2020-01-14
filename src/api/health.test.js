@@ -18,19 +18,19 @@ describe('GET /health', () => {
   });
 
   it('should return 200 and the response from getHealthCheck', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, true, true)));
 
     request(app)
       .get('/health')
       .expect(200)
       .expect(res => {
-        expect(res.body).toEqual(expectedHealthCheckBase(true, true));
+        expect(res.body).toEqual(expectedHealthCheckBase(true, true, true));
       })
       .end(done);
   });
 
   it('should call health check service with no parameters', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, true, true)));
 
     request(app)
       .get('/health')
@@ -41,37 +41,37 @@ describe('GET /health', () => {
   });
 
   it('should return 503 status if s3 writable is false', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, true, true)));
 
     request(app)
       .get('/health')
       .expect(503)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, true));
+        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, true, true));
       })
       .end(done);
   });
 
   it('should return 503 status if mhs writable is false', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, false)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, true, false)));
 
     request(app)
       .get('/health')
       .expect(503)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(true, false));
+        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(true, true, false));
       })
       .end(done);
   });
 
   it('should return 503 if both s3 and mhs are not writable', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, false)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, true, false)));
 
     request(app)
       .get('/health')
       .expect(503)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, false));
+        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, true, false));
       })
       .end(done);
   });
@@ -90,14 +90,27 @@ describe('GET /health', () => {
   });
 
   it('should update the log event for any unexpected error', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(false, true, true)));
 
     request(app)
       .get('/health')
       .expect(() => {
         expect(updateLogEvent).toHaveBeenCalledTimes(2);
         expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Health check completed' });
-        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, true));
+        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false, true, true));
+      })
+      .end(done);
+  });
+
+  it('should return 503 if s3 is not connected and not writable', done => {
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true, false, true)));
+
+    request(app)
+      .get('/health')
+      .expect(() => {
+        expect(updateLogEvent).toHaveBeenCalledTimes(2);
+        expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Health check completed' });
+        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(true, false, true));
       })
       .end(done);
   });
@@ -119,11 +132,11 @@ function mockLoggingMiddleware() {
   };
 }
 
-const expectedS3Base = isWritable => {
+const expectedS3Base = (isWritable, isConnected) => {
   const s3Base = {
     type: 's3',
     bucketName: config.awsS3BucketName,
-    available: true,
+    available: isConnected,
     writable: isWritable
   };
   return !isWritable
@@ -134,12 +147,12 @@ const expectedS3Base = isWritable => {
     : s3Base;
 };
 
-const expectedHealthCheckBase = (s3_writable, mhs_connected) => ({
+const expectedHealthCheckBase = (s3_writable, s3_connected, mhs_connected) => ({
   version: '1',
   description: 'Health of GP2GP Adapter service',
   node_env: process.env.NODE_ENV,
   details: {
-    filestore: expectedS3Base(s3_writable),
+    filestore: expectedS3Base(s3_writable, s3_connected),
     mhs: getExpectedResults(mhs_connected)
   }
 });

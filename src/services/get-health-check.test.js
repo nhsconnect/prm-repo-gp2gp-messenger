@@ -13,6 +13,7 @@ const mockOn = jest.fn();
 const mockConnect = jest.fn();
 const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
 const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
+const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
 const mockErrorResponse = 'Error: exhausted connection failover';
 
 describe('get-health-check', () => {
@@ -35,7 +36,8 @@ describe('get-health-check', () => {
 
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
-      deleteObject: mockDeleteObject
+      deleteObject: mockDeleteObject,
+      headBucket: mockHeadBucket
     }));
 
     mockStompit(mockOn, mockConnect);

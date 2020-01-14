@@ -16,11 +16,13 @@ describe('s3', () => {
   let s3Service;
   const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
   const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
+  const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
 
   beforeAll(() => {
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
-      deleteObject: mockDeleteObject
+      deleteObject: mockDeleteObject,
+      headBucket: mockHeadBucket
     }));
 
     s3Service = new S3Service(conversationId, messageId);
@@ -102,7 +104,7 @@ describe('s3', () => {
     const expectedResultBase = {
       type: 's3',
       bucketName: config.awsS3BucketName,
-      available: true,
+      available: false,
       writable: false
     };
 
@@ -116,6 +118,7 @@ describe('s3', () => {
       return s3Service.checkS3Health().then(result => {
         expect(result).toStrictEqual({
           ...expectedResultBase,
+          available: true,
           writable: true
         });
       });
@@ -123,6 +126,18 @@ describe('s3', () => {
 
     it('should return writable false if you can not save to S3', () => {
       mockPutObject.mockImplementation((config, callback) => callback(error));
+
+      return s3Service.checkS3Health().then(result => {
+        expect(result).toStrictEqual({
+          ...expectedResultBase,
+          error: 'some-error',
+          available: true
+        });
+      });
+    });
+    it('should return writable and accessible false if you can not connect to S3', () => {
+      mockPutObject.mockImplementation((config, callback) => callback(error));
+      mockHeadBucket.mockImplementation((config, callback) => callback(error));
 
       return s3Service.checkS3Health().then(result => {
         expect(result).toStrictEqual({

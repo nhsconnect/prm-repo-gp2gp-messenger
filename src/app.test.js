@@ -23,6 +23,7 @@ describe('app', () => {
         Promise.resolve({
           details: {
             filestore: {
+              available: true,
               writable: true
             },
             mhs: {
