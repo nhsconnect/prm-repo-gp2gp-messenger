@@ -2,4 +2,3 @@ DOJO_DOCKER_IMAGE="nhsdev/node-dojo:9e0e2f7ed4fcda238a6c2cff6ee6776960db471f"
 DOJO_DRIVER=docker-compose
 DOJO_DOCKER_COMPOSE_FILE=docker-compose.yml
 DOJO_DOCKER_COMPOSE_OPTIONS="--service-ports"
-DOJO_EXIT_BEHAVIOR="ignore"
