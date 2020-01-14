@@ -5,7 +5,7 @@ import { checkMHSHealth } from '../config/queue';
 export function getHealthCheck() {
   updateLogEvent({ status: 'Starting health check' });
 
-  const s3Service = new S3Service('health-check.txt');
+  const s3Service = new S3Service('health', 'health-check.txt');
 
   return Promise.all([s3Service.checkS3Health(), checkMHSHealth()]).then(([s3, mhs]) => {
     updateLogEvent({ mhs, s3 });

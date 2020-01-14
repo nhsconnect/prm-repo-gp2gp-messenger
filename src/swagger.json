@@ -9,6 +9,10 @@
     {
       "name": "ehr-request",
       "description": "Send EHR request"
+    },
+    {
+      "name": "health",
+      "description": "Health Check"
     }
   ],
   "paths": {
@@ -60,6 +64,34 @@
           }
         ]
       }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Checks system and dependency health",
+        "responses": {
+          "200": {
+            "description": "Health Check Ok"
+          },
+          "503": {
+            "description": "One or more dependencies are not OK"
+          },
+          "500": {
+            "description": "Unknown server-side error has occured",
+            "schema": {
+              "$ref": "#/definitions/ServerError"
+            }
+          },
+          "default": {
+            "description": "200 and 503 response follow default schema",
+            "schema": {
+              "$ref": "#/definitions/HealthReponseTemplate"
+            }
+          }
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -108,6 +140,104 @@
       "properties": {
         "error": {
           "type": "string"
+        }
+      }
+    },
+    "HealthReponseTemplate": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "node_env": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object",
+          "properties": {
+            "filestore": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "bucketName": {
+                  "type": "string"
+                },
+                "available": {
+                  "type": "boolean"
+                },
+                "writable": {
+                  "type": "boolean"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "mhs": {
+              "type": "object",
+              "properties": {
+                "options": {
+                  "type": "object",
+                  "properties": {
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "string"
+                    },
+                    "timeout": {
+                      "type": "integer"
+                    },
+                    "connectionHeaders": {
+                      "type": "object",
+                      "properties": {
+                        "login": {
+                          "type": "string"
+                        },
+                        "passcode": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "ssl": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "headers": {
+                  "type": "object",
+                  "properties": {
+                    "server": {
+                      "type": "string"
+                    },
+                    "session": {
+                      "type": "string"
+                    },
+                    "heart-beat": {
+                      "type": "string"
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "error": {
+                  "type": "string"
+                },
+                "connected": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
         }
       }
     }
