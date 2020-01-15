@@ -30,12 +30,34 @@ data "aws_iam_policy_document" "gp2gp-s3" {
   }
 }
 
+data "aws_iam_policy_document" "gp2gp-s3-bucket" {
+  statement {
+    actions = [
+      "s3:HeadBucket"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.s3_bucket_name}"
+    ]
+  }
+}
+
 resource "aws_iam_policy" "gp2gp-s3" {
   name   = "${var.environment}-gp2gp-s3"
   policy = "${data.aws_iam_policy_document.gp2gp-s3.json}"
 }
 
+resource "aws_iam_policy" "gp2gp-s3-bucket" {
+  name   = "${var.environment}-gp2gp-s3-bucket"
+  policy = "${data.aws_iam_policy_document.gp2gp-s3-bucket.json}"
+}
+
 resource "aws_iam_role_policy_attachment" "gp2gp-s3-attach" {
   role       = "${aws_iam_role.gp2gp.name}"
   policy_arn = aws_iam_policy.gp2gp-s3.arn
+}
+
+resource "aws_iam_role_policy_attachment" "gp2gp-s3-bucket-attach" {
+  role       = "${aws_iam_role.gp2gp.name}"
+  policy_arn = aws_iam_policy.gp2gp-s3-bucket.arn
 }
