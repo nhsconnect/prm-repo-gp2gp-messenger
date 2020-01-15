@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "gp2gp-s3" {
 data "aws_iam_policy_document" "gp2gp-s3-bucket" {
   statement {
     actions = [
-      "s3:HeadBucket"
+      "s3:ListBucket"
     ]
 
     resources = [
