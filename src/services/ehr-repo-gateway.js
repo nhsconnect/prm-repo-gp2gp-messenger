@@ -18,8 +18,6 @@ export const storeMessageInEhrRepo = (message, conversationId, messageId) =>
       updateLogEvent({ ehrRepository: { url: url } });
       return axios.put(url, message);
     })
-    .then(response => {
-      updateLogEvent({ ehrRepository: { response: response.status } });
-    })
+    .then(response => updateLogEvent({ ehrRepository: { response: response.status } }))
     .then(() => setTransferComplete(conversationId, messageId))
     .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }));

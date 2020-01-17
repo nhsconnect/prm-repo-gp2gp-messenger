@@ -4,6 +4,7 @@ import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 import { updateLogEvent } from '../middleware/logging';
 
 jest.mock('axios');
+
 jest.mock('../middleware/logging');
 
 describe('ehr-repo-gateway', () => {
@@ -16,7 +17,7 @@ describe('ehr-repo-gateway', () => {
       jest.resetAllMocks();
 
       axios.post.mockResolvedValue({ data: 'some-url' });
-      axios.put.mockResolvedValue();
+      axios.put.mockResolvedValue({ status: 200 });
     });
 
     it('should make request with conversation id and message id', () => {
