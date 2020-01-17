@@ -14,6 +14,9 @@ const setTransferComplete = (conversationId, messageId) =>
 
 export const storeMessageInEhrRepo = (message, conversationId, messageId) =>
   fetchStorageUrl(conversationId, messageId)
-    .then(url => axios.put(url, message))
+    .then(url => {
+      updateLogEvent({ ehrRepository: { url: url } });
+      return axios.put(url, message);
+    })
     .then(() => setTransferComplete(conversationId, messageId))
     .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }));
