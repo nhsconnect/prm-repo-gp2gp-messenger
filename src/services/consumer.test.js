@@ -130,7 +130,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     expect(client.subscribe).toHaveBeenCalledWith(
-      { destination: config.queueName },
+      { destination: config.queueName, ack: 'client-individual' },
       expect.anything()
     );
   });
@@ -255,7 +255,10 @@ describe('initialiseConsumer', () => {
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', {
         event: {
-          status: 'Message Handled'
+          status: 'Message Handled',
+          mhs: {
+            mqMessageId: undefined
+          }
         }
       });
       done();
