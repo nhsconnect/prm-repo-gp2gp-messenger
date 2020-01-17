@@ -255,7 +255,7 @@ describe('initialiseConsumer', () => {
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', {
         event: {
-          status: 'message-handled'
+          status: 'Message Handled'
         }
       });
       done();

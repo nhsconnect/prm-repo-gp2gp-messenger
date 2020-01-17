@@ -57,10 +57,11 @@ const onMessageCallback = (client, message) => (err, body) => {
 
   handleMessage(body)
     .then(() => {
+      updateLogEvent({ status: 'Acknowledging Message', mhs: { mqMessageId: message.id } });
       return client.ack(message);
     })
     .then(() => {
-      updateLogEvent({ status: 'message-handled' });
+      updateLogEvent({ status: 'Message Handled' });
     })
     .catch(err => {
       sendMessageToDlq(client, body, err);
@@ -75,7 +76,7 @@ const onMessageCallback = (client, message) => (err, body) => {
 
 const subscribeCallback = client => (err, message) => {
   withContext(() => {
-    updateLogEvent({ status: 'consuming-message' });
+    updateLogEvent({ status: 'Consuming received message' });
 
     if (err) {
       updateLogEventWithError(err);
@@ -90,12 +91,19 @@ const subscribeCallback = client => (err, message) => {
 
 const initialiseConsumer = () => {
   connectToQueue((err, client) => {
-    if (err) throw err;
+    if (err) {
+      updateLogEventWithError(err);
+      throw err;
+    }
 
+    updateLogEvent({ status: 'Subscribing to MQ', mhs: { queue: config.queueName } });
     // client.subscribe(headers, onMessageCallback)
     // onMessageCallback(error, message)
     // message<T extends stream.Readable>
-    client.subscribe({ destination: config.queueName }, subscribeCallback(client));
+    client.subscribe(
+      { destination: config.queueName, ack: 'client-individual' },
+      subscribeCallback(client)
+    );
   });
 };
 
