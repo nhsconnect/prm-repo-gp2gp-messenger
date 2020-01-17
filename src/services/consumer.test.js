@@ -130,7 +130,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     expect(client.subscribe).toHaveBeenCalledWith(
-      { destination: config.queueName, ack: 'client-individual' },
+      { destination: config.queueName },
       expect.anything()
     );
   });
