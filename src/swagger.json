@@ -75,20 +75,33 @@
           "200": {
             "description": "Health Check Ok"
           },
-          "503": {
-            "description": "One or more dependencies are not OK"
-          },
           "500": {
             "description": "Unknown server-side error has occured",
             "schema": {
               "$ref": "#/definitions/ServerError"
             }
           },
+          "503": {
+            "description": "One or more dependencies are not OK"
+          },
           "default": {
             "description": "200 and 503 response follow default schema",
             "schema": {
               "$ref": "#/definitions/HealthReponseTemplate"
             }
+          }
+        }
+      }
+    },
+    "/error": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Generate error log",
+        "responses": {
+          "201": {
+            "description": "Successfully create error log"
           }
         }
       }
