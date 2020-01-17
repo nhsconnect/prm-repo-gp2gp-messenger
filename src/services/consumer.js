@@ -95,10 +95,7 @@ const initialiseConsumer = () => {
     // client.subscribe(headers, onMessageCallback)
     // onMessageCallback(error, message)
     // message<T extends stream.Readable>
-    client.subscribe(
-      { destination: config.queueName, ack: 'client-individual' },
-      subscribeCallback(client)
-    );
+    client.subscribe({ destination: config.queueName }, subscribeCallback(client));
   });
 };
 
