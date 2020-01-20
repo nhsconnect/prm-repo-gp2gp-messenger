@@ -21,7 +21,8 @@ data "aws_iam_policy_document" "gp2gp-s3" {
   statement {
     actions = [
       "s3:PutObject",
-      "s3:GetObject"
+      "s3:GetObject",
+      "s3:DeleteObject"
     ]
 
     resources = [
