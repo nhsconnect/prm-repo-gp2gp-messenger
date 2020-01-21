@@ -13,9 +13,13 @@ import {
 import { connectToQueue } from '../config/queue';
 
 const putResponseOnQueue = (client, response) => {
-  const frame = client.send({ destination: config.queueName });
+  const transaction = client.begin();
+
+  const frame = transaction.send({ destination: config.queueName });
   frame.write(response);
   frame.end();
+
+  transaction.commit();
 };
 
 export const sendMessage = message =>
