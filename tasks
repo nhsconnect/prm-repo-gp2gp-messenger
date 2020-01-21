@@ -91,6 +91,13 @@ case "${command}" in
   build)
       dojo "./tasks _build"
       ;;
+  _coverage)
+      npm install
+      npm run coverage
+      ;;
+  coverage)
+      dojo "./tasks _coverage"
+      ;;
   _test)
       npm install
       npm run test

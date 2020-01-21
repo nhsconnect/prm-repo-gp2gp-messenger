@@ -7,6 +7,7 @@
     "lint": "eslint src/ --fix",
     "unit": "jest --setupFiles dotenv/config",
     "test": "npm run lint && npm run unit",
+    "coverage": "jest --coverage --setupFiles dotenv/config",
     "build": "babel src -d build --ignore '**/*.test.js' && cp src/*.json build",
     "start": "node build/server.js",
     "start-local": "babel-node -r node_modules/dotenv/config src/server.js",
