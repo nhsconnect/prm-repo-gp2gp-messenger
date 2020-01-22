@@ -59,11 +59,9 @@ export const connectToQueue = callback => {
     generateQueueConfig(config.queueUrl1),
     ...(config.queueUrl2 && [generateQueueConfig(config.queueUrl2)])
   ];
-  const queue = new ConnectFailover(hosts, { maxReconnects: 10, initialReconnectDelay: 100 });
-
-  queue.on('error', error =>
-    logger.error(`Failover url could not connect to the queue broker: ${error}`, error)
-  );
-
+  const queue = new ConnectFailover(hosts, { maxReconnects: 1, initialReconnectDelay: 100 });
+  queue.on('error', error => {
+    logger.error(`Failover url could not connect to the queue broker: ${error}`, error);
+  });
   queue.connect(callback);
 };

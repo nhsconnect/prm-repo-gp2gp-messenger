@@ -45,7 +45,17 @@ all.
 
 ## Running the tests
 
-Run the tests with `npm test`.
+Run the unit tests with 
+
+`npm test`
+
+Run the integration tests 
+
+`npm run itest`
+
+Run the coverage tests(unit test and integration test) 
+
+`npm run coverage`
 
 ## Start the app locally
 

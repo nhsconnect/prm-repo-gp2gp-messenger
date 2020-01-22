@@ -5,9 +5,11 @@
   "main": "src/server.js",
   "scripts": {
     "lint": "eslint src/ --fix",
-    "unit": "jest --setupFiles dotenv/config",
+    "unit": "jest \"^((?!.*integration.*).)*$\" --setupFiles dotenv/config",
     "test": "npm run lint && npm run unit",
-    "coverage": "jest --coverage --setupFiles dotenv/config",
+    "integration": "jest \"src/.*\\integration.test\\.js\" --detectOpenHandles --forceExit --setupFiles dotenv/config",
+    "itest": "npm run lint && npm run integration",
+    "coverage": "jest --coverage --detectOpenHandles --forceExit --setupFiles dotenv/config",
     "build": "babel src -d build --ignore '**/*.test.js' && cp src/*.json build",
     "start": "node build/server.js",
     "start-local": "babel-node -r node_modules/dotenv/config src/server.js",

@@ -1,7 +1,7 @@
 import { getHealthCheck } from './get-health-check';
 import config from '../config';
-import { getExpectedResults, mockClient, mockStompit } from '../config/queue.test';
 import { S3 } from 'aws-sdk';
+import { ConnectFailover } from 'stompit';
 
 jest.mock('stompit');
 jest.mock('aws-sdk');
@@ -9,6 +9,12 @@ jest.mock('aws-sdk');
 jest.mock('../config/logging');
 jest.mock('../middleware/logging');
 
+const mockStompit = (on, connect) => {
+  ConnectFailover.mockImplementation(() => ({
+    on,
+    connect
+  }));
+};
 const mockOn = jest.fn();
 const mockConnect = jest.fn();
 const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
@@ -95,3 +101,42 @@ const expectedHealthCheckBase = (s3_writable, mhs_connected) => ({
     mhs: getExpectedResults(mhs_connected)
   }
 });
+
+const mockHeadersResponse = {
+  'heart-beat': '0,0',
+  server: 'RabbitMQ/3.7.8',
+  session: 'session/aAS4hrR',
+  version: '1.2'
+};
+
+const mockOptionsResponse = {
+  connectHeaders: { host: '/', login: 'guest', passcode: '*****' },
+  host: 'mq-1',
+  port: '61613',
+  ssl: false
+};
+
+const getExpectedResults = isWritable => {
+  const baseConf = {
+    options: mockOptionsResponse,
+    headers: mockHeadersResponse,
+    connected: isWritable
+  };
+
+  return !isWritable
+    ? {
+        ...baseConf,
+        headers: {},
+        error: mockErrorResponse
+      }
+    : {
+        ...baseConf,
+        connected: true
+      };
+};
+
+const mockClient = {
+  headers: mockHeadersResponse,
+  _options: mockOptionsResponse,
+  disconnect: jest.fn()
+};

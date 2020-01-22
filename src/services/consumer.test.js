@@ -85,7 +85,7 @@ describe('initialiseConsumer', () => {
           ssl: false
         }
       ],
-      { maxReconnects: 10, initialReconnectDelay: 100 }
+      { maxReconnects: 1, initialReconnectDelay: 100 }
     );
   });
 
@@ -107,7 +107,7 @@ describe('initialiseConsumer', () => {
           ssl: true
         }
       ],
-      { maxReconnects: 10, initialReconnectDelay: 100 }
+      { maxReconnects: 1, initialReconnectDelay: 100 }
     );
   });
 

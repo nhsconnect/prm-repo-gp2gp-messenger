@@ -96,7 +96,8 @@ case "${command}" in
       npm run coverage
       ;;
   coverage)
-      dojo "./tasks _coverage"
+      configure_local_envs
+      dojo -c Dojofile-compose "./tasks _coverage"
       ;;
   _test)
       npm install
@@ -104,6 +105,14 @@ case "${command}" in
       ;;
   test)
       dojo "./tasks _test"
+      ;;
+  _itest)
+      npm install
+      npm run itest
+      ;;
+  itest)
+      configure_local_envs
+      dojo -c Dojofile-compose "./tasks _itest"
       ;;
   build_docker_local)
       REPOSITORY_URI=$IMAGE_REPO_NAME
