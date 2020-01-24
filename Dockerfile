@@ -1,7 +1,6 @@
 FROM node:12.14.1-alpine
 WORKDIR /app
 COPY package*.json ./
-COPY node_modules/ ./node_modules
 COPY build/ /app/
 
 RUN apk update && apk add openssl ca-certificates && rm -rf /var/cache/apk/*
@@ -27,6 +26,10 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
   MHS_QUEUE_USERNAME="" \
   MHS_QUEUE_PASSWORD="" \
   S3_BUCKET_NAME=""
+
+# This should be done to avoid any platform dependent packages
+RUN npm install && npm audit --fix
+RUN npm install -g sequelize-cli
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/usr/bin/run-gp2gp-server"]
