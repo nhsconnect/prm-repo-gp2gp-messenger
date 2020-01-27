@@ -1,4 +1,3 @@
-import S3Service from '../storage/s3';
 import config from '../config';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
@@ -53,20 +52,17 @@ const handleMessage = async message => {
   });
 
   if (isNegativeAcknowledgement) {
+    updateLogEvent({ status: 'handling negative acknowledgement' });
     throw new Error('Message is a negative acknowledgement');
   }
 
-  const s3Service = new S3Service(conversationId, messageId);
+  await storeMessageInEhrRepo(message, conversationId, messageId);
+  await updateLogEvent({ status: 'store message to ehr repo' });
 
-  return s3Service
-    .save(message)
-    .then(() => storeMessageInEhrRepo(message, conversationId, messageId))
-    .then(() => s3Service.remove())
-    .then(() => {
-      if (action === EHR_EXTRACT_MESSAGE_ACTION) {
-        return sendContinueMessage(message, messageId);
-      }
-    });
+  if (action === EHR_EXTRACT_MESSAGE_ACTION) {
+    await updateLogEvent({ status: 'sending continue message' });
+    await sendContinueMessage(message, messageId);
+  }
 };
 
 export default handleMessage;

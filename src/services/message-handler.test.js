@@ -1,13 +1,11 @@
 import handleMessage from './message-handler';
 import config from '../config';
-import S3Service from '../storage/s3';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import { generateContinueRequest } from '../templates/continue-template';
 import { updateLogEvent } from '../middleware/logging';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 
-jest.mock('../storage/s3');
 jest.mock('./mhs-gateway');
 jest.mock('./mhs-gateway-fake');
 jest.mock('uuid/v4', () => () => 'some-uuid');
@@ -16,9 +14,6 @@ jest.mock('../middleware/logging');
 jest.mock('./ehr-repo-gateway');
 
 describe('handleMessage', () => {
-  const mockSave = jest.fn();
-  const mockRemove = jest.fn();
-
   const conversationId = 'some-conversation-id-123';
   const messageId = 'some-message-id-456';
   const foundationSupplierAsid = 'foundation-supplier-asid';
@@ -58,19 +53,8 @@ describe('handleMessage', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-
-    S3Service.mockImplementation(() => ({ save: mockSave, remove: mockRemove }));
-
-    mockSave.mockResolvedValue();
-    mockRemove.mockResolvedValue();
     mhsGateway.sendMessage.mockResolvedValue();
     mhsGatewayFake.sendMessage.mockResolvedValue();
-  });
-
-  it('should store the message in s3', () => {
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(mockSave).toHaveBeenCalledWith(ehrRequestCompletedMessage);
-    });
   });
 
   it('should store the message in the ehr repo', () => {
@@ -81,23 +65,6 @@ describe('handleMessage', () => {
         messageId
       );
     });
-  });
-
-  it('should remove the message from s3 after it has been successfully stored in the ehr repository', () => {
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(mockRemove).toHaveBeenCalled();
-    });
-  });
-
-  it('should not remove the message from s3 if it was not successfully stored in the ehr repository', () => {
-    const error = new Error('storing failed');
-    storeMessageInEhrRepo.mockRejectedValue(error);
-
-    return expect(handleMessage(ehrRequestCompletedMessage))
-      .rejects.toEqual(error)
-      .then(() => {
-        expect(mockRemove).not.toHaveBeenCalled();
-      });
   });
 
   it('should update the log event at each stage', () => {
@@ -266,13 +233,6 @@ describe('handleMessage', () => {
     return expect(handleMessage(messageWithoutFoundationSupplierAsid)).rejects.toEqual(
       new Error('Message does not contain foundation supplier ASID')
     );
-  });
-
-  it('should reject the promise if saving to s3 fails', () => {
-    const error = new Error('saving failed');
-    mockSave.mockRejectedValue(error);
-
-    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
   });
 
   it('should reject the promise if sending continue message fails', () => {

@@ -53,7 +53,7 @@ describe('get-health-check', () => {
     it('should resolve when both checks are ok', () => {
       mockConnect.mockImplementation(callback => callback(false, mockClient));
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true, true));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(true));
       });
     });
 
@@ -62,7 +62,7 @@ describe('get-health-check', () => {
       mockConnect.mockImplementation(callback => callback(false, mockClient));
 
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(false, true));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(true));
       });
     });
 
@@ -71,33 +71,17 @@ describe('get-health-check', () => {
       mockConnect.mockImplementation(callback => callback(mockErrorResponse, null));
 
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true, false));
+        return expect(result).toStrictEqual(expectedHealthCheckBase(false));
       });
     });
   });
 });
 
-const expectedS3Base = isWritable => {
-  const s3Base = {
-    type: 's3',
-    bucketName: config.awsS3BucketName,
-    available: true,
-    writable: isWritable
-  };
-  return !isWritable
-    ? {
-        ...s3Base,
-        error: mockErrorResponse
-      }
-    : s3Base;
-};
-
-const expectedHealthCheckBase = (s3_writable, mhs_connected) => ({
+const expectedHealthCheckBase = mhs_connected => ({
   version: '1',
   description: 'Health of GP2GP Adapter service',
   node_env: process.env.NODE_ENV,
   details: {
-    filestore: expectedS3Base(s3_writable),
     mhs: getExpectedResults(mhs_connected)
   }
 });

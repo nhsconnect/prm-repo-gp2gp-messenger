@@ -51,11 +51,9 @@ describe('ehr-repo-gateway', () => {
     it('should not make put request to ehr repo service when storing message fails', () => {
       axios.put.mockRejectedValue('some-error');
 
-      return expect(storeMessageInEhrRepo(message, conversationId, messageId))
-        .rejects.toBeTruthy()
-        .then(() => {
-          expect(axios.put).toHaveBeenCalledTimes(1);
-        });
+      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
+        expect(axios.put).toHaveBeenCalledTimes(1);
+      });
     });
 
     it('should update the log event when the transfer has completed successfully', () => {
