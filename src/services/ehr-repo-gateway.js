@@ -9,7 +9,7 @@ const fetchStorageUrl = (conversationId, messageId) =>
       return response.data;
     })
     .catch(err => {
-      updateLogEvent({ status: 'failed to get pre-signed url', error: err });
+      updateLogEvent({ status: 'failed to get pre-signed url', error: err.stack });
       throw err;
     });
 
@@ -35,7 +35,7 @@ export const storeMessageInEhrRepo = (message, conversationId, messageId) => {
     .catch(err => {
       updateLogEvent({
         status: 'failed to store message to s3 bucket via pre-signed url',
-        error: err
+        error: err.stack
       });
     })
     .finally(() => eventFinished());

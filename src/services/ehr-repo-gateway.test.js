@@ -65,7 +65,7 @@ describe('ehr-repo-gateway', () => {
     });
 
     it('should update the log event when the transfer has completed successfully', () => {
-      axios.put.mockRejectedValue('some-error');
+      axios.put.mockRejectedValue({ stack: 'some-error' });
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(updateLogEvent).toHaveBeenCalledWith({
           status: 'failed to store message to s3 bucket via pre-signed url',
