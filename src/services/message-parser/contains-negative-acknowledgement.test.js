@@ -2,7 +2,6 @@ import { containsNegativeAcknowledgement } from './contains-negative-acknowledge
 
 // Not that in a real example this acknowledgement is not prefixed with eb: as in the implementation - to clarify
 describe('containsNegativeAcknowledgement', () => {
-
   const realExample = `
     <COPC_IN000001UK01 xmlns="urn:hl7-org:v3">
       <ControlActEvent classCode="CACT" moodCode="EVN">

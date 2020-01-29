@@ -1,17 +1,26 @@
 import axios from 'axios';
 import config from '../config';
 import { eventFinished, updateLogEvent } from '../middleware/logging';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, {
+  retries: 2,
+  retryDelay: retryCount => {
+    console.log('Retry count: ', retryCount);
+    updateLogEvent({ status: `axios retry times: ${retryCount}` });
+    eventFinished();
+    return 1000;
+  }
+});
 
 const fetchStorageUrl = (conversationId, messageId) =>
   axios
     .post(`${config.ehrRepoUrl}/health-record/${conversationId}/message`, { messageId })
-    .then(response => {
-      return response.data;
-    })
     .catch(err => {
-      updateLogEvent({ status: 'failed to get pre-signed url', error: err });
+      updateLogEvent({ status: 'failed to get pre-signed url', error: err.stack });
       throw err;
-    });
+    })
+    .finally(() => eventFinished());
 
 const setTransferComplete = (conversationId, messageId) =>
   axios
@@ -25,17 +34,30 @@ const setTransferComplete = (conversationId, messageId) =>
 
 export const storeMessageInEhrRepo = (message, conversationId, messageId) => {
   return fetchStorageUrl(conversationId, messageId)
-    .then(url => {
-      updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: url } });
-      return axios.put(url, message);
+    .then(response => {
+      updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });
+      return axios
+        .put(response.data, message)
+        .catch(err => {
+          updateLogEvent({
+            status: 'failed to store message to s3 via pre-signed url',
+            error: err.stack
+          });
+          throw err;
+        })
+        .finally(() => eventFinished());
     })
-    .then(response => updateLogEvent({ ehrRepository: { response: response.status } }))
+    .then(response =>
+      updateLogEvent({
+        ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
+      })
+    )
     .then(() => setTransferComplete(conversationId, messageId))
     .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }))
     .catch(err => {
       updateLogEvent({
-        status: 'failed to store message to s3 bucket via pre-signed url',
-        error: err
+        status: 'failed to store message to ehr repository',
+        error: err.stack
       });
     })
     .finally(() => eventFinished());

@@ -27,7 +27,12 @@ export const options = {
     format.json(),
     obfuscateSecrets()
   ),
-  transports: [new transports.Console({ handleExceptions: true })]
+  transports: [
+    new transports.Console({
+      handleExceptions: true,
+      format: format.combine(format.prettyPrint())
+    })
+  ]
 };
 
 const logger = createLogger(options);
