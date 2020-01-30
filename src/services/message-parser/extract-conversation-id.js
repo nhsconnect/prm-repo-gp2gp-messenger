@@ -1,7 +1,7 @@
+import { XmlParser } from './xml-parser';
+
 export const extractConversationId = message => {
-  const matches = message.match(/<eb:ConversationId>(.*?)<\/eb:ConversationId>/);
-  if (!matches) {
-    throw new Error('Message does not contain conversation id');
-  }
-  return matches[1];
+  return new XmlParser()
+    .parse(message)
+    .then(messageObject => messageObject.findFirst('ConversationId'));
 };

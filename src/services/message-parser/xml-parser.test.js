@@ -1,7 +1,7 @@
 import { XmlParser } from './xml-parser';
 
-describe('xml-parser', () => {
-  describe('fromXml', () => {
+describe('XmlParser', () => {
+  describe('parse', () => {
     const standardXml = `
     <root>
         <body>Hello World</body>
@@ -61,7 +61,7 @@ describe('xml-parser', () => {
     });
   });
 
-  describe('find', () => {
+  describe('findAll', () => {
     const exampleNestedObject = `
      <a>
         <b>Hello</b>
@@ -132,6 +132,33 @@ describe('xml-parser', () => {
           expect(object.length).toBe(1);
           return expect(object[0]).toBe('Hello');
         });
+    });
+  });
+  describe('findFirst', () => {
+    const xmlExample = `
+     <a>
+        <b>Hello</b>
+        <c>
+            <b>World</b>    
+        </c>
+     </a>
+    `;
+
+    it('should find one item', () => {
+      return new XmlParser()
+        .parse(xmlExample)
+        .then(object => object.findFirst('b'))
+        .then(object => {
+          return expect(object).toBe('Hello');
+        });
+    });
+
+    it('should return undefined if one does not exist', () => {
+      return new XmlParser().parse(xmlExample).then(object => {
+        return expect(() => object.findFirst('d')).toThrow(
+          Error(`The key 'd' was not found in the message`)
+        );
+      });
     });
   });
 });

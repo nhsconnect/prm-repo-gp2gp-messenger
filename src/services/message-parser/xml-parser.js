@@ -32,6 +32,15 @@ XmlParser.prototype.findAll = function(key, maxDepth = 10) {
   return searchData(this.data, key, maxDepth);
 };
 
+XmlParser.prototype.findFirst = function(key) {
+  const foundAll = this.findAll(key);
+
+  if (foundAll.length === 0) {
+    throw new Error(`The key '${key}' was not found in the message`);
+  }
+  return foundAll[0];
+};
+
 const searchData = (object, key, maxDepth, found = []) => {
   let param;
 

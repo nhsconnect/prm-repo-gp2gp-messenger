@@ -151,7 +151,7 @@ describe('handleMessage', () => {
     </SOAP-ENV:Envelope>`;
 
     return expect(handleMessage(messageWithoutConversationId)).rejects.toEqual(
-      new Error('Message does not contain conversation id')
+      new Error(`The key 'ConversationId' was not found in the message`)
     );
   });
 

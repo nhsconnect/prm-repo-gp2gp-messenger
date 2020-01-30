@@ -7,16 +7,18 @@ describe('extractConversationId', () => {
         </eb:Body>
     `;
 
-  const expectedErrorMessage = 'Message does not contain conversation id';
+  const expectedErrorMessage = `The key 'ConversationId' was not found in the message`;
 
   const testConversationId = uuid().toUpperCase();
 
   const realExample = `
-    <SOAP:Header>
-        <eb:MessageHeader SOAP:mustUnderstand="1" eb:version="2.0">
-            <eb:ConversationId>${testConversationId}</eb:ConversationId>
-        </eb:MessageHeader>
-    </SOAP:Header>
+    <SOAP:Envelope>
+      <SOAP:Header>
+          <eb:MessageHeader SOAP:mustUnderstand="1" eb:version="2.0">
+              <eb:ConversationId>${testConversationId}</eb:ConversationId>
+          </eb:MessageHeader>
+      </SOAP:Header>
+    </SOAP:Envelope>
     `;
 
   const exampleResolveXML = `
@@ -26,14 +28,20 @@ describe('extractConversationId', () => {
     `;
 
   it('should extract the conversationId from XML body', () => {
-    expect(extractConversationId(exampleResolveXML)).toBe(testConversationId);
+    return extractConversationId(exampleResolveXML).then(conversationId => {
+      return expect(conversationId).toBe(testConversationId);
+    });
   });
 
   it('should extract the conversationId from XML body in a real example', () => {
-    expect(extractConversationId(realExample)).toBe(testConversationId);
+    return extractConversationId(realExample).then(conversationId =>
+      expect(conversationId).toBe(testConversationId)
+    );
   });
 
   it('should throw and error when conversationId does not exist', () => {
-    expect(() => extractConversationId(exampleErrorXML)).toThrow(Error(expectedErrorMessage));
+    return expect(extractConversationId(exampleErrorXML)).rejects.toThrow(
+      Error(expectedErrorMessage)
+    );
   });
 });
