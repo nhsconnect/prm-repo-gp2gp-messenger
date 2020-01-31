@@ -6,7 +6,7 @@ describe('extractInteractionId', () => {
         </eb:Body>
     `;
 
-  const expectedErrorMessage = 'Message does not contain interaction id';
+  const expectedErrorMessage = `The key 'interactionId' was not found in the message`;
 
   const testInteractionId = 'RCMR_IN030000UK05';
 
@@ -25,14 +25,20 @@ describe('extractInteractionId', () => {
     `;
 
   it('should extract the conversationId from XML body', () => {
-    expect(extractInteractionId(exampleResolveXML)).toBe(testInteractionId);
+    return extractInteractionId(exampleResolveXML).then(interactionId =>
+      expect(interactionId).toBe(testInteractionId)
+    );
   });
 
   it('should extract the conversationId from XML body in a real example', () => {
-    expect(extractInteractionId(realExample)).toBe(testInteractionId);
+    return extractInteractionId(realExample).then(interactionId =>
+      expect(interactionId).toBe(testInteractionId)
+    );
   });
 
   it('should throw and error when conversationId does not exist', () => {
-    expect(() => extractInteractionId(exampleErrorXML)).toThrow(Error(expectedErrorMessage));
+    return expect(extractInteractionId(exampleErrorXML)).rejects.toThrow(
+      Error(expectedErrorMessage)
+    );
   });
 });

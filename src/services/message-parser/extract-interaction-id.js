@@ -1,7 +1,8 @@
+import { XmlParser } from './xml-parser';
+
 export const extractInteractionId = message => {
-  const matches = message.match(/<interactionId[\s\S]*?extension="(.*?)"/);
-  if (!matches) {
-    throw new Error('Message does not contain interaction id');
-  }
-  return matches[1];
+  return new XmlParser()
+    .parse(message)
+    .then(jsObject => jsObject.findFirst('interactionId'))
+    .then(interactionId => interactionId.extension);
 };
