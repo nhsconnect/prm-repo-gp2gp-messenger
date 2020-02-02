@@ -1,5 +1,10 @@
-export const generateContinueRequest = (id, timestamp, receivingAsid, sendingAsid, ehrId) =>
-  `<COPC_IN000001UK01 xmlns="urn:hl7-org:v3">
+export const generateContinueRequest = (
+  id,
+  timestamp,
+  receivingAsid,
+  sendingAsid,
+  ehrId
+) => `<COPC_IN000001UK01 xmlns="urn:hl7-org:v3">
     <id root="${id}"/>
     <creationTime value="${timestamp}"/>
     <versionCode code="V3NPfIT3.0"/>
@@ -57,7 +62,7 @@ export const generateContinueRequest = (id, timestamp, receivingAsid, sendingAsi
                                     <processingCode code="P"/>
                                     <processingModeCode code="T"/>
                                     <acceptAckCode code="NE"/>
-                                    <acknowledgement typeCode="AA">
+                                    <acknowledgement typeCode="AR">
                                         <acknowledgementDetail typeCode="IF">
                                             <code code="0" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101" displayName="Continue"/>
                                         </acknowledgementDetail>

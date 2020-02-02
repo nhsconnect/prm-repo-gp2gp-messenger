@@ -32,6 +32,7 @@ const onMessageCallback = (client, message) => (err, body) => {
       updateLogEvent({ status: 'Message Handled' });
     })
     .catch(err => {
+      console.log(err);
       updateLogEventWithError(err);
 
       // Not Acknowledges - no body

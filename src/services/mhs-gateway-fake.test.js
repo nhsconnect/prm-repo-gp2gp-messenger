@@ -4,10 +4,7 @@ import { connectToQueue } from '../config/queue';
 import { getRoutingInformation, sendMessage } from './mhs-gateway-fake';
 import { updateLogEvent } from '../middleware/logging';
 import { extractInteractionId } from './message-parser';
-import { generateSecondFragmentResponse } from '../templates/fragment-2-template';
 import { generateFirstFragmentResponse } from '../templates/fragment-1-template';
-import { generateThirdFragmentResponse } from '../templates/fragment-3-template';
-import { generateAcknowledgementResponse } from '../templates/ack-template';
 
 httpContext.enable();
 
@@ -28,7 +25,8 @@ const client = {
   subscribe: jest.fn(),
   begin: jest.fn(),
   ack: jest.fn(),
-  nack: jest.fn()
+  nack: jest.fn(),
+  disconnect: jest.fn()
 };
 
 const frame = { write: jest.fn(), end: jest.fn() };
@@ -81,7 +79,7 @@ describe('mhs-gateway-fake', () => {
       });
     });
 
-    it('should put 3 fragments on queue before ack when confirmation sent', () => {
+    it('should put 1 fragment on when first confirmation sent', () => {
       const continueRequest = 'COPC_IN000001UK01';
 
       extractInteractionId.mockReturnValue(continueRequest);
@@ -90,14 +88,11 @@ describe('mhs-gateway-fake', () => {
         expect(updateLogEvent).toHaveBeenCalledWith({
           mhs: { interactionId: continueRequest }
         });
-        expect(frame.write).toHaveBeenCalledTimes(4);
-        expect(frame.end).toHaveBeenCalledTimes(4);
-        expect(mockTransaction.commit).toHaveBeenCalledTimes(4);
+        expect(frame.write).toHaveBeenCalledTimes(1);
+        expect(frame.end).toHaveBeenCalledTimes(1);
+        expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
         expect(frame.write).toHaveBeenCalledWith(generateFirstFragmentResponse());
-        expect(frame.write).toHaveBeenCalledWith(generateSecondFragmentResponse());
-        expect(frame.write).toHaveBeenCalledWith(generateThirdFragmentResponse());
-        expect(frame.write).toHaveBeenCalledWith(generateAcknowledgementResponse());
-        return expect(mockTransaction.send).toHaveBeenCalledWith({ destination: config.queueName });
+        expect(mockTransaction.send).toHaveBeenCalledWith({ destination: config.queueName });
       });
     });
   });

@@ -22,6 +22,7 @@ const XmlParser = function() {
 };
 
 XmlParser.prototype.parse = function(rawXml) {
+  rawXml = rawXml.toString().replace('\ufeff', '');
   return new xml2js.Parser(this.options)
     .parseStringPromise(rawXml)
     .then(result => (this.data = result))

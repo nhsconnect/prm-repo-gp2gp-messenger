@@ -36,11 +36,13 @@ const sendContinueMessage = async (message, messageId) => {
 
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });
-
+  const startTag = '<SOAP-ENV:Envelope';
+  const envelopeStartIndex = message.indexOf(startTag);
+  message = message.slice(envelopeStartIndex);
   const conversationId = await extractConversationId(message);
   const messageId = await extractMessageId(message);
   const action = await extractAction(message);
-  const isNegativeAcknowledgement = containsNegativeAcknowledgement(message);
+  const isNegativeAcknowledgement = await containsNegativeAcknowledgement(message);
 
   updateLogEvent({
     message: {

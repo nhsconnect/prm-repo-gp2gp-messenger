@@ -17,8 +17,7 @@ describe('handleMessage', () => {
   const conversationId = 'some-conversation-id-123';
   const messageId = 'some-message-id-456';
   const foundationSupplierAsid = 'foundation-supplier-asid';
-  const ehrRequestCompletedMessage = `
-    <SOAP-ENV:Envelope>
+  const ehrRequestCompletedMessage = `<SOAP-ENV:Envelope>
       <SOAP-ENV:Header>
         <eb:CPAId>S2036482A2160104</eb:CPAId>
         <eb:ConversationId>${conversationId}</eb:ConversationId>

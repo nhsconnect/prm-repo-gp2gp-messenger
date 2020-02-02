@@ -22,15 +22,22 @@ const putResponseOnQueue = (client, response) => {
   transaction.commit();
 };
 
+function* continueMessageResponse() {
+  yield generateFirstFragmentResponse();
+  yield generateSecondFragmentResponse();
+  yield generateThirdFragmentResponse();
+  yield generateAcknowledgementResponse();
+}
+
 export const sendMessage = message =>
   new Promise((resolve, reject) => {
-    connectToQueue((err, client) => {
+    connectToQueue(async (err, client) => {
       if (err) {
         updateLogEvent({ mhs: { status: 'connection-failed' } });
         return reject(err);
       }
 
-      const interactionId = extractInteractionId(message);
+      const interactionId = await extractInteractionId(message);
       updateLogEvent({ mhs: { interactionId } });
 
       if (interactionId === EHR_REQUEST_MESSAGE_ACTION) {
@@ -38,10 +45,7 @@ export const sendMessage = message =>
       }
 
       if (interactionId === CONTINUE_MESSAGE_ACTION) {
-        putResponseOnQueue(client, generateFirstFragmentResponse());
-        putResponseOnQueue(client, generateSecondFragmentResponse());
-        putResponseOnQueue(client, generateThirdFragmentResponse());
-        putResponseOnQueue(client, generateAcknowledgementResponse());
+        putResponseOnQueue(client, continueMessageResponse().next().value);
       }
 
       resolve();
