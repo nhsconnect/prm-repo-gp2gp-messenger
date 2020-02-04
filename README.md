@@ -1,4 +1,5 @@
 # Deductions GP2GP adaptor
+
 This is a Proof of Concept implementation of a component to handle the sending and receiving of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
 
 The goal is to confirm the GP2GP message format can be used to transfer Orphan and Standard Records into a secure NHS repository.
@@ -9,62 +10,65 @@ The initial version will send and receive health records that are encoded in the
 
 ## Prerequisites
 
-* Node 12.x
+- Node 12.x
 
 ## Set up
 
-Run `npm install` to install all node dependencies.
+1. Run `npm install` to install all node dependencies.
+2. Create a .env file at the root of the directory
+3. Copy the contents of the [.env.sample](./.env.sample) file at the root of the directory, and paste into the .env file. The .env.sample file contains template environment variables.
+4. If you would like to run locally, following the steps below, otherwise fill in the required fields.
+   - Note: The `AUTHORIZATION_KEYS` should be a comma-separated list.
+5. The app will use a fake MHS when `NODE_ENV` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
 
-Create a .env file using the .env.sample file. The `AUTHORIZATION_KEYS` should be a comma-separated list. The app will
-use a fake MHS when `NODE_ENV` is set to `local` or `dev`.
+   ```
+   AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+   MHS_STOMP_VIRTUAL_HOST="/"
+   DEDUCTIONS_ASID=deduction-asid
+   DEDUCTIONS_ODS_CODE=deduction-ods
+   NODE_ENV=local
+   MHS_QUEUE_NAME=gp2gp-test
+   MHS_DLQ_NAME=gp2gp-test.dlq
+   MHS_QUEUE_URL_1=tcp://localhost:61610
+   MHS_QUEUE_URL_2=tcp://localhost:61613
+   MHS_QUEUE_USERNAME=
+   MHS_QUEUE_PASSWORD=
+   S3_BUCKET_NAME=
+   EHR_REPO_URL=http://ehr-repo.com
+   LOCALSTACK_URL=
+   ```
 
-Here is an example for your local environment:
-
-```
-AUTHORIZATION_KEYS=auth-key-1,auth-key-2
-MHS_STOMP_VIRTUAL_HOST="/"
-DEDUCTIONS_ASID=deduction-asid
-DEDUCTIONS_ODS_CODE=deduction-ods
-NODE_ENV=local
-MHS_QUEUE_NAME=gp2gp-test
-MHS_DLQ_NAME=gp2gp-test.dlq
-MHS_QUEUE_URL_1=tcp://localhost:61610
-MHS_QUEUE_URL_2=tcp://localhost:61613
-MHS_QUEUE_USERNAME=
-MHS_QUEUE_PASSWORD=
-S3_BUCKET_NAME=
-EHR_REPO_URL=http://ehr-repo.com
-LOCALSTACK_URL=
-```
-A template environment variables file is available as .env.sample
-
-Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
-to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at
-all.
-`MHS_STOMP_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
+- Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
+  to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at
+  all.
+- `MHS_STOMP_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
 
 ## Running the tests
 
-Run the unit tests with 
+Run the unit tests with
 
 `npm test`
 
-Run the integration tests 
+Run the integration tests
 
 `npm run itest`
 
-Run the coverage tests(unit test and integration test) 
+Run the coverage tests(unit test and integration test)
 
 `npm run coverage`
 
 ## Start the app locally
 
-Run a development server with `npm run start-local`.
-
-Or to start together with a linked MQ server and S3 mocked with localstack, creates a test bucket.
+1. Run a development server with `npm run start-local`. Or run `./tasks run_local` to start together with a linked MQ server and S3 mocked with localstack. It creates a test bucket.
+2. If successful, it will print a message similar to the following in the terminal:
 
 ```
-./tasks run_local
+{
+  message: 'Listening on port 3000',
+  level: 'info',
+  correlationId: undefined,
+  timestamp: '2020-01-31T11:47:19.763Z'
+}
 ```
 
 ### Swagger
