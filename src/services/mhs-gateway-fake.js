@@ -3,6 +3,7 @@ import { generateEhrExtractResponse } from '../templates/ehr-extract-template';
 import { generateFirstFragmentResponse } from '../templates/fragment-1-template';
 import { generateSecondFragmentResponse } from '../templates/fragment-2-template';
 import { generateThirdFragmentResponse } from '../templates/fragment-3-template';
+import { generateBigFragmentResponse } from '../templates/fragment-4-template';
 import { generateAcknowledgementResponse } from '../templates/ack-template';
 import { updateLogEvent } from '../middleware/logging';
 import {
@@ -22,12 +23,15 @@ const putResponseOnQueue = (client, response) => {
   transaction.commit();
 };
 
-function* continueMessageResponse() {
+function* messageGenerator() {
   yield generateFirstFragmentResponse();
   yield generateSecondFragmentResponse();
   yield generateThirdFragmentResponse();
+  yield generateBigFragmentResponse();
   yield generateAcknowledgementResponse();
 }
+
+const continueMessageResponse = messageGenerator();
 
 export const sendMessage = message =>
   new Promise((resolve, reject) => {
@@ -45,7 +49,7 @@ export const sendMessage = message =>
       }
 
       if (interactionId === CONTINUE_MESSAGE_ACTION) {
-        putResponseOnQueue(client, continueMessageResponse().next().value);
+        putResponseOnQueue(client, continueMessageResponse.next().value);
       }
 
       resolve();
