@@ -191,7 +191,7 @@ case "${command}" in
       ;;
   run_local)
       configure_local_envs
-      dojo -c Dojofile-compose #"./tasks _run_local"
+      dojo -c Dojofile-compose "./tasks _run_local"
       ;;
   test_docker)
       # Tests that image uses variables for config and runs migration on start
