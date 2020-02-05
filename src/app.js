@@ -21,7 +21,7 @@ app.use(requestLogger(options));
 app.use('/health', logging.middleware, healthCheck);
 app.use('/ehr-request', logging.middleware, ehrRequest);
 app.use('/error', logging.middleware, errorEndpoint);
-app.get('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(errorLogger(options));
 
