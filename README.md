@@ -73,7 +73,7 @@ Run the coverage tests(unit test and integration test)
 
 ### Swagger
 
-The swagger documentation for the app can be found at http://localhost:3000/. To update it, change the
+The swagger documentation for the app can be found at http://localhost:3000/swagger. To update it, change the
 `src/swagger.json` file. You can use the editor https://editor.swagger.io/ which will validate your changes.
 
 ### Example request
