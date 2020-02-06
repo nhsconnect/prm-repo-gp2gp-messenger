@@ -27,6 +27,8 @@ pipelines:
     materials:
       git:
         type: configrepo
+        whitelist:
+          - docs/**/*.*
     stages:
       - build:
           clean_workspace: true
@@ -110,6 +112,8 @@ pipelines:
     materials:
       git:
         type: configrepo
+        whitelist:
+          - docs/**/*.*
       app:
         pipeline: prm-deductions-gp2gp-adaptor
         stage: test_docker
@@ -130,6 +134,8 @@ pipelines:
     materials:
       git:
         type: configrepo
+        whitelist:
+          - docs/**/*.*
       dev_env:
         pipeline: prm-deductions-gp2gp-adaptor.dev
         stage: deploy #TODO: Add a smoke test in dev, then depend on smoke test
