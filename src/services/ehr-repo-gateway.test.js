@@ -1,8 +1,8 @@
 import axios from 'axios';
-import config from '../config';
-import { storeMessageInEhrRepo } from './ehr-repo-gateway';
-import { updateLogEvent } from '../middleware/logging';
 import axiosRetry from 'axios-retry';
+import config from '../config';
+import { updateLogEvent } from '../middleware/logging';
+import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 
 jest.mock('axios');
 jest.mock('axios-retry');
@@ -18,6 +18,8 @@ describe('ehr-repo-gateway', () => {
     beforeEach(() => {
       jest.resetAllMocks();
 
+      axios.patch.mockResolvedValue({ status: 200 });
+      axios.put.mockResolvedValue({ status: 200 });
       axios.post.mockResolvedValue({ data: 'some-url' });
     });
 
@@ -38,11 +40,10 @@ describe('ehr-repo-gateway', () => {
       });
     });
 
-    it('should make put request to ehr repo service with transfer complete flag', () => {
-      axios.put.mockResolvedValue({ status: 200 });
+    it('should make patch request to ehr repo service with transfer complete flag', () => {
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(
-          axios.put
+          axios.patch
         ).toHaveBeenCalledWith(
           `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
           { transferComplete: true }
@@ -50,16 +51,20 @@ describe('ehr-repo-gateway', () => {
       });
     });
 
-    it('should not make put request to ehr repo service when storing message fails', () => {
+    it('should not make patch request to ehr repo service when storing message fails', () => {
       axios.put.mockRejectedValue('some-error');
 
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(axios.put).toHaveBeenCalledTimes(1);
+        expect(axios.patch).toHaveBeenCalledTimes(0);
+        expect(updateLogEvent).not.toHaveBeenCalledWith({
+          status: 'failed to store message to s3 via pre-signed url',
+          error: expect.anything()
+        });
       });
     });
 
     it('should update the log event when the transfer has completed successfully', () => {
-      axios.put.mockResolvedValue({ status: 200 });
       return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
         expect(updateLogEvent).toHaveBeenCalledWith({
           ehrRepository: { transferSuccessful: true }

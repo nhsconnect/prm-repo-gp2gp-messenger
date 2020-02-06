@@ -1,7 +1,7 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import config from '../config';
 import { eventFinished, updateLogEvent } from '../middleware/logging';
-import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
   retries: 2,
@@ -24,7 +24,7 @@ const fetchStorageUrl = (conversationId, messageId) =>
 
 const setTransferComplete = (conversationId, messageId) =>
   axios
-    .put(`${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`, {
+    .patch(`${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`, {
       transferComplete: true
     })
     .catch(err => {
