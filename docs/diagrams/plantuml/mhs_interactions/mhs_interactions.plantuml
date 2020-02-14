@@ -21,7 +21,7 @@ activate gp2gp
     group MHS Adapter
         group MHS Outbound Async Workflow
             gp2gp -> mhs : POST {MHS Client Endpoint}/
-                note left: Content-Type*: application/json\n\ Interaction-Id*: <UUID>\n\ Sync-Async*: <bool>\n\ Message-Id: <UUID>\n\ Correlation-Id*: <UUID>\n\ Ods-Code: <String (YES)>\n\ Body:\n\ {\n\     "payload": "<Message>", \n\     "attachments": []\n\ }
+                note left: Content-Type*: application/json\n\ Interaction-Id*: <Interation-Id>\n\ Sync-Async*: <bool>\n\ Correlation-Id*: <UUID>\n\ Ods-Code: <String (YES)>\n\ Body:\n\ {\n\     "payload": "<Message>", \n\     "attachments": []\n\ }
                 activate mhs
 
                 ' MHS Internal Lookup for the Interaction ID
@@ -29,8 +29,9 @@ activate gp2gp
 
                     mhs -> mhs: Interaction-Id lookup
                         note left: This will return the fully qualified version of the\n\ interaction Id that is used for the SDS query
-                else 500 Interaction Id does not exist
-                    mhs -[NHS_ERROR]-> gp2gp : <Get Error Message from Tom>
+
+                else 404 Interaction Id does not exist
+                    mhs -[NHS_ERROR]-> gp2gp : Unknown interaction ID: <Interation-Id>
                 end
 
                 alt
@@ -41,23 +42,23 @@ activate gp2gp
                     ' however in reality this is not the case, however it is the first one that must be used.
                     mhs -> sds : Accredited System Lookup
                         activate sds
-                        note left: Query: \n\ objectClass = nhsAs\n\ nhsIdCode=<Ods-Code>\n\ nhsSvcIAId=<Interaction-Path>:<Interation-Id>
+                        note left: Query: \n\ objectClass = nhsAs\n\ nhsIdCode=<Ods-Code>\n\ nhsSvcIAId=<Interaction-Namespace>:<Interation-Id>
 
                     sds -> mhs: Receiving ASID and Party Key
                         deactivate sds
 
                 else 500 Accredited system lookup failed
-                    mhs -[NHS_ERROR]-> gp2gp: <Get Error Message from Tom>
+                    mhs -[NHS_ERROR]-> gp2gp: Error obtaining outbound URL
                 else
 
                     ' For most messages, we assume that the ODS-Code would be spine (YES), however for GP2GP messages
                     ' we would need to change the Ods-Code, which we can do by providing it in the request headers
                     mhs -> sds: Message Handling System Lookup
                         activate sds
-                        note left: Query: \n\ objectClass = nhsMhs\n\ nhsMhsPartyKey=<Party Key>\n\ nhsSvcIAId=<Interaction-Path>:<Interation-Id>
+                        note left: Query: \n\ objectClass = nhsMhs\n\ nhsMhsPartyKey=<Party Key>\n\ nhsSvcIAId=<Interaction-Namespace>:<Interation-Id>
 
                 else 500 Could not get Endpoint information
-                    mhs -[NHS_ERROR]-> gp2gp: <Get Error Message from Tom>
+                    mhs -[NHS_ERROR]-> gp2gp: (likely?) Error obtaining outbound URL
                 else
 
                     sds -> mhs: Target Endpoint
@@ -88,8 +89,10 @@ activate gp2gp
                     activate mhs
 
             else 500 Could not process
+                ref over sds
+                  Target attempts message POST 3 times
+                end ref
                 mhs -[NHS_ERROR]-> target: Unexpected error
-                    note left: It seems that it will attempt three times before giving up
             else
 
                 mhs -> mhs: Extracts information from SOAP Envelope
