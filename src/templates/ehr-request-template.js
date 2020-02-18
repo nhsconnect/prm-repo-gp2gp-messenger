@@ -27,11 +27,9 @@ const checkTemplateArguments = require('./utils/check_params');
 const template = ({
   id,
   timestamp,
-  receivingAsid,
-  sendingAsid,
-  receivingOdsCode,
-  sendingOdsCode,
-  nhsNumber
+  receivingService: { asid: receivingAsid, odsCode: receivingOdsCode },
+  sendingService: { asid: sendingAsid, odsCode: sendingOdsCode },
+  patient: { nhsNumber }
 }) =>
   `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" 
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 

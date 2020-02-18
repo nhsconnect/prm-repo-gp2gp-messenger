@@ -35,4 +35,15 @@ describe('generateEhrRequestQuery', () => {
   it('should not throw error when all required arguments are defined', () => {
     expect(() => generateEhrRequestQuery(testObjectComplete)).not.toThrowError();
   });
+
+  it('should have populate the xml template with all the required fields', () => {
+    const ehrRequestQuery = generateEhrRequestQuery(testObjectComplete);
+    expect(ehrRequestQuery).toContain(sendingService.odsCode);
+    expect(ehrRequestQuery).toContain(sendingService.asid);
+    expect(ehrRequestQuery).toContain(receivingService.asid);
+    expect(ehrRequestQuery).toContain(receivingService.odsCode);
+    expect(ehrRequestQuery).toContain(testObjectComplete.id);
+    expect(ehrRequestQuery).toContain(testObjectComplete.timestamp);
+    expect(ehrRequestQuery).toContain(testObjectComplete.patient.nhsNumber);
+  });
 });
