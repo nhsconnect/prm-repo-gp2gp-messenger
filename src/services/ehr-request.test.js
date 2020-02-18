@@ -1,10 +1,10 @@
-import sendEhrRequest from './ehr-request';
-import * as mhsGatewayFake from './mhs-gateway-fake';
-import * as mhsGateway from './mhs-gateway';
-import generateEhrRequestQuery from '../templates/ehr-request-template';
 import { when } from 'jest-when';
 import config from '../config';
 import { updateLogEvent } from '../middleware/logging';
+import generateEhrRequestQuery from '../templates/ehr-request-template';
+import sendEhrRequest from './ehr-request';
+import * as mhsGateway from './mhs-gateway';
+import * as mhsGatewayFake from './mhs-gateway-fake';
 
 jest.mock('./mhs-gateway-fake');
 jest.mock('./mhs-gateway');
@@ -19,11 +19,17 @@ describe('sendEhrRequest', () => {
   const ehrRequestQuery = generateEhrRequestQuery({
     id: 'some-uuid',
     timestamp: '20190228112548',
-    receivingAsid: receivingAsid,
-    sendingAsid: config.deductionsAsid,
-    receivingOdsCode: odsCode,
-    sendingOdsCode: config.deductionsOdsCode,
-    nhsNumber: nhsNumber
+    receivingService: {
+      asid: receivingAsid,
+      odsCode: odsCode
+    },
+    sendingService: {
+      asid: config.deductionsAsid,
+      odsCode: config.deductionsOdsCode
+    },
+    patient: {
+      nhsNumber: nhsNumber
+    }
   });
 
   it('should send generated EHR request message to real MHS when environment is PTL', () => {

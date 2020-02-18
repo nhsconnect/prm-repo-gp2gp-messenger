@@ -1,10 +1,10 @@
 import moment from 'moment';
 import uuid from 'uuid/v4';
-import * as mhsGatewayFake from './mhs-gateway-fake';
-import * as mhsGateway from './mhs-gateway';
-import generateEhrRequestQuery from '../templates/ehr-request-template';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
+import generateEhrRequestQuery from '../templates/ehr-request-template';
+import * as mhsGateway from './mhs-gateway';
+import * as mhsGatewayFake from './mhs-gateway-fake';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
   const mhs = config.isPTL ? mhsGateway : mhsGatewayFake;
@@ -23,11 +23,17 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
       const ehrRequestQuery = generateEhrRequestQuery({
         id: uuid(),
         timestamp: timestamp,
-        receivingAsid: asid,
-        sendingAsid: config.deductionsAsid,
-        receivingOdsCode: odsCode,
-        sendingOdsCode: config.deductionsOdsCode,
-        nhsNumber: nhsNumber
+        receivingService: {
+          asid,
+          odsCode
+        },
+        sendingService: {
+          asid: config.deductionsAsid,
+          odsCode: config.deductionsOdsCode
+        },
+        patient: {
+          nhsNumber: nhsNumber
+        }
       });
       return mhs.sendMessage(ehrRequestQuery).catch(err => {
         updateLogEventWithError(err);

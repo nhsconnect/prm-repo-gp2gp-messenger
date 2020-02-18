@@ -1,9 +1,9 @@
-import config from '../config';
-import * as mhsGateway from './mhs-gateway';
-import * as mhsGatewayFake from './mhs-gateway-fake';
-import generateContinueRequest from '../templates/continue-template';
-import uuid from 'uuid/v4';
 import moment from 'moment';
+import uuid from 'uuid/v4';
+import config from '../config';
+import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
+import { generateContinueRequest } from '../templates/continue-template';
+import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 import {
   containsNegativeAcknowledgement,
   EHR_EXTRACT_MESSAGE_ACTION,
@@ -12,8 +12,8 @@ import {
   extractFoundationSupplierAsid,
   extractMessageId
 } from './message-parser';
-import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
-import { storeMessageInEhrRepo } from './ehr-repo-gateway';
+import * as mhsGateway from './mhs-gateway';
+import * as mhsGatewayFake from './mhs-gateway-fake';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');

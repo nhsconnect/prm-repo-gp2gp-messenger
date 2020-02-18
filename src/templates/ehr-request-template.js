@@ -1,20 +1,21 @@
-const generateEhrRequestQuery = ({
-  id,
-  timestamp,
-  receivingAsid,
-  sendingAsid,
-  receivingOdsCode,
-  sendingOdsCode,
-  nhsNumber
-}) => {
+const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingService, patient }) => {
   const inputObject = {
     id,
     timestamp,
-    receivingAsid,
-    sendingAsid,
-    receivingOdsCode,
-    sendingOdsCode,
-    nhsNumber
+    receivingService: {
+      asid: undefined,
+      odsCode: undefined,
+      ...(receivingService || {})
+    },
+    sendingService: {
+      asid: undefined,
+      odsCode: undefined,
+      ...(sendingService || {})
+    },
+    patient: {
+      nhsNumber: undefined,
+      ...(patient || {})
+    }
   };
 
   checkTemplateArguments(inputObject);
