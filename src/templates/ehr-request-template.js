@@ -1,4 +1,4 @@
-export const generateEhrRequestQuery = (
+const generateEhrRequestQuery = ({
   id,
   timestamp,
   receivingAsid,
@@ -6,8 +6,35 @@ export const generateEhrRequestQuery = (
   receivingOdsCode,
   sendingOdsCode,
   nhsNumber
-) =>
-  `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 RCMR_IN010000UK05.xsd">
+}) => {
+  const inputObject = {
+    id,
+    timestamp,
+    receivingAsid,
+    sendingAsid,
+    receivingOdsCode,
+    sendingOdsCode,
+    nhsNumber
+  };
+
+  checkTemplateArguments(inputObject);
+  return template(inputObject);
+};
+
+const checkTemplateArguments = require('./utils/check_params');
+
+const template = ({
+  id,
+  timestamp,
+  receivingAsid,
+  sendingAsid,
+  receivingOdsCode,
+  sendingOdsCode,
+  nhsNumber
+}) =>
+  `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="urn:hl7-org:v3 RCMR_IN010000UK05.xsd">
     <id root="${id}" />
     <creationTime value="${timestamp}" />
     <versionCode code="V3NPfIT3.1.10"/>
@@ -59,3 +86,5 @@ export const generateEhrRequestQuery = (
         </subject>
     </ControlActEvent>
   </RCMR_IN010000UK05>`;
+
+module.exports = generateEhrRequestQuery;

@@ -2,7 +2,7 @@ import handleMessage from './message-handler';
 import config from '../config';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
-import { generateContinueRequest } from '../templates/continue-template';
+import generateContinueRequest from '../templates/continue-template';
 import { updateLogEvent } from '../middleware/logging';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 

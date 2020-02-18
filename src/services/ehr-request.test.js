@@ -1,7 +1,7 @@
 import sendEhrRequest from './ehr-request';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import * as mhsGateway from './mhs-gateway';
-import { generateEhrRequestQuery } from '../templates/ehr-request-template';
+import generateEhrRequestQuery from '../templates/ehr-request-template';
 import { when } from 'jest-when';
 import config from '../config';
 import { updateLogEvent } from '../middleware/logging';
@@ -16,15 +16,15 @@ describe('sendEhrRequest', () => {
   const odsCode = 'some-ods-code';
   const receivingAsid = 'some-asid';
   const nhsNumber = 'some-nhs-number';
-  const ehrRequestQuery = generateEhrRequestQuery(
-    'some-uuid',
-    '20190228112548',
-    receivingAsid,
-    config.deductionsAsid,
-    odsCode,
-    config.deductionsOdsCode,
-    nhsNumber
-  );
+  const ehrRequestQuery = generateEhrRequestQuery({
+    id: 'some-uuid',
+    timestamp: '20190228112548',
+    receivingAsid: receivingAsid,
+    sendingAsid: config.deductionsAsid,
+    receivingOdsCode: odsCode,
+    sendingOdsCode: config.deductionsOdsCode,
+    nhsNumber: nhsNumber
+  });
 
   it('should send generated EHR request message to real MHS when environment is PTL', () => {
     config.isPTL = true;

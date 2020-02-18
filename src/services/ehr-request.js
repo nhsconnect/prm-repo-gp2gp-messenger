@@ -2,7 +2,7 @@ import moment from 'moment';
 import uuid from 'uuid/v4';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 import * as mhsGateway from './mhs-gateway';
-import { generateEhrRequestQuery } from '../templates/ehr-request-template';
+import generateEhrRequestQuery from '../templates/ehr-request-template';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 
@@ -20,15 +20,15 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
       updateLogEvent({ status: 'requesting-ehr', ehrRequest: { asid } });
 
       const timestamp = moment().format('YYYYMMDDHHmmss');
-      const ehrRequestQuery = generateEhrRequestQuery(
-        uuid(),
-        timestamp,
-        asid,
-        config.deductionsAsid,
-        odsCode,
-        config.deductionsOdsCode,
-        nhsNumber
-      );
+      const ehrRequestQuery = generateEhrRequestQuery({
+        id: uuid(),
+        timestamp: timestamp,
+        receivingAsid: asid,
+        sendingAsid: config.deductionsAsid,
+        receivingOdsCode: odsCode,
+        sendingOdsCode: config.deductionsOdsCode,
+        nhsNumber: nhsNumber
+      });
       return mhs.sendMessage(ehrRequestQuery).catch(err => {
         updateLogEventWithError(err);
         return Promise.reject(err);

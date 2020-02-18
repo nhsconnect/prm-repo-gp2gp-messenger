@@ -1,7 +1,7 @@
 import config from '../config';
 import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
-import { generateContinueRequest } from '../templates/continue-template';
+import generateContinueRequest from '../templates/continue-template';
 import uuid from 'uuid/v4';
 import moment from 'moment';
 import {
