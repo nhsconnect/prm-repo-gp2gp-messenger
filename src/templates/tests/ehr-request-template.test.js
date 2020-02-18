@@ -1,28 +1,25 @@
 const generateEhrRequestQuery = require('../ehr-request-template');
 const uuid = require('uuid/v4');
+const testData = require('./testData.json');
 
 describe('generateEhrRequestQuery', () => {
-  const sendingService = {
-    odsCode: 'ba21',
-    asid: '123'
-  };
-
-  const receivingService = {
-    asid: 'abc',
-    odsCode: 'ab12'
-  };
-
   const testObjectMissing = {
     id: uuid(),
     timestamp: '20200101101010',
-    sendingService,
-    receivingService
+    sendingService: {
+      odsCode: testData.mhs.odsCode,
+      asid: testData.mhs.asid
+    },
+    receivingService: {
+      odsCode: testData.emisPractise.odsCode,
+      asid: testData.emisPractise.asid
+    }
   };
 
   const testObjectComplete = {
     ...testObjectMissing,
     patient: {
-      nhsNumber: '1234567890'
+      nhsNumber: testData.emisPatient.nhsNumber
     }
   };
 
@@ -38,12 +35,17 @@ describe('generateEhrRequestQuery', () => {
 
   it('should have populate the xml template with all the required fields', () => {
     const ehrRequestQuery = generateEhrRequestQuery(testObjectComplete);
-    expect(ehrRequestQuery).toContain(sendingService.odsCode);
-    expect(ehrRequestQuery).toContain(sendingService.asid);
-    expect(ehrRequestQuery).toContain(receivingService.asid);
-    expect(ehrRequestQuery).toContain(receivingService.odsCode);
-    expect(ehrRequestQuery).toContain(testObjectComplete.id);
-    expect(ehrRequestQuery).toContain(testObjectComplete.timestamp);
-    expect(ehrRequestQuery).toContain(testObjectComplete.patient.nhsNumber);
+
+    const checkEntries = object => {
+      Object.keys(object).map(key => {
+        if (typeof object[key] === 'object') {
+          checkEntries(object[key]);
+        } else {
+          expect(ehrRequestQuery).toContain(object[key]);
+        }
+      });
+    };
+
+    checkEntries(testObjectComplete);
   });
 });

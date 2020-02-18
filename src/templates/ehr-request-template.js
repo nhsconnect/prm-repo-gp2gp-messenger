@@ -1,3 +1,5 @@
+const checkTemplateArguments = require('./utils/check_params');
+
 const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingService, patient }) => {
   const inputObject = {
     id,
@@ -21,8 +23,6 @@ const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingServi
   checkTemplateArguments(inputObject);
   return template(inputObject);
 };
-
-const checkTemplateArguments = require('./utils/check_params');
 
 const template = ({
   id,
