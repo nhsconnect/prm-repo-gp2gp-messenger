@@ -1,40 +1,41 @@
-const generateEhrRequestQuery = require('../ehr-request-template');
+const generateUpdatePdsRequest = require('../generate-update-ods-request');
 const uuid = require('uuid/v4');
 const testData = require('./testData.json');
 
-describe('generateEhrRequestQuery', () => {
+describe('generateUpdatePdsRequest', () => {
   const testObjectMissing = {
-    id: uuid(),
+    id: uuid().toUpperCase(),
     timestamp: '20200101101010',
-    sendingService: {
-      odsCode: testData.mhs.odsCode,
-      asid: testData.mhs.asid
-    },
     receivingService: {
-      odsCode: testData.emisPractise.odsCode,
-      asid: testData.emisPractise.asid
+      asid: testData.pds.asid
+    },
+    sendingService: {
+      asid: testData.mhs.asid,
+      odsCode: 'mhs.odsCode'
     }
   };
 
   const testObjectComplete = {
     ...testObjectMissing,
     patient: {
-      nhsNumber: testData.emisPatient.nhsNumber
+      nhsNumber: testData.tppPatient.nhsNumber,
+      pdsId: testData.tppPatient.pdsId,
+      pdsUpdateChangeNumber: testData.tppPatient.serialChaneNumber
     }
   };
 
   it('should throw error when nhsNumber is not defined in inputObject', () => {
-    expect(() => generateEhrRequestQuery(testObjectMissing)).toThrowError(
+    expect(() => generateUpdatePdsRequest(testObjectMissing)).toThrowError(
       Error('nhsNumber is undefined')
     );
   });
 
   it('should not throw error when all required arguments are defined', () => {
-    expect(() => generateEhrRequestQuery(testObjectComplete)).not.toThrowError();
+    expect(() => generateUpdatePdsRequest(testObjectComplete)).not.toThrowError();
   });
 
   it('should have populate the xml template with all the required fields', () => {
-    const ehrRequestQuery = generateEhrRequestQuery(testObjectComplete);
+    const ehrRequestQuery = generateUpdatePdsRequest(testObjectComplete);
 
     const checkEntries = object => {
       Object.keys(object).map(key => {

@@ -1,0 +1,42 @@
+{
+  "emisPatient": {
+    "title": "Miss",
+    "gender": "Female",
+    "firstName": "Emma",
+    "lastName": "Fergus",
+    "dob": "20170104",
+    "nhsNumber": "9651221577",
+    "pdsId": "273B24A9",
+    "conversationId": "hhh"
+  },
+  "tppPatient": {
+    "gender": "Female",
+    "firstName": "Justice",
+    "lastName": "Sadare",
+    "dob": "19701202",
+    "nhsNumber": "9442964410",
+    "pdsId": "cppz",
+    "conversationId": "",
+    "serialChaneNumber": "138"
+  },
+  "emisPractise": {
+    "name": "Walton Village R",
+    "odsCode": "N82668",
+    "asid": "200000000205"
+  },
+  "tppPractise": {
+    "name": "",
+    "odsCode": "M85019",
+    "asid": ""
+  },
+  "mhs": {
+    "name": "Deductions MHS",
+    "odsCode": "B86041",
+    "asid": "200000001161"
+  },
+  "pds": {
+    "name": "PDS",
+    "odsCode": "YES",
+    "asid": "928942012545"
+  }
+}
