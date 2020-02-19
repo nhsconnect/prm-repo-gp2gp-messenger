@@ -15,9 +15,10 @@ jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 
 describe('sendEhrRequest', () => {
   let ehrRequestQuery;
+
   beforeEach(() => {
     config.deductionsAsid = 'some-asid';
-    config.odsCode = 'some-ods-code';
+    config.deductionsOdsCode = 'some-ods-code';
 
     ehrRequestQuery = generateEhrRequestQuery({
       id: 'some-uuid',
