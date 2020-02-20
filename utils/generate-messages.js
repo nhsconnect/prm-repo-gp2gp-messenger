@@ -1,11 +1,9 @@
 const uuid = require('uuid/v4');
 const dateFormat = require('dateformat');
-const generateAdvancePdsRequest = require('../src/templates/pds-advanced-query-request');
 const generateEhrRequestQuery = require('../src/templates/ehr-request-template');
-const generateUpdatePdsRequest = require('../src/templates/generate_update_ods_request');
-const generatePdsRetrievalQuery = require('../src/templates/pds-retreval-template');
-const generateContinueRequest = require('../src/templates/continue-template-2');
-const genderCode = require('../src/templates/utils/gender-code');
+const generateUpdatePdsRequest = require('../src/templates/generate-update-ods-request');
+const generatePdsRetrievalQuery = require('../src/templates/pds-retrieval-template');
+const generateContinueRequest = require('../src/templates/continue-template');
 
 // receiving_asid_2: '200000000631',
 const emisPatient = {
@@ -19,10 +17,28 @@ const emisPatient = {
   conversationId: 'hhh'
 };
 
+// receiving_asid_2: '200000000631',
+const tppPatient = {
+  gender: 'Female',
+  firstName: 'Justice',
+  lastName: 'Sadare',
+  dob: '19701202',
+  nhsNumber: '9442964410',
+  pdsId: 'cppz',
+  conversationId: '',
+  serialChaneNumber: '138' // + 1 each time
+};
+
 const emisPractise = {
   name: 'Walton Village R',
   odsCode: 'N82668',
   asid: '200000000205'
+};
+
+const tppPractise = {
+  name: '',
+  odsCode: 'M85019',
+  asid: ''
 };
 
 const mhs = {
@@ -54,7 +70,6 @@ const advancePdsRequest = generateAdvancePdsRequest(
   patient.patientDOB
 );
 
-//  DONE
 const gp2gpRequest = generateEhrRequestQuery({
   id: uuid().toUpperCase(),
   timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
@@ -71,35 +86,26 @@ const gp2gpRequest = generateEhrRequestQuery({
   }
 });
 
-const pdsUpdateRequestToUs = generateUpdatePdsRequest(
-  uuid().toUpperCase(),
-  dateFormat(Date.now(), 'yyyymmddHHMMss'),
-  patient.pdsASID,
-  patient.mhsASID,
-  patient.patientNHSNumber,
-  patient.mhsODSCode,
-  patient.patientPDSid
-);
+const pdsUpdateRequestToUs = generateUpdatePdsRequest({
+  id: uuid().toUpperCase(),
+  timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+  receivingService: { asid: pds.asid },
+  sendingService: { asid: mhs.asid, odsCode: mhs.odsCode },
+  patient: {
+    nhsNumber: tppPatient.nhsNumber,
+    pdsId: tppPatient.pdsId,
+    pdsUpdateChangeNumber: tppPatient.serialChaneNumber
+  }
+});
 
-const pdsUpdateRequestRevertToOriginalGp = generateUpdatePdsRequest(
-  uuid().toUpperCase(),
-  dateFormat(Date.now(), 'yyyymmddHHMMss'),
-  patient.pdsASID,
-  patient.mhsASID,
-  patient.patientNHSNumber,
-  patient.practiseODSCode,
-  patient.patientPDSid
-);
+const pdsRetrevalQuery = generatePdsRetrievalQuery({
+  id: uuid().toUpperCase(),
+  timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+  receivingService: { asid: pds.asid },
+  sendingService: { asid: mhs.asid },
+  patient: { nhsNumber: tppPatient.nhsNumber }
+});
 
-const pdsRetrevalQuery = generatePdsRetrievalQuery(
-  uuid().toUpperCase(),
-  dateFormat(Date.now(), 'yyyymmddHHMMss'),
-  patient.pdsASID,
-  patient.mhsASID,
-  patient.patientNHSNumber
-);
-
-// TODO
 const gp2gpContinueMessage = generateContinueRequest(
   uuid().toUpperCase(),
   dateFormat(Date.now(), 'yyyymmddHHMMss'),
@@ -110,9 +116,8 @@ const gp2gpContinueMessage = generateContinueRequest(
   patient.mhsODSCode
 );
 
-console.log('AdvancePDS:\n', advancePdsRequest);
-console.log('GP2GP Request:\n', gp2gpRequest);
-console.log('Retreival querr PDS:\n', pdsRetrevalQuery);
+//console.log('AdvancePDS:\n', advancePdsRequest);
+//console.log('GP2GP Request:\n', gp2gpRequest);
+//console.log('Retreival querr PDS:\n', pdsRetrevalQuery);
 console.log('PDS Update GP -> Us:\n', pdsUpdateRequestToUs);
-console.log('PDS Update Us -> Gp:\n', pdsUpdateRequestRevertToOriginalGp);
-console.log('Continue Message:\n', gp2gpContinueMessage);
+//console.log('Continue Message:\n', gp2gpContinueMessage);
