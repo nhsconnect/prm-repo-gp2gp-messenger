@@ -1,11 +1,11 @@
-import app from '../app';
 import request from 'supertest';
-import { getHealthCheck } from '../services/get-health-check';
-import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
+import app from '../../app';
+import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { getHealthCheck } from '../../services/get-health-check';
 
-jest.mock('../config/logging');
-jest.mock('../services/get-health-check');
-jest.mock('../middleware/logging', () => mockLoggingMiddleware());
+jest.mock('../../config/logging');
+jest.mock('../../services/get-health-check');
+jest.mock('../../middleware/logging', () => mockLoggingMiddleware());
 jest.mock('express-winston', () => mockExpressWinston());
 
 const mockErrorResponse = 'Error: An error has occurred';
@@ -85,7 +85,7 @@ function mockExpressWinston() {
 }
 
 function mockLoggingMiddleware() {
-  const original = jest.requireActual('../middleware/logging');
+  const original = jest.requireActual('../../middleware/logging');
   return {
     ...original,
     updateLogEvent: jest.fn(),

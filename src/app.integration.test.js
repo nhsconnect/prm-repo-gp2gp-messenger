@@ -48,10 +48,11 @@ describe('app', () => {
   describe('GET /pds-retrieval', () => {
     it('should return a 200 status code for /pds-retrieval/:nhsNumber', done => {
       request(app)
-        .get('/pds-retrieval/99')
+        .get('/pds-retrieval/9999999999')
         .expect(200)
         .end(done);
     });
+
     it('should return a 404 status code without nhsNumber parameter', done => {
       request(app)
         .get('/pds-retrieval')

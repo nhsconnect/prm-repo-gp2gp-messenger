@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../app';
-import { updateLogEventWithError } from '../middleware/logging';
+import app from '../../app';
+import { updateLogEventWithError } from '../../middleware/logging';
 
-jest.mock('../config/logging');
-jest.mock('../middleware/logging', () => mockLoggingMiddleware());
+jest.mock('../../config/logging');
+jest.mock('../../middleware/logging', () => mockLoggingMiddleware());
 jest.mock('express-winston', () => mockExpressWinston());
 
 describe('GET /error', () => {
@@ -36,7 +36,7 @@ describe('GET /error', () => {
 });
 
 function mockLoggingMiddleware() {
-  const original = jest.requireActual('../middleware/logging');
+  const original = jest.requireActual('../../middleware/logging');
   return {
     ...original,
     updateLogEvent: jest.fn(),
