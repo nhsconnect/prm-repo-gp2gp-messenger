@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY build/ /app/
 
-RUN apk update && apk add openssl ca-certificates && rm -rf /var/cache/apk/*
+RUN apk update && apk add openssl ca-certificates git && rm -rf /var/cache/apk/*
 COPY ./certs/deductions.crt /usr/local/share/ca-certificates/deductions.crt
 RUN update-ca-certificates
 
