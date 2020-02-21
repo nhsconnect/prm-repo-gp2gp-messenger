@@ -9,6 +9,10 @@ jest.mock('express-winston', () => ({
 jest.mock('./config/logging');
 
 describe('app', () => {
+  beforeEach(() => {
+    process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+  });
+
   describe('GET /', () => {
     it('should return a 404 status code', done => {
       request(app)
@@ -49,6 +53,7 @@ describe('app', () => {
     it('should return a 200 status code for /pds-retrieval/:nhsNumber', done => {
       request(app)
         .get('/pds-retrieval/9999999999')
+        .set('Authorization', 'correct-key')
         .expect(200)
         .end(done);
     });
