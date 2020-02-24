@@ -15,7 +15,7 @@ const validateInputs = ({ interactionId, conversationId, message }) => {
   throw error;
 };
 
-const stripXMLMessage = (xml = '') =>
+const stripXMLMessage = xml =>
   xml
     .trim()
     .replace(/\r?\n|\r/g, '')
