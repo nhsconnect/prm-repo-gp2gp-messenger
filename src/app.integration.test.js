@@ -13,6 +13,12 @@ describe('app', () => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
   });
 
+  afterEach(() => {
+    if (process.env.AUTHORIZATION_KEYS) {
+      delete process.env.AUTHORIZATION_KEYS;
+    }
+  });
+
   describe('GET /', () => {
     it('should return a 404 status code', done => {
       request(app)

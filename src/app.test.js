@@ -51,6 +51,12 @@ describe('app', () => {
       sendEhrRequest.mockResolvedValue();
     });
 
+    afterEach(() => {
+      if (process.env.AUTHORIZATION_KEYS) {
+        delete process.env.AUTHORIZATION_KEYS;
+      }
+    });
+
     it('should return a 202 status code', done => {
       request(app)
         .post('/ehr-request')
