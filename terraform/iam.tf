@@ -115,7 +115,7 @@ resource "aws_iam_policy" "gp2gp-logs" {
 
 resource "aws_iam_policy" "gp2gp-ssm" {
   name   = "${var.environment}-gp2gp-ssm"
-  policy = data.aws_iam_policy_document.gp2gp-s3-bucket.json
+  policy = data.aws_iam_policy_document.ssm_policy_doc.json
 }
 
 resource "aws_iam_role_policy_attachment" "gp2gp-s3-attach" {
