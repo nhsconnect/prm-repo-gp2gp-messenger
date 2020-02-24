@@ -1,11 +1,21 @@
+import { when } from 'jest-when';
 import request from 'supertest';
+import uuid from 'uuid/v4';
 import app from '../../app';
+import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
+import { sendMessage } from '../../services/mhs-service';
+import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
+
+const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 
 jest.mock('../../config/logging');
 
 jest.mock('../../middleware/logging', () => mockLoggingMiddleware());
 jest.mock('express-winston', () => mockExpressWinston());
+jest.mock('../../services/mhs-service');
+jest.mock('../../templates/generate-pds-retrieval-request');
+jest.mock('uuid/v4');
 
 function mockLoggingMiddleware() {
   const original = jest.requireActual('../../middleware/logging');
@@ -33,12 +43,32 @@ function generateLogEvent(message) {
   };
 }
 
+const interactionId = 'QUPA_IN000008UK02';
+
 describe('/pds-retrieval/:nhsNumber', () => {
   beforeEach(() => {
+    config.pdsAsid = 'pdsAsid';
+    config.deductionsAsid = 'deductionsAsid';
+    uuid.mockImplementation(() => mockUUID);
+
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+
+    when(sendMessage)
+      .mockResolvedValue('success')
+      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: undefined })
+      .mockRejectedValue(Error('rejected'));
+
+    generatePdsRetrievalQuery.mockImplementation(() => 'message');
   });
 
   afterEach(() => {
+    if (process.env.AUTHORIZATION_KEYS) {
+      delete process.env.AUTHORIZATION_KEYS;
+    }
+
+    config.pdsAsid = process.env.PDS_ASID;
+    config.deductionsAsid = process.env.DEDUCTIONS_ASID;
+
     jest.clearAllMocks();
   });
 
@@ -109,6 +139,19 @@ describe('/pds-retrieval/:nhsNumber', () => {
         });
         expect(updateLogEvent).toHaveBeenCalledTimes(1);
         expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+      })
+      .end(done);
+  });
+
+  it('should return a 503 if sendMessage throws an error', done => {
+    generatePdsRetrievalQuery.mockImplementation(() => undefined);
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('rejected');
       })
       .end(done);
   });
