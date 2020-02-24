@@ -88,7 +88,10 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
 
     resources = [
       "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/authorization_keys",
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/nhs/${var.environment}/mq/app-username"
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/nhs/${var.environment}/mq/app-username",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/nhs/${var.environment}/mq/app-password",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/deductions_asid",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/deductions_ods_code"
     ]
   }
 }
