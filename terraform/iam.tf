@@ -109,12 +109,12 @@ resource "aws_iam_policy" "gp2gp-s3-bucket" {
 
 resource "aws_iam_policy" "gp2gp-ecr" {
   name   = "${var.environment}-gp2gp-ecr"
-  policy = data.aws_iam_policy_document.gp2gp-s3.json
+  policy = data.aws_iam_policy_document.ecr_policy_doc.json
 }
 
 resource "aws_iam_policy" "gp2gp-logs" {
   name   = "${var.environment}-gp2gp-logs"
-  policy = data.aws_iam_policy_document.gp2gp-s3-bucket.json
+  policy = data.aws_iam_policy_document.logs_policy_doc.json
 }
 
 resource "aws_iam_policy" "gp2gp-ssm" {
