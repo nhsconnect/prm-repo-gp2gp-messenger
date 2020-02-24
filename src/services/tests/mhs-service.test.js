@@ -4,7 +4,7 @@ import uuid from 'uuid/v4';
 import { updateLogEventWithError } from '../../middleware/logging';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 import testData from '../../templates/tests/testData.json';
-import { processXmlMessage, sendMessage } from '../mhs-service';
+import { sendMessage, stripXMLMessage } from '../mhs-service';
 
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
@@ -17,13 +17,7 @@ const interactionId = 'QUPA_IN040000UK32';
 const url = 'http://url.com';
 
 describe('mhs-service', () => {
-  const pdsRetrievalQuery = generatePdsRetrievalQuery({
-    id: conversationId,
-    timestamp,
-    receivingService: { asid: testData.pds.asid },
-    sendingService: { asid: testData.mhs.asid },
-    patient: { nhsNumber: testData.emisPatient.nhsNumber }
-  });
+  const message = 'message';
 
   const requestOptions = {
     headers: {
@@ -34,7 +28,7 @@ describe('mhs-service', () => {
       'Ods-Code': 'YES'
     },
     data: {
-      payload: processXmlMessage(pdsRetrievalQuery)
+      payload: message
     }
   };
 
@@ -44,7 +38,7 @@ describe('mhs-service', () => {
   });
 
   it('logs an Error if interactionId is not passed in', () => {
-    return sendMessage({ conversationId, message: pdsRetrievalQuery }).catch(err => {
+    return sendMessage({ conversationId, message }).catch(err => {
       const error = Error(['interactionId must be passed in']);
       expect(err).toEqual(error);
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
@@ -63,7 +57,7 @@ describe('mhs-service', () => {
 
   it('logs an Error if conversationId is not passed in', () => {
     const error = Error(['conversationId must be passed in']);
-    return sendMessage({ interactionId, message: pdsRetrievalQuery }).catch(err => {
+    return sendMessage({ interactionId, message }).catch(err => {
       expect(err).toEqual(error);
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
       expect(updateLogEventWithError).toHaveBeenCalledWith(error);
@@ -81,38 +75,44 @@ describe('mhs-service', () => {
   });
 
   it('throws an Error if interactionId is not passed in', () => {
-    return expect(sendMessage({ conversationId, message: pdsRetrievalQuery })).rejects.toThrowError(
+    return expect(sendMessage({ conversationId, message })).rejects.toThrowError(
       Error('interactionId must be passed in')
     );
   });
 
   it("should call axios with odsCode 'YES' by default and return 200", () => {
-    return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
-      response => {
-        expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(url, requestOptions);
-      }
-    );
+    return sendMessage({ interactionId, conversationId, message }).then(response => {
+      expect(response.status).toBe(200);
+      expect(axios.post).toBeCalledWith(url, requestOptions);
+    });
   });
 
   it('should call axios with specified odsCode if passed in', () => {
     const odsCode = 'A123';
-    return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery, odsCode }).then(
+    return sendMessage({ interactionId, conversationId, message, odsCode }).then(response => {
+      expect(response.status).toBe(200);
+      expect(axios.post).toBeCalledWith(url, {
+        ...requestOptions,
+        headers: { ...requestOptions.headers, 'Ods-Code': odsCode }
+      });
+    });
+  });
+
+  it('should stringify and escape the payload (xml message)', () => {
+    const pdsRetrievalQuery = generatePdsRetrievalQuery({
+      id: conversationId,
+      timestamp,
+      receivingService: { asid: testData.pds.asid },
+      sendingService: { asid: testData.mhs.asid },
+      patient: { nhsNumber: testData.emisPatient.nhsNumber }
+    });
+    return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
       response => {
         expect(response.status).toBe(200);
         expect(axios.post).toBeCalledWith(url, {
           ...requestOptions,
-          headers: { ...requestOptions.headers, 'Ods-Code': odsCode }
+          data: { payload: stripXMLMessage(pdsRetrievalQuery) }
         });
-      }
-    );
-  });
-
-  it('should stringify and escape the payload (xml message)', () => {
-    return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
-      response => {
-        expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(url, requestOptions);
       }
     );
   });
@@ -133,7 +133,7 @@ describe('mhs-service', () => {
   });
 });
 
-describe('processXmlMessage', () => {
+describe('stripXMLMessage', () => {
   const pdsRetrievalQuery = generatePdsRetrievalQuery({
     id: conversationId,
     timestamp,
@@ -143,18 +143,18 @@ describe('processXmlMessage', () => {
   });
 
   it('should return a string', () => {
-    expect(typeof processXmlMessage(pdsRetrievalQuery) === 'string').toBe(true);
+    expect(typeof stripXMLMessage(pdsRetrievalQuery) === 'string').toBe(true);
   });
 
   it('should remove spaces between xml tags', () => {
-    expect(processXmlMessage(pdsRetrievalQuery).match(/> +</g)).toBe(null);
+    expect(stripXMLMessage(pdsRetrievalQuery).match(/> +</g)).toBe(null);
   });
 
   it('should trim the message', () => {
-    expect(processXmlMessage(` ${pdsRetrievalQuery}     `).match(/^ +| +$/)).toBe(null);
+    expect(stripXMLMessage(` ${pdsRetrievalQuery}     `).match(/^ +| +$/)).toBe(null);
   });
 
   it('should remove new lines (/n) and carriage return characters (/r)', () => {
-    expect(processXmlMessage(pdsRetrievalQuery).match(/\r?\n|\r/g)).toBe(null);
+    expect(stripXMLMessage(pdsRetrievalQuery).match(/\r?\n|\r/g)).toBe(null);
   });
 });

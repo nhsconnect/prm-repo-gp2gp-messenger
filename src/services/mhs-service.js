@@ -15,7 +15,7 @@ const validateInputs = ({ interactionId, conversationId, message }) => {
   throw error;
 };
 
-const processXmlMessage = (xml = '') =>
+const stripXMLMessage = (xml = '') =>
   xml
     .trim()
     .replace(/\r?\n|\r/g, '')
@@ -35,7 +35,7 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         'Ods-Code': odsCode
       },
       data: {
-        payload: processXmlMessage(message)
+        payload: stripXMLMessage(message)
       }
     };
 
@@ -52,4 +52,4 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
   });
 };
 
-export { sendMessage, processXmlMessage };
+export { sendMessage, stripXMLMessage };
