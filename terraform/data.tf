@@ -44,14 +44,22 @@ data "aws_ssm_parameter" "deductions_private_private_subnets" {
   name = "/nhs/${var.environment}/deductions_private_private_subnets"
 }
 
-data "aws_ssm_parameter" "deductions_private_gp2gp_a_alb_tg_arn" {
-  name = "/nhs/${var.environment}/deductions_private_gp2gp_a_alb_tg_arn"
-}
-
 data "aws_ssm_parameter" "deductions_private_pds_a_alb_tg_arn" {
   name = "/nhs/${var.environment}/deductions_private_pds_a_alb_tg_arn"
 }
 
 data "aws_ssm_parameter" "deductions_private_alb_dns" {
   name = "/nhs/${var.environment}/deductions_private_alb_dns"
+}
+
+data "aws_ssm_parameter" "deductions_private_vpc_id" {
+  name = "/nhs/${var.environment}/deductions_private_vpc_id"
+}
+
+data "aws_ssm_parameter" "deductions_private_alb_httpl_arn" {
+  name = "/nhs/${var.environment}/deductions_private_alb_httpl_arn"
+}
+
+data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
+  name = "/nhs/${var.environment}/deductions_private_gp2gp_adaptor_sg_id"
 }

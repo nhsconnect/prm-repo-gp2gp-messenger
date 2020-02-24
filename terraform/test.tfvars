@@ -1,17 +1,14 @@
-environment          = "test"
-component_name       = "gp2gp-adaptor"
+environment    = "test"
+component_name = "gp2gp-adaptor"
+dns_name       = "gp2gp-adaptor"
 
 s3_bucket_name       = "test-gp2gp-bucket"
-task_execution_role  = "ecsTaskExecutionRole"
-task_family          = "gp2gp-adaptor"
 
-task_container_name  = "gp2gp-adaptor-container"
-task_image_name      = "deductions/gp2gp-adaptor"
-task_cpu             = 256
-task_memory          = 512
-task_container_port  = 3000
-task_host_port       = 3000
+task_cpu    = 256
+task_memory = 512
+port        = 3000
 
-service_container_port  = "3000"
-service_container_name  = "gp2gp-adaptor-container"
-service_desired_count   = "2"
+service_desired_count = "2"
+
+alb_deregistration_delay = 15
+
