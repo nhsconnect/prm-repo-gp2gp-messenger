@@ -14,6 +14,7 @@ jest.mock('axios');
 const conversationId = uuid().toUpperCase();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const interactionId = 'QUPA_IN040000UK32';
+const url = 'http://url.com';
 
 describe('mhs-service', () => {
   const pdsRetrievalQuery = generatePdsRetrievalQuery({
@@ -89,10 +90,7 @@ describe('mhs-service', () => {
     return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
       response => {
         expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(
-          'https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1802240048/MHS+Adapter+GP2GP+Compliance',
-          requestOptions
-        );
+        expect(axios.post).toBeCalledWith(url, requestOptions);
       }
     );
   });
@@ -102,13 +100,10 @@ describe('mhs-service', () => {
     return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery, odsCode }).then(
       response => {
         expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(
-          'https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1802240048/MHS+Adapter+GP2GP+Compliance',
-          {
-            ...requestOptions,
-            headers: { ...requestOptions.headers, 'Ods-Code': odsCode }
-          }
-        );
+        expect(axios.post).toBeCalledWith(url, {
+          ...requestOptions,
+          headers: { ...requestOptions.headers, 'Ods-Code': odsCode }
+        });
       }
     );
   });
@@ -117,12 +112,24 @@ describe('mhs-service', () => {
     return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
       response => {
         expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(
-          'https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1802240048/MHS+Adapter+GP2GP+Compliance',
-          requestOptions
-        );
+        expect(axios.post).toBeCalledWith(url, requestOptions);
       }
     );
+  });
+
+  it('should call updateLogEventWithError if there is an error with axios.post request', () => {
+    axios.post.mockRejectedValue(new Error());
+    return sendMessage({ interactionId, conversationId, message: 'message' }).catch(err => {
+      const error = Error(
+        `POST ${url} - Request failed - ${JSON.stringify({
+          ...requestOptions,
+          data: { payload: 'message' }
+        })}`
+      );
+      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+      expect(updateLogEventWithError).toHaveBeenCalledWith(error);
+      return expect(err).toEqual(error);
+    });
   });
 });
 

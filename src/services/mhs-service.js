@@ -21,27 +21,34 @@ const processXmlMessage = (xml = '') =>
     .replace(/\r?\n|\r/g, '')
     .replace(/>\s+</g, '><');
 
+const url = 'http://url.com';
+
 const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });
+    const axiosOptions = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Interaction-ID': interactionId,
+        'Sync-Async': false,
+        'Correlation-Id:': conversationId,
+        'Ods-Code': odsCode
+      },
+      data: {
+        payload: processXmlMessage(message)
+      }
+    };
 
     return axios
-      .post(
-        'https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1802240048/MHS+Adapter+GP2GP+Compliance',
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Interaction-ID': interactionId,
-            'Sync-Async': false,
-            'Correlation-Id:': conversationId,
-            'Ods-Code': odsCode
-          },
-          data: {
-            payload: processXmlMessage(message)
-          }
-        }
-      )
-      .then(resolve);
+      .post(url, axiosOptions)
+      .then(resolve)
+      .catch(error => {
+        const axiosError = new Error(
+          `POST ${url} - ${error.message || 'Request failed'} - ${JSON.stringify(axiosOptions)}`
+        );
+        updateLogEventWithError(axiosError);
+        reject(axiosError);
+      });
   });
 };
 
