@@ -4,6 +4,7 @@ import { param } from 'express-validator';
 import uuid from 'uuid/v4';
 import config from '../config';
 import { checkIsAuthenticated } from '../middleware/auth';
+import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs-service';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
@@ -32,11 +33,26 @@ router.get('/:nhsNumber', checkIsAuthenticated, validationRules, validate, (req,
   });
 
   sendMessage({ interactionId, conversationId, message })
-    .then(() => {
-      res.sendStatus(200);
+    .then(messageResponse => {
+      switch (messageResponse.status) {
+        case 200:
+          updateLogEvent({
+            status: '200 PDS response received',
+            conversationId,
+            response: messageResponse
+          });
+          res.status(200).json({ message: messageResponse.data });
+          break;
+        case 500:
+          throw new Error(`MHS Error: ${messageResponse.data}`);
+        default:
+          throw new Error(`Unexpected Error: ${messageResponse.data}`);
+      }
+
       next();
     })
     .catch(err => {
+      updateLogEventWithError(err);
       res.status(503).json({
         errors: err.message
       });

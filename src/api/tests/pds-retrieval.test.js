@@ -1,13 +1,14 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import uuid from 'uuid/v4';
+import { updateLogEvent, updateLogEventWithError } from '../../../src/middleware/logging';
 import app from '../../app';
 import config from '../../config';
-import { updateLogEvent } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs-service';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
+const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
 
 jest.mock('../../config/logging');
 
@@ -54,9 +55,17 @@ describe('/pds-retrieval/:nhsNumber', () => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
     when(sendMessage)
-      .mockResolvedValue('success')
+      .mockResolvedValue({ status: 503, data: 'MHS error' })
+      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: 'message' })
+      .mockResolvedValue({ status: 200, data: 'message' })
       .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: undefined })
-      .mockRejectedValue(Error('rejected'));
+      .mockRejectedValue(Error('rejected'))
+      .calledWith({
+        interactionId,
+        conversationId: mockErrorUUID.toUpperCase(),
+        message: 'message'
+      })
+      .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
     generatePdsRetrievalQuery.mockImplementation(() => 'message');
   });
@@ -109,6 +118,33 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .end(done);
   });
 
+  it('should return a 200 with MHS message passed back', done => {
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.message).toBe('message');
+      })
+      .end(done);
+  });
+
+  it('should return a 200 and update the logs', done => {
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(() => {
+        expect(updateLogEvent).toHaveBeenCalledTimes(2);
+        expect(updateLogEvent).toHaveBeenCalledWith({
+          status: '200 PDS response received',
+          conversationId: mockUUID.toUpperCase(),
+          response: { data: 'message', status: 200 }
+        });
+      })
+      .end(done);
+  });
+
   it('should return an error if :nhsNumber is less than 10 digits', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
@@ -152,6 +188,45 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('rejected');
+      })
+      .end(done);
+  });
+
+  it('should return a 503 with error message if mhs returns a 500 status code', done => {
+    uuid.mockImplementation(() => mockErrorUUID);
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('MHS Error: 500 MHS Error');
+      })
+      .end(done);
+  });
+
+  it('should return a 503 with error message if mhs returns a 503 status code', done => {
+    uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('Unexpected Error: MHS error');
+      })
+      .end(done);
+  });
+
+  it('should call updateLogEventWithError if mhs returns a 503 status code', done => {
+    uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(() => {
+        expect(updateLogEventWithError).toBeCalledTimes(1);
+        expect(updateLogEventWithError).toBeCalledWith(Error('Unexpected Error: MHS error'));
       })
       .end(done);
   });
