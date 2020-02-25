@@ -9,6 +9,10 @@ import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-re
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
+const message =
+  '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></QUPA_IN000008UK02>';
+const sendMessageErrorMessage =
+  '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></QUPA_IN000008UK02>';
 
 jest.mock('../../config/logging');
 
@@ -56,18 +60,22 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS error' })
-      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: 'message' })
-      .mockResolvedValue({ status: 200, data: 'message' })
-      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: undefined })
+      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: message })
+      .mockResolvedValue({ status: 200, data: message })
+      .calledWith({
+        interactionId,
+        conversationId: mockUUID.toUpperCase(),
+        message: sendMessageErrorMessage
+      })
       .mockRejectedValue(Error('rejected'))
       .calledWith({
         interactionId,
         conversationId: mockErrorUUID.toUpperCase(),
-        message: 'message'
+        message: message
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
-    generatePdsRetrievalQuery.mockResolvedValue('message');
+    generatePdsRetrievalQuery.mockResolvedValue(message);
   });
 
   afterEach(() => {
@@ -124,7 +132,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .set('Authorization', 'correct-key')
       .expect(200)
       .expect(res => {
-        expect(res.body.message).toBe('message');
+        expect(res.body.message).toBe(message);
       })
       .end(done);
   });
@@ -139,7 +147,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
         expect(updateLogEvent).toHaveBeenCalledWith({
           status: '200 PDS response received',
           conversationId: mockUUID.toUpperCase(),
-          response: { data: 'message', status: 200 }
+          response: { data: message, status: 200 }
         });
       })
       .end(done);
@@ -180,7 +188,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should return a 503 if sendMessage throws an error', done => {
-    generatePdsRetrievalQuery.mockResolvedValue(undefined);
+    generatePdsRetrievalQuery.mockResolvedValue(sendMessageErrorMessage);
 
     request(app)
       .get('/pds-retrieval/9999999999')
@@ -232,27 +240,61 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should returns a 503 status code with message if generatePdsRetrievalQuery throws an error', done => {
-    generatePdsRetrievalQuery.mockRejectedValue(Error('asid is undefined'));
+    generatePdsRetrievalQuery.mockRejectedValue(
+      Error('Check template parameter error: asid is undefined')
+    );
 
     request(app)
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('asid is undefined');
+        expect(res.body.errors).toBe('Check template parameter error: asid is undefined');
       })
       .end(done);
   });
 
   it('should call updateLogEventWithError when generatePdsRetrievalQuery throws an error', done => {
-    generatePdsRetrievalQuery.mockRejectedValue(Error('asid is undefined'));
+    generatePdsRetrievalQuery.mockRejectedValue(
+      Error('Check template parameter error: asid is undefined')
+    );
 
     request(app)
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
-        expect(updateLogEventWithError).toBeCalledWith(Error('asid is undefined'));
+        expect(updateLogEventWithError).toBeCalledWith(
+          Error('Check template parameter error: asid is undefined')
+        );
+      })
+      .end(done);
+  });
+
+  it('should return a 503 if message does not include the interactionId', done => {
+    generatePdsRetrievalQuery.mockResolvedValue('<Header></Header>');
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('interactionId is not included in the message');
+      })
+      .end(done);
+  });
+
+  it('should call updateLogEventWithError if message does not include the interactionId', done => {
+    generatePdsRetrievalQuery.mockResolvedValue('<Header></Header>');
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(updateLogEventWithError).toBeCalledTimes(1);
+        expect(updateLogEventWithError).toBeCalledWith(
+          Error('interactionId is not included in the message')
+        );
       })
       .end(done);
   });

@@ -28,14 +28,19 @@ router.get(
     try {
       const interactionId = 'QUPA_IN000008UK02';
       const conversationId = uuid().toUpperCase();
+      const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 
       const message = await generatePdsRetrievalQuery({
         id: conversationId,
-        timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+        timestamp,
         receivingService: { asid: config.pdsAsid },
         sendingService: { asid: config.deductionsAsid },
         patient: { nhsNumber: req.params.nhsNumber }
       });
+
+      if (!message.includes(interactionId)) {
+        throw new Error('interactionId is not included in the message');
+      }
 
       const messageResponse = await sendMessage({ interactionId, conversationId, message });
 
