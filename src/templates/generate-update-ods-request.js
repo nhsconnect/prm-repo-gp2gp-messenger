@@ -1,6 +1,6 @@
 const checkTemplateArguments = require('./utils/check_params');
 
-const generateUpdatePdsRequest = ({ id, timestamp, receivingService, sendingService, patient }) => {
+const generateUpdateOdsRequest = ({ id, timestamp, receivingService, sendingService, patient }) => {
   const inputObject = {
     id,
     timestamp,
@@ -114,4 +114,4 @@ const template = ({
 </PRPA_IN000203UK03>
 `;
 
-module.exports = generateUpdatePdsRequest;
+module.exports = generateUpdateOdsRequest;

@@ -35,14 +35,14 @@ describe('generatePdsRetrievalQuery', () => {
   });
 
   it('should have populate the xml template with all the required fields', async done => {
-    const ehrRequestQuery = await generatePdsRetrievalQuery(testObjectComplete);
+    const pdsRequestQuery = await generatePdsRetrievalQuery(testObjectComplete);
 
     const checkEntries = object => {
       Object.keys(object).map(key => {
         if (typeof object[key] === 'object') {
           checkEntries(object[key]);
         } else {
-          expect(ehrRequestQuery).toContain(object[key]);
+          expect(pdsRequestQuery).toContain(object[key]);
         }
       });
     };
@@ -57,37 +57,15 @@ describe('generatePdsRetrievalQuery', () => {
     });
   });
 
-  describe('checkTemplateArguments', () => {
-    it("should throw 'asid is undefined' if not pass in receivingService object", () => {
-      return expect(
-        generatePdsRetrievalQuery({
-          id: uuid().toUpperCase(),
-          timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
-          sendingService: {
-            asid: testData.mhs.asid
-          },
-          patient: {
-            nhsNumber: testData.tppPatient.nhsNumber
-          }
-        })
-      ).rejects.toThrowError('asid is undefined');
-    });
-  });
-
-  describe('checkTemplateArguments', () => {
-    it("should throw 'asid is undefined' if not pass in sendingService object", () => {
-      return expect(
-        generatePdsRetrievalQuery({
-          id: uuid().toUpperCase(),
-          timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
-          receivingService: {
-            asid: testData.pds.asid
-          },
-          patient: {
-            nhsNumber: testData.tppPatient.nhsNumber
-          }
-        })
-      ).rejects.toThrowError('asid is undefined');
-    });
+  it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {
+    return expect(
+      generatePdsRetrievalQuery({
+        id: uuid().toUpperCase(),
+        timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+        patient: {
+          nhsNumber: testData.tppPatient.nhsNumber
+        }
+      })
+    ).rejects.toThrowError('Check template parameter error: asid is undefined, asid is undefined');
   });
 });

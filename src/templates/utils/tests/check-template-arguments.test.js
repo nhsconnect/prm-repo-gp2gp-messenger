@@ -3,7 +3,7 @@ const checkTemplateArguments = require('../check_params');
 describe('checkTemplateArguments', () => {
   it('should throw error when input argument is undefined', () => {
     expect(() => checkTemplateArguments({ arg1: undefined })).toThrowError(
-      Error('arg1 is undefined')
+      'Check template parameter error: arg1 is undefined'
     );
   });
 
@@ -12,18 +12,35 @@ describe('checkTemplateArguments', () => {
   });
 
   it('should throw error when input object is not of type object', () => {
-    expect(() => checkTemplateArguments('string')).toThrowError(
-      Error('input object is not an object')
-    );
+    expect(() => checkTemplateArguments('string')).toThrowError('input object is not an object');
   });
 
   it('should throw error when input object is undefined', () => {
-    expect(() => checkTemplateArguments()).toThrowError(Error('input object is not an object'));
+    expect(() => checkTemplateArguments()).toThrowError('input object is not an object');
   });
 
   it('should throw error for level one nested input objects', () => {
     expect(() => checkTemplateArguments({ patient: { arg1: undefined } })).toThrowError(
-      Error('arg1 is undefined')
+      'Check template parameter error: arg1 is undefined'
+    );
+  });
+
+  it('should throw error that contains all fields that are undefined (one object)', () => {
+    expect(() =>
+      checkTemplateArguments({
+        patient: { arg1: undefined, arg2: undefined }
+      })
+    ).toThrowError('Check template parameter error: arg1 is undefined, arg2 is undefined');
+  });
+
+  it('should throw error that contains all fields that are undefined', () => {
+    expect(() =>
+      checkTemplateArguments({
+        patient: { arg1: undefined, arg2: undefined },
+        sendingService: undefined
+      })
+    ).toThrowError(
+      'Check template parameter error: arg1 is undefined, arg2 is undefined, sendingService is undefined'
     );
   });
 
@@ -33,13 +50,13 @@ describe('checkTemplateArguments', () => {
 
   it('will throw error when max depth has been reached', () => {
     expect(() => checkTemplateArguments({ patient: { arg1: 'string' } }, 0)).toThrowError(
-      Error('maxDepth reached, exiting')
+      'maxDepth reached, exiting'
     );
   });
 
   it('will not throw error when nested object is within max depth', () => {
     expect(() => checkTemplateArguments({ patient: { arg1: 'string' } }, 2)).not.toThrowError(
-      Error('maxDepth reached, exiting')
+      'maxDepth reached, exiting'
     );
   });
 });

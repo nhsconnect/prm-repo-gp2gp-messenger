@@ -1,11 +1,12 @@
-const generateUpdatePdsRequest = require('../generate-update-ods-request');
+const generateUpdateOdsRequest = require('../generate-update-ods-request');
 const uuid = require('uuid/v4');
+import dateFormat from 'dateformat';
 const testData = require('./testData.json');
 
-describe('generateUpdatePdsRequest', () => {
+describe('generateUpdateOdsRequest', () => {
   const testObjectMissing = {
     id: uuid().toUpperCase(),
-    timestamp: '20200101101010',
+    timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
     receivingService: {
       asid: testData.pds.asid
     },
@@ -25,24 +26,40 @@ describe('generateUpdatePdsRequest', () => {
   };
 
   it('should throw error when nhsNumber is not defined in inputObject', () => {
-    expect(() => generateUpdatePdsRequest(testObjectMissing)).toThrowError(
-      Error('nhsNumber is undefined')
+    expect(() => generateUpdateOdsRequest(testObjectMissing)).toThrowError(
+      'Check template parameter error: nhsNumber is undefined, pdsId is undefined, pdsUpdateChangeNumber is undefined'
+    );
+  });
+
+  it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {
+    expect(() =>
+      generateUpdateOdsRequest({
+        id: uuid().toUpperCase(),
+        timestamp: '20200101101010',
+        patient: {
+          nhsNumber: testData.tppPatient.nhsNumber,
+          pdsId: testData.tppPatient.pdsId,
+          pdsUpdateChangeNumber: testData.tppPatient.serialChaneNumber
+        }
+      })
+    ).toThrowError(
+      'Check template parameter error: asid is undefined, asid is undefined, odsCode is undefined'
     );
   });
 
   it('should not throw error when all required arguments are defined', () => {
-    expect(() => generateUpdatePdsRequest(testObjectComplete)).not.toThrowError();
+    expect(() => generateUpdateOdsRequest(testObjectComplete)).not.toThrowError();
   });
 
   it('should have populate the xml template with all the required fields', () => {
-    const ehrRequestQuery = generateUpdatePdsRequest(testObjectComplete);
+    const updateODSRequest = generateUpdateOdsRequest(testObjectComplete);
 
     const checkEntries = object => {
       Object.keys(object).map(key => {
         if (typeof object[key] === 'object') {
           checkEntries(object[key]);
         } else {
-          expect(ehrRequestQuery).toContain(object[key]);
+          expect(updateODSRequest).toContain(object[key]);
         }
       });
     };
