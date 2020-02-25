@@ -67,7 +67,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
-    generatePdsRetrievalQuery.mockImplementation(() => 'message');
+    generatePdsRetrievalQuery.mockImplementation(() => Promise.resolve('message'));
   });
 
   afterEach(() => {
@@ -180,7 +180,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should return a 503 if sendMessage throws an error', done => {
-    generatePdsRetrievalQuery.mockImplementation(() => undefined);
+    generatePdsRetrievalQuery.mockImplementation(() => Promise.resolve(undefined));
 
     request(app)
       .get('/pds-retrieval/9999999999')

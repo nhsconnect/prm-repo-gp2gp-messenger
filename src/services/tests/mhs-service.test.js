@@ -98,14 +98,15 @@ describe('mhs-service', () => {
     });
   });
 
-  it('should stringify and escape the payload (xml message)', () => {
-    const pdsRetrievalQuery = generatePdsRetrievalQuery({
+  it('should stringify and escape the payload (xml message)', async () => {
+    const pdsRetrievalQuery = await generatePdsRetrievalQuery({
       id: conversationId,
       timestamp,
       receivingService: { asid: testData.pds.asid },
       sendingService: { asid: testData.mhs.asid },
       patient: { nhsNumber: testData.emisPatient.nhsNumber }
     });
+
     return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
       response => {
         expect(response.status).toBe(200);
@@ -134,27 +135,31 @@ describe('mhs-service', () => {
 });
 
 describe('stripXMLMessage', () => {
-  const pdsRetrievalQuery = generatePdsRetrievalQuery({
+  const pdsQueryArguments = {
     id: conversationId,
     timestamp,
     receivingService: { asid: testData.pds.asid },
     sendingService: { asid: testData.mhs.asid },
     patient: { nhsNumber: testData.emisPatient.nhsNumber }
-  });
+  };
 
-  it('should return a string', () => {
+  it('should return a string', async () => {
+    const pdsRetrievalQuery = await generatePdsRetrievalQuery(pdsQueryArguments);
     expect(typeof stripXMLMessage(pdsRetrievalQuery) === 'string').toBe(true);
   });
 
-  it('should remove spaces between xml tags', () => {
+  it('should remove spaces between xml tags', async () => {
+    const pdsRetrievalQuery = await generatePdsRetrievalQuery(pdsQueryArguments);
     expect(stripXMLMessage(pdsRetrievalQuery).match(/> +</g)).toBe(null);
   });
 
-  it('should trim the message', () => {
+  it('should trim the message', async () => {
+    const pdsRetrievalQuery = await generatePdsRetrievalQuery(pdsQueryArguments);
     expect(stripXMLMessage(` ${pdsRetrievalQuery}     `).match(/^ +| +$/)).toBe(null);
   });
 
-  it('should remove new lines (/n) and carriage return characters (/r)', () => {
+  it('should remove new lines (/n) and carriage return characters (/r)', async () => {
+    const pdsRetrievalQuery = await generatePdsRetrievalQuery(pdsQueryArguments);
     expect(stripXMLMessage(pdsRetrievalQuery).match(/\r?\n|\r/g)).toBe(null);
   });
 });

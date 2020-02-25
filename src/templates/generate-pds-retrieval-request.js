@@ -1,32 +1,31 @@
 const checkTemplateArguments = require('./utils/check_params');
 
-const generatePdsRetrievalQuery = ({
-  id,
-  timestamp,
-  receivingService,
-  sendingService,
-  patient
-}) => {
-  const inputObject = {
-    id,
-    timestamp,
-    receivingService: {
-      asid: undefined,
-      ...(receivingService || {})
-    },
-    sendingService: {
-      asid: undefined,
-      ...(sendingService || {})
-    },
-    patient: {
-      nhsNumber: undefined,
-      ...(patient || {})
-    }
-  };
+const generatePdsRetrievalQuery = ({ id, timestamp, receivingService, sendingService, patient }) =>
+  new Promise((resolve, reject) => {
+    try {
+      const inputObject = {
+        id,
+        timestamp,
+        receivingService: {
+          asid: undefined,
+          ...(receivingService || {})
+        },
+        sendingService: {
+          asid: undefined,
+          ...(sendingService || {})
+        },
+        patient: {
+          nhsNumber: undefined,
+          ...(patient || {})
+        }
+      };
 
-  checkTemplateArguments(inputObject);
-  return template(inputObject);
-};
+      checkTemplateArguments(inputObject);
+      resolve(template(inputObject));
+    } catch (err) {
+      reject(err);
+    }
+  });
 
 const template = ({
   id,
