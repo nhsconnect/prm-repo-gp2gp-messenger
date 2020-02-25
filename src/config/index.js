@@ -1,6 +1,6 @@
 const config = {
-  deductionsAsid: process.env.DEDUCTIONS_ASID,
-  deductionsOdsCode: process.env.DEDUCTIONS_ODS_CODE,
+  deductionsAsid: process.env.DEDUCTIONS_ASID || '200000001161',
+  deductionsOdsCode: process.env.DEDUCTIONS_ODS_CODE || 'B86041',
   isLocal: process.env.NODE_ENV === 'local',
   isPTL: process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'dev',
   queueName: process.env.MHS_QUEUE_NAME,
