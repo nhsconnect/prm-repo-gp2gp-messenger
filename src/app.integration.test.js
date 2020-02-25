@@ -1,3 +1,4 @@
+import axios from 'axios';
 import request from 'supertest';
 import app from './app';
 
@@ -7,10 +8,12 @@ jest.mock('express-winston', () => ({
 }));
 
 jest.mock('./config/logging');
+jest.mock('axios');
 
 describe('app', () => {
   beforeEach(() => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+    axios.post.mockImplementation(() => Promise.resolve({ status: 200 }));
   });
 
   afterEach(() => {
