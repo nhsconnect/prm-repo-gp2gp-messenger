@@ -67,7 +67,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
-    generatePdsRetrievalQuery.mockImplementation(() => Promise.resolve('message'));
+    generatePdsRetrievalQuery.mockResolvedValue('message');
   });
 
   afterEach(() => {
@@ -180,7 +180,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should return a 503 if sendMessage throws an error', done => {
-    generatePdsRetrievalQuery.mockImplementation(() => Promise.resolve(undefined));
+    generatePdsRetrievalQuery.mockResolvedValue(undefined);
 
     request(app)
       .get('/pds-retrieval/9999999999')
@@ -227,6 +227,32 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(Error('Unexpected Error: MHS error'));
+      })
+      .end(done);
+  });
+
+  it('should returns a 503 status code with message if generatePdsRetrievalQuery throws an error', done => {
+    generatePdsRetrievalQuery.mockRejectedValue(Error('asid is undefined'));
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('asid is undefined');
+      })
+      .end(done);
+  });
+
+  it('should call updateLogEventWithError when generatePdsRetrievalQuery throws an error', done => {
+    generatePdsRetrievalQuery.mockRejectedValue(Error('asid is undefined'));
+
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(() => {
+        expect(updateLogEventWithError).toBeCalledTimes(1);
+        expect(updateLogEventWithError).toBeCalledWith(Error('asid is undefined'));
       })
       .end(done);
   });
