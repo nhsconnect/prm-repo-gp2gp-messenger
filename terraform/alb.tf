@@ -18,7 +18,7 @@ resource "aws_alb_target_group" "alb-tg" {
 }
 
 resource "aws_alb_listener_rule" "alb-listener-rule" {
-  listener_arn = data.aws_ssm_parameter.deductions_private_alb_httpl_arn.value
+  listener_arn = data.aws_ssm_parameter.deductions_private_alb_httpsl_arn.value
   priority     = 101
 
   action {

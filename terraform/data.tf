@@ -60,6 +60,11 @@ data "aws_ssm_parameter" "deductions_private_alb_httpl_arn" {
   name = "/nhs/${var.environment}/deductions_private_alb_httpl_arn"
 }
 
+data "aws_ssm_parameter" "deductions_private_alb_httpsl_arn" {
+  name = "/nhs/${var.environment}/deductions_private_alb_httpsl_arn"
+}
+
+
 data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
   name = "/nhs/${var.environment}/deductions_private_gp2gp_adaptor_sg_id"
 }
