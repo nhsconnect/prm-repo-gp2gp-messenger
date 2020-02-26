@@ -1,4 +1,4 @@
-import { containsNegativeAcknowledgement } from './contains-negative-acknowledgement';
+import { containsNegativeAcknowledgement } from '../contains-negative-acknowledgement';
 
 // Not that in a real example this acknowledgement is not prefixed with eb: as in the implementation - to clarify
 describe('containsNegativeAcknowledgement', () => {

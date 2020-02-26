@@ -1,14 +1,14 @@
 import httpContext from 'async-local-storage';
-import config from '../config';
-import { connectToQueue } from '../config/queue';
-import { getRoutingInformation, sendMessage } from './mhs-gateway-fake';
-import { updateLogEvent } from '../middleware/logging';
-import { extractInteractionId } from './message-parser';
-import { generateFirstFragmentResponse } from '../templates/soap/fragment-1-template';
-import { generateSecondFragmentResponse } from '../templates/soap/fragment-2-template';
-import { generateThirdFragmentResponse } from '../templates/soap/fragment-3-template';
-import { generateBigFragmentResponse } from '../templates/soap/fragment-4-template';
-import { generateAcknowledgementResponse } from '../templates/soap/ack-template';
+import config from '../../config';
+import { connectToQueue } from '../../config/queue';
+import { getRoutingInformation, sendMessage } from '../mhs-gateway-fake';
+import { updateLogEvent } from '../../middleware/logging';
+import { extractInteractionId } from '../message-parser';
+import { generateFirstFragmentResponse } from '../../templates/soap/fragment-1-template';
+import { generateSecondFragmentResponse } from '../../templates/soap/fragment-2-template';
+import { generateThirdFragmentResponse } from '../../templates/soap/fragment-3-template';
+import { generateBigFragmentResponse } from '../../templates/soap/fragment-4-template';
+import { generateAcknowledgementResponse } from '../../templates/soap/ack-template';
 
 httpContext.enable();
 

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import config from '../config';
-import { updateLogEvent } from '../middleware/logging';
-import { storeMessageInEhrRepo } from './ehr-repo-gateway';
+import config from '../../config';
+import { updateLogEvent } from '../../middleware/logging';
+import { storeMessageInEhrRepo } from '../ehr-repo-gateway';
 
 jest.mock('axios');
 jest.mock('axios-retry');

@@ -1,5 +1,5 @@
 import uuid from 'uuid/v4';
-import { extractMessageId } from './extract-message-id';
+import { extractMessageId } from '../extract-message-id';
 
 describe('extractMessageId', () => {
   const exampleErrorXML = `

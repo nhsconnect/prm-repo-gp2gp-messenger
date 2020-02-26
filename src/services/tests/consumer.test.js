@@ -1,8 +1,8 @@
 import { ConnectFailover } from 'stompit';
-import initialiseConsumer from './consumer';
-import config from '../config';
-import handleMessage from './message-handler';
-import logger from '../config/logging';
+import initialiseConsumer from '../consumer';
+import config from '../../config';
+import handleMessage from '../message-handler';
+import logger from '../../config/logging';
 import httpContext from 'async-local-storage';
 
 httpContext.enable();

@@ -1,5 +1,5 @@
-import { getHealthCheck } from './get-health-check';
-import config from '../config';
+import { getHealthCheck } from '../get-health-check';
+import config from '../../config';
 import { S3 } from 'aws-sdk';
 import { ConnectFailover } from 'stompit';
 
