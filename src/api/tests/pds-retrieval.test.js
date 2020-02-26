@@ -290,7 +290,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     request(app)
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')
-      .expect(res => {
+      .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(
           Error('interactionId is not included in the message')
