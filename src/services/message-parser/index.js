@@ -4,6 +4,7 @@ import { extractFoundationSupplierAsid } from './extract-supplier-asid';
 import { extractAction } from './extract-action';
 import { extractInteractionId } from './extract-interaction-id';
 import { containsNegativeAcknowledgement } from './contains-negative-acknowledgement';
+import { parseMultipartBody } from './multipart-parser';
 
 export const EHR_EXTRACT_MESSAGE_ACTION = 'RCMR_IN030000UK06';
 export const EHR_REQUEST_MESSAGE_ACTION = 'RCMR_IN010000UK05';
@@ -15,3 +16,4 @@ export { extractFoundationSupplierAsid };
 export { extractAction };
 export { extractInteractionId };
 export { containsNegativeAcknowledgement };
+export { parseMultipartBody };

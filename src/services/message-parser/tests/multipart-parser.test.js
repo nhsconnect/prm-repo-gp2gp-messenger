@@ -1,6 +1,6 @@
-import { parseMultipartBody } from './multipart-parser';
+import { parseMultipartBody } from '../multipart-parser';
 
-const testBody = `<body>something</body>`;
+const testBody = `<body xmlns:xsi="http://www.w3c.org/2001/XML-Schema-Instance">something</body>`;
 const contentId = `<ebXMLHeader@spine.nhs.uk>`;
 const contentType = `text/xml`;
 const contentTransferEncoding = `8bit`;
@@ -53,8 +53,17 @@ ${testBody}
 ----=_MIME-Boundary--
 `;
 
-const manyObjectsPathMultipartMessage = `
+const oneObjectTwoLineBody = `
 ----=_MIME-Boundary
+Content-Id: ${contentId}
+
+${testBody}
+${testBody}
+
+----=_MIME-Boundary--
+`;
+
+const manyObjectsPathMultipartMessage = `----=_MIME-Boundary
 Content-Id: ${contentId}
 Content-Type: ${contentType}
 Content-Transfer-Encoding: ${contentTransferEncoding}
@@ -77,6 +86,9 @@ ${testBody}
 
 ----=_MIME-Boundary--
 `;
+
+const randomPrefixString = `
+fjdsaou4npjwae${manyObjectsPathMultipartMessage}`;
 
 const noEofBoundaryMultipartMessage = `
 ----=_MIME-Boundary
@@ -144,6 +156,7 @@ describe('MultipartParser', () => {
     it('should return empty array if there is no boundary in message', () => {
       expect(parseMultipartBody(stringBodyMultipartMessage)).toEqual([]);
     });
+
     it('should trim header value if message header value has space in prefix ', () => {
       expect(parseMultipartBody(messageHeaderWithAdditionalWhitespace)).toEqual([
         {
@@ -175,9 +188,15 @@ describe('MultipartParser', () => {
         }
       ]);
     });
+
     it('should return object with header and body if the message have many parts', () => {
       expect(parseMultipartBody(manyObjectsPathMultipartMessage)).toEqual(multipartMessageOutput);
     });
+
+    it('should return object with header and body if the message is prefixed with random characters', () => {
+      expect(parseMultipartBody(randomPrefixString)).toEqual(multipartMessageOutput);
+    });
+
     it('should return object with empty header if the message has not header ', () => {
       expect(parseMultipartBody(messageHasNoHeader)).toEqual([
         {
@@ -186,6 +205,7 @@ describe('MultipartParser', () => {
         }
       ]);
     });
+
     it('should return object with header and body if the end boundary is missing', () => {
       expect(parseMultipartBody(noEofBoundaryMultipartMessage)).toEqual([
         {
@@ -193,6 +213,17 @@ describe('MultipartParser', () => {
             'Content-Id': contentId
           },
           body: testBody
+        }
+      ]);
+    });
+
+    it('should return one object including both of the lines for the body', () => {
+      expect(parseMultipartBody(oneObjectTwoLineBody)).toEqual([
+        {
+          headers: {
+            'Content-Id': contentId
+          },
+          body: [testBody, testBody].join('')
         }
       ]);
     });

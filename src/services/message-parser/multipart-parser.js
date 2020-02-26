@@ -4,17 +4,26 @@ const boundaryMatcher = /^.*--=_MIME-Boundary$/gm;
 // Where the key include alpha characters and hyphens only
 // and the value can include any character.
 const headerMatcher = /^([a-zA-Z-]+):[\s]*(.*)[\s]*$/gm;
-const keyValuePairMatcher = /([a-zA-Z-]+):[\s]*(.*)[\s]*/;
+const keyValuePairMatcher = /^([a-zA-Z-]+):[\s]*(.*)[\s]*$/m;
 
 const newLineMatcher = /^[\n]+$/g;
 const bodyMatcher = /^[\s]*(.*)[\s]*$/gm;
 
-const getFullBoundaryText = multipartMessage => multipartMessage.match(boundaryMatcher) || '';
+const getFullBoundaryText = multipartMessage => {
+  const boundaryMatch = multipartMessage.match(boundaryMatcher) || '';
+
+  if (!boundaryMatch) return '';
+
+  return boundaryMatch[0].substring(boundaryMatch[0].indexOf('--') || 0);
+};
 
 const extractBoundaryContent = rawMultipartMessage => {
-  const messageParts = rawMultipartMessage
-    .trim()
-    .split(getFullBoundaryText(rawMultipartMessage)[0]);
+  const fullBoundaryTest = getFullBoundaryText(rawMultipartMessage);
+
+  // Case when boundary does not exist (empty message or string)
+  if (!fullBoundaryTest) return [];
+
+  const messageParts = rawMultipartMessage.trim().split(fullBoundaryTest);
 
   return messageParts[messageParts.length - 1] === '--'
     ? messageParts.slice(1, -1)
@@ -38,13 +47,10 @@ const extractBody = messagePart => {
     .join('');
 };
 
-const parseMultipartBody = multipartMessage => {
-  if (!multipartMessage) return [];
-
-  return extractBoundaryContent(multipartMessage).map(messagePart => ({
+const parseMultipartBody = multipartMessage =>
+  extractBoundaryContent(multipartMessage).map(messagePart => ({
     headers: extractHeaders(messagePart),
     body: extractBody(messagePart)
   }));
-};
 
 export { parseMultipartBody };
