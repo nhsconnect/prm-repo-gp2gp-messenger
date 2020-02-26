@@ -9,8 +9,8 @@ httpContext.enable();
 
 jest.mock('stompit');
 jest.mock('uuid/v4', () => () => 'some-correlation-id');
-jest.mock('../config/logging');
-jest.mock('./message-handler');
+jest.mock('../../config/logging');
+jest.mock('../message-handler');
 
 describe('initialiseConsumer', () => {
   const queue = { connect: jest.fn(), on: () => {} };

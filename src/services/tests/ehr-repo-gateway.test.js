@@ -6,7 +6,7 @@ import { storeMessageInEhrRepo } from '../ehr-repo-gateway';
 
 jest.mock('axios');
 jest.mock('axios-retry');
-jest.mock('../middleware/logging');
+jest.mock('../../middleware/logging');
 axiosRetry.mockImplementation(() => jest.fn());
 
 describe('ehr-repo-gateway', () => {

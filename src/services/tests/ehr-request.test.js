@@ -7,9 +7,9 @@ import sendEhrRequest from '../ehr-request';
 import * as mhsGateway from '../mhs-gateway';
 import * as mhsGatewayFake from '../mhs-gateway-fake';
 
-jest.mock('./mhs-gateway-fake');
-jest.mock('./mhs-gateway');
-jest.mock('../middleware/logging');
+jest.mock('../mhs-gateway-fake');
+jest.mock('../mhs-gateway');
+jest.mock('../../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 

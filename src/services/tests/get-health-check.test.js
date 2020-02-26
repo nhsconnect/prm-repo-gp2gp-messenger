@@ -6,8 +6,8 @@ import { ConnectFailover } from 'stompit';
 jest.mock('stompit');
 jest.mock('aws-sdk');
 jest.mock('aws-sdk');
-jest.mock('../config/logging');
-jest.mock('../middleware/logging');
+jest.mock('../../config/logging');
+jest.mock('../../middleware/logging');
 
 const mockStompit = (on, connect) => {
   ConnectFailover.mockImplementation(() => ({

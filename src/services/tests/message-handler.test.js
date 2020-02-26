@@ -6,12 +6,12 @@ import handleMessage from '../message-handler';
 import * as mhsGateway from '../mhs-gateway';
 import * as mhsGatewayFake from '../mhs-gateway-fake';
 
-jest.mock('./mhs-gateway');
-jest.mock('./mhs-gateway-fake');
+jest.mock('../mhs-gateway');
+jest.mock('../mhs-gateway-fake');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
-jest.mock('../middleware/logging');
-jest.mock('./ehr-repo-gateway');
+jest.mock('../../middleware/logging');
+jest.mock('../ehr-repo-gateway');
 
 describe('handleMessage', () => {
   const conversationId = 'some-conversation-id-123';

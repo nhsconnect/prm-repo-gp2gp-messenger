@@ -12,10 +12,10 @@ import { generateAcknowledgementResponse } from '../../templates/soap/ack-templa
 
 httpContext.enable();
 
-jest.mock('../config/queue');
-jest.mock('../config/logging');
-jest.mock('../middleware/logging');
-jest.mock('./message-parser');
+jest.mock('../../config/queue');
+jest.mock('../../config/logging');
+jest.mock('../../middleware/logging');
+jest.mock('../message-parser');
 
 const QUEUE_NAME = 'test-queue';
 
