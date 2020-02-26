@@ -1,12 +1,14 @@
 const generatePdsRetrievalQuery = require('../generate-pds-retrieval-request');
 const dateFormat = require('dateformat');
-const uuid = require('uuid/v4');
 const testData = require('./testData.json');
+
+const mockUUID = 'dce9a411-ad97-426b-86b6-55baf2d0d6e4'.toUpperCase();
+const timestamp = dateFormat(new Date(1993, 6, 28, 14, 39, 7), 'yyyymmddHHMMss');
 
 describe('generatePdsRetrievalQuery', () => {
   const testObjectMissing = {
-    id: uuid().toUpperCase(),
-    timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+    id: mockUUID,
+    timestamp,
     receivingService: {
       asid: testData.pds.asid
     },
@@ -52,15 +54,29 @@ describe('generatePdsRetrievalQuery', () => {
   });
 
   it('should return a Promise (can use .then())', () => {
-    generatePdsRetrievalQuery(testObjectComplete).then(response => {
+    return generatePdsRetrievalQuery({
+      ...testObjectComplete,
+      id: mockUUID
+    }).then(response => {
       return expect(typeof response === 'string');
+    });
+  });
+
+  it('should return response that is escaped (includes /n) and contains QUPA_IN000008UK02 opening and closing tags', () => {
+    return generatePdsRetrievalQuery({
+      ...testObjectComplete,
+      id: mockUUID
+    }).then(response => {
+      expect(typeof response === 'string');
+      expect(response).toContain('\n');
+      return expect(response).toMatch(/^<QUPA_IN000008UK02(.*)<\/QUPA_IN000008UK02>$/gs);
     });
   });
 
   it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {
     return expect(
       generatePdsRetrievalQuery({
-        id: uuid().toUpperCase(),
+        id: mockUUID,
         timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
         patient: {
           nhsNumber: testData.tppPatient.nhsNumber

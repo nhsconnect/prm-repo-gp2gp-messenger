@@ -1,6 +1,7 @@
 import axios from 'axios';
 import dateFormat from 'dateformat';
 import uuid from 'uuid/v4';
+import config from '../../config';
 import { updateLogEventWithError } from '../../middleware/logging';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 import testData from '../../templates/tests/testData.json';
@@ -25,7 +26,8 @@ describe('mhs-service', () => {
       'Interaction-ID': interactionId,
       'Sync-Async': false,
       'Correlation-Id:': conversationId,
-      'Ods-Code': 'YES'
+      'Ods-Code': 'YES',
+      'from-asid': testData.mhs.asid
     },
     data: {
       payload: message
@@ -33,8 +35,13 @@ describe('mhs-service', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    config.deductionsAsid = testData.mhs.asid;
     axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));
+  });
+
+  afterEach(() => {
+    config.deductionsAsid = process.env.DEDUCTIONS_ASID;
+    jest.clearAllMocks();
   });
 
   it('logs an Error if interactionId is not passed in', () => {

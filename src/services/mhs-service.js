@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '../config';
 import { updateLogEventWithError } from '../middleware/logging';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
@@ -32,7 +33,8 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         'Interaction-ID': interactionId,
         'Sync-Async': false,
         'Correlation-Id:': conversationId,
-        'Ods-Code': odsCode
+        'Ods-Code': odsCode,
+        'from-asid': config.deductionsAsid
       },
       data: {
         payload: stripXMLMessage(message)
