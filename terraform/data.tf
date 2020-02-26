@@ -44,10 +44,6 @@ data "aws_ssm_parameter" "deductions_private_private_subnets" {
   name = "/nhs/${var.environment}/deductions_private_private_subnets"
 }
 
-data "aws_ssm_parameter" "deductions_private_pds_a_alb_tg_arn" {
-  name = "/nhs/${var.environment}/deductions_private_pds_a_alb_tg_arn"
-}
-
 data "aws_ssm_parameter" "deductions_private_alb_dns" {
   name = "/nhs/${var.environment}/deductions_private_alb_dns"
 }
