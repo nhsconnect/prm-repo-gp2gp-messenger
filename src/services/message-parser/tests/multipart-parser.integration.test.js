@@ -22,29 +22,6 @@ const asyncSpineAcknowledgementExample = `SpESs�A�$00722412-C3CC-4DE9-A670-6
 message-id�$F8C728B2-93A9-445C-B0DB-60C686A9E0C2�correlation-id�777777Sw�${syncSpineAcknowledgementExample}`;
 
 describe('multipart-parser', () => {
-  // TODO: Remove after deskcheck as covered below by Spine Acknowledgement tests
-  describe('deskcheck', () => {
-    it('Sync Acknowledgement Example', () => {
-      console.log('Acknowledgement Input:', syncSpineAcknowledgementExample);
-
-      const parsedAcknowledgement = parseMultipartBody(syncSpineAcknowledgementExample);
-
-      console.log('Acknowledgement Output:', parsedAcknowledgement);
-
-      expect(parsedAcknowledgement.length).toBe(2);
-    });
-
-    it('Async Acknowledgement Example', () => {
-      console.log('Acknowledgement Input:', asyncSpineAcknowledgementExample);
-
-      const parsedAcknowledgement = parseMultipartBody(asyncSpineAcknowledgementExample);
-
-      console.log('Acknowledgement Output:', parsedAcknowledgement);
-
-      expect(parsedAcknowledgement.length).toBe(2);
-    });
-  });
-
   describe('Spine Acknowledgement', () => {
     let parsedAcknowledgement;
 
