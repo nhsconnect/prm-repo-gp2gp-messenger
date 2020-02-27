@@ -3,10 +3,8 @@ import { updateLogEvent } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/continue-template';
 import { storeMessageInEhrRepo } from '../ehr-repo-gateway';
 import handleMessage from '../message-handler';
-import * as mhsGateway from '../mhs-gateway';
 import * as mhsGatewayFake from '../mhs-gateway-fake';
 
-jest.mock('../mhs-gateway');
 jest.mock('../mhs-gateway-fake');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
@@ -52,7 +50,6 @@ describe('handleMessage', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    mhsGateway.sendMessage.mockResolvedValue();
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 
@@ -80,24 +77,7 @@ describe('handleMessage', () => {
     });
   });
 
-  it('should send generated continue request to real MHS if message is EHR Request Completed and environment is PTL', () => {
-    config.isPTL = true;
-
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      const continueMessage = generateContinueRequest(
-        'some-uuid',
-        '20190228112548',
-        foundationSupplierAsid,
-        config.deductionsAsid,
-        messageId
-      );
-      expect(mhsGateway.sendMessage).toHaveBeenCalledWith(continueMessage);
-    });
-  });
-
   it('should send generated continue request to fake MHS if message is EHR Request Completed and environment is not PTL', () => {
-    config.isPTL = false;
-
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       const continueMessage = generateContinueRequest(
         'some-uuid',
@@ -129,7 +109,6 @@ describe('handleMessage', () => {
 
     return handleMessage(fragmentMessage).then(() => {
       expect(mhsGatewayFake.sendMessage).not.toHaveBeenCalled();
-      expect(mhsGateway.sendMessage).not.toHaveBeenCalled();
     });
   });
 
@@ -232,15 +211,6 @@ describe('handleMessage', () => {
     return expect(handleMessage(messageWithoutFoundationSupplierAsid)).rejects.toEqual(
       new Error('Message does not contain foundation supplier ASID')
     );
-  });
-
-  it('should reject the promise if sending continue message fails', () => {
-    config.isPTL = true;
-
-    const error = new Error('sending failed');
-    mhsGateway.sendMessage.mockRejectedValue(error);
-
-    return expect(handleMessage(ehrRequestCompletedMessage)).rejects.toEqual(error);
   });
 
   it('should reject the promise if message is negative acknowledgement', () => {

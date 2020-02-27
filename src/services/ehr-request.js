@@ -3,15 +3,14 @@ import uuid from 'uuid/v4';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import generateEhrRequestQuery from '../templates/ehr-request-template';
-import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
-  const mhs = config.isPTL ? mhsGateway : mhsGatewayFake;
+  const mhs = mhsGatewayFake;
 
   updateLogEvent({
     status: 'fetching-routing-info',
-    ehrRequest: { nhsNumber, odsCode, isPtl: config.isPTL }
+    ehrRequest: { nhsNumber, odsCode }
   });
 
   return mhs

@@ -12,7 +12,6 @@ import {
   extractFoundationSupplierAsid,
   extractMessageId
 } from './message-parser';
-import * as mhsGateway from './mhs-gateway';
 import * as mhsGatewayFake from './mhs-gateway-fake';
 
 const sendContinueMessage = async (message, messageId) => {
@@ -26,12 +25,10 @@ const sendContinueMessage = async (message, messageId) => {
     messageId
   );
 
-  return config.isPTL
-    ? mhsGateway.sendMessage(continueRequest)
-    : mhsGatewayFake.sendMessage(continueRequest).catch(err => {
-        updateLogEventWithError(err);
-        return Promise.reject(err);
-      });
+  return mhsGatewayFake.sendMessage(continueRequest).catch(err => {
+    updateLogEventWithError(err);
+    return Promise.reject(err);
+  });
 };
 
 const handleMessage = async message => {

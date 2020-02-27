@@ -4,11 +4,9 @@ import { updateLogEvent } from '../../middleware/logging';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import testData from '../../templates/tests/testData.json';
 import sendEhrRequest from '../ehr-request';
-import * as mhsGateway from '../mhs-gateway';
 import * as mhsGatewayFake from '../mhs-gateway-fake';
 
 jest.mock('../mhs-gateway-fake');
-jest.mock('../mhs-gateway');
 jest.mock('../../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
@@ -46,20 +44,6 @@ describe('sendEhrRequest', () => {
   const receivingAsid = testData.emisPractise.asid;
   const nhsNumber = testData.emisPatient.nhsNumber;
 
-  it('should send generated EHR request message to real MHS when environment is PTL', () => {
-    config.isPTL = true;
-
-    when(mhsGateway.getRoutingInformation)
-      .calledWith(odsCode)
-      .mockResolvedValue({ asid: receivingAsid });
-    when(mhsGateway.sendMessage)
-      .calledWith(ehrRequestQuery)
-      .mockResolvedValue();
-    return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      expect(mhsGateway.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
-    });
-  });
-
   it('should send generated EHR request message to fake MHS when environment is not PTL', () => {
     config.isPTL = false;
 
@@ -81,7 +65,7 @@ describe('sendEhrRequest', () => {
     return sendEhrRequest(nhsNumber, odsCode).then(() => {
       expect(updateLogEvent).toHaveBeenCalledWith({
         status: 'fetching-routing-info',
-        ehrRequest: { nhsNumber, odsCode, isPtl: false }
+        ehrRequest: { nhsNumber, odsCode }
       });
       expect(updateLogEvent).toHaveBeenCalledWith({
         status: 'requesting-ehr',
