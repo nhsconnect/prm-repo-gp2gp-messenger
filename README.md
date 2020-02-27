@@ -37,6 +37,8 @@ The initial version will send and receive health records that are encoded in the
    EHR_REPO_URL=http://ehr-repo.com
    LOCALSTACK_URL=
    PDS_ASID=
+   MHS_OUTBOUND_PREFIX_URL=
+   MHS_OUTBOUND_URL=
    ```
 
 - Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set

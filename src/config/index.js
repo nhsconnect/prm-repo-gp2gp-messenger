@@ -12,7 +12,9 @@ const config = {
   queuePassword: process.env.MHS_QUEUE_PASSWORD,
   awsS3BucketName: process.env.S3_BUCKET_NAME,
   ehrRepoUrl: process.env.EHR_REPO_URL,
-  pdsAsid: process.env.PDS_ASID || '928942012545'
+  pdsAsid: process.env.PDS_ASID || '928942012545',
+  mhsOutboundUrl:
+    process.env.MHS_OUTBOUND_PREFIX_URL + process.env.NODE_ENV + process.env.MHS_OUTBOUND_URL
 };
 
 export default config;

@@ -22,8 +22,6 @@ const stripXMLMessage = xml =>
     .replace(/\r?\n|\r/g, '')
     .replace(/>\s+</g, '><');
 
-const url = 'http://url.com';
-
 const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });
@@ -40,6 +38,8 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         payload: stripXMLMessage(message)
       }
     };
+
+    const url = config.mhsOutboundUrl;
 
     return axios
       .post(url, axiosOptions)

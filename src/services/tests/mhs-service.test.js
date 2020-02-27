@@ -36,11 +36,14 @@ describe('mhs-service', () => {
 
   beforeEach(() => {
     config.deductionsAsid = testData.mhs.asid;
+    config.mhsOutboundUrl = url;
     axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));
   });
 
   afterEach(() => {
     config.deductionsAsid = process.env.DEDUCTIONS_ASID;
+    config.mhsOutboundUrl =
+      process.env.MHS_OUTBOUND_PREFIX_URL + process.env.NODE_ENV + process.env.MHS_OUTBOUND_URL;
     jest.clearAllMocks();
   });
 
