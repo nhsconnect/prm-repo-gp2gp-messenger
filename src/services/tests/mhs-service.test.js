@@ -20,7 +20,7 @@ const url = 'http://url.com';
 describe('mhs-service', () => {
   const message = 'message';
 
-  const requestOptions = {
+  const axiosHeaders = {
     headers: {
       'Content-Type': 'application/json',
       'Interaction-ID': interactionId,
@@ -28,10 +28,11 @@ describe('mhs-service', () => {
       'Correlation-Id:': conversationId,
       'Ods-Code': 'YES',
       'from-asid': testData.mhs.asid
-    },
-    data: {
-      payload: message
     }
+  };
+
+  const axiosBody = {
+    payload: message
   };
 
   beforeEach(() => {
@@ -92,7 +93,7 @@ describe('mhs-service', () => {
   it("should call axios with odsCode 'YES' by default and return 200", () => {
     return sendMessage({ interactionId, conversationId, message }).then(response => {
       expect(response.status).toBe(200);
-      expect(axios.post).toBeCalledWith(url, requestOptions);
+      expect(axios.post).toBeCalledWith(url, axiosBody, axiosHeaders);
     });
   });
 
@@ -100,9 +101,11 @@ describe('mhs-service', () => {
     const odsCode = 'A123';
     return sendMessage({ interactionId, conversationId, message, odsCode }).then(response => {
       expect(response.status).toBe(200);
-      expect(axios.post).toBeCalledWith(url, {
-        ...requestOptions,
-        headers: { ...requestOptions.headers, 'Ods-Code': odsCode }
+      expect(axios.post).toBeCalledWith(url, axiosBody, {
+        headers: {
+          ...axiosHeaders.headers,
+          'Ods-Code': odsCode
+        }
       });
     });
   });
@@ -119,10 +122,11 @@ describe('mhs-service', () => {
     return sendMessage({ interactionId, conversationId, message: pdsRetrievalQuery }).then(
       response => {
         expect(response.status).toBe(200);
-        expect(axios.post).toBeCalledWith(url, {
-          ...requestOptions,
-          data: { payload: stripXMLMessage(pdsRetrievalQuery) }
-        });
+        expect(axios.post).toBeCalledWith(
+          url,
+          { payload: stripXMLMessage(pdsRetrievalQuery) },
+          axiosHeaders
+        );
       }
     );
   });
@@ -131,10 +135,9 @@ describe('mhs-service', () => {
     axios.post.mockRejectedValue(new Error());
     return sendMessage({ interactionId, conversationId, message: 'message' }).catch(err => {
       const error = Error(
-        `POST ${url} - Request failed - ${JSON.stringify({
-          ...requestOptions,
-          data: { payload: 'message' }
-        })}`
+        `POST ${url} - Request failed - Headers: ${JSON.stringify({
+          ...axiosHeaders.headers
+        })} - Body: "message"`
       );
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
       expect(updateLogEventWithError).toHaveBeenCalledWith(error);

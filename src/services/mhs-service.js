@@ -25,7 +25,11 @@ const stripXMLMessage = xml =>
 const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });
-    const axiosOptions = {
+    const axiosBody = {
+      payload: stripXMLMessage(message)
+    };
+
+    const axiosHeaders = {
       headers: {
         'Content-Type': 'application/json',
         'Interaction-ID': interactionId,
@@ -33,20 +37,19 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         'Correlation-Id:': conversationId,
         'Ods-Code': odsCode,
         'from-asid': config.deductionsAsid
-      },
-      data: {
-        payload: stripXMLMessage(message)
       }
     };
 
     const url = config.mhsOutboundUrl;
 
     return axios
-      .post(url, axiosOptions)
+      .post(url, axiosBody, axiosHeaders)
       .then(resolve)
       .catch(error => {
         const axiosError = new Error(
-          `POST ${url} - ${error.message || 'Request failed'} - ${JSON.stringify(axiosOptions)}`
+          `POST ${url} - ${error.message || 'Request failed'} - Headers: ${JSON.stringify(
+            axiosHeaders.headers
+          )} - Body: ${JSON.stringify(axiosBody.payload)}`
         );
         updateLogEventWithError(axiosError);
         reject(axiosError);
