@@ -68,8 +68,7 @@ function configure_local_envs {
   export S3_BUCKET_NAME="test-bucket"
   export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
   export NODE_ENV=local
-  export MHS_OUTBOUND_PREFIX_URL="https://mhs-outbound-"
-  export MHS_OUTBOUND_URL=".mhs.patient-deductions.nhs.uk"
+  export MHS_OUTBOUND_URL="https://mhs-outbound-url"
 }
 
 command="$1"
