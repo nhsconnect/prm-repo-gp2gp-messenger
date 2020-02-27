@@ -1,6 +1,6 @@
-import { checkMHSHealth } from './queue';
+import { checkMHSHealth } from '../queue';
 import { ConnectFailover } from 'stompit';
-import config from './index';
+import config from '../index';
 
 jest.mock('stompit');
 
@@ -24,7 +24,6 @@ describe('queue', () => {
       config.queuePassword = 'guest';
       config.stompVirtualHost = '/';
 
-      jest.clearAllMocks();
       mockStompit(mockOn, mockConnect);
     });
 

@@ -56,5 +56,8 @@
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "clearMocks": true
   }
 }

@@ -6,7 +6,7 @@ import config from '../config';
 import { checkIsAuthenticated } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
-import { sendMessage } from '../services/mhs-service';
+import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 const router = express.Router();
 

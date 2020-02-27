@@ -43,8 +43,6 @@ describe('initialiseConsumer', () => {
     config.queuePassword = 'some-password';
     config.stompVirtualHost = '/';
 
-    jest.clearAllMocks();
-
     client.begin.mockReturnValue(mockTransaction);
     mockTransaction.send.mockReturnValue(frame);
     message.readString.mockImplementation((encoding, callback) =>

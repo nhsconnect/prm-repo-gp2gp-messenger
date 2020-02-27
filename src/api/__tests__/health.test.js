@@ -5,17 +5,11 @@ import { getHealthCheck } from '../../services/get-health-check';
 
 jest.mock('../../config/logging');
 jest.mock('../../services/get-health-check');
-jest.mock('../../middleware/logging', () => mockLoggingMiddleware());
-jest.mock('express-winston', () => mockExpressWinston());
-
+jest.mock('../../middleware/logging');
 const mockErrorResponse = 'Error: An error has occurred';
 
 // Mocked so need to get real for expectedHealthCheckBase ??
 describe('GET /health', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should return 200 and the response from getHealthCheck', done => {
     getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true)));
 
@@ -77,21 +71,6 @@ describe('GET /health', () => {
   });
 });
 
-function mockExpressWinston() {
-  return {
-    errorLogger: () => (req, res, next) => next(),
-    logger: () => (req, res, next) => next()
-  };
-}
-
-function mockLoggingMiddleware() {
-  const original = jest.requireActual('../../middleware/logging');
-  return {
-    ...original,
-    updateLogEvent: jest.fn(),
-    updateLogEventWithError: jest.fn()
-  };
-}
 const expectedHealthCheckBase = mhs_connected => ({
   version: '1',
   description: 'Health of GP2GP Adapter service',

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import config from '../config';
-import { updateLogEventWithError } from '../middleware/logging';
+import config from '../../config';
+import { updateLogEventWithError } from '../../middleware/logging';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
   if (interactionId && conversationId && message) return;

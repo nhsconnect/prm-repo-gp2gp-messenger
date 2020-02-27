@@ -1,14 +1,14 @@
 import axios from 'axios';
 import dateFormat from 'dateformat';
 import uuid from 'uuid/v4';
-import config from '../../config';
-import { updateLogEventWithError } from '../../middleware/logging';
-import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
-import testData from '../../templates/tests/testData.json';
-import { sendMessage, stripXMLMessage } from '../mhs-service';
+import config from '../../../config';
+import { updateLogEventWithError } from '../../../middleware/logging';
+import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
+import testData from '../../../templates/__tests__/testData.json';
+import { sendMessage, stripXMLMessage } from '../mhs-outbound-client';
 
-jest.mock('../../config/logging');
-jest.mock('../../middleware/logging');
+jest.mock('../../../config/logging');
+jest.mock('../../../middleware/logging');
 
 jest.mock('axios');
 
@@ -44,7 +44,6 @@ describe('mhs-service', () => {
   afterEach(() => {
     config.deductionsAsid = process.env.DEDUCTIONS_ASID;
     config.mhsOutboundUrl = process.env.MHS_OUTBOUND_URL;
-    jest.clearAllMocks();
   });
 
   it('logs an Error if interactionId is not passed in', () => {

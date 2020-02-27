@@ -3,9 +3,9 @@ import { updateLogEvent } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/continue-template';
 import { storeMessageInEhrRepo } from '../ehr-repo-gateway';
 import handleMessage from '../message-handler';
-import * as mhsGatewayFake from '../mhs-gateway-fake';
+import * as mhsGatewayFake from '../mhs/mhs-queue-test-helper';
 
-jest.mock('../mhs-gateway-fake');
+jest.mock('../mhs/mhs-queue-test-helper');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 jest.mock('../../middleware/logging');
@@ -49,7 +49,6 @@ describe('handleMessage', () => {
     `;
 
   beforeEach(() => {
-    jest.resetAllMocks();
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 

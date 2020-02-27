@@ -2,11 +2,11 @@ import { when } from 'jest-when';
 import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
-import testData from '../../templates/tests/testData.json';
+import testData from '../../templates/__tests__/testData.json';
 import sendEhrRequest from '../ehr-request';
-import * as mhsGatewayFake from '../mhs-gateway-fake';
+import * as mhsQueueTestHelper from '../mhs/mhs-queue-test-helper';
 
-jest.mock('../mhs-gateway-fake');
+jest.mock('../mhs/mhs-queue-test-helper');
 jest.mock('../../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
@@ -47,20 +47,20 @@ describe('sendEhrRequest', () => {
   it('should send generated EHR request message to fake MHS when environment is not PTL', () => {
     config.isPTL = false;
 
-    when(mhsGatewayFake.getRoutingInformation)
+    when(mhsQueueTestHelper.getRoutingInformation)
       .calledWith(odsCode)
       .mockResolvedValue({ asid: receivingAsid });
-    when(mhsGatewayFake.sendMessage)
+    when(mhsQueueTestHelper.sendMessage)
       .calledWith(ehrRequestQuery)
       .mockResolvedValue();
 
     return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      expect(mhsGatewayFake.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
+      expect(mhsQueueTestHelper.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
     });
   });
 
   it('should update log event for each stage', () => {
-    mhsGatewayFake.getRoutingInformation.mockResolvedValue({ asid: receivingAsid });
+    mhsQueueTestHelper.getRoutingInformation.mockResolvedValue({ asid: receivingAsid });
 
     return sendEhrRequest(nhsNumber, odsCode).then(() => {
       expect(updateLogEvent).toHaveBeenCalledWith({

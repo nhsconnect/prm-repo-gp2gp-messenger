@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import generateEhrRequestQuery from '../templates/ehr-request-template';
-import * as mhsGatewayFake from './mhs-gateway-fake';
+import * as mhsGatewayFake from './mhs/mhs-queue-test-helper';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
   const mhs = mhsGatewayFake;

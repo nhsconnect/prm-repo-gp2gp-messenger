@@ -1,4 +1,4 @@
-import { obfuscateSecrets } from './logging';
+import { obfuscateSecrets } from '../logging';
 
 describe('logging', () => {
   describe('obfuscateSecrets', () => {

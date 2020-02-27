@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { checkIsAuthenticated } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import sendEhrRequest from '../services/ehr-request';
-import MhsError from '../services/MhsError';
+import MhsError from '../services/mhs/mhs-error';
 import { updateLogEventWithError } from '../middleware/logging';
 
 const router = express.Router();

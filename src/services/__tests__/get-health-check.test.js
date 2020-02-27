@@ -38,8 +38,6 @@ describe('get-health-check', () => {
     config.queuePassword = 'guest';
     config.stompVirtualHost = '/';
 
-    jest.clearAllMocks();
-
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
       deleteObject: mockDeleteObject,

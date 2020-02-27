@@ -1,21 +1,21 @@
 import httpContext from 'async-local-storage';
-import config from '../../config';
-import { connectToQueue } from '../../config/queue';
-import { getRoutingInformation, sendMessage } from '../mhs-gateway-fake';
-import { updateLogEvent } from '../../middleware/logging';
-import { extractInteractionId } from '../message-parser';
-import { generateFirstFragmentResponse } from '../../templates/soap/fragment-1-template';
-import { generateSecondFragmentResponse } from '../../templates/soap/fragment-2-template';
-import { generateThirdFragmentResponse } from '../../templates/soap/fragment-3-template';
-import { generateBigFragmentResponse } from '../../templates/soap/fragment-4-template';
-import { generateAcknowledgementResponse } from '../../templates/soap/ack-template';
+import config from '../../../config';
+import { connectToQueue } from '../../../config/queue';
+import { getRoutingInformation, sendMessage } from '../mhs-queue-test-helper';
+import { updateLogEvent } from '../../../middleware/logging';
+import { extractInteractionId } from '../../message-parser';
+import { generateFirstFragmentResponse } from '../../../templates/soap/fragment-1-template';
+import { generateSecondFragmentResponse } from '../../../templates/soap/fragment-2-template';
+import { generateThirdFragmentResponse } from '../../../templates/soap/fragment-3-template';
+import { generateBigFragmentResponse } from '../../../templates/soap/fragment-4-template';
+import { generateAcknowledgementResponse } from '../../../templates/soap/ack-template';
 
 httpContext.enable();
 
-jest.mock('../../config/queue');
-jest.mock('../../config/logging');
-jest.mock('../../middleware/logging');
-jest.mock('../message-parser');
+jest.mock('../../../config/queue');
+jest.mock('../../../config/logging');
+jest.mock('../../../middleware/logging');
+jest.mock('../../message-parser');
 
 const QUEUE_NAME = 'test-queue';
 
@@ -47,10 +47,6 @@ describe('mhs-gateway-fake', () => {
       client.nack.mockReturnValue(Promise.resolve());
 
       connectToQueue.mockImplementation(callback => callback(null, client));
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it('should reject and update log event when an error has occurred', () => {

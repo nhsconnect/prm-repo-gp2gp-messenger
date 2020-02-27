@@ -1,24 +1,17 @@
 import request from 'supertest';
-import app from './app';
-import logger from './config/logging';
-import sendEhrRequest from './services/ehr-request';
-import { getHealthCheck } from './services/get-health-check';
-import MhsError from './services/MhsError';
+import app from '../app';
+import logger from '../config/logging';
+import sendEhrRequest from '../services/ehr-request';
+import { getHealthCheck } from '../services/get-health-check';
+import MhsError from '../services/mhs/mhs-error';
 
-jest.mock('./services/ehr-request');
-jest.mock('express-winston', () => ({
-  errorLogger: () => (req, res, next) => next(),
-  logger: () => (req, res, next) => next()
-}));
-jest.mock('./config/logging');
-
-jest.mock('./services/get-health-check');
+jest.mock('../services/ehr-request');
+jest.mock('../config/logging');
+jest.mock('../services/get-health-check');
 
 describe('app', () => {
   describe('GET /health', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
-
       getHealthCheck.mockReturnValue(
         Promise.resolve({
           details: {
@@ -47,7 +40,6 @@ describe('app', () => {
 
     beforeEach(() => {
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
-      jest.clearAllMocks();
       sendEhrRequest.mockResolvedValue();
     });
 
