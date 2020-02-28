@@ -2,11 +2,14 @@ import logger from '../logging';
 import { connectToQueue } from '../queue';
 import config from '../index';
 
+jest.unmock('stompit');
 jest.mock('../logging');
+
+const originalConfig = { ...config };
 
 describe('connectToQueue', () => {
   afterEach(() => {
-    config.queueUrl1 = process.env.MHS_QUEUE_URL_1;
+    config.queueUrl1 = originalConfig.queueUrl1;
   });
 
   it('should log out error message if failed to connect the test url', done => {

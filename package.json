@@ -58,6 +58,8 @@
     "supertest": "^4.0.2"
   },
   "jest": {
-    "clearMocks": true
+    "resetModules": true,
+    "clearMocks": true,
+    "automock": false
   }
 }
