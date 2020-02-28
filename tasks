@@ -114,6 +114,14 @@ case "${command}" in
       configure_local_envs
       dojo -c Dojofile-compose "./tasks _itest"
       ;;
+  _teste2e)
+      npm install
+      npm run test:e2e
+      ;;
+  teste2e)
+      configure_local_envs
+      dojo -c Dojofile-compose "./tasks _teste2e"
+      ;;
   build_docker_local)
       REPOSITORY_URI=$IMAGE_REPO_NAME
       COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
