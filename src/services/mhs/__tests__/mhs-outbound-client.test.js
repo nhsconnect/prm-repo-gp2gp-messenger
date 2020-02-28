@@ -25,7 +25,7 @@ describe('mhs-service', () => {
       'Content-Type': 'application/json',
       'Interaction-ID': interactionId,
       'Sync-Async': false,
-      'Correlation-Id:': conversationId,
+      'Correlation-Id': conversationId,
       'Ods-Code': 'YES',
       'from-asid': testData.mhs.asid
     }

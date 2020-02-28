@@ -34,7 +34,7 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         'Content-Type': 'application/json',
         'Interaction-ID': interactionId,
         'Sync-Async': false,
-        'Correlation-Id:': conversationId,
+        'Correlation-Id': conversationId,
         'Ods-Code': odsCode,
         'from-asid': config.deductionsAsid
       }
