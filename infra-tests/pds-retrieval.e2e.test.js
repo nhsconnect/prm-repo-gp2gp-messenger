@@ -1,6 +1,6 @@
 import axios from 'axios';
-import config from '../../config/index';
-import testData from '../../templates/tests/testData.json';
+import config from '../src/config';
+import testData from '../src/templates/tests/testData.json';
 
 describe('End to end test of /pds-retrieval/:nhsNumber', () => {
   it('will receive QUPA_IN000009UK03 from PDS (successful retrieval)', async () => {
