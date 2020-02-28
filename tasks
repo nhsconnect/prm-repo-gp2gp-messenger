@@ -57,7 +57,7 @@ function get_aws_secret {
 
 function configure_local_envs {
   export GP2GP_URL="http://gp2gp:3000"
-  export NHS_ENVIRONMENT=test
+  export NHS_ENVIRONMENT="${NHS_ENVIRONMENT:-test}"
   export MHS_QUEUE_URL_1=tcp://mq-1:61613
   export MHS_QUEUE_URL_2=tcp://mq-2:61613
   export MHS_QUEUE_USERNAME=guest

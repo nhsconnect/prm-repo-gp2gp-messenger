@@ -14,7 +14,7 @@ const config = {
   mhsOutboundUrl: process.env.MHS_OUTBOUND_URL,
   url: !process.env.NHS_ENVIRONMENT
     ? `http://127.0.0.1:3000`
-    : `https://${process.env.NHS_ENVIRONMENT}.gp2gp-adaptor-patient-deductions.nhs.uk`
+    : `https://${process.env.NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk`
 };
 
 export default config;
