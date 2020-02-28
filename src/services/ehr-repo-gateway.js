@@ -6,7 +6,6 @@ import { eventFinished, updateLogEvent } from '../middleware/logging';
 axiosRetry(axios, {
   retries: 2,
   retryDelay: retryCount => {
-    console.log('Retry count: ', retryCount);
     updateLogEvent({ status: `axios retry times: ${retryCount}` });
     eventFinished();
     return 1000;

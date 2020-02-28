@@ -1,13 +1,8 @@
 import axios from 'axios';
 import request from 'supertest';
-import app from './app';
+import app from '../app';
 
-jest.mock('express-winston', () => ({
-  errorLogger: () => (req, res, next) => next(),
-  logger: () => (req, res, next) => next()
-}));
-
-jest.mock('./config/logging');
+jest.mock('../config/logging');
 jest.mock('axios');
 
 describe('app', () => {

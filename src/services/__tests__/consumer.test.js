@@ -1,4 +1,4 @@
-import { ConnectFailover } from 'stompit';
+import { ConnectFailover, connect } from 'stompit';
 import initialiseConsumer from '../consumer';
 import config from '../../config';
 import handleMessage from '../message-handler';
@@ -7,33 +7,36 @@ import httpContext from 'async-local-storage';
 
 httpContext.enable();
 
-jest.mock('stompit');
 jest.mock('uuid/v4', () => () => 'some-correlation-id');
 jest.mock('../../config/logging');
 jest.mock('../message-handler');
 
-describe('initialiseConsumer', () => {
-  const queue = { connect: jest.fn(), on: () => {} };
-  const mockTransaction = {
-    send: jest.fn(),
-    commit: jest.fn(),
-    abort: jest.fn()
-  };
-  const client = {
-    subscribe: jest.fn(),
-    begin: jest.fn(),
-    ack: jest.fn(),
-    nack: jest.fn()
-  };
-  const message = { readString: jest.fn(), pipe: jest.fn() };
-  const frame = { write: jest.fn(), end: jest.fn() };
+const errorMessage = 'some-error-happened';
 
-  afterAll(() => {
-    config.queueUrl1 = process.env.MHS_QUEUE_URL_1;
-    config.queueUrl2 = process.env.MHS_QUEUE_URL_2;
-    config.queueUsername = process.env.MHS_QUEUE_USERNAME;
-    config.queuePassword = process.env.MHS_QUEUE_PASSWORD;
-    config.stompVirtualHost = process.env.MHS_STOMP_VIRTUAL_HOST;
+const mockTransaction = {
+  send: jest.fn(),
+  commit: jest.fn(),
+  abort: jest.fn()
+};
+
+const client = {
+  subscribe: jest.fn(),
+  begin: jest.fn(),
+  ack: jest.fn(),
+  nack: jest.fn()
+};
+
+const message = { readString: jest.fn(), pipe: jest.fn() };
+
+const originalConfig = { ...config };
+
+describe('initialiseConsumer', () => {
+  afterEach(() => {
+    config.queueUrl1 = originalConfig.queueUrl1;
+    config.queueUrl2 = originalConfig.queueUrl2;
+    config.queueUsername = originalConfig.queueUsername;
+    config.queuePassword = originalConfig.queuePassword;
+    config.stompVirtualHost = originalConfig.stompVirtualHost;
   });
 
   beforeEach(() => {
@@ -43,18 +46,14 @@ describe('initialiseConsumer', () => {
     config.queuePassword = 'some-password';
     config.stompVirtualHost = '/';
 
-    jest.clearAllMocks();
-
-    client.begin.mockReturnValue(mockTransaction);
-    mockTransaction.send.mockReturnValue(frame);
     message.readString.mockImplementation((encoding, callback) =>
       callback(null, 'some-message-body')
     );
+
+    client.begin.mockReturnValue(mockTransaction);
     client.subscribe.mockImplementation((config, callback) => callback(null, message));
-    client.ack.mockReturnValue(Promise.resolve());
-    client.nack.mockReturnValue(Promise.resolve());
-    queue.connect.mockImplementation(callback => callback(null, client));
-    ConnectFailover.mockImplementation(() => queue);
+
+    connect.mockImplementation(callback => callback(null, client));
 
     handleMessage.mockResolvedValue();
   });
@@ -63,28 +62,7 @@ describe('initialiseConsumer', () => {
     initialiseConsumer();
 
     expect(ConnectFailover).toHaveBeenCalledWith(
-      [
-        {
-          connectHeaders: {
-            login: 'some-username',
-            passcode: 'some-password',
-            host: '/'
-          },
-          host: 'some-url',
-          port: 'some-port',
-          ssl: true
-        },
-        {
-          connectHeaders: {
-            login: 'some-username',
-            passcode: 'some-password',
-            host: '/'
-          },
-          host: 'other-url',
-          port: 'other-port',
-          ssl: false
-        }
-      ],
+      [connectionFailoverTemplate(true), connectionFailoverTemplate(false, 'other')],
       { maxReconnects: 1, initialReconnectDelay: 100 }
     );
   });
@@ -94,21 +72,10 @@ describe('initialiseConsumer', () => {
 
     initialiseConsumer();
 
-    expect(ConnectFailover).toHaveBeenCalledWith(
-      [
-        {
-          connectHeaders: {
-            login: 'some-username',
-            passcode: 'some-password',
-            host: '/'
-          },
-          host: 'some-url',
-          port: 'some-port',
-          ssl: true
-        }
-      ],
-      { maxReconnects: 1, initialReconnectDelay: 100 }
-    );
+    expect(ConnectFailover).toHaveBeenCalledWith([connectionFailoverTemplate(true)], {
+      maxReconnects: 1,
+      initialReconnectDelay: 100
+    });
   });
 
   it('should throw if the queue urls are not configured correctly', () => {
@@ -120,10 +87,9 @@ describe('initialiseConsumer', () => {
   });
 
   it('should throw when there is an error connecting to the broker', () => {
-    const error = new Error('some-error-happened');
-    queue.connect.mockImplementation(callback => callback(error));
+    connect.mockImplementation(callback => callback(new Error(errorMessage)));
 
-    return expect(() => initialiseConsumer()).toThrow(error);
+    return expect(() => initialiseConsumer()).toThrow(new Error(errorMessage));
   });
 
   it('should subscribe to the queue with the correct config', () => {
@@ -136,27 +102,19 @@ describe('initialiseConsumer', () => {
   });
 
   it('should update the log event when there is an error subscribing to the queue', () => {
-    const error = new Error('some-error-happened');
-    client.subscribe.mockImplementation((config, callback) => callback(error, message));
+    client.subscribe.mockImplementation((config, callback) =>
+      callback(new Error(errorMessage), message)
+    );
 
     initialiseConsumer();
 
-    expect(logger.info).toHaveBeenCalledWith('Event finished', {
-      event: {
-        status: 'Consuming received message',
-        error: {
-          message: 'some-error-happened',
-          stack: expect.any(String)
-        }
-      }
-    });
+    expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
   });
 
   it('should throw when there is an error subscribing to the queue but no message', () => {
-    const error = new Error('some-error-happened');
-    client.subscribe.mockImplementation((config, callback) => callback(error));
+    client.subscribe.mockImplementation((config, callback) => callback(new Error(errorMessage)));
 
-    expect(() => initialiseConsumer()).toThrow(error);
+    expect(() => initialiseConsumer()).toThrow(new Error(errorMessage));
   });
 
   it('should read the message from the queue with the correct encoding', () => {
@@ -166,22 +124,13 @@ describe('initialiseConsumer', () => {
   });
 
   it('should update log event when there is an error reading the message', () => {
-    const error = new Error('some-error-happened');
     message.readString.mockImplementation((encoding, callback) =>
-      callback(error, 'some-message-body')
+      callback(new Error(errorMessage), 'some-message-body')
     );
 
     initialiseConsumer();
 
-    expect(logger.info).toHaveBeenCalledWith('Event finished', {
-      event: {
-        status: 'Consuming received message',
-        error: {
-          message: 'some-error-happened',
-          stack: expect.any(String)
-        }
-      }
-    });
+    expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
   });
 
   it('should pass the message to the handler', () => {
@@ -215,8 +164,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should send a negative acknowledgement if handling the message fails', done => {
-    const error = new Error('handling message failed');
-    handleMessage.mockRejectedValue(error);
+    handleMessage.mockRejectedValue(new Error(errorMessage));
 
     initialiseConsumer();
 
@@ -227,22 +175,34 @@ describe('initialiseConsumer', () => {
   });
 
   it('should log the error event if handling the message fails', done => {
-    const error = new Error('handling message failed');
-    handleMessage.mockRejectedValue(error);
+    handleMessage.mockRejectedValue(new Error(errorMessage));
 
     initialiseConsumer();
 
     setImmediate(() => {
-      expect(logger.info).toHaveBeenCalledWith('Event finished', {
-        event: {
-          status: 'Consuming received message',
-          error: {
-            message: 'handling message failed',
-            stack: expect.any(String)
-          }
-        }
-      });
+      expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
       done();
     });
   });
+});
+
+const errorMessageTemplate = () => ({
+  event: {
+    status: 'Consuming received message',
+    error: {
+      message: errorMessage,
+      stack: expect.any(String)
+    }
+  }
+});
+
+const connectionFailoverTemplate = (isSSL, altPrefix = 'some') => ({
+  connectHeaders: {
+    login: 'some-username',
+    passcode: 'some-password',
+    host: '/'
+  },
+  host: `${altPrefix}-url`,
+  port: `${altPrefix}-port`,
+  ssl: isSSL
 });

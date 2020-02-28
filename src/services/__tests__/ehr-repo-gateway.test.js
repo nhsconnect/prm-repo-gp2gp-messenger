@@ -16,8 +16,6 @@ describe('ehr-repo-gateway', () => {
     const messageId = 'some-message-id';
 
     beforeEach(() => {
-      jest.resetAllMocks();
-
       axios.patch.mockResolvedValue({ status: 200 });
       axios.put.mockResolvedValue({ status: 200 });
       axios.post.mockResolvedValue({ data: 'some-url' });

@@ -1,6 +1,6 @@
 import httpContext from 'async-local-storage';
 import axios from 'axios';
-import { getCorrelationId, middleware } from './correlation';
+import { getCorrelationId, middleware } from '../correlation';
 
 httpContext.enable();
 

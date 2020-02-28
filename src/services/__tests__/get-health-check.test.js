@@ -1,22 +1,13 @@
 import { getHealthCheck } from '../get-health-check';
 import config from '../../config';
 import { S3 } from 'aws-sdk';
-import { ConnectFailover } from 'stompit';
+import { connect } from 'stompit';
 
-jest.mock('stompit');
 jest.mock('aws-sdk');
 jest.mock('aws-sdk');
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
 
-const mockStompit = (on, connect) => {
-  ConnectFailover.mockImplementation(() => ({
-    on,
-    connect
-  }));
-};
-const mockOn = jest.fn();
-const mockConnect = jest.fn();
 const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
 const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
 const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
@@ -38,28 +29,24 @@ describe('get-health-check', () => {
     config.queuePassword = 'guest';
     config.stompVirtualHost = '/';
 
-    jest.clearAllMocks();
-
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
       deleteObject: mockDeleteObject,
       headBucket: mockHeadBucket
     }));
-
-    mockStompit(mockOn, mockConnect);
   });
 
   describe('getHealthCheck', () => {
     it('should resolve when both checks are ok', () => {
-      mockConnect.mockImplementation(callback => callback(false, mockClient));
+      connect.mockImplementation(callback => callback(false, mockClient));
       return getHealthCheck().then(result => {
         return expect(result).toStrictEqual(expectedHealthCheckBase(true));
       });
     });
 
     it('should resolve when s3 is not ok', () => {
-      mockPutObject.mockImplementation((config, callback) => callback(mockErrorResponse));
-      mockConnect.mockImplementation(callback => callback(false, mockClient));
+      connect.mockImplementation((config, callback) => callback(mockErrorResponse));
+      connect.mockImplementation(callback => callback(false, mockClient));
 
       return getHealthCheck().then(result => {
         return expect(result).toStrictEqual(expectedHealthCheckBase(true));
@@ -67,8 +54,8 @@ describe('get-health-check', () => {
     });
 
     it('should resolve when MHS is not ok', () => {
-      mockPutObject.mockImplementation((config, callback) => callback());
-      mockConnect.mockImplementation(callback => callback(mockErrorResponse, null));
+      connect.mockImplementation((config, callback) => callback());
+      connect.mockImplementation(callback => callback(mockErrorResponse, null));
 
       return getHealthCheck().then(result => {
         return expect(result).toStrictEqual(expectedHealthCheckBase(false));

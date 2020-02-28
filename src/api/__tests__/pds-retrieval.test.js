@@ -4,7 +4,7 @@ import uuid from 'uuid/v4';
 import { updateLogEvent, updateLogEventWithError } from '../../../src/middleware/logging';
 import app from '../../app';
 import config from '../../config';
-import { sendMessage } from '../../services/mhs-service';
+import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
@@ -16,27 +16,10 @@ const sendMessageErrorMessage =
 
 jest.mock('../../config/logging');
 
-jest.mock('../../middleware/logging', () => mockLoggingMiddleware());
-jest.mock('express-winston', () => mockExpressWinston());
-jest.mock('../../services/mhs-service');
+jest.mock('../../middleware/logging');
+jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-pds-retrieval-request');
 jest.mock('uuid/v4');
-
-function mockLoggingMiddleware() {
-  const original = jest.requireActual('../../middleware/logging');
-  return {
-    ...original,
-    updateLogEvent: jest.fn(),
-    updateLogEventWithError: jest.fn()
-  };
-}
-
-function mockExpressWinston() {
-  return {
-    errorLogger: () => (req, res, next) => next(),
-    logger: () => (req, res, next) => next()
-  };
-}
 
 function generateLogEvent(message) {
   return {
@@ -54,6 +37,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   beforeEach(() => {
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
+
     uuid.mockImplementation(() => mockUUID);
 
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
@@ -85,8 +69,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     config.pdsAsid = process.env.PDS_ASID;
     config.deductionsAsid = process.env.DEDUCTIONS_ASID;
-
-    jest.clearAllMocks();
   });
 
   it('should return a 401 (Unauthorised) if Authorization header is not provided and log event', done => {
