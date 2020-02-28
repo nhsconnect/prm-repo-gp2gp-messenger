@@ -21,9 +21,9 @@ common:
             - ./tasks wait_ecs
 
 pipelines:
-  "prm-deductions-gp2gp-adaptor":
+  'prm-deductions-gp2gp-adaptor':
     group: deductions
-    label_template: "${git[:8]}"
+    label_template: '${git[:8]}'
     materials:
       git:
         type: configrepo
@@ -106,9 +106,9 @@ pipelines:
                       - -c
                       - ./tasks test_docker
 
-  "prm-deductions-gp2gp-adaptor.dev":
+  'prm-deductions-gp2gp-adaptor.dev':
     group: deductions
-    label_template: "${git[:8]}"
+    label_template: '${git[:8]}'
     materials:
       git:
         type: configrepo
@@ -127,10 +127,22 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
+      - test:
+          clean_workspace: true
+          jobs:
+            endToEnd:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks teste2e
 
-  "prm-deductions-gp2gp-adaptor.test":
+  'prm-deductions-gp2gp-adaptor.test':
     group: deductions
-    label_template: "${git[:8]}"
+    label_template: '${git[:8]}'
     materials:
       git:
         type: configrepo
@@ -149,3 +161,15 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
+      - test:
+          clean_workspace: true
+          jobs:
+            endToEnd:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks teste2e
