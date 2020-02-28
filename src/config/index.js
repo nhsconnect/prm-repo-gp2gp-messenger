@@ -11,7 +11,10 @@ const config = {
   awsS3BucketName: process.env.S3_BUCKET_NAME,
   ehrRepoUrl: process.env.EHR_REPO_URL,
   pdsAsid: process.env.PDS_ASID || '928942012545',
-  mhsOutboundUrl: process.env.MHS_OUTBOUND_URL
+  mhsOutboundUrl: process.env.MHS_OUTBOUND_URL,
+  url: !process.env.NHS_ENVIRONMENT
+    ? `http://127.0.0.1:3000`
+    : `https://${process.env.NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk`
 };
 
 export default config;
