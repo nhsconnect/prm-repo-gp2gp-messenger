@@ -9,17 +9,17 @@ describe('generateQueueConfig', () => {
       host: 'mq-1',
       port: '61613',
       ssl: false,
-      login: 'guest',
-      passcode: 'guest',
-      virtualHost: '/'
+      username: 'guest',
+      password: 'guest',
+      vhost: '/'
     },
     {
       host: 'mq-2',
       port: '61613',
       ssl: false,
-      login: 'guest',
-      passcode: 'guest',
-      virtualHost: '/'
+      username: 'guest',
+      password: 'guest',
+      vhost: '/'
     }
   ];
 

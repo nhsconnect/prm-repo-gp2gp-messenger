@@ -13,7 +13,7 @@ describe('connectToQueue', () => {
   });
 
   it('should log out error message if failed to connect the test url', done => {
-    config.queueUrls = ['tcp://mq-1:1234', ''];
+    config.queueUrls = ['tcp://mq-1:1234'];
 
     const testCallback = () => {
       expect(logger.error).toHaveBeenCalled();

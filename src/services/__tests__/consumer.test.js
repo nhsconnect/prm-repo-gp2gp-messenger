@@ -66,7 +66,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should connect to the broker when there is no failover', () => {
-    config.queueUrls[1] = '';
+    config.queueUrls = ['stomp+ssl://some-url:some-port'];
 
     initialiseConsumer();
 
@@ -80,7 +80,9 @@ describe('initialiseConsumer', () => {
     config.queueUrls[0] = 'some-url-without-protocol:some-port';
 
     expect(() => initialiseConsumer()).toThrow(
-      new Error('Queue url should have the format protocol://host:port')
+      new Error(
+        'Queue url some-url-without-protocol:some-port should have the format protocol://host:port'
+      )
     );
   });
 

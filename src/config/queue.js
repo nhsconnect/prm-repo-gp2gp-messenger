@@ -1,23 +1,6 @@
 import { ConnectFailover } from 'stompit';
-import config from './index';
 import logger from './logging';
-
-const generateQueueConfig = url => {
-  const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
-  if (!urlParts || urlParts.length < 4)
-    throw new Error('Queue url should have the format protocol://host:port');
-
-  return {
-    host: urlParts[2],
-    port: urlParts[3],
-    ssl: urlParts[1].includes('ssl'),
-    connectHeaders: {
-      login: config.queueUsername,
-      passcode: config.queuePassword,
-      host: config.queueVirtualHost
-    }
-  };
-};
+import { getStompitQueueConfig } from './utils';
 
 const removePasscode = options => {
   return {
@@ -32,7 +15,7 @@ const removePasscode = options => {
 const connectToQueueCallback = (resolve, reject) => (err, client) => {
   if (err) {
     resolve({
-      options: removePasscode(generateQueueConfig(config.queueUrls[0])),
+      options: removePasscode(getStompitQueueConfig()[0]),
       headers: {},
       connected: false,
       error: err
@@ -55,11 +38,10 @@ export const checkMHSHealth = () => {
 };
 
 export const connectToQueue = callback => {
-  const hosts = [
-    generateQueueConfig(config.queueUrls[0]),
-    ...(config.queueUrls[1] && [generateQueueConfig(config.queueUrls[1])])
-  ];
-  const queue = new ConnectFailover(hosts, { maxReconnects: 1, initialReconnectDelay: 100 });
+  const queue = new ConnectFailover(getStompitQueueConfig(), {
+    maxReconnects: 1,
+    initialReconnectDelay: 100
+  });
   queue.on('error', error => {
     logger.error(`Failover url could not connect to the queue broker: ${error}`, error);
   });

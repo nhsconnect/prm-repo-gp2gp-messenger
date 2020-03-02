@@ -8,12 +8,10 @@ const generateQueueConfig = url => {
     host: urlParts[2],
     port: urlParts[3],
     ssl: urlParts[1].includes('ssl'),
-    login: config.queueUsername,
-    passcode: config.queuePassword,
-    virtualHost: config.queueVirtualHost
+    username: config.queueUsername,
+    password: config.queuePassword,
+    vhost: config.queueVirtualHost
   };
 };
-
-// config -> stompit
 
 export { generateQueueConfig };
