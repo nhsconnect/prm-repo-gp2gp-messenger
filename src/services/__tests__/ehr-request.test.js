@@ -4,9 +4,9 @@ import { updateLogEvent } from '../../middleware/logging';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import testData from '../../templates/__tests__/testData.json';
 import sendEhrRequest from '../ehr-request';
-import * as mhsQueueTestHelper from '../mhs/mhs-queue-test-helper';
+import * as mhsQueueTestHelper from '../mhs/mhs-old-queue-test-helper';
 
-jest.mock('../mhs/mhs-queue-test-helper');
+jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('../../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('moment', () => () => ({ format: () => '20190228112548' }));

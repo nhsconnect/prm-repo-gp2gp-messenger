@@ -64,7 +64,7 @@ function configure_local_envs {
   export MHS_QUEUE_PASSWORD=guest
   export MHS_QUEUE_NAME=gp2gp-test
   export MHS_DLQ_NAME=gp2gp-test.dlq
-  export MHS_STOMP_VIRTUAL_HOST="/"
+  export MHS_QUEUE_VIRTUAL_HOST="/"
   export S3_BUCKET_NAME="test-bucket"
   export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
   export NODE_ENV=local
