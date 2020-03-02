@@ -9,19 +9,17 @@ const originalConfig = { ...config };
 describe('queue', () => {
   describe('checkMHSHealth', () => {
     afterEach(() => {
-      config.queueUrl1 = originalConfig.queueUrl1;
-      config.queueUrl2 = originalConfig.queueUrl2;
+      config.queueUrls = originalConfig.queueUrls;
       config.queueUsername = originalConfig.queueUsername;
       config.queuePassword = originalConfig.queuePassword;
-      config.stompVirtualHost = originalConfig.stompVirtualHost;
+      config.queueVirtualHost = originalConfig.queueVirtualHost;
     });
 
     beforeEach(() => {
-      config.queueUrl1 = 'tcp://mq-1:61613';
-      config.queueUrl2 = 'tcp://mq-2:61613';
+      config.queueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
       config.queueUsername = 'guest';
       config.queuePassword = 'guest';
-      config.stompVirtualHost = '/';
+      config.queueVirtualHost = '/';
     });
 
     it('should return writable true if it can connect and write to MHS queue', () => {

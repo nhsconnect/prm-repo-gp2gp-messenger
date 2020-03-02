@@ -13,27 +13,27 @@ const mockDeleteObject = jest.fn().mockImplementation((config, callback) => call
 const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
 const mockErrorResponse = 'Error: exhausted connection failover';
 
-describe('get-health-check', () => {
-  afterAll(() => {
-    config.queueUrl1 = process.env.MHS_QUEUE_URL_1;
-    config.queueUrl2 = process.env.MHS_QUEUE_URL_2;
-    config.queueUsername = process.env.MHS_QUEUE_USERNAME;
-    config.queuePassword = process.env.MHS_QUEUE_PASSWORD;
-    config.stompVirtualHost = process.env.MHS_QUEUE_VIRTUAL_HOST;
-  });
+const originalConfig = { ...config };
 
+describe('get-health-check', () => {
   beforeEach(() => {
-    config.queueUrl1 = 'tcp://mq-1:61613';
-    config.queueUrl2 = 'tcp://mq-2:61613';
+    config.queueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
     config.queueUsername = 'guest';
     config.queuePassword = 'guest';
-    config.stompVirtualHost = '/';
+    config.queueVirtualHost = '/';
 
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
       deleteObject: mockDeleteObject,
       headBucket: mockHeadBucket
     }));
+  });
+
+  afterEach(() => {
+    config.queueUrls = originalConfig.queueUrls;
+    config.queueUsername = originalConfig.queueUsername;
+    config.queuePassword = originalConfig.queuePassword;
+    config.queueVirtualHost = originalConfig.queueVirtualHost;
   });
 
   describe('getHealthCheck', () => {

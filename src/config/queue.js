@@ -14,7 +14,7 @@ const generateQueueConfig = url => {
     connectHeaders: {
       login: config.queueUsername,
       passcode: config.queuePassword,
-      host: config.stompVirtualHost
+      host: config.queueVirtualHost
     }
   };
 };
@@ -32,7 +32,7 @@ const removePasscode = options => {
 const connectToQueueCallback = (resolve, reject) => (err, client) => {
   if (err) {
     resolve({
-      options: removePasscode(generateQueueConfig(config.queueUrl1)),
+      options: removePasscode(generateQueueConfig(config.queueUrls[0])),
       headers: {},
       connected: false,
       error: err
@@ -56,8 +56,8 @@ export const checkMHSHealth = () => {
 
 export const connectToQueue = callback => {
   const hosts = [
-    generateQueueConfig(config.queueUrl1),
-    ...(config.queueUrl2 && [generateQueueConfig(config.queueUrl2)])
+    generateQueueConfig(config.queueUrls[0]),
+    ...(config.queueUrls[1] && [generateQueueConfig(config.queueUrls[1])])
   ];
   const queue = new ConnectFailover(hosts, { maxReconnects: 1, initialReconnectDelay: 100 });
   queue.on('error', error => {

@@ -1,6 +1,8 @@
 import config from '../../';
 import { generateHostsConfig } from '../generate-hosts-config';
 
+const originalConfig = { ...config };
+
 describe('generateHostsConfig', () => {
   const hosts = [
     {
@@ -30,6 +32,13 @@ describe('generateHostsConfig', () => {
     config.queuePassword = 'guest';
     config.queueVirtualHost = '/';
     config.queueName = mockQueueName;
+  });
+
+  afterEach(() => {
+    config.queueUsername = originalConfig.queueUsername;
+    config.queuePassword = originalConfig.queuePassword;
+    config.queueVirtualHost = originalConfig.queueVirtualHost;
+    config.queueName = originalConfig.queueName;
   });
 
   it('should throw an error if input is not an array', () => {

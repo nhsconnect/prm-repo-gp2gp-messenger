@@ -1,6 +1,8 @@
 import config from '../../';
 import { generateQueueConfig } from '../generate-queue-config';
 
+const originalConfig = { ...config };
+
 describe('generateQueueConfig', () => {
   const hosts = [
     {
@@ -29,6 +31,13 @@ describe('generateQueueConfig', () => {
     config.queuePassword = 'guest';
     config.queueVirtualHost = '/';
     config.queueName = mockQueueName;
+  });
+
+  afterEach(() => {
+    config.queueUsername = originalConfig.queueUsername;
+    config.queuePassword = originalConfig.queuePassword;
+    config.queueVirtualHost = originalConfig.queueVirtualHost;
+    config.queueName = originalConfig.queueName;
   });
 
   it(`should create the queue config from host URL ${mockQueueUrls[0]}`, () => {

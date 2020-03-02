@@ -32,19 +32,17 @@ const originalConfig = { ...config };
 
 describe('initialiseConsumer', () => {
   afterEach(() => {
-    config.queueUrl1 = originalConfig.queueUrl1;
-    config.queueUrl2 = originalConfig.queueUrl2;
+    config.queueUrls = originalConfig.queueUrls;
     config.queueUsername = originalConfig.queueUsername;
     config.queuePassword = originalConfig.queuePassword;
-    config.stompVirtualHost = originalConfig.stompVirtualHost;
+    config.queueVirtualHost = originalConfig.queueVirtualHost;
   });
 
   beforeEach(() => {
-    config.queueUrl1 = 'stomp+ssl://some-url:some-port';
-    config.queueUrl2 = 'tcp://other-url:other-port';
+    config.queueUrls = ['stomp+ssl://some-url:some-port', 'tcp://other-url:other-port'];
     config.queueUsername = 'some-username';
     config.queuePassword = 'some-password';
-    config.stompVirtualHost = '/';
+    config.queueVirtualHost = '/';
 
     message.readString.mockImplementation((encoding, callback) =>
       callback(null, 'some-message-body')
@@ -68,7 +66,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should connect to the broker when there is no failover', () => {
-    config.queueUrl2 = '';
+    config.queueUrls[1] = '';
 
     initialiseConsumer();
 
@@ -79,7 +77,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should throw if the queue urls are not configured correctly', () => {
-    config.queueUrl1 = 'some-url-without-protocol:some-port';
+    config.queueUrls[0] = 'some-url-without-protocol:some-port';
 
     expect(() => initialiseConsumer()).toThrow(
       new Error('Queue url should have the format protocol://host:port')
