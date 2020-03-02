@@ -19,7 +19,7 @@ describe('get-health-check', () => {
     config.queueUrl2 = process.env.MHS_QUEUE_URL_2;
     config.queueUsername = process.env.MHS_QUEUE_USERNAME;
     config.queuePassword = process.env.MHS_QUEUE_PASSWORD;
-    config.stompVirtualHost = process.env.MHS_STOMP_VIRTUAL_HOST;
+    config.stompVirtualHost = process.env.MHS_QUEUE_VIRTUAL_HOST;
   });
 
   beforeEach(() => {

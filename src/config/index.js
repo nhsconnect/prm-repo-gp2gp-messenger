@@ -5,7 +5,7 @@ const config = {
   dlqName: process.env.MHS_DLQ_NAME,
   queueUrl1: process.env.MHS_QUEUE_URL_1,
   queueUrl2: process.env.MHS_QUEUE_URL_2,
-  stompVirtualHost: process.env.MHS_STOMP_VIRTUAL_HOST,
+  queueVirtualHost: process.env.MHS_QUEUE_VIRTUAL_HOST,
   queueUsername: process.env.MHS_QUEUE_USERNAME,
   queuePassword: process.env.MHS_QUEUE_PASSWORD,
   awsS3BucketName: process.env.S3_BUCKET_NAME,

@@ -12,7 +12,7 @@ import {
   extractFoundationSupplierAsid,
   extractMessageId
 } from './message-parser';
-import * as mhsGatewayFake from './mhs/mhs-queue-test-helper';
+import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = moment().format('YYYYMMDDHHmmss');

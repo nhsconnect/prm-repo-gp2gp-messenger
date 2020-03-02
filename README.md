@@ -23,7 +23,7 @@ The initial version will send and receive health records that are encoded in the
 
    ```
    AUTHORIZATION_KEYS=auth-key-1,auth-key-2
-   MHS_STOMP_VIRTUAL_HOST="/"
+   MHS_QUEUE_VIRTUAL_HOST="/"
    DEDUCTIONS_ASID=deduction-asid
    DEDUCTIONS_ODS_CODE=deduction-ods
    NODE_ENV=local
@@ -43,7 +43,7 @@ The initial version will send and receive health records that are encoded in the
 - Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
   to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at
   all.
-- `MHS_STOMP_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
+- `MHS_QUEUE_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
 
 ## Running the tests
 
