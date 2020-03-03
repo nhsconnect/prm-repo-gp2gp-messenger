@@ -127,6 +127,19 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
+      - test:
+          clean_workspace: true
+          jobs:
+            endToEnd:
+              resources:
+                - deductions-private
+                - dev
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks teste2e
 
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
@@ -149,3 +162,16 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
+      - test:
+          clean_workspace: true
+          jobs:
+            endToEnd:
+              resources:
+                - deductions-private
+                - test
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks teste2e

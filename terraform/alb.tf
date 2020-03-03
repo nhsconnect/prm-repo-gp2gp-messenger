@@ -51,3 +51,38 @@ resource "aws_alb_listener_rule" "alb-https-listener-rule" {
     values = ["${var.environment}.${var.dns_name}.patient-deductions.nhs.uk"]
   }
 }
+
+
+# resource "aws_alb_target_group" "gp2gp-alb-internal-tg" {
+#   name        = "${var.environment}-${var.component_name}-priv-int-tg"
+#   port        = 3000
+#   protocol    = "HTTP"
+#   vpc_id      = module.vpc.vpc_id
+#   target_type = "ip"
+#   deregistration_delay = var.priv_deregistration_delay
+#   health_check {
+#     healthy_threshold   = 3
+#     unhealthy_threshold = 5
+#     timeout             = 5
+#     interval            = 10
+#     path                = "/health"
+#     port                = 3000
+#   }
+# }
+
+# # Redirect all traffic from the ALB to the target group
+# resource "aws_alb_listener" "alb-internal-listener" {
+#   load_balancer_arn = aws_alb.alb-internal.arn
+#   port              = "80"
+#   protocol          = "HTTP"
+
+#   default_action {
+#     type = "fixed-response"
+
+#     fixed_response {
+#       content_type = "text/plain"
+#       message_body = "Error"
+#       status_code  = "501"
+#     }
+#   }
+# }

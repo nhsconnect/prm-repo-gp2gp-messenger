@@ -67,3 +67,12 @@ data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
 data "aws_ssm_parameter" "mhs_outbound_url" {
   name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/mhs-${var.environment}/outbound_url"
 }
+
+data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
+   name = "/nhs/${var.environment}/deductions_private_alb_internal_dns"
+}
+
+# LOAD BALANCER ID
+# data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
+#    name = "/nhs/${var.environment}/deductions_private_alb_internal_dns"
+# }
