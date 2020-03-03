@@ -4,6 +4,10 @@ data "aws_ssm_parameter" "root_zone_id" {
   name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/root_zone_id"
 }
 
+data "aws_ssm_parameter" "private_zone_id" {
+  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/${var.environment}/private_root_zone_id"
+}
+
 data "aws_ssm_parameter" "authorization_keys" {
   name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/gp2gp-adaptor/authorization_keys"
 }
@@ -60,6 +64,14 @@ data "aws_ssm_parameter" "deductions_private_alb_httpsl_arn" {
   name = "/nhs/${var.environment}/deductions_private_alb_httpsl_arn"
 }
 
+data "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
+  name = "/nhs/${var.environment}/deductions_private_int_alb_httpl_arn"
+}
+
+data "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
+  name = "/nhs/${var.environment}/deductions_private_int_alb_httpsl_arn"
+}
+
 data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
   name = "/nhs/${var.environment}/deductions_private_gp2gp_adaptor_sg_id"
 }
@@ -67,3 +79,7 @@ data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
 data "aws_ssm_parameter" "mhs_outbound_url" {
   name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/mhs-${var.environment}/outbound_url"
 }
+
+data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
+   name = "/nhs/${var.environment}/deductions_private_alb_internal_dns"
+} 
