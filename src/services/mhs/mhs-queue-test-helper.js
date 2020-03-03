@@ -1,3 +1,0 @@
-class TestQueuePublisher {}
-
-export { TestQueuePublisher };

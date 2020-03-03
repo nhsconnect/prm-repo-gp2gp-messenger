@@ -4,6 +4,7 @@ const config = {
   queueName: process.env.MHS_QUEUE_NAME,
   dlqName: process.env.MHS_DLQ_NAME,
   queueUrls: [process.env.MHS_QUEUE_URL_1, process.env.MHS_QUEUE_URL_2],
+  testQueueUrl: process.env.MHS_QUEUE_URL_TEST,
   queueVirtualHost: process.env.MHS_QUEUE_VIRTUAL_HOST,
   queueUsername: process.env.MHS_QUEUE_USERNAME,
   queuePassword: process.env.MHS_QUEUE_PASSWORD,

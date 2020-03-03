@@ -10,7 +10,13 @@ services:
       - 3000:3000
   mq-1:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61620:61613
   mq-2:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61621:61613
   mq-3:
     image: rabbitmq:3.8.2
+    ports:
+      - 61622:5672
