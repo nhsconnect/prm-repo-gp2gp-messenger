@@ -20,6 +20,26 @@ resource "aws_alb_listener_rule" "int-alb-http-listener-rule" {
   priority     = 100
 
   action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  condition {
+    field  = "host-header"
+    values = ["${var.environment}.${var.dns_name}.patient-deductions.nhs.uk"]
+  }
+}
+
+resource "aws_alb_listener_rule" "int-alb-https-listener-rule" {
+  listener_arn = data.aws_ssm_parameter.deductions_private_int_alb_httpsl_arn.value
+  priority     = 101
+
+  action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.internal-alb-tg.arn
   }
