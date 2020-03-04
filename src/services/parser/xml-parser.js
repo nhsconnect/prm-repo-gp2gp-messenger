@@ -29,7 +29,7 @@ XmlParser.prototype.parse = function(rawXml) {
     .then(() => this);
 };
 
-XmlParser.prototype.findAll = function(key, maxDepth = 10) {
+XmlParser.prototype.findAll = function(key, maxDepth = 50) {
   return searchData(this.data, key, maxDepth);
 };
 
