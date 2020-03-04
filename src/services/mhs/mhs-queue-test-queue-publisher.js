@@ -21,27 +21,4 @@ const sendToQueue = message =>
     });
   });
 
-// open.then(function(conn) {
-//   return conn.createChannel();
-// }).then(function(ch) {
-//   return ch.assertQueue(q).then(function(ok) {
-//     return ch.sendToQueue(q, Buffer.from('something to do'));
-//   });
-// }).catch(console.warn);
-
-// SEND TO QUEUE -> put message 'string'
-// int - consumer the queue (number of items)
-
-// HOW TO DEAL WITH ERRORs?
-
-// clear the queue
-
-// LOGGING
-// ERROR
-
-// STOMPIT IMPLEMENTATION -> TRANSACTIONAL SENDING
-// assume already have a client
-
-// transaction.abort([options])
-
 export { sendToQueue };
