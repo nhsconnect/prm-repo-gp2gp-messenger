@@ -5,12 +5,9 @@ services:
     links:
       - mq-1:mq-1
       - mq-2:mq-2
-      - mq-3:mq-3
     ports:
       - 3000:3000
   mq-1:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
   mq-2:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
-  mq-3:
-    image: rabbitmq:3.8.2

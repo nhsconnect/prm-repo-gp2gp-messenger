@@ -12,7 +12,14 @@ const mockClient = {
     ssl: false
   },
   subscribe: jest.fn(),
-  begin: jest.fn(),
+  begin: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockImplementation(() => ({
+      write: jest.fn(),
+      end: jest.fn()
+    })),
+    commit: jest.fn()
+  })),
+
   ack: jest.fn().mockResolvedValue(),
   nack: jest.fn().mockResolvedValue(),
   disconnect: jest.fn()
