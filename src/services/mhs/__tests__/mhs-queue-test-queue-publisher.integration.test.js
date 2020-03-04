@@ -1,31 +1,58 @@
-import { TestQueuePublisher } from '../mhs-queue-test-queue-publisher';
+import config from '../../../config';
+import { connectToQueue } from '../../../config/queue';
+import { generateEhrExtractResponse } from '../../../templates/soap/ehr-extract-template';
+import { sendToQueue } from '../mhs-queue-test-queue-publisher';
 
-jest.unmock('amqplib');
+jest.unmock('stompit');
+
+const originalConfig = { ...config };
 
 describe('mhs-queue-test-helper', () => {
+  const queueConsumer = () =>
+    new Promise((resolve, reject) => {
+      const subscribeCallback = client => (err, message) =>
+        message.readString('utf-8', (error, body) => {
+          if (error) {
+            reject(error);
+          }
+          client.ack(message);
+          client.disconnect();
+          resolve(body);
+        });
+
+      connectToQueue((error, client) => {
+        if (error) {
+          reject(error);
+        }
+        client.subscribe(
+          { destination: config.queueName, ack: 'client-individual' },
+          subscribeCallback(client)
+        );
+      });
+    });
+
   describe('TestQueuePublisher', () => {
-    let queuePublisher;
-
-    beforeEach(async () => {
-      queuePublisher = await new TestQueuePublisher();
+    afterEach(() => {
+      config.queueUrls = originalConfig.queueUrls;
+      config.queueUsername = originalConfig.queueUsername;
+      config.queueName = originalConfig.queueName;
+      config.queuePassword = originalConfig.queuePassword;
+      config.queueVirtualHost = originalConfig.queueVirtualHost;
     });
 
-    afterEach(() => {});
-
-    describe('TestQueuePublisher.isConnected', () => {
-      it('should connect to the queue (using amqplib)', async done => {
-        expect(await queuePublisher.isConnected()).toBe(true);
-        done();
-      });
+    beforeEach(() => {
+      config.queueUrls = ['tcp://localhost:61620', 'tcp://localhost:61621'];
+      config.queueUsername = 'guest';
+      config.queuePassword = 'guest';
+      config.queueVirtualHost = '/';
+      config.queueName = 'gp2gp-test';
     });
 
-    describe('TestQueuePublisher.disconnect', () => {
-      it('should close connection', async done => {
-        expect(await queuePublisher.isConnected()).toBe(true);
-        await queuePublisher.disconnect();
-        expect(await queuePublisher.isConnected()).toBe(false);
-        done();
-      });
+    it('should put a message on the queue that can then be consumed', async done => {
+      await sendToQueue(generateEhrExtractResponse());
+      const message = await queueConsumer();
+      expect(message).toEqual(generateEhrExtractResponse());
+      done();
     });
   });
 });
