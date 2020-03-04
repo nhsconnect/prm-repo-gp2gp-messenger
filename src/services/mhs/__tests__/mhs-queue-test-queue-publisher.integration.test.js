@@ -5,8 +5,6 @@ import { sendToQueue } from '../mhs-queue-test-queue-publisher';
 
 jest.unmock('stompit');
 
-const originalConfig = { ...config };
-
 describe('mhs-queue-test-helper', () => {
   const queueConsumer = () =>
     new Promise((resolve, reject) => {
