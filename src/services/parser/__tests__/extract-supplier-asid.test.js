@@ -1,4 +1,4 @@
-import { extractFoundationSupplierAsid } from '../extract-supplier-asid';
+import { extractFoundationSupplierAsid } from '../soap-parser/extract-supplier-asid';
 
 describe('extractFoundationSupplierAsid', () => {
   const exampleErrorXML = `

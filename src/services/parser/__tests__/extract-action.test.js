@@ -1,4 +1,4 @@
-import { extractAction } from '../extract-action';
+import { extractAction } from '../soap-parser/extract-action';
 
 describe('extractAction', () => {
   const exampleErrorXML = `

@@ -11,7 +11,7 @@ import {
   extractConversationId,
   extractFoundationSupplierAsid,
   extractMessageId
-} from './message-parser';
+} from './parser/soap-parser';
 import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 
 const sendContinueMessage = async (message, messageId) => {

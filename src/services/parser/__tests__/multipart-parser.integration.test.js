@@ -1,4 +1,4 @@
-import { parseMultipartBody } from '../index';
+import { parseMultipartBody } from '../soap-parser';
 
 const syncSpineAcknowledgementExample = `----=_MIME-Boundary
 Content-Id: <ebXMLHeader@spine.nhs.uk>

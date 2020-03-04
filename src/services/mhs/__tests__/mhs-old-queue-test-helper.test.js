@@ -3,7 +3,7 @@ import config from '../../../config';
 import { connectToQueue } from '../../../config/queue';
 import { getRoutingInformation, sendMessage } from '../mhs-old-queue-test-helper';
 import { updateLogEvent } from '../../../middleware/logging';
-import { extractInteractionId } from '../../message-parser';
+import { extractInteractionId } from '../../parser/soap-parser';
 import { generateFirstFragmentResponse } from '../../../templates/soap/fragment-1-template';
 import { generateSecondFragmentResponse } from '../../../templates/soap/fragment-2-template';
 import { generateThirdFragmentResponse } from '../../../templates/soap/fragment-3-template';
@@ -15,7 +15,7 @@ httpContext.enable();
 jest.mock('../../../config/queue');
 jest.mock('../../../config/logging');
 jest.mock('../../../middleware/logging');
-jest.mock('../../message-parser');
+jest.mock('../../parser/soap-parser');
 
 const QUEUE_NAME = 'test-queue';
 

@@ -1,5 +1,5 @@
 import uuid from 'uuid/v4';
-import { extractConversationId } from '../extract-conversation-id';
+import { extractConversationId } from '../soap-parser/extract-conversation-id';
 
 describe('extractConversationId', () => {
   const exampleErrorXML = `

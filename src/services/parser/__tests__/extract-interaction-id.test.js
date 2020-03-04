@@ -1,4 +1,4 @@
-import { extractInteractionId } from '../extract-interaction-id';
+import { extractInteractionId } from '../soap-parser/extract-interaction-id';
 
 describe('extractInteractionId', () => {
   const exampleErrorXML = `

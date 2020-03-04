@@ -1,4 +1,4 @@
-import { XmlParser } from './xml-parser';
+import { XmlParser } from '../xml-parser';
 
 export const extractConversationId = message => {
   return new XmlParser()

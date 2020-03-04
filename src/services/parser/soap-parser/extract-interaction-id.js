@@ -1,4 +1,4 @@
-import { XmlParser } from './xml-parser';
+import { XmlParser } from '../xml-parser';
 
 export const extractInteractionId = async message => {
   const interactionId = await new XmlParser()
