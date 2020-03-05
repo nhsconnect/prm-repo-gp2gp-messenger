@@ -5,7 +5,9 @@ export const parsePdsResponse = async message => {
   const extractedMessage = await Promise.all([
     extractSerialChangeNumber(message),
     extractPdsId(message)
-  ]).catch(err => console.log(err));
+  ]).catch(err => {
+    throw Error(err);
+  });
   return extractedMessage
     ? {
         serialChangeNumber: extractedMessage[0],

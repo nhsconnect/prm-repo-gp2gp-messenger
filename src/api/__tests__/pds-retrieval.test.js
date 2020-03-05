@@ -6,6 +6,11 @@ import app from '../../app';
 import config from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
+import { validatePdsResponse } from '../../services/pds/pds-response-validator';
+import { parsePdsResponse } from '../../services/pds/pds-response-handler';
+
+jest.mock('../../services/pds/pds-response-validator');
+jest.mock('../../services/pds/pds-response-handler');
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
@@ -104,6 +109,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     request(app)
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')
+      .expect(res => (res.body = 'something'))
       .expect(200)
       .end(done);
   });
@@ -113,9 +119,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')
       .expect(200)
-      .expect(res => {
-        expect(res.body.message).toBe(message);
-      })
       .end(done);
   });
 
@@ -131,6 +134,19 @@ describe('/pds-retrieval/:nhsNumber', () => {
           conversationId: mockUUID.toUpperCase(),
           response: { data: message, status: 200 }
         });
+      })
+      .end(done);
+  });
+
+  it('should return a 200 and parse the pds response if the response is valid', done => {
+    validatePdsResponse.mockResolvedValue(Promise.resolve(true));
+    parsePdsResponse.mockResolvedValue(Promise.resolve({}));
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(async () => {
+        await parsePdsResponse().then(result => expect(result).toEqual({}));
       })
       .end(done);
   });

@@ -1,6 +1,5 @@
 import { parsePdsResponse } from '../pds-response-handler';
 import { pdsResponseAck } from '../pds-responses/pds-response-ack';
-import { pdsQeuryFailedAE } from '../pds-responses/pds-response-nack-AE';
 
 describe('pds-response-handler', () => {
   describe('parsePdsResponse', () => {
@@ -10,12 +9,6 @@ describe('pds-response-handler', () => {
           serialChangeNumber: '138',
           patientPdsId: 'cppz'
         });
-      });
-    });
-
-    it('should return empty object and log the error if the response is NACK', () => {
-      return parsePdsResponse(pdsQeuryFailedAE()).then(parsedMessage => {
-        expect(parsedMessage).toEqual({});
       });
     });
   });

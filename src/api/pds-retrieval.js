@@ -8,6 +8,8 @@ import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
+import { validatePdsResponse } from '../services/pds/pds-response-validator';
+import { parsePdsResponse } from '../services/pds/pds-response-handler';
 
 const router = express.Router();
 
@@ -52,7 +54,16 @@ router.get(
             conversationId,
             response: messageResponse
           });
-          res.status(200).json({ message: messageResponse.data });
+          if (messageResponse.data) {
+            const isValid = await validatePdsResponse(messageResponse.data);
+            if (isValid) {
+              const parsedResponse = await parsePdsResponse(messageResponse.data);
+              res.status(200).json(parsedResponse);
+            } else {
+              updateLogEventWithError(Error('Error in processing the patient retrieval request'));
+              res.status(200).json({});
+            }
+          }
           break;
         case 500:
           throw new Error(`MHS Error: ${messageResponse.data}`);
