@@ -73,7 +73,7 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks coverage
+                      - ./tasks test_coverage
             npm_install:
               resources:
                 - docker
