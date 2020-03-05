@@ -13,9 +13,27 @@ jest.mock('../../services/pds/pds-response-validator');
 jest.mock('../../services/pds/pds-response-handler');
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
+const mockNoPatientUID = 'ebf6ee70-b9b7-64a6-8780-a386fccd759d';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
-const message =
+const testSerialChangeNumber = '2';
+const testPatientPdsId = 'cppz';
+const fakerequest =
   '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></QUPA_IN000008UK02>';
+const message = `
+<PDSResponse xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="OBS" moodCode="EVN" xsi:schemaLocation="urn:hl7-org:v3 ../../Schemas/PRPA_MT000201UK03.xsd">
+      <pertinentSerialChangeNumber classCode="OBS" moodCode="EVN">
+        <code code="2" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.35"/>
+        <value value="${testSerialChangeNumber}"/>
+      </pertinentSerialChangeNumber>
+    <patientCareProvisionEvent classCode="PCPR" moodCode="EVN">
+      <code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.37" code="1"/>
+      <effectiveTime>
+        <low value="20140212"/>
+      </effectiveTime>
+      <id root="2.16.840.1.113883.2.1.3.2.4.18.1" extension="${testPatientPdsId}"/>
+    </patientCareProvisionEvent>
+</PDSResponse>`;
+
 const sendMessageErrorMessage =
   '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></QUPA_IN000008UK02>';
 
@@ -47,9 +65,12 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
+    validatePdsResponse.mockResolvedValue(Promise.resolve(true));
+    parsePdsResponse.mockResolvedValue(Promise.resolve({}));
+
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS error' })
-      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: message })
+      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
       .mockResolvedValue({ status: 200, data: message })
       .calledWith({
         interactionId,
@@ -60,11 +81,17 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .calledWith({
         interactionId,
         conversationId: mockErrorUUID.toUpperCase(),
-        message: message
+        message: fakerequest
       })
-      .mockResolvedValue({ status: 500, data: '500 MHS Error' });
+      .mockResolvedValue({ status: 500, data: '500 MHS Error' })
+      .calledWith({
+        interactionId,
+        conversationId: mockNoPatientUID.toUpperCase(),
+        message: fakerequest
+      })
+      .mockResolvedValue({ status: 200, data: 'no patient details' });
 
-    generatePdsRetrievalQuery.mockResolvedValue(message);
+    generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
   });
 
   afterEach(() => {
@@ -106,12 +133,15 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
-    request(app)
-      .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
-      .expect(res => (res.body = 'something'))
-      .expect(200)
-      .end(done);
+    try {
+      request(app)
+        .get('/pds-retrieval/9999999999')
+        .set('Authorization', 'correct-key')
+        .expect(200)
+        .end(done);
+    } catch (err) {
+      console.log(err);
+    }
   });
 
   it('should return a 200 with MHS message passed back', done => {
@@ -139,8 +169,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
   });
 
   it('should return a 200 and parse the pds response if the response is valid', done => {
-    validatePdsResponse.mockResolvedValue(Promise.resolve(true));
-    parsePdsResponse.mockResolvedValue(Promise.resolve({}));
     request(app)
       .get('/pds-retrieval/9999999999')
       .set('Authorization', 'correct-key')

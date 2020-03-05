@@ -2,6 +2,7 @@ import axios from 'axios';
 import request from 'supertest';
 import app from '../app';
 import { pdsResponseAck } from '../services/pds/pds-responses/pds-response-ack';
+import { pdsQeuryFailedAE } from '../services/pds/pds-responses/pds-response-nack-AE';
 
 jest.mock('../config/logging');
 jest.mock('axios');
@@ -60,6 +61,43 @@ describe('app', () => {
         .get('/pds-retrieval/9999999999')
         .set('Authorization', 'correct-key')
         .expect(200)
+        .end(done);
+    });
+
+    it('should return the response body for /pds-retrieval/:nhsNumber', done => {
+      request(app)
+        .get('/pds-retrieval/9999999999')
+        .set('Authorization', 'correct-key')
+        .expect(200)
+        .expect(res => {
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              conversationId: expect.anything(),
+              data: {
+                patientPdsId: 'cppz',
+                serialChangeNumber: '138'
+              }
+            })
+          );
+        })
+        .end(done);
+    });
+
+    it('should return the response body with Errors for /pds-retrieval/:nhsNumber', done => {
+      axios.post.mockImplementation(() =>
+        Promise.resolve({ status: 200, data: pdsQeuryFailedAE() })
+      );
+      request(app)
+        .get('/pds-retrieval/9999999999')
+        .set('Authorization', 'correct-key')
+        .expect(200)
+        .expect(res => {
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              errors: ['Error in processing the patient retrieval request']
+            })
+          );
+        })
         .end(done);
     });
 

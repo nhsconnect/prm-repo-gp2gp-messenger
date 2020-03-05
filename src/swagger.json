@@ -18,9 +18,13 @@
   "paths": {
     "/ehr-request": {
       "post": {
-        "tags": ["ehr-request"],
+        "tags": [
+          "ehr-request"
+        ],
         "summary": "Sends EHR request",
-        "consumes": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -63,7 +67,9 @@
     },
     "/health": {
       "get": {
-        "tags": ["health"],
+        "tags": [
+          "health"
+        ],
         "summary": "Checks system and dependency health",
         "responses": {
           "200": {
@@ -92,7 +98,9 @@
     },
     "/pds-retrieval/{nhsNumber}": {
       "get": {
-        "tags": ["pds-retrieval"],
+        "tags": [
+          "pds-retrieval"
+        ],
         "summary": "Uses an NHS number to make a PDS request to confirm communication with MHS",
         "parameters": [
           {
@@ -105,7 +113,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful retrieval"
+            "description": "Successful retrieval",
+            "schema": {
+              "$ref": "#/definitions/PDSResponseBody"
+            }
           },
           "401": {
             "description": "Authorization header missing"
@@ -129,7 +140,9 @@
     },
     "/error": {
       "get": {
-        "tags": ["health"],
+        "tags": [
+          "health"
+        ],
         "summary": "Generate error log",
         "responses": {
           "201": {
@@ -147,6 +160,32 @@
     }
   },
   "definitions": {
+    "PDSResponseBody": {
+      "type": "object",
+      "description": "Extracted SOAP response",
+      "properties": {
+        "conversationId": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "serialChangeNumber": {
+              "type": "string"
+            },
+            "patientPdsId": {
+              "type": "string"
+            }
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "PDSResponse": {
       "type": "string",
       "description": "Raw SOAP response"
@@ -161,7 +200,10 @@
           "type": "string"
         }
       },
-      "required": ["nhsNumber", "odsCode"]
+      "required": [
+        "nhsNumber",
+        "odsCode"
+      ]
     },
     "ValidationErrors": {
       "type": "object",

@@ -47,6 +47,8 @@ router.get(
 
       const messageResponse = await sendMessage({ interactionId, conversationId, message });
 
+      const responseBody = { conversationId, data: {}, errors: [] };
+
       switch (messageResponse.status) {
         case 200:
           updateLogEvent({
@@ -55,15 +57,15 @@ router.get(
             response: messageResponse
           });
           if (messageResponse.data) {
-            const isValid = await validatePdsResponse(messageResponse.data);
-            if (isValid) {
-              const parsedResponse = await parsePdsResponse(messageResponse.data);
-              res.status(200).json(parsedResponse);
+            if (await validatePdsResponse(messageResponse.data)) {
+              responseBody.data = await parsePdsResponse(messageResponse.data);
             } else {
-              updateLogEventWithError(Error('Error in processing the patient retrieval request'));
-              res.status(200).json({});
+              const errorMessage = 'Error in processing the patient retrieval request';
+              updateLogEventWithError(Error(errorMessage));
+              responseBody.errors.push(errorMessage);
             }
           }
+          res.status(200).json(responseBody);
           break;
         case 500:
           throw new Error(`MHS Error: ${messageResponse.data}`);
