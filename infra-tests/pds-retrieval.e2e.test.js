@@ -11,7 +11,7 @@ describe('End to end test of /pds-retrieval/:nhsNumber', () => {
 
     const res = await axios.get(`${config.url}/pds-retrieval/${nhsNumber}`, {
       headers: {
-        Authorization: 'XFFGsdUdstqNjFCNnCQgaegbzpqcMp'
+        Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
       }
     });
     expect(res.status).toBe(200);
