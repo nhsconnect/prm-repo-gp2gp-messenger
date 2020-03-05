@@ -50,7 +50,7 @@ describe('pds-response-handler', () => {
     });
     it('should throw error if failed to extract patient pds id', () => {
       return parsePdsResponse(noPDSId).catch(err => {
-        expect(err.message).toEqual('Error: failed to extract PDS Id');
+        expect(err.message).toEqual('Error: Failed to extract PDS ID');
       });
     });
 

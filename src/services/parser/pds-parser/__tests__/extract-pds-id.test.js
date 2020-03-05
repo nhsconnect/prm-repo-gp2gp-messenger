@@ -56,7 +56,7 @@ describe('extractPdsId', () => {
 
   it('should throw error if it could not extract the pds id ', () => {
     return extractPdsId(noPatientCareProvisionEvent).catch(err =>
-      expect(err.message).toEqual('failed to extract PDS Id')
+      expect(err.message).toEqual('Failed to extract PDS ID')
     );
   });
 });

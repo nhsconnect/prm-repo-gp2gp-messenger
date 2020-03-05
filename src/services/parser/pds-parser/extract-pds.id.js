@@ -5,8 +5,8 @@ export const extractPdsId = async message => {
     .parse(message)
     .then(jsObject => jsObject.findAll('patientCareProvisionEvent'))
     .then(jsObjectArray => jsObjectArray.find(jsObject => jsObject.code.code === '1').id.extension)
-    .catch(err => {
-      throw Error('failed to extract PDS Id ', err);
+    .catch(() => {
+      throw Error('Failed to extract PDS ID');
     });
   return pdsId;
 };
