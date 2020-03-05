@@ -13,6 +13,21 @@ function check_env {
   fi
 }
 
+function configure_local_envs {
+  export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+  export GP2GP_URL="http://gp2gp:3000"
+  export NHS_ENVIRONMENT="${NHS_ENVIRONMENT:-test}"
+  export MHS_QUEUE_URL_1=tcp://mq-1:61613
+  export MHS_QUEUE_URL_2=tcp://mq-2:61613
+  export MHS_QUEUE_USERNAME=guest
+  export MHS_QUEUE_PASSWORD=guest
+  export MHS_QUEUE_NAME=gp2gp-test
+  export MHS_QUEUE_VIRTUAL_HOST="/"
+  export REPOSITORY_URI=$IMAGE_REPO_NAME
+  export NODE_ENV=local
+  export MHS_OUTBOUND_URL="https://mhs-outbound-url"
+}
+
 function tf_plan {
   operation=$1
   cd terraform
@@ -45,6 +60,21 @@ function docker_login {
   eval $(dojo -c Dojofile-infra "aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION")
 }
 
+function build_docker_image {
+  echo Build started on `date`
+  COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
+  IMAGE_TAG=${COMMIT_HASH}
+  echo Building the Docker image...
+  docker build -t $REPOSITORY_URI:latest -t $REPOSITORY_URI:$IMAGE_TAG .
+  echo Build completed on `date`
+}
+
+function configure_docker_repository_uri {
+  docker_login
+  AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
+  REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
+}
+
 function get_aws_secret {
   secret_id=$1
   json=$(aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id)
@@ -55,27 +85,8 @@ function get_aws_secret {
   echo $json | jq -r ".Parameter.Value"
 }
 
-function configure_local_envs {
-  export GP2GP_URL="http://gp2gp:3000"
-  export NHS_ENVIRONMENT="${NHS_ENVIRONMENT:-test}"
-  export MHS_QUEUE_URL_1=tcp://mq-1:61613
-  export MHS_QUEUE_URL_2=tcp://mq-2:61613
-  export MHS_QUEUE_USERNAME=guest
-  export MHS_QUEUE_PASSWORD=guest
-  export MHS_QUEUE_NAME=gp2gp-test
-  export MHS_DLQ_NAME=gp2gp-test.dlq
-  export MHS_QUEUE_VIRTUAL_HOST="/"
-  export S3_BUCKET_NAME="test-bucket"
-  export G2P_ADAPTOR_DOCKER_IMAGE="${G2P_ADAPTOR_DOCKER_IMAGE:-$IMAGE_REPO_NAME}"
-  export NODE_ENV=local
-  export MHS_OUTBOUND_URL="https://mhs-outbound-url"
-}
-
 command="$1"
 case "${command}" in
-  login)
-      docker_login
-      ;;
   _dep)
       echo "Running NPM Audit ..."
       npm audit
@@ -91,14 +102,6 @@ case "${command}" in
   build)
       dojo "./tasks _build"
       ;;
-  _coverage)
-      npm install
-      npm run coverage
-      ;;
-  coverage)
-      configure_local_envs
-      dojo -c Dojofile-compose "./tasks _coverage"
-      ;;
   _test)
       npm install
       npm run test
@@ -106,46 +109,50 @@ case "${command}" in
   test)
       dojo "./tasks _test"
       ;;
-  _itest)
+  _test_integration)
       npm install
-      npm run itest
+      npm run test:integration
       ;;
-  itest)
+  test_integration)
       configure_local_envs
-      dojo -c Dojofile-compose "./tasks _itest"
+      dojo -c Dojofile-itest "./tasks _test_integration"
       ;;
-  _teste2e)
+  _test_functional)
       npm install
-      npm run test:e2e
+      npm run test:functional
       ;;
-  teste2e)
+  test_functional)
+      export GP2GP_URL=https://${NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk
+      dojo "./tasks _test_functional"
+      ;;
+  _test_coverage)
+      npm install
+      npm run test:coverage
+      ;;
+  test_coverage)
       configure_local_envs
-      dojo -c Dojofile-compose "./tasks _teste2e"
+      dojo -c Dojofile-itest "./tasks _test_coverage"
       ;;
   build_docker_local)
-      REPOSITORY_URI=$IMAGE_REPO_NAME
-      COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
-      IMAGE_TAG=${COMMIT_HASH}
-      echo Build started on `date`
-      echo Building the Docker image...
-      docker build -t $REPOSITORY_URI:latest .
-      docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      echo Build completed on `date`
+      configure_local_envs
+      build_docker_image
       ;;
   build_docker)
-      docker_login
-      AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
-      REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
-      ./tasks build_docker_local
-      COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
-      IMAGE_TAG=${COMMIT_HASH}
-      docker tag $IMAGE_REPO_NAME $REPOSITORY_URI:$IMAGE_TAG
-      docker tag $IMAGE_REPO_NAME $REPOSITORY_URI:latest
+      configure_docker_repository_uri
+      build_docker_image
       echo "Pushing the Docker image...
       $REPOSITORY_URI:latest
       $REPOSITORY_URI:$IMAGE_TAG"
-      docker push $REPOSITORY_URI:latest
-      docker push $REPOSITORY_URI:$IMAGE_TAG
+      docker push $REPOSITORY_URI
+      ;;
+  test_docker)
+      configure_docker_repository_uri
+      export GP2GP_URL="http://gp2gp:3000"
+      dojo -c Dojofile-dtest "./tasks _test_functional"
+      ;;
+  test_docker_local)
+      configure_local_envs
+      dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   tf)
       check_env
@@ -166,51 +173,14 @@ case "${command}" in
       dojo -c Dojofile-infra "./tasks _tf_apply"
       ;;
   _wait_ecs)
-      aws ecs wait services-stable --region $AWS_DEFAULT_REGION \
+      aws ecs wait services-stable \
+        --region $AWS_DEFAULT_REGION \
         --cluster $NHS_ENVIRONMENT-deductions-private-ecs-cluster \
         --service $NHS_ENVIRONMENT-gp2gp-adaptor-service
       ;;
   wait_ecs)
       check_env
       dojo -c Dojofile-infra "./tasks _wait_ecs"
-      ;;
-  _test_docker)
-      npm install axios
-      echo "Waiting for gp2gp-adaptor endpoint to start responding at ${GP2GP_URL}"
-      count=1
-      set +e
-      while ! node infra-tests/test_health.js; do
-        echo "Waiting for gp2gp-adaptor endpoint at ${GP2GP_URL}"
-        sleep 1
-        ((count++))
-        if [ 30 -le $count ]; then
-          echo "Timed-out waiting for gp2gp-adaptor endpoint at ${GP2GP_URL}"
-          exit 5
-        fi
-      done
-      echo "GP2GP endpoint at ${GP2GP_URL} is healthy"
-      ;;
-  test_docker_local)
-      configure_local_envs
-      dojo -c Dojofile-dtest "./tasks _test_docker"
-      ;;
-  _run_local)
-      sleep 10
-      npm run start-local-nodemon
-      ;;
-  run_local)
-      configure_local_envs
-      dojo -c Dojofile-compose "./tasks _run_local"
-      ;;
-  test_docker)
-      # Tests that image uses variables for config and runs migration on start
-      docker_login
-      COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
-      IMAGE_TAG=${COMMIT_HASH}
-      AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
-      REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-      export G2P_ADAPTOR_DOCKER_IMAGE="${REPOSITORY_URI}/$IMAGE_REPO_NAME:${IMAGE_TAG}"
-      ./tasks test_docker_local
       ;;
   *)
       echo "Invalid command: '${command}'"

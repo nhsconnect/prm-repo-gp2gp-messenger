@@ -51,6 +51,15 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test
+            integration:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_integration
             coverage:
               artifacts:
                 - build:
@@ -127,7 +136,19 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
-
+      - functional:
+          clean_workspace: true
+          jobs:
+            test:
+              resources:
+                - deductions-private
+                - dev
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_functional
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
     label_template: '${git[:8]}'
@@ -138,7 +159,7 @@ pipelines:
           - docs/**/*.*
       dev_env:
         pipeline: prm-deductions-gp2gp-adaptor.dev
-        stage: deploy #TODO: Add a smoke test in dev, then depend on smoke test
+        stage: functional
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_test
@@ -149,3 +170,16 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
+      - functional:
+          clean_workspace: true
+          jobs:
+            test:
+              resources:
+                - deductions-private
+                - test
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_functional

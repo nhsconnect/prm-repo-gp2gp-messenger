@@ -28,20 +28,18 @@ The initial version will send and receive health records that are encoded in the
    DEDUCTIONS_ODS_CODE=deduction-ods
    NODE_ENV=local
    MHS_QUEUE_NAME=gp2gp-test
-   MHS_DLQ_NAME=gp2gp-test.dlq
    MHS_QUEUE_URL_1=tcp://localhost:61610
    MHS_QUEUE_URL_2=tcp://localhost:61613
+   MHS_QUEUE_VIRTUAL_HOST=/
    MHS_QUEUE_USERNAME=
    MHS_QUEUE_PASSWORD=
-   S3_BUCKET_NAME=
    EHR_REPO_URL=http://ehr-repo.com
-   LOCALSTACK_URL=
    PDS_ASID=
    MHS_OUTBOUND_URL=
    ```
 
 - Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
-  to any value and the variables `MHS_QUEUE_USERNAME`, `MHS_QUEUE_PASSWORD` and `S3_BUCKET_NAME` do not need to be set at
+  to any value and the variables `MHS_QUEUE_USERNAME` and `MHS_QUEUE_PASSWORD` do not need to be set at
   all.
 - `MHS_QUEUE_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
 
@@ -49,19 +47,19 @@ The initial version will send and receive health records that are encoded in the
 
 Run the unit tests with
 
-`npm test`
+`npm test` or `./tasks test`
 
 Run the integration tests
 
-`npm run itest`
+`npm run test:integration` or `./tasks test_integration`
 
-Run the coverage tests(unit test and integration test)
+Run the coverage tests (unit test and integration test)
 
-`npm run coverage`
+`npm run test:coverage` or `./tasks test_coverage`
 
 ## Start the app locally
 
-1. Run a development server with `npm run start-local`. Or run `./tasks run_local` to start together with a linked MQ server and S3 mocked with localstack. It creates a test bucket.
+1. Run a development server with `npm run start:local`, to start together with a linked MQ server.
 2. If successful, it will print a message similar to the following in the terminal:
 
 ```

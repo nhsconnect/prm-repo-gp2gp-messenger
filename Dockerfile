@@ -29,7 +29,6 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
 
 # This should be done to avoid any platform dependent packages
 RUN npm install && npm audit --fix
-RUN npm install -g sequelize-cli
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/usr/bin/run-gp2gp-server"]

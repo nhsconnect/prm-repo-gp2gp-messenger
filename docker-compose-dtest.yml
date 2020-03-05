@@ -6,7 +6,7 @@ services:
       - mq-1:mq-1
       - mq-2:mq-2
   gp2gp:
-    image: ${G2P_ADAPTOR_DOCKER_IMAGE}
+    image: ${REPOSITORY_URI}:latest
     links:
       - mq-1:mq-1
       - mq-2:mq-2
