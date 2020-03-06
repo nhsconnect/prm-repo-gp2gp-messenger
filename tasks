@@ -180,6 +180,7 @@ case "${command}" in
   test_docker)
       configure_docker_repository_uri
       export GP2GP_URL="http://gp2gp:3000"
+      export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
       dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   test_docker_local)
