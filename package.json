@@ -1,7 +1,8 @@
 {
   "name": "prm-deductions-gp2gp-adaptor",
   "version": "1.0.0",
-  "description": "",
+  "description": "GP2GP Adapter Service for making and receiving Health Records using GP2GP",
+  "license": "OGL 3.0",
   "main": "src/server.js",
   "scripts": {
     "lint": "eslint src/ --fix",

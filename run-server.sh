@@ -14,7 +14,7 @@ echo "Waiting for any MQ port to be open"
 count=0
 while ! nc -z ${MQ_HOST_1} ${MQ_PORT_1} && ! nc -z ${MQ_HOST_2} ${MQ_PORT_2}; do
   echo "Waiting for MQ at ${MQ_HOST_1}:${MQ_PORT_1} or ${MQ_HOST_2}:${MQ_PORT_2}"
-  sleep 1
+  sleep 2
   ((count++))
   if [ "${MQ_CONNECTION_TIMEOUT}" -le $count ]; then
     echo "Timed-out waiting for MQ connection at ${MQ_HOST_1}:${MQ_PORT_1} or ${MQ_HOST_2}:${MQ_PORT_2}"
