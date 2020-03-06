@@ -2,9 +2,18 @@
 
 set -Eeo pipefail
 
+###########################
+# Local Config Parameters #
+###########################
+
 AWS_DEFAULT_REGION=eu-west-2
 IMAGE_REPO_NAME=deductions/gp2gp-adaptor
 NHS_SERVICE=gp2gp-adaptor
+
+
+####################################
+# Instance (Environment) Variables #
+####################################
 
 function check_env {
   if [[ -z "${NHS_ENVIRONMENT}" ]]; then
@@ -27,6 +36,32 @@ function configure_local_envs {
   export NODE_ENV=local
   export MHS_OUTBOUND_URL="https://mhs-outbound-url"
 }
+
+function get_aws_account_id {
+    AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
+}
+
+function configure_aws_service_auth_keys {
+    check_env
+    get_aws_account_id
+    parameter_name=/NHS/${NHS_ENVIRONMENT}-${AWS_ACCOUNT_ID}/${NHS_SERVICE}/authorization_keys
+    echo "${parameter_name}"
+    export AUTHORIZATION_KEYS=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  ${parameter-name} | jq -r .Partameter.Value")
+}
+
+function get_aws_secret {
+  secret_id=$1
+  json=$(aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id)
+  if [ $? != 0 ]; then
+    >&2 echo "Failed to obtain AWS secret: $secret_id"
+    exit 5
+  fi
+  echo $json | jq -r ".Parameter.Value"
+}
+
+#######################
+# Terraform Functions #
+#######################
 
 function tf_plan {
   operation=$1
@@ -55,9 +90,19 @@ function tf_apply {
   terraform output -json > tf-out.json
 }
 
+############################
+# Docker Related Functions #
+############################
+
 function docker_login {
   echo Logging in to Amazon ECR...
   eval $(dojo -c Dojofile-infra "aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION")
+}
+
+function configure_docker_repository_uri {
+  docker_login
+  get_aws_account_id
+  REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
 }
 
 function build_docker_image {
@@ -69,21 +114,9 @@ function build_docker_image {
   echo Build completed on `date`
 }
 
-function configure_docker_repository_uri {
-  docker_login
-  AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
-  REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
-}
-
-function get_aws_secret {
-  secret_id=$1
-  json=$(aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id)
-  if [ $? != 0 ]; then
-    >&2 echo "Failed to obtain AWS secret: $secret_id"
-    exit 5
-  fi
-  echo $json | jq -r ".Parameter.Value"
-}
+###########
+## TASKS ##
+###########
 
 command="$1"
 case "${command}" in
@@ -122,6 +155,7 @@ case "${command}" in
       npm run test:functional
       ;;
   test_functional)
+      configure_aws_service_auth_keys
       export GP2GP_URL=https://${NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk
       dojo "./tasks _test_functional"
       ;;
