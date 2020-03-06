@@ -102,7 +102,7 @@ function docker_login {
 function configure_docker_repository_uri {
   docker_login
   get_aws_account_id
-  REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
+  export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
 }
 
 function build_docker_image {
@@ -174,9 +174,7 @@ case "${command}" in
   build_docker)
       configure_docker_repository_uri
       build_docker_image
-      echo "Pushing the Docker image...
-      $REPOSITORY_URI:latest
-      $REPOSITORY_URI:$IMAGE_TAG"
+      echo "Pushing the Docker image... $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG"
       docker push $REPOSITORY_URI
       ;;
   test_docker)
@@ -210,7 +208,7 @@ case "${command}" in
       aws ecs wait services-stable \
         --region $AWS_DEFAULT_REGION \
         --cluster $NHS_ENVIRONMENT-deductions-private-ecs-cluster \
-        --service $NHS_ENVIRONMENT-gp2gp-adaptor-service
+        --service $NHS_ENVIRONMENT-${NHS_SERVICE}-service
       ;;
   wait_ecs)
       check_env
