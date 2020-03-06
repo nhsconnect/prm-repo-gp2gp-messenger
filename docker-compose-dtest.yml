@@ -10,6 +10,16 @@ services:
     links:
       - mq-1:mq-1
       - mq-2:mq-2
+    environment:
+      - AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+      - MHS_QUEUE_URL_1=tcp://mq-1:61613
+      - MHS_QUEUE_URL_2=tcp://mq-2:61613
+      - MHS_QUEUE_VIRTUAL_HOST=/
+      - DEDUCTIONS_ASID=deduction-asid
+      - DEDUCTIONS_ODS_CODE=deduction-ods
+      - MHS_QUEUE_NAME=gp2gp-test
+      - MHS_QUEUE_USERNAME=guest
+      - MHS_QUEUE_PASSWORD=guest
   mq-1:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
   mq-2:
