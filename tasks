@@ -72,7 +72,7 @@ function build_docker_image {
 function configure_docker_repository_uri {
   docker_login
   AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
-  REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
+  export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
 }
 
 function get_aws_secret {
@@ -147,7 +147,8 @@ case "${command}" in
       ;;
   test_docker)
       configure_docker_repository_uri
-      export GP2GP_URL="http://gp2gp:3000"
+      export MHS_QUEUE_URL_1=tcp://mq-1:61613
+      export MHS_QUEUE_URL_2=tcp://mq-2:61613
       dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   test_docker_local)

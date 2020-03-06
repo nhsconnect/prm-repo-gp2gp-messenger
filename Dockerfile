@@ -20,12 +20,10 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
   DEDUCTIONS_ODS_CODE=deduction-ods \
   NODE_ENV=local \
   MHS_QUEUE_NAME=gp2gp-test \
-  MHS_DLQ_NAME=gp2gp-test.dlq \
   MHS_QUEUE_URL_1=tcp://localhost:61610 \
   MHS_QUEUE_URL_2="" \
   MHS_QUEUE_USERNAME="" \
-  MHS_QUEUE_PASSWORD="" \
-  S3_BUCKET_NAME=""
+  MHS_QUEUE_PASSWORD=""
 
 # This should be done to avoid any platform dependent packages
 RUN npm install && npm audit --fix

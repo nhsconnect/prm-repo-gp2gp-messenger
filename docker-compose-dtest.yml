@@ -10,6 +10,9 @@ services:
     links:
       - mq-1:mq-1
       - mq-2:mq-2
+    environment:
+      - MHS_QUEUE_URL_1=${MHS_QUEUE_URL_1}
+      - MHS_QUEUE_URL_2=${MHS_QUEUE_URL_2}
   mq-1:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
   mq-2:
