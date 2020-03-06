@@ -146,9 +146,9 @@ case "${command}" in
       docker push $REPOSITORY_URI
       ;;
   test_docker)
+      export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+      export GP2GP_URL="http://gp2gp:3000"
       configure_docker_repository_uri
-      export MHS_QUEUE_URL_1=tcp://mq-1:61613
-      export MHS_QUEUE_URL_2=tcp://mq-2:61613
       dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   test_docker_local)
