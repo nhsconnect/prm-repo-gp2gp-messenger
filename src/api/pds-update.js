@@ -1,8 +1,15 @@
 import express from 'express';
 import { param } from 'express-validator';
+import dateFormat from 'dateformat';
+import uuid from 'uuid/v4';
+import config from '../config';
+import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 import { checkIsAuthenticated } from '../middleware/auth';
-import { updateLogEventWithError } from '../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
+import { sendMessage } from '../services/mhs/mhs-outbound-client';
+import { parsePdsResponse } from '../services/pds/pds-response-handler';
+import { validatePdsResponse } from '../services/pds/pds-response-validator';
 
 const router = express.Router();
 
@@ -16,13 +23,53 @@ const validationRules = [
 ];
 
 router.post(
-  '/:serialChangeNum/:pdsId/:nhsNumber',
+  '/:serialChangeNumber/:pdsId/:nhsNumber',
   checkIsAuthenticated,
   validationRules,
   validate,
   async (req, res, next) => {
     try {
-      res.sendStatus(200);
+      const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+      const interactionId = 'PRPA_IN000203UK03';
+      const conversationId = uuid().toUpperCase();
+
+      const message = await generateUpdateOdsRequest({
+        id: conversationId,
+        timestamp,
+        receivingService: { asid: config.pdsAsid },
+        sendingService: { asid: config.deductionsAsid, odsCode: config.deductionsOdsCode },
+        patient: {
+          nhsNumber: req.params.nhsNumber,
+          pdsId: req.params.pdsId,
+          pdsUpdateChangeNumber: req.params.serialChangeNumber
+        }
+      });
+
+      const messageResponse = await sendMessage({ interactionId, conversationId, message });
+      const responseBody = { conversationId, data: {}, errors: [] };
+      switch (messageResponse.status) {
+        case 200:
+          updateLogEvent({
+            status: '200 PDS Update response received',
+            conversationId,
+            response: messageResponse
+          });
+          if (messageResponse.data) {
+            if (await validatePdsResponse(messageResponse.data)) {
+              responseBody.data = await parsePdsResponse(messageResponse.data);
+            } else {
+              const errorMessage = 'Error in processing the patient retrieval request';
+              updateLogEventWithError(Error(errorMessage));
+              responseBody.errors.push(errorMessage);
+            }
+          }
+          res.status(200).json(responseBody);
+          break;
+        case 500:
+          throw new Error(`MHS Error: ${messageResponse.data}`);
+        default:
+          throw new Error(`Unexpected Error: ${messageResponse.data}`);
+      }
       next();
     } catch (err) {
       updateLogEventWithError(err);
