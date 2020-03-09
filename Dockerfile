@@ -25,7 +25,6 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
   MHS_QUEUE_USERNAME="" \
   MHS_QUEUE_PASSWORD=""
 
-# This should be done to avoid any platform dependent packages
 RUN yarn install
 
 ENTRYPOINT ["/sbin/tini", "--"]

@@ -2,7 +2,6 @@
   "name": "prm-deductions-gp2gp-adaptor",
   "version": "1.0.0",
   "description": "GP2GP Adapter Service for making and receiving Health Records using GP2GP",
-  "license": "OGL 3.0",
   "main": "src/server.js",
   "scripts": {
     "lint": "eslint src/ --fix",
@@ -33,7 +32,6 @@
     "express": "^4.17.1",
     "express-validator": "^6.3.0",
     "express-winston": "^4.0.1",
-    "improved-yarn-audit": "^1.1.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "moment": "^2.24.0",
@@ -56,6 +54,7 @@
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-jest": "^23.0.4",
     "eslint-plugin-prettier": "^3.1.1",
+    "improved-yarn-audit": "^1.1.1",
     "jest": "^24.9.0",
     "jest-when": "^2.7.0",
     "nodemon": "^2.0.2",

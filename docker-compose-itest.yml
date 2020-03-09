@@ -1,5 +1,4 @@
 version: '2'
-# Please use this with ./tasks run_local
 services:
   default:
     links:
