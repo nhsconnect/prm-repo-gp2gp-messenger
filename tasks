@@ -38,15 +38,15 @@ function configure_local_envs {
 }
 
 function get_aws_account_id {
-    AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
-}
+     AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
+ }
 
 function configure_aws_service_auth_keys {
     check_env
     get_aws_account_id
-    parameter_name=/NHS/${NHS_ENVIRONMENT}-${AWS_ACCOUNT_ID}/${NHS_SERVICE}/authorization_keys
+    parameter_name="/NHS/${NHS_ENVIRONMENT}-${AWS_ACCOUNT_ID}/${NHS_SERVICE}/authorization_keys"
     echo "${parameter_name}"
-    export AUTHORIZATION_KEYS=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  ${parameter-name} | jq -r .Partameter.Value")
+    export AUTHORIZATION_KEYS=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  ${parameter_name} | jq -r .Parameter.Value")
 }
 
 function get_aws_secret {
