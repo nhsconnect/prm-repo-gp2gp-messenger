@@ -33,15 +33,15 @@ pipelines:
       - build:
           clean_workspace: true
           jobs:
-            dependency_check:
-              resources:
-                - docker
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks dep
+            # dependency_check:
+            #   resources:
+            #     - docker
+            #   tasks:
+            #     - exec:
+            #         command: /bin/bash
+            #         arguments:
+            #           - -c
+            #           - ./tasks dep
             test:
               resources:
                 - docker
