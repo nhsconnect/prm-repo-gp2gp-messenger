@@ -121,6 +121,7 @@ function build_docker_image {
 command="$1"
 case "${command}" in
   _dep)
+      yarn install
       yarn run improved-yarn-audit --ignore-dev-deps
       ;;
   dep)
