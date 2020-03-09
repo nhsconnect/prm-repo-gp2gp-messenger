@@ -8,10 +8,8 @@ export const parsePdsResponse = async message => {
   ]).catch(err => {
     throw Error(err);
   });
-  return extractedMessage
-    ? {
-        serialChangeNumber: extractedMessage[0],
-        patientPdsId: extractedMessage[1]
-      }
-    : {};
+  return {
+    serialChangeNumber: extractedMessage[0],
+    patientPdsId: extractedMessage[1]
+  };
 };

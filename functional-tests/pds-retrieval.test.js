@@ -22,4 +22,17 @@ describe('End to end test of /pds-retrieval/:nhsNumber', () => {
       .then(response => expect(response.status).toBe(200))
       .catch(error => expect(error).toEqual(new Error('Request failed with status code 503')));
   });
+  it('should receive QUQI_IN010000UK14 from PDS if the nhs number is not exist', () => {
+    const fakeNhsNumber = '0000000000';
+    const baseURL = process.env.GP2GP_URL ? process.env.GP2GP_URL : config.url;
+
+    return axios
+      .get(`${baseURL}/pds-retrieval/${fakeNhsNumber}`, {
+        headers: {
+          Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
+        },
+        adapter
+      })
+      .then(response => expect(response.status).toBe(200));
+  });
 });

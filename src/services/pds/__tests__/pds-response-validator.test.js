@@ -23,11 +23,20 @@ describe('validatePdsResponse', () => {
              </QUPA_IN000009UK03>
     `;
 
+  const pdsResponseEmptyString = `
+    `;
+
   it('should return false if the pds response is NACK', () => {
     return validatePdsResponse(pdsResponseAE).then(res => expect(res).toBe(false));
   });
 
   it('should return true if the pds response is ACK', () => {
     return validatePdsResponse(pdsResponseAA).then(res => expect(res).toBe(true));
+  });
+
+  it('should catch error when there is any failure to validate the response', () => {
+    return validatePdsResponse(pdsResponseEmptyString).catch(err =>
+      expect(err.message).toEqual('failed to validate the response body')
+    );
   });
 });

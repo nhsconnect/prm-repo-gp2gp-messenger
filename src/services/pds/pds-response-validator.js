@@ -5,8 +5,8 @@ export const validatePdsResponse = async message => {
     .parse(message)
     .then(jsObject => jsObject.findAll('QUQI_IN010000UK14'))
     .then(queryFailure => (queryFailure.length > 0 ? false : true))
-    .catch(err => {
-      throw Error(err);
+    .catch(() => {
+      throw Error('failed to validate the response body');
     });
   return result;
 };

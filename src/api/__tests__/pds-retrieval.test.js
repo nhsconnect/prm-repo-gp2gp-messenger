@@ -9,11 +9,10 @@ import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-re
 import { validatePdsResponse } from '../../services/pds/pds-response-validator';
 import { parsePdsResponse } from '../../services/pds/pds-response-handler';
 
-jest.mock('../../services/pds/pds-response-validator');
-jest.mock('../../services/pds/pds-response-handler');
-
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
+const mockNoDataUUID = 'fdb5c732-9e82-48ef-991b-8cd54b485748';
 const mockNoPatientUID = 'ebf6ee70-b9b7-64a6-8780-a386fccd759d';
+const mockNoPdsUUID = '6db9d011-98a9-48d3-b65a-cd83688dfc71';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
 const testSerialChangeNumber = '2';
 const testPatientPdsId = 'cppz';
@@ -34,11 +33,20 @@ const message = `
     </patientCareProvisionEvent>
 </PDSResponse>`;
 
+const messageNoPdsId = `
+<PDSResponse xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="OBS" moodCode="EVN" xsi:schemaLocation="urn:hl7-org:v3 ../../Schemas/PRPA_MT000201UK03.xsd">
+      <pertinentSerialChangeNumber classCode="OBS" moodCode="EVN">
+        <code code="2" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.35"/>
+        <value value="${testSerialChangeNumber}"/>
+      </pertinentSerialChangeNumber>
+</PDSResponse>`;
+
 const sendMessageErrorMessage =
   '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></QUPA_IN000008UK02>';
 
 jest.mock('../../config/logging');
-
+jest.mock('../../services/pds/pds-response-validator');
+jest.mock('../../services/pds/pds-response-handler');
 jest.mock('../../middleware/logging');
 jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-pds-retrieval-request');
@@ -66,7 +74,10 @@ describe('/pds-retrieval/:nhsNumber', () => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
     validatePdsResponse.mockResolvedValue(Promise.resolve(true));
-    parsePdsResponse.mockResolvedValue(Promise.resolve({}));
+    parsePdsResponse.mockResolvedValue({
+      serialChangeNumber: testSerialChangeNumber,
+      patientPdsId: testPatientPdsId
+    });
 
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS error' })
@@ -74,10 +85,22 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .mockResolvedValue({ status: 200, data: message })
       .calledWith({
         interactionId,
+        conversationId: mockNoDataUUID.toUpperCase(),
+        message: fakerequest
+      })
+      .mockResolvedValue({ status: 200 })
+      .calledWith({
+        interactionId,
         conversationId: mockUUID.toUpperCase(),
         message: sendMessageErrorMessage
       })
       .mockRejectedValue(Error('rejected'))
+      .calledWith({
+        interactionId,
+        conversationId: mockNoPdsUUID.toUpperCase(),
+        message: fakerequest
+      })
+      .mockResolvedValue({ status: 200, data: messageNoPdsId })
       .calledWith({
         interactionId,
         conversationId: mockErrorUUID.toUpperCase(),
@@ -174,7 +197,67 @@ describe('/pds-retrieval/:nhsNumber', () => {
       .set('Authorization', 'correct-key')
       .expect(200)
       .expect(async () => {
-        await parsePdsResponse().then(result => expect(result).toEqual({}));
+        await parsePdsResponse(message).then(result =>
+          expect(result).toEqual({
+            serialChangeNumber: testSerialChangeNumber,
+            patientPdsId: testPatientPdsId
+          })
+        );
+      })
+      .end(done);
+  });
+
+  it('should return a 200 and the validator should be called', done => {
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(async () => {
+        const isValid = await validatePdsResponse(message);
+        expect(isValid).toBe(true);
+      })
+      .end(done);
+  });
+
+  it('should return empty data and error message if any failure happened when extracting pds response', done => {
+    uuid.mockImplementation(() => mockNoPdsUUID);
+    parsePdsResponse.mockRejectedValue(Error('some-error'));
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data).toEqual({});
+        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
+        expect(updateLogEventWithError).toBeCalledTimes(2);
+      })
+      .end(done);
+  });
+
+  it('should return error message if the message is NACK', done => {
+    validatePdsResponse.mockResolvedValue(Promise.resolve(false));
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data).toEqual({});
+        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
+        expect(updateLogEventWithError).toBeCalledTimes(1);
+      })
+      .end(done);
+  });
+
+  it('should return and log error message if the response body is empty ', done => {
+    uuid.mockImplementation(() => mockNoDataUUID);
+    request(app)
+      .get('/pds-retrieval/9999999999')
+      .set('Authorization', 'correct-key')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.data).toEqual({});
+        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
+        expect(updateLogEventWithError).toBeCalledTimes(1);
       })
       .end(done);
   });
