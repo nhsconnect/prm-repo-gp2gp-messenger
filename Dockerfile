@@ -26,7 +26,7 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
   MHS_QUEUE_PASSWORD=""
 
 # This should be done to avoid any platform dependent packages
-RUN npm install && npm audit --fix
+RUN yarn install
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/usr/bin/run-gp2gp-server"]
