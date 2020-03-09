@@ -6,6 +6,7 @@ import ehrRequest from './api/ehr-request';
 import errorEndpoint from './api/errorEndpoint';
 import healthCheck from './api/health';
 import pdsRetrieval from './api/pds-retrieval';
+import pdsUpdate from './api/pds-update';
 import { options } from './config/logging';
 import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
@@ -24,6 +25,7 @@ app.use('/ehr-request', logging.middleware, ehrRequest);
 app.use('/error', logging.middleware, errorEndpoint);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/pds-retrieval', logging.middleware, pdsRetrieval);
+app.use('/pds-update', logging.middleware, pdsUpdate);
 
 app.use(errorLogger(options));
 
