@@ -33,6 +33,7 @@ describe('End to end test of /pds-retrieval/:nhsNumber', () => {
         },
         adapter
       })
-      .then(response => expect(response.status).toBe(200));
+      .then(response => expect(response.status).toBe(200))
+      .catch(error => expect(error).toEqual(new Error('Request failed with status code 503')));
   });
 });
