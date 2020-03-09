@@ -6,5 +6,10 @@ services:
       - mq-2:mq-2
   mq-1:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61620:61613
+      - 15672:15672
   mq-2:
     image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61621:61613
