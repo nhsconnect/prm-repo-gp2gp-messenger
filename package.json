@@ -6,7 +6,7 @@
   "main": "src/server.js",
   "scripts": {
     "lint": "eslint src/ --fix",
-    "test": "npm run lint && npm run test:unit",
+    "test": "yarn run lint && yarn run test:unit",
     "test:unit": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config",
     "test:integration": "jest \"src/.*\\integration.test\\.js\" --detectOpenHandles --forceExit --setupFiles dotenv/config",
     "test:functional": "jest functional-tests/*",
@@ -33,6 +33,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.3.0",
     "express-winston": "^4.0.1",
+    "improved-yarn-audit": "^1.1.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "moment": "^2.24.0",
