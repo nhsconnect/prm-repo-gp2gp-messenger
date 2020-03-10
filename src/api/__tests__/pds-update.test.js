@@ -54,6 +54,7 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
+    config.deductionsOdsCode = 'deductionsOdsCode';
     uuid.mockImplementation(() => mockUUID);
 
     validatePdsResponse.mockResolvedValue(Promise.resolve(true));
@@ -86,20 +87,20 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
 
   it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
     request(app)
-      .post('/pds-update/137/cppz/9442964410')
+      .post('/pds-update/123/cppz/9442964410')
       .set('Authorization', 'correct-key')
       .expect(200)
       .end(done);
   });
   it('should return a 401 when no authorization header provided', done => {
     request(app)
-      .post('/pds-update/137/cppz/9442964410')
+      .post('/pds-update/123/cppz/9442964410')
       .expect(401)
       .end(done);
   });
   it('should return a 403 when authorization key is incorrect', done => {
     request(app)
-      .post('/pds-update/137/cppz/9442964410')
+      .post('/pds-update/123/cppz/9442964410')
       .set('Authorization', 'incorrect-key')
       .expect(403)
       .end(done);
@@ -107,7 +108,7 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
   it('should return an error if :nhsNumber is less than 10 digits', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
-      .post('/pds-update/137/cppz/944410')
+      .post('/pds-update/123/cppz/944410')
       .set('Authorization', 'correct-key')
       .expect(422)
       .expect('Content-Type', /json/)
@@ -120,4 +121,17 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       })
       .end(done);
   });
+
+  // it('should return a 503 if sendMessage throws an error', done => {
+  //   generateUpdateOdsRequest.mockResolvedValue(sendMessageErrorMessage);
+
+  //   request(app)
+  //     .get('/pds-update/123/cppz/9442964410')
+  //     .set('Authorization', 'correct-key')
+  //     .expect(res => {
+  //       expect(res.status).toBe(503);
+  //       expect(res.body.errors).toBe('rejected');
+  //     })
+  //     .end(done);
+  // });
 });
