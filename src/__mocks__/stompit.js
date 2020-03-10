@@ -19,7 +19,7 @@ const mockClient = {
     })),
     commit: jest.fn()
   })),
-
+  on: jest.fn(),
   ack: jest.fn().mockResolvedValue(),
   nack: jest.fn().mockResolvedValue(),
   disconnect: jest.fn()

@@ -1,5 +1,6 @@
-import { connectToQueue } from '../../../src/config/queue';
+import { connectToQueue } from '../../config/queue';
 import config from '../../config';
+import uuid from 'uuid/v4';
 
 const putMessageOnQueue = (client, message) => {
   const transaction = client.begin();
@@ -13,7 +14,7 @@ const sendToQueue = message =>
   new Promise((resolve, reject) => {
     connectToQueue((err, client) => {
       if (err) {
-        reject(err); // not tested
+        reject(err);
       }
       putMessageOnQueue(client, message);
       client.disconnect();
@@ -22,11 +23,14 @@ const sendToQueue = message =>
   });
 
 const clearQueue = async () => {
-  await sendToQueue('EOF');
+  const endOfQueueMessage = `EOQ-${uuid()}`;
+
+  await sendToQueue(endOfQueueMessage);
+
   return new Promise((resolve, reject) =>
     connectToQueue((err, client) => {
       if (err) {
-        reject(err); // not tested
+        reject(err);
       }
 
       client.on('error', error => {
@@ -34,19 +38,23 @@ const clearQueue = async () => {
         reject(error);
       });
 
-      client.subscribe({ destination: config.queueName, ack: 'client' }, (error, message) => {
-        if (error) {
-          reject(error); // not tested
-        }
-        message.readString('utf-8', (error, body) => {
+      client.subscribe(
+        { destination: config.queueName, ack: 'client-individual' },
+        (error, message) => {
           if (error) {
-            reject(error); // not tested
+            reject(error);
           }
 
-          client.ack(message);
-          if (body === 'EOF') client.destroy('Queue quit');
-        });
-      });
+          message.readString('utf-8', async (error, body) => {
+            if (error) {
+              reject(error);
+            }
+
+            await client.ack(message);
+            if (body === endOfQueueMessage) client.disconnect();
+          });
+        }
+      );
 
       resolve(client);
     })

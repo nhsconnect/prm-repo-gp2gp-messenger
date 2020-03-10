@@ -3,7 +3,7 @@ import config from '../../../config';
 import { getStompitQueueConfig } from '../../../config/utils/get-stompit-queue-config';
 import { generateEhrExtractResponse } from '../../../templates/soap/ehr-extract-template';
 import { sendToQueue } from '../mhs-queue-test-queue-publisher';
-
+import { connect } from 'stompit';
 const originalConfig = { ...config };
 
 describe('mhs-queue-test-queue-publisher', () => {
@@ -29,6 +29,11 @@ describe('mhs-queue-test-queue-publisher', () => {
       expect(ConnectFailover).toHaveBeenCalledTimes(1);
       expect(ConnectFailover).toHaveBeenCalledWith(getStompitQueueConfig(), expect.anything());
       done();
+    });
+
+    it('should return an error if client is unable to connect', () => {
+      connect.mockImplementation(callback => callback('some-connection-error', null));
+      return expect(sendToQueue('error')).rejects.toBe('some-connection-error');
     });
   });
 });

@@ -148,7 +148,7 @@ case "${command}" in
       ;;
   test_integration)
       configure_local_envs
-      dojo -c Dojofile-itest
+      dojo -c Dojofile-itest "./tasks _test_integration"
       ;;
   _test_functional)
       yarn install
