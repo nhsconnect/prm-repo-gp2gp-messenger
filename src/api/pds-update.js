@@ -60,7 +60,7 @@ router.post(
                     if (`${messageResponse}`) {
                         throw new Error(`Unexpected Error: ${messageResponse.data}`);
                     }
-                    throw new Error(`No message response data`);
+                    throw new Error(`No message response from mhs`);
             }
             next();
         } catch (err) {
