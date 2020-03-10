@@ -46,4 +46,10 @@ resource "aws_ecs_task_definition" "task" {
         environment_variables = jsonencode(local.environment_variables),
         secrets               = jsonencode(local.secret_environment_variables)
     })
+
+  tags = {
+    Terraform = "true"
+    Environment = var.environment
+    Deductions-Component = var.component_name
+  }
 }
