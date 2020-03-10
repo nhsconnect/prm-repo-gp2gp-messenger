@@ -3,11 +3,8 @@ import adapter from 'axios/lib/adapters/http';
 import config from '../src/config';
 
 describe('/health', () => {
-  it('health endpoint returns matching data', async () => {
-    const baseURL = process.env.GP2GP_URL ? process.env.GP2GP_URL : config.url;
-
-    const healthUrl = `${baseURL}/health`;
-    const res = await axios.get(healthUrl, {
+  it('health endpoint returns matching data', async done => {
+    const res = await axios.get(`${config.url}/health`, {
       adapter
     });
 
@@ -17,5 +14,6 @@ describe('/health', () => {
         description: 'Health of GP2GP Adapter service'
       })
     );
+    done();
   });
 });
