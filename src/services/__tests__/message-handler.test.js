@@ -36,6 +36,7 @@ describe('handleMessage', () => {
   <RCMR_IN030000UK06>
     <id root="${messageId}"/>
     <communicationFunctionRcv typeCode="RCV">
+    <interactionId extension="RCMR_IN030000UK06" root="2.16.840.1.113883.2.1.3.2.4.12"/>
         <device classCode="DEV" determinerCode="INSTANCE">
             <id extension="${config.deductionsAsid}" root="1.2.826.0.1285.0.2.0.107"/>
         </device>
@@ -128,7 +129,9 @@ describe('handleMessage', () => {
     </SOAP-ENV:Envelope>`;
 
     return expect(handleMessage(messageWithoutConversationId)).rejects.toEqual(
-      new Error(`The key 'ConversationId' was not found in the message`)
+      new Error(
+        `Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id`
+      )
     );
   });
 
@@ -149,7 +152,9 @@ describe('handleMessage', () => {
     </SOAP-ENV:Envelope>`;
 
     return expect(handleMessage(messageWithoutMessageId)).rejects.toEqual(
-      new Error('Message does not contain message id')
+      new Error(
+        'Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id'
+      )
     );
   });
 
