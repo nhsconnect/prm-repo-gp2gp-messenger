@@ -1,14 +1,14 @@
 import config from '../../../config';
 import { connectToQueue } from '../../../config/queue';
 import { generateEhrExtractResponse } from '../../../templates/soap/ehr-extract-template';
-import { sendToQueue } from '../mhs-queue-test-queue-publisher';
+import { clearQueue, sendToQueue } from '../mhs-queue-test-queue-publisher';
 
 jest.unmock('stompit');
 
 describe('mhs-queue-test-helper', () => {
-  const queueConsumer = () =>
+  const consumeOneMessage = () =>
     new Promise((resolve, reject) => {
-      const subscribeCallback = client => (err, message) =>
+      const subscribeCallback = client => (err, message) => {
         message.readString('utf-8', (error, body) => {
           if (error) {
             reject(error);
@@ -17,11 +17,20 @@ describe('mhs-queue-test-helper', () => {
           client.disconnect();
           resolve(body);
         });
+      };
 
       connectToQueue((error, client) => {
         if (error) {
           reject(error);
         }
+
+        // Timeout required for when message queue is empty
+        // it will unsubscribe and disconnect after 0.5s if no messages have been detected
+        setTimeout(() => {
+          resolve({});
+          client.disconnect();
+        }, 500);
+
         client.subscribe(
           { destination: config.queueName, ack: 'client-individual' },
           subscribeCallback(client)
@@ -29,12 +38,36 @@ describe('mhs-queue-test-helper', () => {
       });
     });
 
-  describe('TestQueuePublisher', () => {
+  afterEach(async () => {
+    await clearQueue();
+  });
+
+  describe('sendToQueue', () => {
     it('should put a message on the queue that can then be consumed', async done => {
       await sendToQueue(generateEhrExtractResponse());
-      const message = await queueConsumer();
+      const message = await consumeOneMessage();
       expect(message).toEqual(generateEhrExtractResponse());
       done();
+    });
+
+    describe('clearTheQueue', () => {
+      it('should clear the queue when multiple messages have been added', async done => {
+        await sendToQueue('message 1');
+        await sendToQueue('message 2');
+        await sendToQueue('message 3');
+        await sendToQueue('message 4');
+        await clearQueue();
+        const message = await consumeOneMessage();
+        expect(message).toEqual({});
+        done();
+      });
+
+      it('should not fail if queue is empty when clearing queue', async done => {
+        await clearQueue();
+        const message = await consumeOneMessage();
+        expect(message).toEqual({});
+        done();
+      });
     });
   });
 });

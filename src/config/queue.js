@@ -45,5 +45,5 @@ export const connectToQueue = callback => {
   queue.on('error', error => {
     logger.error(`Failover url could not connect to the queue broker: ${error}`, error);
   });
-  queue.connect(callback);
+  return queue.connect(callback);
 };
