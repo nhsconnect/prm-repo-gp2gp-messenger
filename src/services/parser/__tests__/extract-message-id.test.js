@@ -2,14 +2,14 @@ import uuid from 'uuid/v4';
 import { extractMessageId } from '../soap-parser/extract-message-id';
 
 describe('extractMessageId', () => {
+  const expectedErrorMessage = 'Message does not contain message id';
+
+  const testMessageId = uuid().toUpperCase();
+
   const exampleErrorXML = `
         <eb:Body>
         </eb:Body>
     `;
-
-  const expectedErrorMessage = 'Message does not contain message id';
-
-  const testMessageId = uuid().toUpperCase();
 
   const realExample = `
     <SOAP:Header>
@@ -28,15 +28,19 @@ describe('extractMessageId', () => {
         </eb:Body>
     `;
 
-  it('should extract the conversationId from XML body', () => {
-    expect(extractMessageId(exampleResolveXML)).toBe(testMessageId);
+  it('should extract the messageId from XML body', () => {
+    return extractMessageId(exampleResolveXML).then(messageId =>
+      expect(messageId).toBe(testMessageId)
+    );
   });
 
-  it('should extract the conversationId from XML body in a real example', () => {
-    expect(extractMessageId(realExample)).toBe(testMessageId);
+  it('should extract the messageId from XML body in a real example', () => {
+    return extractMessageId(realExample).then(messageId => expect(messageId).toBe(testMessageId));
   });
 
-  it('should throw and error when conversationId does not exist', () => {
-    expect(() => extractMessageId(exampleErrorXML)).toThrow(Error(expectedErrorMessage));
+  it('should throw and error when messageId does not exist', () => {
+    return extractMessageId(exampleErrorXML).catch(err =>
+      expect(err.message).toBe(expectedErrorMessage)
+    );
   });
 });

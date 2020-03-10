@@ -8,10 +8,9 @@ import { checkIsAuthenticated } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
-import { parsePdsResponse } from '../services/pds/pds-response-handler';
-import { validatePdsResponse } from '../services/pds/pds-response-validator';
 
 const router = express.Router();
+const odsCode = config.deductionsOdsCode;
 
 const validationRules = [
   param('nhsNumber')
@@ -37,7 +36,7 @@ router.post(
         id: conversationId,
         timestamp,
         receivingService: { asid: config.pdsAsid },
-        sendingService: { asid: config.deductionsAsid, odsCode: config.deductionsOdsCode },
+        sendingService: { asid: config.deductionsAsid, odsCode },
         patient: {
           nhsNumber: req.params.nhsNumber,
           pdsId: req.params.pdsId,
@@ -45,8 +44,13 @@ router.post(
         }
       });
 
-      const messageResponse = await sendMessage({ interactionId, conversationId, message });
-      const responseBody = { conversationId, data: {}, errors: [] };
+      const messageResponse = await sendMessage({
+        interactionId,
+        conversationId,
+        odsCode,
+        message
+      });
+
       switch (messageResponse.status) {
         case 200:
           updateLogEvent({
@@ -54,21 +58,12 @@ router.post(
             conversationId,
             response: messageResponse
           });
-          if (messageResponse.data) {
-            if (await validatePdsResponse(messageResponse.data)) {
-              responseBody.data = await parsePdsResponse(messageResponse.data);
-            } else {
-              const errorMessage = 'Error in processing the patient retrieval request';
-              updateLogEventWithError(Error(errorMessage));
-              responseBody.errors.push(errorMessage);
-            }
-          }
-          res.status(200).json(responseBody);
+          res.status(200).json(messageResponse.data);
           break;
         case 500:
           throw new Error(`MHS Error: ${messageResponse.data}`);
         default:
-          throw new Error(`Unexpected Error: ${messageResponse.data}`);
+          throw new Error(`Unexpected Error. Message response: ${messageResponse}`);
       }
       next();
     } catch (err) {

@@ -36,9 +36,21 @@ const handleMessage = async message => {
   const startTag = '<SOAP-ENV:Envelope';
   const envelopeStartIndex = message.indexOf(startTag);
   message = message.slice(envelopeStartIndex);
-  const conversationId = await extractConversationId(message);
-  const messageId = await extractMessageId(message);
-  const action = await extractAction(message);
+  const parsers = [
+    extractConversationId(message),
+    extractMessageId(message),
+    extractAction(message)
+  ];
+  const extractResults = await Promise.all(parsers).catch(err => {
+    console.log(err);
+    throw Error(
+      'Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id'
+    );
+  });
+  const conversationId = extractResults[0];
+  const messageId = extractResults[1];
+  const action = extractResults[2];
+
   const isNegativeAcknowledgement = await containsNegativeAcknowledgement(message);
 
   updateLogEvent({

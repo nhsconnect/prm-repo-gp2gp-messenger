@@ -1,7 +1,10 @@
-export const extractMessageId = message => {
-  const matches = message.match(/<eb:MessageId>(.*?)<\/eb:MessageId>/);
-  if (!matches) {
-    throw new Error('Message does not contain message id');
-  }
-  return matches[1];
+import { XmlParser } from '../xml-parser';
+
+export const extractMessageId = async message => {
+  return await new XmlParser()
+    .parse(message)
+    .then(messageObject => messageObject.findFirst('MessageId'))
+    .catch(() => {
+      throw Error('Message does not contain message id');
+    });
 };

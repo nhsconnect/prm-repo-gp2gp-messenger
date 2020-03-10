@@ -15,6 +15,12 @@ resource "aws_alb_target_group" "alb-tg" {
     path                = "/health"
     port                = 3000
   }
+
+  tags = {
+    Terraform = "true"
+    Environment = var.environment
+    Deductions-Component = var.component_name
+  }
 }
 
 resource "aws_alb_listener_rule" "alb-http-listener-rule" {

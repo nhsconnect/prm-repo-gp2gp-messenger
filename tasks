@@ -24,8 +24,6 @@ function check_env {
 
 function configure_local_envs {
   export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
-  export GP2GP_URL="http://gp2gp:3000"
-  export NHS_ENVIRONMENT="${NHS_ENVIRONMENT:-test}"
   export MHS_QUEUE_URL_1=tcp://mq-1:61613
   export MHS_QUEUE_URL_2=tcp://mq-2:61613
   export MHS_QUEUE_USERNAME=guest
@@ -35,10 +33,23 @@ function configure_local_envs {
   export REPOSITORY_URI=$IMAGE_REPO_NAME
   export NODE_ENV=local
   export MHS_OUTBOUND_URL="https://mhs-outbound-url"
+  configure_service_url
+}
+
+function configure_service_url {
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+    export SERVICE_URL=http://${NHS_SERVICE}:3000
+  else
+    export SERVICE_URL=https://${NHS_ENVIRONMENT}.${NHS_SERVICE}.patient-deductions.nhs.uk
+  fi
+}
+
+function get_latest_commit_hash {
+  export COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
 }
 
 function get_aws_account_id {
-     AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
+    AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
  }
 
 function configure_aws_service_auth_keys {
@@ -107,7 +118,7 @@ function configure_docker_repository_uri {
 
 function build_docker_image {
   echo Build started on `date`
-  COMMIT_HASH=$(git rev-parse HEAD | cut -c 1-7)
+  get_latest_commit_hash
   IMAGE_TAG=${COMMIT_HASH}
   echo Building the Docker image...
   docker build -t $REPOSITORY_URI:latest -t $REPOSITORY_URI:$IMAGE_TAG .
@@ -156,7 +167,7 @@ case "${command}" in
       ;;
   test_functional)
       configure_aws_service_auth_keys
-      export GP2GP_URL=https://${NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk
+      configure_service_url
       dojo "./tasks _test_functional"
       ;;
   _test_coverage)
@@ -179,13 +190,15 @@ case "${command}" in
       ;;
   test_docker)
       configure_docker_repository_uri
-      export GP2GP_URL="http://gp2gp:3000"
+      get_latest_commit_hash
+      configure_service_url
       export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
       dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   test_docker_local)
       configure_local_envs
-      dojo -c Dojofile-dtest
+      get_latest_commit_hash
+      dojo -c Dojofile-dtest "./tasks _test_functional"
       ;;
   tf)
       check_env
