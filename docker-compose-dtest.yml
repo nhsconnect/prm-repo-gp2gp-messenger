@@ -2,11 +2,11 @@ version: '2'
 services:
   default:
     links:
-      - gp2gp:gp2gp
+      - gp2gp-adaptor:gp2gp-adaptor
       - mq-1:mq-1
       - mq-2:mq-2
-  gp2gp:
-    image: ${REPOSITORY_URI}:latest
+  gp2gp-adaptor:
+    image: ${REPOSITORY_URI}:${COMMIT_HASH}
     links:
       - mq-1:mq-1
       - mq-2:mq-2
