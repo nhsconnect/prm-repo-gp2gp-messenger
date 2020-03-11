@@ -7,7 +7,6 @@ import * as mhsGatewayFake from '../mhs/mhs-old-queue-test-helper';
 
 jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('uuid/v4', () => () => 'some-uuid');
-jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 jest.mock('../../middleware/logging');
 jest.mock('../ehr-repo-gateway');
 

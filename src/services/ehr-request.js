@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import uuid from 'uuid/v4';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
@@ -18,7 +18,7 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
     .then(({ asid }) => {
       updateLogEvent({ status: 'requesting-ehr', ehrRequest: { asid } });
 
-      const timestamp = moment().format('YYYYMMDDHHmmss');
+      const timestamp = dayjs().format('YYYYMMDDHHmmss');
       const ehrRequestQuery = generateEhrRequestQuery({
         id: uuid(),
         timestamp: timestamp,
