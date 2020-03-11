@@ -93,6 +93,9 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     request(app)
       .post('/pds-update/123/cppz/9442964410')
       .expect(200)
+      .expect(res => {
+        expect(res.body).toEqual(message);
+      })
       .end(done);
   });
 
@@ -117,7 +120,6 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
 
   //   request(app)
   //     .get('/pds-update/123/cppz/9442964410')
-  //     .set('Authorization', 'correct-key')
   //     .expect(res => {
   //       expect(res.status).toBe(503);
   //       expect(res.body.errors).toBe('rejected');

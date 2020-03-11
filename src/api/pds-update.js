@@ -61,7 +61,7 @@ router.post(
         case 500:
           throw new Error(`MHS Error: ${messageResponse.data}`);
         default:
-          throw new Error(`Unexpected Error. Message response: ${messageResponse}`);
+          throw new Error(`Unexpected Error: body: ${messageResponse.body}, data: ${messageResponse.data}`);
       }
       next();
     } catch (err) {
