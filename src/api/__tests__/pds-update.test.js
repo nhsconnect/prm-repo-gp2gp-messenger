@@ -116,6 +116,22 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       .end(done);
   });
 
+  it('should return an error if :serialChangeNumber is not numeric', done => {
+    const errorMessage = [{ serialChangeNumber: "'serialChangeNumber' provided is not numeric" }];
+    request(app)
+      .post('/pds-update/xxx/cppz/9442964410')
+      .expect(422)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        expect(res.body).toEqual({
+          errors: errorMessage
+        });
+        expect(updateLogEvent).toHaveBeenCalledTimes(1);
+        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+      })
+      .end(done);
+  });
+
   it('should return a 503 with error message if mhs returns a 500 status code', done => {
     uuid.mockImplementation(() => mockErrorUUID);
 

@@ -15,6 +15,9 @@ const validationRules = [
   param('nhsNumber')
     .isNumeric()
     .withMessage("'nhsNumber' provided is not numeric"),
+  param('serialChangeNumber')
+    .isNumeric()
+    .withMessage("'serialChangeNumber' provided is not numeric"),
   param('nhsNumber')
     .isLength({ min: 10, max: 10 })
     .withMessage("'nhsNumber' provided is not 10 characters")
@@ -64,7 +67,7 @@ router.post(
           if (`${messageResponse.data}`) {
             throw new Error(`Unexpected Error: ${messageResponse.data}`);
           }
-          throw new Error(`No message response from MHS`);
+          throw new Error(`No message response from MHS, response: ${messageResponse}`);
       }
       next();
     } catch (err) {
