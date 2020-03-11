@@ -1,6 +1,8 @@
 import request from 'supertest';
 import app from '../../app';
 
+jest.mock('../logging');
+
 // In all other unit tests we want to pass through all of this logic and should therefore call jest.mock
 // jest.mock('../auth') will call the manual mock in __mocks__ automatically
 describe('auth', () => {
