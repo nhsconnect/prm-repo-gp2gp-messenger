@@ -96,6 +96,59 @@
         }
       }
     },
+    "/pds-update/{serialChangeNumber}/{pdsId}/{nhsNumber}": {
+      "get": {
+        "tags": [
+          "pds-update"
+        ],
+        "summary": "Updates ODS code in PDS to Deductions Repo ODS code",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "serialChangeNumber",
+            "description": "serial change number",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "pdsId",
+            "description": "PDS Id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "nhsNumber",
+            "description": "NHS Number (must be 10 digits)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval"
+          }
+        },
+        "401": {
+          "description": "Authorization header missing"
+        },
+        "403": {
+          "description": "Authorization key invalid"
+        },
+        "422": {
+          "description": "Validation failed"
+        },
+        "503": {
+          "description": "Error"
+        }
+      },
+      "security": [
+        {
+          "api_key": []
+        }
+      ]
+    },
     "/pds-retrieval/{nhsNumber}": {
       "get": {
         "tags": [

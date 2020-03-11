@@ -61,6 +61,7 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     parsePdsResponse.mockResolvedValue(Promise.resolve({}));
 
     when(sendMessage)
+      .mockResolvedValue({ status: 503, data: 'MHS Error' })
       .calledWith({
         interactionId,
         conversationId: mockUUID.toUpperCase(),
@@ -115,15 +116,27 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       .end(done);
   });
 
-  // it('should return a 503 if sendMessage throws an error', done => {
-  //   generateUpdateOdsRequest.mockResolvedValue(sendMessageErrorMessage);
+  it('should return a 503 with error message if mhs returns a 500 status code', done => {
+    uuid.mockImplementation(() => mockErrorUUID);
 
-  //   request(app)
-  //     .get('/pds-update/123/cppz/9442964410')
-  //     .expect(res => {
-  //       expect(res.status).toBe(503);
-  //       expect(res.body.errors).toBe('rejected');
-  //     })
-  //     .end(done);
-  // });
+    request(app)
+      .post('/pds-update/123/cppz/9442964410')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('MHS Error: 500 MHS Error');
+      })
+      .end(done);
+  });
+
+  it('should return a 503 with error message if mhs returns a 503 status code', done => {
+    uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
+
+    request(app)
+      .post('/pds-update/123/cppz/9442964410')
+      .expect(res => {
+        expect(res.status).toBe(503);
+        expect(res.body.errors).toBe('Unexpected Error: MHS Error');
+      })
+      .end(done);
+  });
 });
