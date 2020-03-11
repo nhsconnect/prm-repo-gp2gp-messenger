@@ -1,9 +1,10 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import uuid from 'uuid/v4';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { generateContinueRequest } from '../templates/continue-template';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
+import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 import {
   containsNegativeAcknowledgement,
   EHR_EXTRACT_MESSAGE_ACTION,
@@ -12,10 +13,9 @@ import {
   extractFoundationSupplierAsid,
   extractMessageId
 } from './parser/soap-parser';
-import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 
 const sendContinueMessage = async (message, messageId) => {
-  const timestamp = moment().format('YYYYMMDDHHmmss');
+  const timestamp = dayjs().format('YYYYMMDDHHmmss');
   const foundationSupplierAsid = await extractFoundationSupplierAsid(message);
   const continueRequest = generateContinueRequest(
     uuid(),

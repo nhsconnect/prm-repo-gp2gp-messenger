@@ -9,7 +9,6 @@ import * as mhsQueueTestHelper from '../mhs/mhs-old-queue-test-helper';
 jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('../../middleware/logging');
 jest.mock('uuid/v4', () => () => 'some-uuid');
-jest.mock('moment', () => () => ({ format: () => '20190228112548' }));
 
 describe('sendEhrRequest', () => {
   let ehrRequestQuery;
