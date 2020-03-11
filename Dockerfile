@@ -25,7 +25,7 @@ ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
   MHS_QUEUE_USERNAME="" \
   MHS_QUEUE_PASSWORD=""
 
-RUN yarn install
+RUN npm install
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/usr/bin/run-gp2gp-server"]

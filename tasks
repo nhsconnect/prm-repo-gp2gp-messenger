@@ -132,38 +132,38 @@ function build_docker_image {
 command="$1"
 case "${command}" in
   _dep)
-      yarn install
-      yarn run improved-yarn-audit --ignore-dev-deps
+      npm install
+      npm audit
       ;;
   dep)
       dojo "./tasks _dep"
       ;;
   _build)
       rm -rf build/
-      yarn install
-      yarn run build
+      npm install
+      npm run build
       ;;
   build)
       dojo "./tasks _build"
       ;;
   _test)
-      yarn install
-      yarn run test
+      npm install
+      npm run test
       ;;
   test)
       dojo "./tasks _test"
       ;;
   _test_integration)
-      yarn install
-      yarn run test:integration
+      npm install
+      npm run test:integration
       ;;
   test_integration)
       configure_local_envs
       dojo -c Dojofile-itest "./tasks _test_integration"
       ;;
   _test_functional)
-      yarn install
-      yarn run test:functional
+      npm install
+      npm run test:functional
       ;;
   test_functional)
       configure_aws_service_auth_keys
@@ -171,8 +171,8 @@ case "${command}" in
       dojo "./tasks _test_functional"
       ;;
   _test_coverage)
-      yarn install
-      yarn run test:coverage
+      npm install
+      npm run test:coverage
       ;;
   test_coverage)
       configure_local_envs
