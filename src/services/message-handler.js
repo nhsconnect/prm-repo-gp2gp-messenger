@@ -42,9 +42,9 @@ const handleMessage = async message => {
     extractAction(message)
   ];
   const extractResults = await Promise.all(parsers).catch(err => {
-    console.log(err);
     throw Error(
-      'Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id'
+      'Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id',
+      err
     );
   });
   const conversationId = extractResults[0];

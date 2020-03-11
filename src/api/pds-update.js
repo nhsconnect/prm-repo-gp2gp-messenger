@@ -4,13 +4,12 @@ import dateFormat from 'dateformat';
 import uuid from 'uuid/v4';
 import config from '../config';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
-import { checkIsAuthenticated } from '../middleware/auth';
+import { authenticateRequest } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 
 const router = express.Router();
-const odsCode = config.deductionsOdsCode;
 
 const validationRules = [
   param('nhsNumber')
@@ -23,7 +22,7 @@ const validationRules = [
 
 router.post(
   '/:serialChangeNumber/:pdsId/:nhsNumber',
-  checkIsAuthenticated,
+  authenticateRequest,
   validationRules,
   validate,
   async (req, res, next) => {
@@ -36,7 +35,7 @@ router.post(
         id: conversationId,
         timestamp,
         receivingService: { asid: config.pdsAsid },
-        sendingService: { asid: config.deductionsAsid, odsCode },
+        sendingService: { asid: config.deductionsAsid, odsCode: config.deductionsOdsCode },
         patient: {
           nhsNumber: req.params.nhsNumber,
           pdsId: req.params.pdsId,
@@ -47,7 +46,6 @@ router.post(
       const messageResponse = await sendMessage({
         interactionId,
         conversationId,
-        odsCode,
         message
       });
 

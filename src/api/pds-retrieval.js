@@ -3,7 +3,7 @@ import express from 'express';
 import { param } from 'express-validator';
 import uuid from 'uuid/v4';
 import config from '../config';
-import { checkIsAuthenticated } from '../middleware/auth';
+import { authenticateRequest } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
@@ -24,7 +24,7 @@ const validationRules = [
 
 router.get(
   '/:nhsNumber',
-  checkIsAuthenticated,
+  authenticateRequest,
   validationRules,
   validate,
   async (req, res, next) => {

@@ -13,6 +13,7 @@ jest.mock('../../services/pds/pds-response-validator');
 jest.mock('../../services/pds/pds-response-handler');
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
+jest.mock('../../middleware/auth');
 jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-update-ods-request');
 jest.mock('uuid/v4');
@@ -38,7 +39,6 @@ const interactionId = 'PRPA_IN000203UK03';
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockNoPatientUID = 'ebf6ee70-b9b7-64a6-8780-a386fccd759d';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
-const mockODSCode = 'ods';
 
 function generateLogEvent(message) {
   return {
@@ -64,28 +64,24 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       .calledWith({
         interactionId,
         conversationId: mockUUID.toUpperCase(),
-        odsCode: mockODSCode,
         message: fakerequest
       })
       .mockResolvedValue({ status: 200, data: message })
       .calledWith({
         interactionId,
         conversationId: mockUUID.toUpperCase(),
-        odsCode: mockODSCode,
         message: sendMessageErrorMessage
       })
       .mockRejectedValue(Error('rejected'))
       .calledWith({
         interactionId,
         conversationId: mockErrorUUID.toUpperCase(),
-        odsCode: mockODSCode,
         message: fakerequest
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' })
       .calledWith({
         interactionId,
         conversationId: mockNoPatientUID.toUpperCase(),
-        odsCode: mockODSCode,
         message: fakerequest
       })
       .mockResolvedValue({ status: 200, data: 'no patient details' });
@@ -93,31 +89,17 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     generateUpdateOdsRequest.mockResolvedValue(fakerequest);
   });
 
-  // it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
-  //   request(app)
-  //     .post('/pds-update/123/cppz/9442964410')
-  //     .set('Authorization', 'correct-key')
-  //     .expect(200)
-  //     .end(done);
-  // });
-  it('should return a 401 when no authorization header provided', done => {
+  it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
     request(app)
       .post('/pds-update/123/cppz/9442964410')
-      .expect(401)
+      .expect(200)
       .end(done);
   });
-  it('should return a 403 when authorization key is incorrect', done => {
-    request(app)
-      .post('/pds-update/123/cppz/9442964410')
-      .set('Authorization', 'incorrect-key')
-      .expect(403)
-      .end(done);
-  });
+
   it('should return an error if :nhsNumber is less than 10 digits', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
       .post('/pds-update/123/cppz/944410')
-      .set('Authorization', 'correct-key')
       .expect(422)
       .expect('Content-Type', /json/)
       .expect(res => {

@@ -48,6 +48,7 @@ jest.mock('../../config/logging');
 jest.mock('../../services/pds/pds-response-validator');
 jest.mock('../../services/pds/pds-response-handler');
 jest.mock('../../middleware/logging');
+jest.mock('../../middleware/auth');
 jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-pds-retrieval-request');
 jest.mock('uuid/v4');
@@ -126,51 +127,9 @@ describe('/pds-retrieval/:nhsNumber', () => {
     config.deductionsAsid = process.env.DEDUCTIONS_ASID;
   });
 
-  it('should return a 401 (Unauthorised) if Authorization header is not provided and log event', done => {
-    request(app)
-      .get('/pds-retrieval/9999999999')
-      .expect(401)
-      .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith({
-          status: 'authorization-failed',
-          error: { message: 'Authorization header not provided' }
-        });
-      })
-      .end(done);
-  });
-
-  it('should return a 403 (Unauthorised) if Authorization header value is incorrect and log event', done => {
-    request(app)
-      .get('/pds-retrieval/9999999999')
-      .set({ Authorization: 'wrong' })
-      .expect(403)
-      .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith({
-          status: 'authorization-failed',
-          error: { message: 'Authorization header value is not a valid authorization key' }
-        });
-      })
-      .end(done);
-  });
-
-  it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
-    try {
-      request(app)
-        .get('/pds-retrieval/9999999999')
-        .set('Authorization', 'correct-key')
-        .expect(200)
-        .end(done);
-    } catch (err) {
-      console.log(err);
-    }
-  });
-
   it('should return a 200 with MHS message passed back', done => {
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .end(done);
   });
@@ -178,7 +137,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return a 200 and update the logs', done => {
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(() => {
         expect(updateLogEvent).toHaveBeenCalledTimes(2);
@@ -194,7 +152,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return a 200 and parse the pds response if the response is valid', done => {
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(async () => {
         await parsePdsResponse(message).then(result =>
@@ -210,7 +167,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return a 200 and the validator should be called', done => {
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(async () => {
         const isValid = await validatePdsResponse(message);
@@ -224,7 +180,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
     parsePdsResponse.mockRejectedValue(Error('some-error'));
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -238,7 +193,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
     validatePdsResponse.mockResolvedValue(Promise.resolve(false));
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -252,7 +206,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
     uuid.mockImplementation(() => mockNoDataUUID);
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -266,7 +219,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
       .get('/pds-retrieval/99')
-      .set('Authorization', 'correct-key')
       .expect(422)
       .expect('Content-Type', /json/)
       .expect(res => {
@@ -283,7 +235,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not numeric" }];
     request(app)
       .get('/pds-retrieval/xxxxxxxxxx')
-      .set('Authorization', 'correct-key')
       .expect(422)
       .expect('Content-Type', /json/)
       .expect(res => {
@@ -301,7 +252,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('rejected');
@@ -314,7 +264,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('MHS Error: 500 MHS Error');
@@ -327,7 +276,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('Unexpected Error: MHS error');
@@ -340,7 +288,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(Error('Unexpected Error: MHS error'));
@@ -355,7 +302,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('Check template parameter error: asid is undefined');
@@ -370,7 +316,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(
@@ -385,7 +330,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('interactionId is not included in the message');
@@ -398,7 +342,6 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
     request(app)
       .get('/pds-retrieval/9999999999')
-      .set('Authorization', 'correct-key')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(
