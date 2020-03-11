@@ -35,7 +35,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "moment": "^2.24.0",
-    "stompit": "git://github.com/gdaws/node-stomp.git#ca18493867291868462ed51b845f49e63ca78829",
+    "stompit": "https://github.com/gdaws/node-stomp.git#ca18493867291868462ed51b845f49e63ca78829",
     "swagger-ui-express": "^4.1.2",
     "traverse": "^0.6.6",
     "uuid": "^3.3.3",
@@ -49,6 +49,7 @@
     "@babel/node": "^7.6.3",
     "@babel/plugin-transform-runtime": "^7.7.6",
     "@babel/preset-env": "^7.6.3",
+    "acorn": "^7.1.1",
     "concurrently": "^5.1.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.7.0",
@@ -59,10 +60,13 @@
     "jest-when": "^2.7.0",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "typescript": "^3.8.3"
   },
   "jest": {
-    "coveragePathIgnorePatterns": ["src/services/mhs/mhs-queue-test-queue-publisher.js"],
+    "coveragePathIgnorePatterns": [
+      "src/services/mhs/mhs-queue-test-queue-publisher.js"
+    ],
     "resetModules": true,
     "clearMocks": true,
     "automock": false
