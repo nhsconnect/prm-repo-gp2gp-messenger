@@ -97,7 +97,7 @@
       }
     },
     "/pds-update/{serialChangeNumber}/{pdsId}/{nhsNumber}": {
-      "get": {
+      "post": {
         "tags": [
           "pds-update"
         ],
