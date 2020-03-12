@@ -109,9 +109,8 @@ describe('extractManifestInfo', () => {
     );
   });
 
-  it('should throw and error when manifest does not exist', () => {
-    return extractManifestInfo(exampleErrorXML).catch(err =>
-      expect(err.message).toBe(expectedErrorMessage)
-    );
+  it('should throw an error when manifest does not exist', done => {
+    expect(extractManifestInfo(exampleErrorXML)).rejects.toThrow(expectedErrorMessage);
+    done();
   });
 });

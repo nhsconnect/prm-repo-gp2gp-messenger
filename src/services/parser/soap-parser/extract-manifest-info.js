@@ -1,10 +1,11 @@
 import { XmlParser } from '../xml-parser';
 
 export const extractManifestInfo = async message => {
-  return await new XmlParser()
-    .parse(message)
-    .then(messageObject => messageObject.findAll('Manifest'))
-    .catch(() => {
-      throw Error('Message does not contain manifestInfo');
-    });
+  const messageObject = await new XmlParser().parse(message);
+
+  const manifests = messageObject.findAll('Manifest');
+  if (manifests.length < 1) {
+    throw Error('Message does not contain manifestInfo');
+  }
+  return manifests;
 };
