@@ -24,17 +24,6 @@ const fakerequest =
 const sendMessageErrorMessage =
   '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></PRPA_IN000203UK03>';
 
-const testSerialChangeNumber = '2';
-
-const message = `<hl7:interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PRPA_IN000202UK01"/><PdsSuccessfulUpdateResponse xmlns="urn:hl7-org:v3" xmlns:soapcsf="http://www.w3.org/2001/12/soap-envelope" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nasp="http://spine.nhs.uk/spine-servicev1.0" xmlns:soap="http://www.w3.org/2001/12/soap-envelope" classCode="REG" moodCode="EVN">
-<pertinentInformation typeCode="PERT">
-  <pertinentSerialChangeNumber classCode="OBS" moodCode="EVN">
-    <code code="2" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.35"/>
-    <value value="${testSerialChangeNumber}/>
-  </pertinentSerialChangeNumber>
-</pertinentInformation>
-</PdsSuccessfulUpdateResponse>`;
-
 const interactionId = 'PRPA_IN000203UK03';
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockNoPatientUID = 'ebf6ee70-b9b7-64a6-8780-a386fccd759d';
@@ -67,7 +56,7 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
         conversationId: mockUUID.toUpperCase(),
         message: fakerequest
       })
-      .mockResolvedValue({ status: 200, data: message })
+      .mockResolvedValue({ status: 202, data: {} })
       .calledWith({
         interactionId,
         conversationId: mockUUID.toUpperCase(),
@@ -90,12 +79,12 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     generateUpdateOdsRequest.mockResolvedValue(fakerequest);
   });
 
-  it('should return a 200 if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
+  it('should return a 204 (no content) if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
     request(app)
       .post('/pds-update/123/cppz/9442964410')
-      .expect(200)
+      .expect(204)
       .expect(res => {
-        expect(res.body).toEqual(message);
+        expect(res.body).toEqual({});
       })
       .end(done);
   });
@@ -151,7 +140,7 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       .post('/pds-update/123/cppz/9442964410')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('Unexpected Error: MHS Error');
+        expect(res.body.errors).toBe('Unexpected Error - HTTP code: 503');
       })
       .end(done);
   });

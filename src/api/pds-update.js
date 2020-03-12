@@ -53,23 +53,18 @@ router.post(
       });
 
       switch (messageResponse.status) {
-        case 200:
+        case 202:
           updateLogEvent({
             status: '200 PDS Update response received',
             conversationId,
             response: messageResponse
           });
-          res.status(200).json(messageResponse.data);
+          res.status(204).json(messageResponse.data);
           break;
         case 500:
           throw new Error(`MHS Error: ${messageResponse.data}`);
         default:
-          if (messageResponse.data) {
-            throw new Error(`Unexpected Error: ${messageResponse.data}`);
-          }
-          throw new Error(
-            `No message response from MHS`
-          );
+          throw new Error(`Unexpected Error - HTTP code: ${messageResponse.status}`);
       }
       next();
     } catch (err) {
