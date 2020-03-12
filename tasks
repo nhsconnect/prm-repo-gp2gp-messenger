@@ -8,8 +8,7 @@ set -Eeo pipefail
 
 AWS_DEFAULT_REGION=eu-west-2
 IMAGE_REPO_NAME=deductions/gp2gp-adaptor
-NHS_SERVICE=gp2gp-adaptor
-
+export NHS_SERVICE=gp2gp-adaptor
 
 ####################################
 # Instance (Environment) Variables #
@@ -18,6 +17,13 @@ NHS_SERVICE=gp2gp-adaptor
 function check_env {
   if [[ -z "${NHS_ENVIRONMENT}" ]]; then
     echo "Must set NHS_ENVIRONMENT"
+    exit 1
+  fi
+}
+
+function check_nhs_service {
+  if [[ -z "${NHS_SERVICE}" ]]; then
+    echo "Must set NHS_SERVICE"
     exit 1
   fi
 }
@@ -60,11 +66,11 @@ function configure_aws_service_auth_keys {
     export AUTHORIZATION_KEYS=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region ${AWS_DEFAULT_REGION} --name  ${parameter_name} | jq -r .Parameter.Value")
 }
 
-function get_aws_secret {
+function get_aws_ssm_secret {
   secret_id=$1
-  json=$(aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id)
+  json=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id")
   if [ $? != 0 ]; then
-    >&2 echo "Failed to obtain AWS secret: $secret_id"
+    >&2 echo "Failed to obtain AWS secret from SSM: $secret_id"
     exit 5
   fi
   echo $json | jq -r ".Parameter.Value"
@@ -99,6 +105,24 @@ function tf_apply {
   terraform get # modules
   terraform apply nhs_deployment.tfplan
   terraform output -json > tf-out.json
+}
+
+
+####################
+# Script Functions #
+####################
+
+function send_canary_update_message {
+  check_nhs_service
+  node scripts/send-canary-update.js $(npm outdated --parseable)
+}
+
+function configure_hangout_webhook {
+  export GOOGLE_CHAT_CANARY_WEBHOOK=$(get_aws_ssm_secret "/NHS/GoCD/prod/google-chat-canary-webhook")
+  if [ -z "${GOOGLE_CHAT_CANARY_WEBHOOK}" ]; then
+    echo "Unable to obtain GOOGLE_CHAT_CANARY_WEBHOOK from AWS"
+    exit 5
+  fi
 }
 
 ############################
@@ -137,6 +161,22 @@ case "${command}" in
       ;;
   dep)
       dojo "./tasks _dep"
+      ;;
+  _list_outdated)
+      npm install
+      npm outdated > outdated-dependencies.txt || send_canary_update_message
+      ;;
+  list_outdated)
+      configure_hangout_webhook
+      dojo "./tasks _list_outdated"
+      ;;
+  update_package_json)
+      dojo "npx npm-check-updates -u"
+      ;;
+  send_dead_canary_message)
+      check_nhs_service
+      configure_hangout_webhook
+      dojo "node scripts/send-canary-error.js"
       ;;
   _build)
       rm -rf build/
