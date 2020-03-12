@@ -68,7 +68,7 @@ router.post(
             throw new Error(`Unexpected Error: ${messageResponse.data}`);
           }
           throw new Error(
-            `No message response from MHS, response: ${JSON.stringify(messageResponse)}`
+            `No message response from MHS, response: ${Object.keys(messageResponse)}`
           );
       }
       next();
