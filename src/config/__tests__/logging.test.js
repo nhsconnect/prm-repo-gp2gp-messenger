@@ -1,32 +1,105 @@
-import { obfuscateSecrets } from '../logging';
+import logger, { obfuscateSecrets, options } from '../logging';
+
+jest.mock('winston', () => ({
+  ...jest.requireActual('winston'),
+  createLogger: jest.fn().mockImplementation(() => ({
+    log: jest.fn(),
+    error: jest.fn()
+  }))
+}));
 
 describe('logging', () => {
-  const messageSymbol = Symbol('message');
-  const obfuscatedString = '********';
-
-  const testObjectWithPasscode = {
-    message: `some-message`,
-    data: 'secret-payload',
-    error: {
-      port: 61614,
-      connectArgs: {
-        ssl: true,
-        connectHeaders: {
-          login: 'abcdefg',
-          passcode: '1234567'
-        }
-      }
-    },
-    [messageSymbol]: 'some-symbol-message'
-  };
-
   describe('obfuscateSecrets', () => {
-    it('should replace secret values with obfuscated value', () => {
-      const obfuscatedObject = testObjectWithPasscode;
-      obfuscatedObject.data = obfuscatedString;
-      obfuscatedObject.error.connectArgs.connectHeaders.passcode = obfuscatedString;
+    const formatter = obfuscateSecrets();
+    const obfuscatedString = '********';
 
-      expect(obfuscateSecrets().transform(testObjectWithPasscode)).toEqual(obfuscatedObject);
+    it('should replace top level data key value with obfuscated values', () => {
+      const obfuscatedObject = formatter.transform({
+        data: 'secret-payload'
+      });
+
+      expect(obfuscatedObject).toStrictEqual(
+        expect.objectContaining({
+          data: obfuscatedString
+        })
+      );
+    });
+
+    it('should replace top level passcode key value with obfuscated values', () => {
+      const obfuscatedObject = formatter.transform({
+        passcode: '123456789'
+      });
+
+      expect(obfuscatedObject).toStrictEqual(
+        expect.objectContaining({
+          passcode: obfuscatedString
+        })
+      );
+    });
+
+    it('should replace nested passcode key value with obfuscated values', () => {
+      const obfuscatedObject = formatter.transform({
+        nested: {
+          passcode: '123456789'
+        }
+      });
+
+      expect(obfuscatedObject).toStrictEqual(
+        expect.objectContaining({
+          nested: {
+            passcode: obfuscatedString
+          }
+        })
+      );
+    });
+
+    it('should replace nested passcode key value with obfuscated values', () => {
+      const obfuscatedObject = formatter.transform({
+        nested: {
+          data: 'some-secret-data'
+        }
+      });
+
+      expect(obfuscatedObject).toStrictEqual(
+        expect.objectContaining({
+          nested: {
+            data: obfuscatedString
+          }
+        })
+      );
+    });
+  });
+
+  describe('options', () => {
+    it('should contain exitOnError that is false', () => {
+      expect(options.exitOnError).toBe(false);
+    });
+
+    it('should contain format', () => {
+      expect(options.format).not.toBeNull();
+    });
+
+    it('should contain transport', () => {
+      expect(options.transports.length).toBe(1);
+    });
+  });
+
+  describe('logger.error override', () => {
+    const message = 'failed';
+    const errorMessage = 'some-error';
+
+    it('should call logger.log only once', () => {
+      logger.error(message, Error(errorMessage));
+      expect(logger.log).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call logger.log with correct message', () => {
+      logger.error(message, Error(errorMessage));
+      expect(logger.log).toHaveBeenCalledWith(
+        'error',
+        `${message}: ${errorMessage}`,
+        expect.objectContaining(Error(errorMessage))
+      );
     });
   });
 });
