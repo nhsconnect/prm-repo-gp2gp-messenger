@@ -1,5 +1,5 @@
 import express from 'express';
-import { param } from 'express-validator';
+import { param, body } from 'express-validator';
 import dateFormat from 'dateformat';
 import uuid from 'uuid/v4';
 import config from '../config';
@@ -14,17 +14,25 @@ const router = express.Router();
 const validationRules = [
   param('nhsNumber')
     .isNumeric()
-    .withMessage("'nhsNumber' provided is not numeric"),
-  param('serialChangeNumber')
-    .isNumeric()
-    .withMessage("'serialChangeNumber' provided is not numeric"),
+    .withMessage(`'nhsNumber' provided is not numeric`),
   param('nhsNumber')
     .isLength({ min: 10, max: 10 })
-    .withMessage("'nhsNumber' provided is not 10 characters")
+    .withMessage("'nhsNumber' provided is not 10 characters"),
+  body('serialChangeNumber')
+    .isNumeric()
+    .withMessage(`'serialChangeNumber' provided is not numeric`),
+  body('serialChangeNumber')
+    .not()
+    .isEmpty()
+    .withMessage(`'serialChangeNumber' has not been provided`),
+  body('pdsId')
+    .not()
+    .isEmpty()
+    .withMessage(`'pdsId' has not been provided`)
 ];
 
 router.post(
-  '/:serialChangeNumber/:pdsId/:nhsNumber',
+  '/:nhsNumber',
   authenticateRequest,
   validationRules,
   validate,
@@ -41,8 +49,8 @@ router.post(
         sendingService: { asid: config.deductionsAsid, odsCode: config.deductionsOdsCode },
         patient: {
           nhsNumber: req.params.nhsNumber,
-          pdsId: req.params.pdsId,
-          pdsUpdateChangeNumber: req.params.serialChangeNumber
+          pdsId: req.body.pdsId,
+          pdsUpdateChangeNumber: req.body.serialChangeNumber
         }
       });
 

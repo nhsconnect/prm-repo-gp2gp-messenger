@@ -126,7 +126,7 @@ describe('app', () => {
     });
   });
 
-  describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
+  describe('POST /pds-update/:nhsNumber', () => {
     beforeEach(() => {
       config.pdsAsid = 'pdsAsid';
       config.deductionsAsid = 'deductionsAsid';
@@ -147,7 +147,11 @@ describe('app', () => {
 
     it('should return a 204 (no content) if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
       request(app)
-        .post('/pds-update/123/cppz/9442964410')
+        .post('/pds-update/9442964410')
+        .send({
+          serialChangeNumber: '123',
+          pdsId: 'cppz'
+        })
         .expect(204)
         .expect(res => {
           expect(res.body).toEqual({});
