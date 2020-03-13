@@ -21,7 +21,7 @@ describe('generateUpdateOdsRequest', () => {
     patient: {
       nhsNumber: testData.tppPatient.nhsNumber,
       pdsId: testData.tppPatient.pdsId,
-      pdsUpdateChangeNumber: testData.tppPatient.serialChaneNumber
+      pdsUpdateChangeNumber: testData.tppPatient.serialChangeNumber
     }
   };
 
@@ -39,7 +39,7 @@ describe('generateUpdateOdsRequest', () => {
         patient: {
           nhsNumber: testData.tppPatient.nhsNumber,
           pdsId: testData.tppPatient.pdsId,
-          pdsUpdateChangeNumber: testData.tppPatient.serialChaneNumber
+          pdsUpdateChangeNumber: testData.tppPatient.serialChangeNumber
         }
       })
     ).toThrowError(

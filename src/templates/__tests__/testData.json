@@ -17,7 +17,7 @@
     "nhsNumber": "9442964410",
     "pdsId": "cppz",
     "conversationId": "",
-    "serialChaneNumber": "138"
+    "serialChangeNumber": "138"
   },
   "emisPractise": {
     "name": "Walton Village R",
@@ -40,6 +40,8 @@
     "asid": "928942012545"
   },
   "patient": {
-    "openTest": { "nhsNumber": "9473480032" }
+    "openTest": {
+      "nhsNumber": "9473480032"
+    }
   }
 }

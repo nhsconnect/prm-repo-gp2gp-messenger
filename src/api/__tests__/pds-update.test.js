@@ -6,11 +6,7 @@ import config from '../../config';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 import { updateLogEvent } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { validatePdsResponse } from '../../services/pds/pds-response-validator';
-import { parsePdsResponse } from '../../services/pds/pds-response-handler';
 
-jest.mock('../../services/pds/pds-response-validator');
-jest.mock('../../services/pds/pds-response-handler');
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
 jest.mock('../../middleware/auth');
@@ -21,12 +17,8 @@ jest.mock('uuid/v4');
 const fakerequest =
   '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';
 
-const sendMessageErrorMessage =
-  '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></PRPA_IN000203UK03>';
-
 const interactionId = 'PRPA_IN000203UK03';
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
-const mockNoPatientUID = 'ebf6ee70-b9b7-64a6-8780-a386fccd759d';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
 
 function generateLogEvent(message) {
@@ -46,9 +38,6 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
     config.deductionsAsid = 'deductionsAsid';
     uuid.mockImplementation(() => mockUUID);
 
-    validatePdsResponse.mockResolvedValue(Promise.resolve(true));
-    parsePdsResponse.mockResolvedValue(Promise.resolve({}));
-
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS Error' })
       .calledWith({
@@ -59,22 +48,10 @@ describe('POST /pds-update/:serialChangeNumber/:pdsId/:nhsNumber', () => {
       .mockResolvedValue({ status: 202, data: {} })
       .calledWith({
         interactionId,
-        conversationId: mockUUID.toUpperCase(),
-        message: sendMessageErrorMessage
-      })
-      .mockRejectedValue(Error('rejected'))
-      .calledWith({
-        interactionId,
         conversationId: mockErrorUUID.toUpperCase(),
         message: fakerequest
       })
-      .mockResolvedValue({ status: 500, data: '500 MHS Error' })
-      .calledWith({
-        interactionId,
-        conversationId: mockNoPatientUID.toUpperCase(),
-        message: fakerequest
-      })
-      .mockResolvedValue({ status: 200, data: 'no patient details' });
+      .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
     generateUpdateOdsRequest.mockResolvedValue(fakerequest);
   });
