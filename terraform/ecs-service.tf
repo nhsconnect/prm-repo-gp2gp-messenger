@@ -42,5 +42,6 @@ resource "aws_ecs_service" "ecs-service" {
     Terraform = "true"
     Environment = var.environment
     Deductions-Component = var.component_name
+    TurnOffAtNight = "True"
   }
 }
