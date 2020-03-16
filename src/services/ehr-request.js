@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import generateEhrRequestQuery from '../templates/ehr-request-template';

@@ -1,18 +1,17 @@
 import { when } from 'jest-when';
 import request from 'supertest';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import app from '../../app';
 import config from '../../config';
-import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 import { updateLogEvent } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
 jest.mock('../../middleware/auth');
 jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-update-ods-request');
-jest.mock('uuid/v4');
 
 const fakerequest =
   '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';

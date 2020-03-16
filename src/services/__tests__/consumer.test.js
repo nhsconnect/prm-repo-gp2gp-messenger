@@ -1,13 +1,12 @@
-import { ConnectFailover, connect } from 'stompit';
-import initialiseConsumer from '../consumer';
-import config from '../../config';
-import handleMessage from '../message-handler';
-import logger from '../../config/logging';
 import httpContext from 'async-local-storage';
+import { connect, ConnectFailover } from 'stompit';
+import config from '../../config';
+import logger from '../../config/logging';
+import initialiseConsumer from '../consumer';
+import handleMessage from '../message-handler';
 
 httpContext.enable();
 
-jest.mock('uuid/v4', () => () => 'some-correlation-id');
 jest.mock('../../config/logging');
 jest.mock('../message-handler');
 

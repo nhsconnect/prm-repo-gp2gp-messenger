@@ -6,7 +6,6 @@ import handleMessage from '../message-handler';
 import * as mhsGatewayFake from '../mhs/mhs-old-queue-test-helper';
 
 jest.mock('../mhs/mhs-old-queue-test-helper');
-jest.mock('uuid/v4', () => () => 'some-uuid');
 jest.mock('../../middleware/logging');
 jest.mock('../ehr-repo-gateway');
 
@@ -79,7 +78,7 @@ describe('handleMessage', () => {
   it('should send generated continue request to fake MHS if message is EHR Request Completed and environment is not PTL', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       const continueMessage = generateContinueRequest(
-        'some-uuid',
+        'mocked-uuid',
         '20190228112548',
         foundationSupplierAsid,
         config.deductionsAsid,

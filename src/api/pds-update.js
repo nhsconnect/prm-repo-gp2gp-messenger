@@ -1,13 +1,13 @@
-import express from 'express';
-import { param, body } from 'express-validator';
 import dateFormat from 'dateformat';
-import uuid from 'uuid/v4';
+import express from 'express';
+import { body, param } from 'express-validator';
+import { v4 as uuid } from 'uuid';
 import config from '../config';
-import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 import { authenticateRequest } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
+import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 
 const router = express.Router();
 

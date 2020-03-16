@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { extractMessageId } from '../soap-parser/extract-message-id';
 
 describe('extractMessageId', () => {

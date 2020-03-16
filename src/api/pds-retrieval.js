@@ -1,15 +1,15 @@
 import dateFormat from 'dateformat';
 import express from 'express';
 import { param } from 'express-validator';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import config from '../config';
 import { authenticateRequest } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
-import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
-import { validatePdsResponse } from '../services/pds/pds-response-validator';
 import { parsePdsResponse } from '../services/pds/pds-response-handler';
+import { validatePdsResponse } from '../services/pds/pds-response-validator';
+import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 
 const router = express.Router();
 

@@ -1,8 +1,15 @@
 import httpContext from 'async-local-storage';
 import axios from 'axios';
+import { v4 as uuid } from 'uuid';
 import { getCorrelationId, middleware } from '../correlation';
-
 httpContext.enable();
+
+uuid.mockImplementation(
+  jest
+    .fn(() => 'default-mocked-uuid')
+    .mockImplementationOnce(() => 'mocked-uuid')
+    .mockImplementationOnce(() => 'second-mocked-uuid')
+);
 
 describe('correlation middleware', () => {
   it('should set a different correlation id for each request', () => {

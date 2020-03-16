@@ -1,6 +1,6 @@
-import { connectToQueue } from '../../config/queue';
+import { v4 as uuid } from 'uuid';
 import config from '../../config';
-import uuid from 'uuid/v4';
+import { connectToQueue } from '../../config/queue';
 
 const putMessageOnQueue = (client, message) => {
   const transaction = client.begin();

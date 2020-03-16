@@ -1,6 +1,6 @@
 const generateUpdateOdsRequest = require('../generate-update-ods-request');
-const uuid = require('uuid/v4');
 import dateFormat from 'dateformat';
+const { v4: uuid } = require('uuid');
 const testData = require('./testData.json');
 
 describe('generateUpdateOdsRequest', () => {
