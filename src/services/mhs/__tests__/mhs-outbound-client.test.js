@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dateFormat from 'dateformat';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import config from '../../../config';
 import { updateLogEventWithError } from '../../../middleware/logging';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';

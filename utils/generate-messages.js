@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const dateFormat = require('dateformat');
 const generateEhrRequestQuery = require('../src/templates/ehr-request-template');
 const generateUpdatePdsRequest = require('../src/templates/generate-update-ods-request');

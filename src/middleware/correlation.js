@@ -1,6 +1,6 @@
 import httpContext from 'async-local-storage';
-import uuid from 'uuid/v4';
 import axios from 'axios';
+import { v4 as uuid } from 'uuid';
 
 const CORRELATION_ID_HEADER = 'X-Correlation-ID';
 const CORRELATION_ID_KEY = 'correlationId';

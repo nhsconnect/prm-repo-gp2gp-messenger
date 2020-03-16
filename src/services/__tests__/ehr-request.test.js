@@ -8,7 +8,6 @@ import * as mhsQueueTestHelper from '../mhs/mhs-old-queue-test-helper';
 
 jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('../../middleware/logging');
-jest.mock('uuid/v4', () => () => 'some-uuid');
 
 describe('sendEhrRequest', () => {
   let ehrRequestQuery;
@@ -18,7 +17,7 @@ describe('sendEhrRequest', () => {
     config.deductionsOdsCode = 'some-ods-code';
 
     ehrRequestQuery = generateEhrRequestQuery({
-      id: 'some-uuid',
+      id: 'mocked-uuid',
       timestamp: '20190228112548',
       receivingService: {
         asid: receivingAsid,

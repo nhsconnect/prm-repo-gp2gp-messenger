@@ -1,15 +1,15 @@
 import { when } from 'jest-when';
 import request from 'supertest';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import app from '../app';
 import config from '../config';
 import sendEhrRequest from '../services/ehr-request';
+import { getHealthCheck } from '../services/get-health-check';
+import { sendMessage } from '../services/mhs/mhs-outbound-client';
+import { parsePdsResponse } from '../services/pds/pds-response-handler';
+import { validatePdsResponse } from '../services/pds/pds-response-validator';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
-import { getHealthCheck } from '../services/get-health-check';
-import { validatePdsResponse } from '../services/pds/pds-response-validator';
-import { parsePdsResponse } from '../services/pds/pds-response-handler';
-import { sendMessage } from '../services/mhs/mhs-outbound-client';
 
 jest.mock('../services/ehr-request');
 jest.mock('../config/logging');
@@ -20,7 +20,6 @@ jest.mock('../services/pds/pds-response-handler');
 jest.mock('../services/mhs/mhs-outbound-client');
 jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
-jest.mock('uuid/v4');
 
 const testSerialChangeNumber = '2';
 const testPatientPdsId = 'cppz';

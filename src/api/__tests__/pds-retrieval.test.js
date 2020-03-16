@@ -1,13 +1,13 @@
 import { when } from 'jest-when';
 import request from 'supertest';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { updateLogEvent, updateLogEventWithError } from '../../../src/middleware/logging';
 import app from '../../app';
 import config from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
-import { validatePdsResponse } from '../../services/pds/pds-response-validator';
 import { parsePdsResponse } from '../../services/pds/pds-response-handler';
+import { validatePdsResponse } from '../../services/pds/pds-response-validator';
+import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockNoDataUUID = 'fdb5c732-9e82-48ef-991b-8cd54b485748';
@@ -51,7 +51,6 @@ jest.mock('../../middleware/logging');
 jest.mock('../../middleware/auth');
 jest.mock('../../services/mhs/mhs-outbound-client');
 jest.mock('../../templates/generate-pds-retrieval-request');
-jest.mock('uuid/v4');
 
 function generateLogEvent(message) {
   return {
