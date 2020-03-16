@@ -13,8 +13,8 @@
     "test:coverage": "jest src/ --maxWorkers=1 --coverage --detectOpenHandles --forceExit --setupFiles dotenv/config",
     "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' && cp src/*.json build",
     "start": "node build/server.js",
-    "start:local": "babel-node -r node_modules/dotenv/config src/server.js",
-    "start:nodemon": "nodemon --exec babel-node -r node_modules/dotenv/config src/server.js"
+    "start:local": "babel-node -r dotenv/config src/server.js",
+    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
   },
   "repository": {
     "type": "git",

@@ -59,10 +59,24 @@ Run the coverage tests (unit test and integration test)
 
 ## Start the app locally
 
-1. Run a development server with `npm run start:local`, to start together with a linked MQ server.
-2. If successful, it will print a message similar to the following in the terminal:
+1. Run the message queues in docker by using `docker-compose up &`, make sure your .env has the following config
+
+2. Run a development server with `npm run start:local`, to start together with a linked MQ server.
+3. If successful, it will print a message similar to the following in the terminal:
+
+
+```.env
+// .env
+MHS_QUEUE_NAME=<any-name>
+MHS_QUEUE_URL_1=tcp://localhost:61620
+MHS_QUEUE_URL_2=tcp://localhost:61621
+MHS_QUEUE_VIRTUAL_HOST=/
+MHS_QUEUE_USERNAME=guest
+MHS_QUEUE_PASSWORD=guest
+```
 
 ```
+// console
 {
   message: 'Listening on port 3000',
   level: 'info',

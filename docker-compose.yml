@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  mq-1:
+    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61620:61613
+  mq-2:
+    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    ports:
+      - 61621:61613
