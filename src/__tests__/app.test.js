@@ -87,7 +87,7 @@ describe('app', () => {
     });
   });
 
-  describe('GET /pds-retrieval/:nhsNumber', () => {
+  describe('GET /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
       config.pdsAsid = 'pdsAsid';
       config.deductionsAsid = 'deductionsAsid';
@@ -111,7 +111,7 @@ describe('app', () => {
 
     it('should return a 200 and parse the pds response if the response is valid', done => {
       request(app)
-        .get('/pds-retrieval/9999999999')
+        .get('/patient-demographics/9999999999')
         .expect(200)
         .expect(async () => {
           await parsePdsResponse(message).then(result =>
@@ -125,7 +125,7 @@ describe('app', () => {
     });
   });
 
-  describe('POST /pds-update/:nhsNumber', () => {
+  describe('POST /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
       config.pdsAsid = 'pdsAsid';
       config.deductionsAsid = 'deductionsAsid';
@@ -146,7 +146,7 @@ describe('app', () => {
 
     it('should return a 204 (no content) if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
       request(app)
-        .post('/pds-update/9442964410')
+        .patch('/patient-demographics/9442964410')
         .send({
           serialChangeNumber: '123',
           pdsId: 'cppz'

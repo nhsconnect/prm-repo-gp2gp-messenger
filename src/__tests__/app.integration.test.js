@@ -55,18 +55,18 @@ describe('app', () => {
     });
   });
 
-  describe('GET /pds-retrieval', () => {
-    it('should return a 200 status code for /pds-retrieval/:nhsNumber', done => {
+  describe('GET /patient-demographics', () => {
+    it('should return a 200 status code for /patient-demographics/:nhsNumber', done => {
       request(app)
-        .get('/pds-retrieval/9999999999')
+        .get('/patient-demographics/9999999999')
         .set('Authorization', 'correct-key')
         .expect(200)
         .end(done);
     });
 
-    it('should return the response body for /pds-retrieval/:nhsNumber', done => {
+    it('should return the response body for /patient-demographics/:nhsNumber', done => {
       request(app)
-        .get('/pds-retrieval/9999999999')
+        .get('/patient-demographics/9999999999')
         .set('Authorization', 'correct-key')
         .expect(200)
         .expect(res => {
@@ -83,12 +83,12 @@ describe('app', () => {
         .end(done);
     });
 
-    it('should return the response body with Errors for /pds-retrieval/:nhsNumber', done => {
+    it('should return the response body with Errors for /patient-demographics/:nhsNumber', done => {
       axios.post.mockImplementation(() =>
         Promise.resolve({ status: 200, data: pdsQeuryFailedAE() })
       );
       request(app)
-        .get('/pds-retrieval/9999999999')
+        .get('/patient-demographics/9999999999')
         .set('Authorization', 'correct-key')
         .expect(200)
         .expect(res => {
@@ -103,7 +103,7 @@ describe('app', () => {
 
     it('should return a 404 status code without nhsNumber parameter', done => {
       request(app)
-        .get('/pds-retrieval')
+        .get('/patient-demographics')
         .expect(404)
         .end(done);
     });

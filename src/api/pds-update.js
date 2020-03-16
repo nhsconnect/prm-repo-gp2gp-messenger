@@ -31,7 +31,7 @@ const validationRules = [
     .withMessage(`'pdsId' has not been provided`)
 ];
 
-router.post(
+router.patch(
   '/:nhsNumber',
   authenticateRequest,
   validationRules,

@@ -19,7 +19,7 @@ describe('auth', () => {
   describe('authenticated successfully', () => {
     it('should return HTTP 200 when correctly authenticated', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
         .expect(503)
         .end(done);
@@ -35,7 +35,7 @@ describe('auth', () => {
 
     it('should return 412 if AUTHORIZATION_KEYS have not been set', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
         .expect(412)
         .end(done);
@@ -43,7 +43,7 @@ describe('auth', () => {
 
     it('should return an explicit error message in the body if AUTHORIZATION_KEYS have not been set', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
         .expect(res => {
           expect(res.body).toEqual(
@@ -59,18 +59,19 @@ describe('auth', () => {
   describe('Authorization header not provided', () => {
     it('should return HTTP 401 when no authorization header provided', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .expect(401)
         .end(done);
     });
 
     it('should return an explicit error message in the body when no authorization header provided', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .expect(res => {
           expect(res.body).toEqual(
             expect.objectContaining({
-              error: 'The request (/pds-retrieval) requires a valid Authorization header to be set'
+              error:
+                'The request (/patient-demographics) requires a valid Authorization header to be set'
             })
           );
         })
@@ -81,7 +82,7 @@ describe('auth', () => {
   describe('incorrect Authorisation header value provided ', () => {
     it('should return HTTP 403 when authorization key is incorrect', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'incorrect-key')
         .expect(403)
         .end(done);
@@ -89,7 +90,7 @@ describe('auth', () => {
 
     it('should return an explicit error message in the body when authorization key is incorrect', done => {
       request(app)
-        .get('/pds-retrieval/0000000000')
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'incorrect-key')
         .expect(res => {
           expect(res.body).toEqual(

@@ -24,8 +24,8 @@ app.use('/health', logging.middleware, healthCheck);
 app.use('/ehr-request', logging.middleware, ehrRequest);
 app.use('/error', logging.middleware, errorEndpoint);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/pds-retrieval', logging.middleware, pdsRetrieval);
-app.use('/pds-update', logging.middleware, pdsUpdate);
+app.use('/patient-demographics', logging.middleware, pdsRetrieval);
+app.use('/patient-demographics', logging.middleware, pdsUpdate);
 
 app.use(errorLogger(options));
 

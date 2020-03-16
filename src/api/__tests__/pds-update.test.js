@@ -30,7 +30,7 @@ function generateLogEvent(message) {
   };
 }
 
-describe('POST /pds-update/:nhsNumber', () => {
+describe('POST /patient-demographics/:nhsNumber', () => {
   beforeEach(() => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
     config.pdsAsid = 'pdsAsid';
@@ -57,7 +57,7 @@ describe('POST /pds-update/:nhsNumber', () => {
 
   it('should return a 204 (no content) if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {
     request(app)
-      .post('/pds-update/9442964410')
+      .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz'
@@ -72,7 +72,7 @@ describe('POST /pds-update/:nhsNumber', () => {
   it('should return an error if :nhsNumber is less than 10 digits', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
-      .post('/pds-update/944410')
+      .patch('/patient-demographics/944410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz'
@@ -92,7 +92,7 @@ describe('POST /pds-update/:nhsNumber', () => {
   it('should return an error if :serialChangeNumber is not numeric', done => {
     const errorMessage = [{ serialChangeNumber: "'serialChangeNumber' provided is not numeric" }];
     request(app)
-      .post('/pds-update/9442964410')
+      .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: 'xxx',
         pdsId: 'cppz'
@@ -112,7 +112,7 @@ describe('POST /pds-update/:nhsNumber', () => {
   it('should return an error if :pdsId is not provided', done => {
     const errorMessage = [{ pdsId: "'pdsId' has not been provided" }];
     request(app)
-      .post('/pds-update/9442964410')
+      .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123'
       })
@@ -132,7 +132,7 @@ describe('POST /pds-update/:nhsNumber', () => {
     uuid.mockImplementation(() => mockErrorUUID);
 
     request(app)
-      .post('/pds-update/9442964410')
+      .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz'
@@ -148,7 +148,7 @@ describe('POST /pds-update/:nhsNumber', () => {
     uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
 
     request(app)
-      .post('/pds-update/9442964410')
+      .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz'

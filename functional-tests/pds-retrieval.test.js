@@ -3,7 +3,7 @@ import adapter from 'axios/lib/adapters/http';
 import config from '../src/config';
 import testData from '../src/templates/__tests__/testData.json';
 
-describe('End to end test of /pds-retrieval/:nhsNumber', () => {
+describe('End to end test of /patient-demographics/:nhsNumber', () => {
   it('will receive QUPA_IN000009UK03 from PDS (successful retrieval)', () => {
     const nhsNumber =
       process.env.NHS_ENVIRONMENT === 'dev'
@@ -11,7 +11,7 @@ describe('End to end test of /pds-retrieval/:nhsNumber', () => {
         : testData.tppPatient.nhsNumber;
 
     return axios
-      .get(`${config.url}/pds-retrieval/${nhsNumber}`, {
+      .get(`${config.url}/patient-demographics/${nhsNumber}`, {
         headers: {
           Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
         },
@@ -25,7 +25,7 @@ describe('End to end test of /pds-retrieval/:nhsNumber', () => {
     const fakeNhsNumber = '0000000000';
 
     return axios
-      .get(`${config.url}/pds-retrieval/${fakeNhsNumber}`, {
+      .get(`${config.url}/patient-demographics/${fakeNhsNumber}`, {
         headers: {
           Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
         },

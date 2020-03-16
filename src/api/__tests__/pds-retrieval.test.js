@@ -64,7 +64,7 @@ function generateLogEvent(message) {
 
 const interactionId = 'QUPA_IN000008UK02';
 
-describe('/pds-retrieval/:nhsNumber', () => {
+describe('/patient-demographics/:nhsNumber', () => {
   beforeEach(() => {
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
@@ -128,14 +128,14 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
   it('should return a 200 with MHS message passed back', done => {
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .end(done);
   });
 
   it('should return a 200 and update the logs', done => {
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(() => {
         expect(updateLogEvent).toHaveBeenCalledTimes(2);
@@ -150,7 +150,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
   it('should return a 200 and parse the pds response if the response is valid', done => {
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(async () => {
         await parsePdsResponse(message).then(result =>
@@ -165,7 +165,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
 
   it('should return a 200 and the validator should be called', done => {
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(async () => {
         const isValid = await validatePdsResponse(message);
@@ -178,7 +178,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     uuid.mockImplementation(() => mockNoPdsUUID);
     parsePdsResponse.mockRejectedValue(Error('some-error'));
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -191,7 +191,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return error message if the message is NACK', done => {
     validatePdsResponse.mockResolvedValue(Promise.resolve(false));
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -204,7 +204,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return and log error message if the response body is empty ', done => {
     uuid.mockImplementation(() => mockNoDataUUID);
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(res => {
         expect(res.body.data).toEqual({});
@@ -217,7 +217,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return an error if :nhsNumber is less than 10 digits', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not 10 characters" }];
     request(app)
-      .get('/pds-retrieval/99')
+      .get('/patient-demographics/99')
       .expect(422)
       .expect('Content-Type', /json/)
       .expect(res => {
@@ -233,7 +233,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
   it('should return an error if :nhsNumber is not numeric', done => {
     const errorMessage = [{ nhsNumber: "'nhsNumber' provided is not numeric" }];
     request(app)
-      .get('/pds-retrieval/xxxxxxxxxx')
+      .get('/patient-demographics/xxxxxxxxxx')
       .expect(422)
       .expect('Content-Type', /json/)
       .expect(res => {
@@ -250,7 +250,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     generatePdsRetrievalQuery.mockResolvedValue(sendMessageErrorMessage);
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('rejected');
@@ -262,7 +262,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     uuid.mockImplementation(() => mockErrorUUID);
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('MHS Error: 500 MHS Error');
@@ -274,7 +274,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('Unexpected Error: MHS error');
@@ -286,7 +286,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(Error('Unexpected Error: MHS error'));
@@ -300,7 +300,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     );
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('Check template parameter error: asid is undefined');
@@ -314,7 +314,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     );
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(
@@ -328,7 +328,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     generatePdsRetrievalQuery.mockResolvedValue('<Header></Header>');
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
         expect(res.body.errors).toBe('interactionId is not included in the message');
@@ -340,7 +340,7 @@ describe('/pds-retrieval/:nhsNumber', () => {
     generatePdsRetrievalQuery.mockResolvedValue('<Header></Header>');
 
     request(app)
-      .get('/pds-retrieval/9999999999')
+      .get('/patient-demographics/9999999999')
       .expect(() => {
         expect(updateLogEventWithError).toBeCalledTimes(1);
         expect(updateLogEventWithError).toBeCalledWith(
