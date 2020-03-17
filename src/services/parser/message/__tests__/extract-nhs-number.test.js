@@ -15,14 +15,10 @@ describe('extractNhsNumber', () => {
     `;
 
   it('should extract the NHS number from XML body', () => {
-    return extractNhsNumber(exampleResolveXML).then(nhsNumber =>
-      expect(nhsNumber).toBe('1234567890')
-    );
+    return expect(extractNhsNumber(exampleResolveXML)).resolves.toBe('1234567890');
   });
 
   it('should throw and error when NHS number does not exist', () => {
-    return extractNhsNumber(exampleErrorXML).catch(err =>
-      expect(err.message).toBe(expectedErrorMessage)
-    );
+    return expect(extractNhsNumber(exampleErrorXML)).rejects.toEqual(Error(expectedErrorMessage));
   });
 });

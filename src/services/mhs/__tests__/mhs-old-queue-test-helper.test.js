@@ -49,17 +49,24 @@ describe('mhs-gateway-fake', () => {
       connectToQueue.mockImplementation(callback => callback(null, client));
     });
 
-    it('should reject and update log event when an error has occurred', () => {
+    it('should reject when an error has occurred', () => {
       const error = new Error('some-error');
 
       connectToQueue.mockImplementation(callback => callback(error));
 
-      return sendMessage('message').catch(err => {
-        expect(err).toStrictEqual(error);
-        expect(connectToQueue).toHaveBeenCalledTimes(1);
-        return expect(updateLogEvent).toHaveBeenCalledWith({
-          mhs: { status: 'connection-failed' }
-        });
+      expect(sendMessage('message')).rejects.toStrictEqual(error);
+    });
+
+    it('should update log event when an error has occurred', async () => {
+      const error = new Error('some-error');
+
+      connectToQueue.mockImplementation(callback => callback(error));
+
+      await sendMessage('message').catch(() => {});
+
+      expect(connectToQueue).toHaveBeenCalledTimes(1);
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        mhs: { status: 'connection-failed' }
       });
     });
 
