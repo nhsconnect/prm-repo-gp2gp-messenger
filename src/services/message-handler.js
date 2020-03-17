@@ -5,14 +5,12 @@ import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { generateContinueRequest } from '../templates/continue-template';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
+import { extractAction, extractConversationId, extractMessageId } from './parser/soap';
 import {
   containsNegativeAcknowledgement,
   EHR_EXTRACT_MESSAGE_ACTION,
-  extractAction,
-  extractConversationId,
-  extractFoundationSupplierAsid,
-  extractMessageId
-} from './parser/soap-parser';
+  extractFoundationSupplierAsid
+} from './parser/message';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = dayjs().format('YYYYMMDDHHmmss');

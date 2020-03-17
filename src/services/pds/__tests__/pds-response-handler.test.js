@@ -1,6 +1,6 @@
 import { parsePdsResponse } from '../pds-response-handler';
 
-jest.mock('../../parser/soap-parser');
+jest.mock('../../parser/soap');
 
 const testSerialChangeNumber = '2';
 const testPatientPdsId = 'cppz';

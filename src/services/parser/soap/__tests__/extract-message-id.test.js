@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { extractMessageId } from '../soap-parser/extract-message-id';
+import { extractMessageId } from '../extract-message-id';
 
 describe('extractMessageId', () => {
   const expectedErrorMessage = 'Message does not contain message id';

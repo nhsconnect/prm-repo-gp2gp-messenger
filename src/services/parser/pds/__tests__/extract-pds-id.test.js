@@ -1,4 +1,4 @@
-import { extractPdsId } from '../extract-pds.id';
+import { extractPdsId } from '../extract-pds-id';
 
 describe('extractPdsId', () => {
   const testPdsId = 'cppz';

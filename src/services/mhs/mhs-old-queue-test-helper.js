@@ -10,7 +10,7 @@ import {
   CONTINUE_MESSAGE_ACTION,
   EHR_REQUEST_MESSAGE_ACTION,
   extractInteractionId
-} from '../parser/soap-parser';
+} from '../parser/message';
 import { connectToQueue } from '../../config/queue';
 
 const putResponseOnQueue = (client, response) => {

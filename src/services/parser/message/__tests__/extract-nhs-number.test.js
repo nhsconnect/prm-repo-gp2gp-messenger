@@ -1,4 +1,4 @@
-import { extractNhsNumber } from '../soap-parser/extract-nhs-number';
+import { extractNhsNumber } from '../extract-nhs-number';
 
 describe('extractNhsNumber', () => {
   const expectedErrorMessage = 'Message does not contain NHS number';

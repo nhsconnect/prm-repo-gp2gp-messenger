@@ -1,4 +1,4 @@
-import { extractManifestInfo } from '../soap-parser/extract-manifest-info';
+import { extractManifestInfo } from '../extract-manifest-info';
 
 describe('extractManifestInfo', () => {
   const expectedErrorMessage = 'Message does not contain manifestInfo';
