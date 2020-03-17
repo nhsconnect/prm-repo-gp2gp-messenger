@@ -29,18 +29,14 @@ describe('extractMessageId', () => {
     `;
 
   it('should extract the messageId from XML body', () => {
-    return extractMessageId(exampleResolveXML).then(messageId =>
-      expect(messageId).toBe(testMessageId)
-    );
+    return expect(extractMessageId(exampleResolveXML)).resolves.toBe(testMessageId);
   });
 
   it('should extract the messageId from XML body in a real example', () => {
-    return extractMessageId(realExample).then(messageId => expect(messageId).toBe(testMessageId));
+    return expect(extractMessageId(realExample)).resolves.toBe(testMessageId);
   });
 
-  it('should throw and error when messageId does not exist', () => {
-    return extractMessageId(exampleErrorXML).catch(err =>
-      expect(err.message).toBe(expectedErrorMessage)
-    );
+  it('should throw an error when messageId does not exist', () => {
+    return expect(extractMessageId(exampleErrorXML)).rejects.toEqual(Error(expectedErrorMessage));
   });
 });

@@ -45,18 +45,18 @@ describe('extractPdsId', () => {
   `;
 
   it('should extract the pdsId from XML body', () => {
-    return extractPdsId(pdsResponseWithPdsId).then(pdsId => expect(pdsId).toEqual(testPdsId));
+    return expect(extractPdsId(pdsResponseWithPdsId)).resolves.toBe(testPdsId);
   });
 
   it('should extract the pdsId from XML body if the body contains patientCareProvisionEvent is not GP', () => {
-    return extractPdsId(multiplePatientCareProvisionEventsWithNoneGP).then(pdsId =>
-      expect(pdsId).toEqual(testPdsId)
+    return expect(extractPdsId(multiplePatientCareProvisionEventsWithNoneGP)).resolves.toBe(
+      testPdsId
     );
   });
 
   it('should throw error if it could not extract the pds id ', () => {
-    return extractPdsId(noPatientCareProvisionEvent).catch(err =>
-      expect(err.message).toEqual('Failed to extract PDS ID')
+    return expect(extractPdsId(noPatientCareProvisionEvent)).rejects.toEqual(
+      Error('Failed to extract PDS ID')
     );
   });
 });

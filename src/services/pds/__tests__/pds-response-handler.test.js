@@ -41,23 +41,24 @@ const noSerialChangeNumber = `
 describe('pds-response-handler', () => {
   describe('parsePdsResponse', () => {
     it('should return an object has serial change number and patient pds id', () => {
-      return parsePdsResponse(normalResponse).then(obj => {
-        expect(obj).toEqual({
+      return expect(parsePdsResponse(normalResponse)).resolves.toEqual(
+        expect.objectContaining({
           serialChangeNumber: testSerialChangeNumber,
           patientPdsId: testPatientPdsId
-        });
-      });
+        })
+      );
     });
+
     it('should throw error if failed to extract patient pds id', () => {
-      return parsePdsResponse(noPDSId).catch(err => {
-        expect(err.message).toEqual('Error: Failed to extract PDS ID');
-      });
+      return expect(parsePdsResponse(noPDSId)).rejects.toEqual(
+        Error('Error: Failed to extract PDS ID')
+      );
     });
 
     it('should throw error if failed to extract serial change number', () => {
-      return parsePdsResponse(noSerialChangeNumber).catch(err => {
-        expect(err.message).toEqual('Error: failed to extract PDS serial change number');
-      });
+      return expect(parsePdsResponse(noSerialChangeNumber)).rejects.toEqual(
+        Error('Error: failed to extract PDS serial change number')
+      );
     });
   });
 });
