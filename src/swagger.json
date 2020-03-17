@@ -136,9 +136,7 @@
             "api_key": []
           }
         ]
-      }
-    },
-    "/patient-demographics/{nhsNumber}": {
+      },
       "patch": {
         "tags": [
           "patient-demographics"
@@ -184,12 +182,7 @@
         "503": {
           "description": "Error"
         }
-      },
-      "security": [
-        {
-          "api_key": []
-        }
-      ]
+      }
     },
     "/error": {
       "get": {
