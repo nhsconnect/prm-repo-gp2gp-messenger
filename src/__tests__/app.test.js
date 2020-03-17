@@ -6,8 +6,6 @@ import config from '../config';
 import sendEhrRequest from '../services/ehr-request';
 import { getHealthCheck } from '../services/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
-import { parsePdsResponse } from '../services/pds/pds-response-handler';
-import { validatePdsResponse } from '../services/pds/pds-response-validator';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 
@@ -15,8 +13,6 @@ jest.mock('../services/ehr-request');
 jest.mock('../config/logging');
 jest.mock('../services/get-health-check');
 jest.mock('../middleware/auth');
-jest.mock('../services/pds/pds-response-validator');
-jest.mock('../services/pds/pds-response-handler');
 jest.mock('../services/mhs/mhs-outbound-client');
 jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
@@ -96,12 +92,6 @@ describe('app', () => {
 
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
-      validatePdsResponse.mockResolvedValue(Promise.resolve(true));
-      parsePdsResponse.mockResolvedValue({
-        serialChangeNumber: testSerialChangeNumber,
-        patientPdsId: testPatientPdsId
-      });
-
       when(sendMessage)
         .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
         .mockResolvedValue({ status: 200, data: message });
@@ -109,18 +99,23 @@ describe('app', () => {
       generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
     });
 
-    it('should return a 200 and parse the pds response if the response is valid', done => {
+    it('should return a 200', done => {
       request(app)
         .get('/patient-demographics/9999999999')
         .expect(200)
-        .expect(async () => {
-          await parsePdsResponse(message).then(result =>
-            expect(result).toEqual({
-              serialChangeNumber: testSerialChangeNumber,
-              patientPdsId: testPatientPdsId
-            })
-          );
-        })
+        .end(done);
+    });
+
+    it('should return on object containing serialChangeNumber and patientPdsId', done => {
+      request(app)
+        .get('/patient-demographics/9999999999')
+        .expect(200)
+        .expect(res =>
+          expect(res.body.data).toEqual({
+            serialChangeNumber: testSerialChangeNumber,
+            patientPdsId: testPatientPdsId
+          })
+        )
         .end(done);
     });
   });

@@ -1,5 +1,5 @@
-import { extractSerialChangeNumber } from '../parser/pds/extract-serial-change-number';
 import { extractPdsId } from '../parser/pds/extract-pds-id';
+import { extractSerialChangeNumber } from '../parser/pds/extract-serial-change-number';
 
 export const parsePdsResponse = async message => {
   const extractedMessage = await Promise.all([

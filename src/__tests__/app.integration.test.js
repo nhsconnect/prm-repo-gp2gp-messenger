@@ -83,21 +83,14 @@ describe('app', () => {
         .end(done);
     });
 
-    it('should return the response body with Errors for /patient-demographics/:nhsNumber', done => {
+    it('should return a 503 status code with Errors for /patient-demographics/:nhsNumber', done => {
       axios.post.mockImplementation(() =>
         Promise.resolve({ status: 200, data: pdsQeuryFailedAE() })
       );
       request(app)
         .get('/patient-demographics/9999999999')
         .set('Authorization', 'correct-key')
-        .expect(200)
-        .expect(res => {
-          expect(res.body).toEqual(
-            expect.objectContaining({
-              errors: ['Error in processing the patient retrieval request']
-            })
-          );
-        })
+        .expect(503)
         .end(done);
     });
 

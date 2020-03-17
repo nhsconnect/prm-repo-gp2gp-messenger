@@ -6,7 +6,6 @@ import app from '../../app';
 import config from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { parsePdsResponse } from '../../services/pds/pds-response-handler';
-import { validatePdsResponse } from '../../services/pds/pds-response-validator';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
@@ -45,7 +44,6 @@ const sendMessageErrorMessage =
   '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></QUPA_IN000008UK02>';
 
 jest.mock('../../config/logging');
-jest.mock('../../services/pds/pds-response-validator');
 jest.mock('../../services/pds/pds-response-handler');
 jest.mock('../../middleware/logging');
 jest.mock('../../middleware/auth');
@@ -73,7 +71,6 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
-    validatePdsResponse.mockResolvedValue(Promise.resolve(true));
     parsePdsResponse.mockResolvedValue({
       serialChangeNumber: testSerialChangeNumber,
       patientPdsId: testPatientPdsId
@@ -163,54 +160,10 @@ describe('/patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 
-  it('should return a 200 and the validator should be called', done => {
+  it('should return a 200', done => {
     request(app)
       .get('/patient-demographics/9999999999')
       .expect(200)
-      .expect(async () => {
-        const isValid = await validatePdsResponse(message);
-        expect(isValid).toBe(true);
-      })
-      .end(done);
-  });
-
-  it('should return empty data and error message if any failure happened when extracting pds response', done => {
-    uuid.mockImplementation(() => mockNoPdsUUID);
-    parsePdsResponse.mockRejectedValue(Error('some-error'));
-    request(app)
-      .get('/patient-demographics/9999999999')
-      .expect(200)
-      .expect(res => {
-        expect(res.body.data).toEqual({});
-        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
-        expect(updateLogEventWithError).toBeCalledTimes(2);
-      })
-      .end(done);
-  });
-
-  it('should return error message if the message is NACK', done => {
-    validatePdsResponse.mockResolvedValue(Promise.resolve(false));
-    request(app)
-      .get('/patient-demographics/9999999999')
-      .expect(200)
-      .expect(res => {
-        expect(res.body.data).toEqual({});
-        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
-        expect(updateLogEventWithError).toBeCalledTimes(1);
-      })
-      .end(done);
-  });
-
-  it('should return and log error message if the response body is empty ', done => {
-    uuid.mockImplementation(() => mockNoDataUUID);
-    request(app)
-      .get('/patient-demographics/9999999999')
-      .expect(200)
-      .expect(res => {
-        expect(res.body.data).toEqual({});
-        expect(res.body.errors).toEqual(['Error in processing the patient retrieval request']);
-        expect(updateLogEventWithError).toBeCalledTimes(1);
-      })
       .end(done);
   });
 

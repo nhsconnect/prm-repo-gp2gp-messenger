@@ -7,8 +7,7 @@ import { authenticateRequest } from '../middleware/auth';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { validate } from '../middleware/validation';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
-import { parsePdsResponse } from '../services/pds/pds-response-handler';
-import { validatePdsResponse } from '../services/pds/pds-response-validator';
+import { PDSRetrievalQueryResponse } from '../services/pds';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 
 const router = express.Router();
@@ -48,7 +47,7 @@ router.get(
       const messageResponse = await sendMessage({ interactionId, conversationId, message });
 
       const responseBody = { conversationId, data: {}, errors: [] };
-      const errorMessage = 'Error in processing the patient retrieval request';
+
       switch (messageResponse.status) {
         case 200:
           updateLogEvent({
@@ -57,25 +56,9 @@ router.get(
             response: messageResponse
           });
 
-          if (messageResponse.data) {
-            if (await validatePdsResponse(messageResponse.data)) {
-              const extractedData = await parsePdsResponse(messageResponse.data).catch(err => {
-                updateLogEventWithError(err);
-              });
-              if (extractedData) {
-                responseBody.data = extractedData;
-              } else {
-                updateLogEventWithError(Error(errorMessage));
-                responseBody.errors.push(errorMessage);
-              }
-            } else {
-              updateLogEventWithError(Error(errorMessage));
-              responseBody.errors.push(errorMessage);
-            }
-          } else {
-            updateLogEventWithError(Error(errorMessage));
-            responseBody.errors.push(errorMessage);
-          }
+          responseBody.data = await new PDSRetrievalQueryResponse().handleMessage(
+            messageResponse.data
+          );
           res.status(200).json(responseBody);
           break;
         case 500:
