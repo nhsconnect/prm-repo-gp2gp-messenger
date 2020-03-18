@@ -1,12 +1,12 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import { updateLogEvent, updateLogEventWithError } from '../../../src/middleware/logging';
-import app from '../../app';
-import config from '../../config';
-import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { parsePdsResponse } from '../../services/pds/pds-response-handler';
-import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import app from '../../../app';
+import config from '../../../config';
+import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
+import { parsePdsResponse } from '../../../services/pds/pds-response-handler';
+import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockNoDataUUID = 'fdb5c732-9e82-48ef-991b-8cd54b485748';
@@ -43,12 +43,12 @@ const messageNoPdsId = `
 const sendMessageErrorMessage =
   '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"><Error></Error></QUPA_IN000008UK02>';
 
-jest.mock('../../config/logging');
-jest.mock('../../services/pds/pds-response-handler');
-jest.mock('../../middleware/logging');
-jest.mock('../../middleware/auth');
-jest.mock('../../services/mhs/mhs-outbound-client');
-jest.mock('../../templates/generate-pds-retrieval-request');
+jest.mock('../../../config/logging');
+jest.mock('../../../services/pds/pds-response-handler');
+jest.mock('../../../middleware/logging');
+jest.mock('../../../middleware/auth');
+jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../templates/generate-pds-retrieval-request');
 
 function generateLogEvent(message) {
   return {
