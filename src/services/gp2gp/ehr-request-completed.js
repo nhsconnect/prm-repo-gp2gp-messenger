@@ -7,8 +7,8 @@ class EHRRequestCompleted {
     this.interactionId = EHR_REQUEST_COMPLETED;
   }
 
-  handleMessage(message) {
-    return extractNhsNumber(message);
+  async handleMessage(message) {
+    return { nhsNumber: await extractNhsNumber(message) };
   }
 }
 

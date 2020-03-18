@@ -5,12 +5,13 @@ import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { generateContinueRequest } from '../templates/continue-template';
 import { storeMessageInEhrRepo } from './ehr-repo-gateway';
 import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
-import { extractAction, extractConversationId, extractMessageId } from './parser/soap';
 import {
   containsNegativeAcknowledgement,
   EHR_EXTRACT_MESSAGE_ACTION,
   extractFoundationSupplierAsid
 } from './parser/message';
+import { parseMultipartBody } from './parser/multipart-parser';
+import { soapEnvelopeHandler } from './soap';
 
 const sendContinueMessage = async (message, messageId) => {
   const timestamp = dayjs().format('YYYYMMDDHHmmss');
@@ -31,31 +32,15 @@ const sendContinueMessage = async (message, messageId) => {
 
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });
-  const startTag = '<SOAP-ENV:Envelope';
-  const envelopeStartIndex = message.indexOf(startTag);
-  message = message.slice(envelopeStartIndex);
-  const parsers = [
-    extractConversationId(message),
-    extractMessageId(message),
-    extractAction(message)
-  ];
-  const extractResults = await Promise.all(parsers).catch(err => {
-    throw Error(
-      'Can’t process the EHR fragment successfully - missing conversation id or interaction id or message id',
-      err
-    );
-  });
-  const conversationId = extractResults[0];
-  const messageId = extractResults[1];
-  const action = extractResults[2];
+  const multipartMessage = await parseMultipartBody(message);
+
+  const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
 
   const isNegativeAcknowledgement = await containsNegativeAcknowledgement(message);
 
   updateLogEvent({
     message: {
-      conversationId,
-      messageId,
-      action,
+      ...soapInformation,
       isNegativeAcknowledgement
     }
   });
@@ -65,12 +50,12 @@ const handleMessage = async message => {
     throw new Error('Message is a negative acknowledgement');
   }
 
-  await storeMessageInEhrRepo(message, conversationId, messageId);
+  await storeMessageInEhrRepo(message, soapInformation.conversationId, soapInformation.messageId);
   await updateLogEvent({ status: 'store message to ehr repo' });
 
-  if (action === EHR_EXTRACT_MESSAGE_ACTION) {
+  if (soapInformation.action === EHR_EXTRACT_MESSAGE_ACTION) {
     await updateLogEvent({ status: 'sending continue message' });
-    await sendContinueMessage(message, messageId);
+    await sendContinueMessage(message, soapInformation.messageId);
   }
 };
 

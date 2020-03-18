@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { extractMessageId } from '../extract-message-id';
 
 describe('extractMessageId', () => {
-  const expectedErrorMessage = 'Message does not contain message id';
+  const expectedErrorMessage = `The key 'MessageId' was not found in the message`;
 
   const testMessageId = uuid().toUpperCase();
 

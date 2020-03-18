@@ -5,6 +5,6 @@ export const extractMessageId = async message => {
     .parse(message)
     .then(messageObject => messageObject.findFirst('MessageId'))
     .catch(() => {
-      throw Error('Message does not contain message id');
+      throw Error(`The key 'MessageId' was not found in the message`);
     });
 };
