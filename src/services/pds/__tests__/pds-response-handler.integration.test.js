@@ -1,10 +1,10 @@
-import { parsePdsResponse } from '../pds-response-handler';
-import { pdsResponseAck } from '../pds-responses/pds-response-ack';
+import { handlePdsResponse } from '../pds-response-handler';
+import { pdsRetrivealQueryResponseSuccess } from './data/pds-retrieval-query-response-success';
 
 describe('pds-response-handler', () => {
-  describe('parsePdsResponse', () => {
+  describe('handlePdsResponse', () => {
     it('should return an object with serialChangeNumber and patientPdsId if the response is ACK', () => {
-      return parsePdsResponse(pdsResponseAck()).then(parsedMessage => {
+      return handlePdsResponse(pdsRetrivealQueryResponseSuccess).then(parsedMessage => {
         expect(parsedMessage).toEqual({
           serialChangeNumber: '138',
           patientPdsId: 'cppz'

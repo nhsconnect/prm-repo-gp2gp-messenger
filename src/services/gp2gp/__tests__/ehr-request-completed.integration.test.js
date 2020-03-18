@@ -2,10 +2,19 @@ import { EHRRequestCompleted } from '../';
 
 describe('EHRRequestCompleted', () => {
   describe('handleMesage', () => {
-    it('should call parseGp2gpMessage? with message', async done => {
-      const message = await new EHRRequestCompleted().handleMessage(exampleEHRRequestCompleted);
-      expect(message).toEqual({});
-      done();
+    it('should return object containing NHS Number', () => {
+      expect(new EHRRequestCompleted().handleMessage(exampleEHRRequestCompleted)).resolves.toEqual(
+        expect.objectContaining({
+          nhsNumber: 9446363101
+        })
+      );
+    });
+
+    it('should return object containing NHS Number', () => {
+      const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
+      expect(new EHRRequestCompleted().handleMessage(message)).rejects.toEqual(
+        Error('Message does not contain NHS number')
+      );
     });
   });
 });

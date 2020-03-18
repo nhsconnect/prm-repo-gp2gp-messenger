@@ -1,7 +1,7 @@
 import { extractPdsId } from '../parser/pds/extract-pds-id';
 import { extractSerialChangeNumber } from '../parser/pds/extract-serial-change-number';
 
-export const parsePdsResponse = async message => {
+export const handlePdsResponse = async message => {
   const [serialChangeNumber, patientPdsId] = await Promise.all([
     extractSerialChangeNumber(message),
     extractPdsId(message)

@@ -1,4 +1,4 @@
-export const pdsResponseAck = () => `<?xml version='1.0' encoding='UTF-8'?>
+export const pdsRetrivealQueryResponseSuccess = `<?xml version='1.0' encoding='UTF-8'?>
 <SOAP-ENV:Envelope xmlns:crs="http://national.carerecords.nhs.uk/schema/crs/" 
     xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
     xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" 

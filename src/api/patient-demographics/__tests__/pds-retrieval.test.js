@@ -1,11 +1,11 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import app from '../../../app';
 import config from '../../../config';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { parsePdsResponse } from '../../../services/pds/pds-response-handler';
+import { handlePdsResponse } from '../../../services/pds/pds-response-handler';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
@@ -71,7 +71,7 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
 
-    parsePdsResponse.mockResolvedValue({
+    handlePdsResponse.mockResolvedValue({
       serialChangeNumber: testSerialChangeNumber,
       patientPdsId: testPatientPdsId
     });
@@ -150,7 +150,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(async () => {
-        await parsePdsResponse(message).then(result =>
+        await handlePdsResponse(message).then(result =>
           expect(result).toEqual({
             serialChangeNumber: testSerialChangeNumber,
             patientPdsId: testPatientPdsId

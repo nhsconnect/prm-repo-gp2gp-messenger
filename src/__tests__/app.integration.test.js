@@ -1,8 +1,8 @@
 import axios from 'axios';
 import request from 'supertest';
 import app from '../app';
-import { pdsResponseAck } from '../services/pds/pds-responses/pds-response-ack';
-import { pdsQeuryFailedAE } from '../services/pds/pds-responses/pds-response-nack-AE';
+import { pdsQueryActFailed } from '../services/pds/__tests__/data/pds-query-act-failed';
+import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
 
 jest.mock('../config/logging');
 jest.mock('axios');
@@ -10,7 +10,9 @@ jest.mock('axios');
 describe('app', () => {
   beforeEach(() => {
     process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
-    axios.post.mockImplementation(() => Promise.resolve({ status: 200, data: pdsResponseAck() }));
+    axios.post.mockImplementation(() =>
+      Promise.resolve({ status: 200, data: pdsRetrivealQueryResponseSuccess })
+    );
   });
 
   afterEach(() => {
@@ -85,7 +87,7 @@ describe('app', () => {
 
     it('should return a 503 status code with Errors for /patient-demographics/:nhsNumber', done => {
       axios.post.mockImplementation(() =>
-        Promise.resolve({ status: 200, data: pdsQeuryFailedAE() })
+        Promise.resolve({ status: 200, data: pdsQueryActFailed() })
       );
       request(app)
         .get('/patient-demographics/9999999999')

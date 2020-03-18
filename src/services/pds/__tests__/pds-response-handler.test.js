@@ -1,4 +1,4 @@
-import { parsePdsResponse } from '../pds-response-handler';
+import { handlePdsResponse } from '../pds-response-handler';
 
 jest.mock('../../parser/soap');
 
@@ -39,9 +39,9 @@ const noSerialChangeNumber = `
 </PDSResponse>`;
 
 describe('pds-response-handler', () => {
-  describe('parsePdsResponse', () => {
+  describe('handlePdsResponse', () => {
     it('should return an object has serial change number and patient pds id', () => {
-      return expect(parsePdsResponse(normalResponse)).resolves.toEqual(
+      return expect(handlePdsResponse(normalResponse)).resolves.toEqual(
         expect.objectContaining({
           serialChangeNumber: testSerialChangeNumber,
           patientPdsId: testPatientPdsId
@@ -50,11 +50,11 @@ describe('pds-response-handler', () => {
     });
 
     it('should throw error if failed to extract patient pds id', () => {
-      return expect(parsePdsResponse(noPDSId)).rejects.toEqual(Error('Failed to extract PDS ID'));
+      return expect(handlePdsResponse(noPDSId)).rejects.toEqual(Error('Failed to extract PDS ID'));
     });
 
     it('should throw error if failed to extract serial change number', () => {
-      return expect(parsePdsResponse(noSerialChangeNumber)).rejects.toEqual(
+      return expect(handlePdsResponse(noSerialChangeNumber)).rejects.toEqual(
         Error('failed to extract PDS serial change number')
       );
     });

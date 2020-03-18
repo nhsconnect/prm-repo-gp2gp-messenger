@@ -1,3 +1,4 @@
+import { extractNhsNumber } from '../parser/message/extract-nhs-number';
 const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK08';
 
 class EHRRequestCompleted {
@@ -6,8 +7,8 @@ class EHRRequestCompleted {
     this.interactionId = EHR_REQUEST_COMPLETED;
   }
 
-  handleMessage() {
-    return {};
+  handleMessage(message) {
+    return extractNhsNumber(message);
   }
 }
 

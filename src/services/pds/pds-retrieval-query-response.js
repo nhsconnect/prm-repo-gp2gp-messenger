@@ -1,4 +1,4 @@
-import { parsePdsResponse } from './';
+import { handlePdsResponse } from './';
 
 const PDS_RETRIEVAL_QUERY_RESPONSE = 'QUPA_IN000010UK02';
 
@@ -9,7 +9,7 @@ class PDSRetrievalQueryResponse {
   }
 
   handleMessage(message) {
-    return parsePdsResponse(message);
+    return handlePdsResponse(message);
   }
 }
 

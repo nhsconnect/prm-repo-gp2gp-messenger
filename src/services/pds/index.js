@@ -1,4 +1,4 @@
-export { parsePdsResponse } from './pds-response-handler';
+export { handlePdsResponse } from './pds-response-handler';
 export {
   PDSRetrievalQueryResponse,
   PDS_RETRIEVAL_QUERY_RESPONSE

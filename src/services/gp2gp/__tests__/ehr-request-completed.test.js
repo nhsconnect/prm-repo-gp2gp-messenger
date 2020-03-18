@@ -1,4 +1,7 @@
+import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../ehr-request-completed';
+
+jest.mock('../../parser/message/extract-nhs-number');
 
 describe('EHRRequestCompleted', () => {
   it('should return "EHR Request Completed" when calling name', () => {
@@ -10,9 +13,10 @@ describe('EHRRequestCompleted', () => {
   });
 
   it('should call parseGp2gpMessage? with message', async done => {
-    const message = await new EHRRequestCompleted().handleMessage();
-    // To Add
-    expect(message).toEqual({});
+    const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
+    await new EHRRequestCompleted().handleMessage(message);
+    expect(extractNhsNumber).toHaveBeenCalledTimes(1);
+    expect(extractNhsNumber).toHaveBeenCalledWith(message);
     done();
   });
 });

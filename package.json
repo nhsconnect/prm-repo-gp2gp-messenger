@@ -12,7 +12,7 @@
     "test:docker": "jest test/docker/*",
     "test:watch": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config --watch",
     "test:coverage": "jest src/ --maxWorkers=1 --coverage --detectOpenHandles --forceExit --setupFiles dotenv/config",
-    "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' && cp src/*.json build",
+    "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' --ignore '**/__tests__/*' && cp src/*.json build",
     "start": "node build/server.js",
     "start:local": "babel-node -r dotenv/config src/server.js",
     "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
@@ -66,6 +66,9 @@
   "jest": {
     "coveragePathIgnorePatterns": [
       "src/services/mhs/mhs-queue-test-queue-publisher.js"
+    ],
+    "testPathIgnorePatterns": [
+      ".*/__tests__/data/.*"
     ],
     "resetModules": true,
     "clearMocks": true,

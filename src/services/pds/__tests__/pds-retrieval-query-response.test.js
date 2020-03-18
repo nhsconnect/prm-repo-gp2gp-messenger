@@ -1,4 +1,4 @@
-import { parsePdsResponse } from '../pds-response-handler';
+import { handlePdsResponse } from '../pds-response-handler';
 import {
   PDSRetrievalQueryResponse,
   PDS_RETRIEVAL_QUERY_RESPONSE
@@ -15,11 +15,11 @@ describe('PDSRetrievalQueryResponse', () => {
     expect(new PDSRetrievalQueryResponse().interactionId).toBe(PDS_RETRIEVAL_QUERY_RESPONSE);
   });
 
-  it('should call parsePdsResponse with message', async done => {
+  it('should call handlePdsResponse with message', async done => {
     const message = 'message';
     await new PDSRetrievalQueryResponse().handleMessage(message);
-    expect(parsePdsResponse).toHaveBeenCalledTimes(1);
-    expect(parsePdsResponse).toHaveBeenCalledWith(message);
+    expect(handlePdsResponse).toHaveBeenCalledTimes(1);
+    expect(handlePdsResponse).toHaveBeenCalledWith(message);
     done();
   });
 });
