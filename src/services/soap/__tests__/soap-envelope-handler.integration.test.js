@@ -12,20 +12,14 @@ describe('soapEnvelopeHandler', () => {
   it('should return object containing manifest', () => {
     const expectedManifestInfo = [
       {
-        Reference: [
-          {
-            Description: { innerText: 'HL7 payload', lang: 'en' },
-            Payload: { encoding: 'XML', style: 'HL7', version: '3.0' },
-            Schema: { location: 'http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd', version: '1.0' },
-            href: 'cid:23e1591d-455e-11e3-9c76-31def0104cb3@spine.nhs.uk'
-          },
-          {
-            Description: { innerText: 'Attachment', lang: 'en' },
-            href: 'cid:23e21c6e-455e-11e3-9c76-31def0104cb3'
-          }
-        ],
-        mustUnderstand: '1',
-        version: '2.0'
+        Description: { innerText: 'HL7 payload', lang: 'en' },
+        Payload: { encoding: 'XML', style: 'HL7', version: '3.0' },
+        Schema: { location: 'http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd', version: '1.0' },
+        href: 'cid:23e1591d-455e-11e3-9c76-31def0104cb3@spine.nhs.uk'
+      },
+      {
+        Description: { innerText: 'Attachment', lang: 'en' },
+        href: 'cid:23e21c6e-455e-11e3-9c76-31def0104cb3'
       }
     ];
     return expect(soapEnvelopeHandler(message)).resolves.toEqual(
