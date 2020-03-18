@@ -206,7 +206,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('rejected');
+        expect(res.body.errors).toEqual(['rejected']);
       })
       .end(done);
   });
@@ -218,7 +218,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('MHS Error: 500 MHS Error');
+        expect(res.body.errors).toEqual(['MHS Error: 500 MHS Error']);
       })
       .end(done);
   });
@@ -230,7 +230,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('Unexpected Error: MHS error');
+        expect(res.body.errors).toEqual(['Unexpected Error: MHS error']);
       })
       .end(done);
   });
@@ -256,7 +256,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('Check template parameter error: asid is undefined');
+        expect(res.body.errors).toEqual(['Check template parameter error: asid is undefined']);
       })
       .end(done);
   });
@@ -284,7 +284,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(res => {
         expect(res.status).toBe(503);
-        expect(res.body.errors).toBe('interactionId is not included in the message');
+        expect(res.body.errors).toEqual(['interactionId is not included in the message']);
       })
       .end(done);
   });

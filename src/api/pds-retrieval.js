@@ -27,11 +27,11 @@ router.get(
   validationRules,
   validate,
   async (req, res, next) => {
+    const interactionId = 'QUPA_IN000008UK02';
+    const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+    const conversationId = uuid().toUpperCase();
+    const responseBody = { conversationId, data: {}, errors: [] };
     try {
-      const interactionId = 'QUPA_IN000008UK02';
-      const conversationId = uuid().toUpperCase();
-      const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-
       const message = await generatePdsRetrievalQuery({
         id: conversationId,
         timestamp,
@@ -45,8 +45,6 @@ router.get(
       }
 
       const messageResponse = await sendMessage({ interactionId, conversationId, message });
-
-      const responseBody = { conversationId, data: {}, errors: [] };
 
       switch (messageResponse.status) {
         case 200:
@@ -69,10 +67,9 @@ router.get(
 
       next();
     } catch (err) {
+      responseBody.errors.push(err.message);
       updateLogEventWithError(err);
-      res.status(503).json({
-        errors: err.message
-      });
+      res.status(503).json(responseBody);
     }
   }
 );

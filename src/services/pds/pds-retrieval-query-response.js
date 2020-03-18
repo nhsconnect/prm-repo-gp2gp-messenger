@@ -4,7 +4,7 @@ const PDS_RETRIEVAL_QUERY_RESPONSE = 'QUPA_IN000010UK02';
 
 class PDSRetrievalQueryResponse {
   constructor() {
-    this.name = 'pds-retrieval-response';
+    this.name = 'PDS Retrieval Query Response';
     this.interactionId = PDS_RETRIEVAL_QUERY_RESPONSE;
   }
 

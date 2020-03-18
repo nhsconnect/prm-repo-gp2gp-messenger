@@ -50,14 +50,12 @@ describe('pds-response-handler', () => {
     });
 
     it('should throw error if failed to extract patient pds id', () => {
-      return expect(parsePdsResponse(noPDSId)).rejects.toEqual(
-        Error('Error: Failed to extract PDS ID')
-      );
+      return expect(parsePdsResponse(noPDSId)).rejects.toEqual(Error('Failed to extract PDS ID'));
     });
 
     it('should throw error if failed to extract serial change number', () => {
       return expect(parsePdsResponse(noSerialChangeNumber)).rejects.toEqual(
-        Error('Error: failed to extract PDS serial change number')
+        Error('failed to extract PDS serial change number')
       );
     });
   });
