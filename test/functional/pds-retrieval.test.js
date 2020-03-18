@@ -34,9 +34,9 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
         },
         adapter
       })
-    ).resolves.toEqual(
+    ).rejects.toEqual(
       expect.objectContaining({
-        status: 200
+        data: Error('Request failed with status code 503')
       })
     );
   });
