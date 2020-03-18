@@ -86,31 +86,26 @@ describe('extractManifestInfo', () => {
   ];
 
   it('should extract the manifest from XML body', () => {
-    return extractManifestInfo(exampleResolveXML).then(messageId =>
-      expect(messageId).toEqual([
-        {
-          Reference: {
-            Description: {
-              innerText: 'COPC_IN000001UK01',
-              lang: 'en-GB'
-            },
-            href: 'cid:FE6A40B9-F4C6-4041-A306-EA2A149411CD@inps.co.uk/Vision/3',
-            id: '_FE6A40B9-F4C6-4041-A306-EA2A149411CD'
+    return expect(extractManifestInfo(exampleResolveXML)).resolves.toEqual([
+      {
+        Reference: {
+          Description: {
+            innerText: 'COPC_IN000001UK01',
+            lang: 'en-GB'
           },
-          version: '2.0'
-        }
-      ])
-    );
+          href: 'cid:FE6A40B9-F4C6-4041-A306-EA2A149411CD@inps.co.uk/Vision/3',
+          id: '_FE6A40B9-F4C6-4041-A306-EA2A149411CD'
+        },
+        version: '2.0'
+      }
+    ]);
   });
 
   it('should extract the manifest from XML body in a real example', () => {
-    return extractManifestInfo(realExample).then(messageId =>
-      expect(messageId).toEqual(extractedManifests)
-    );
+    return expect(extractManifestInfo(realExample)).resolves.toEqual(extractedManifests);
   });
 
-  it('should throw an error when manifest does not exist', done => {
-    expect(extractManifestInfo(exampleErrorXML)).rejects.toThrow(expectedErrorMessage);
-    done();
+  it('should throw an error when manifest does not exist', () => {
+    return expect(extractManifestInfo(exampleErrorXML)).rejects.toThrow(expectedErrorMessage);
   });
 });
