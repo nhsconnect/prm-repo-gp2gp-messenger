@@ -19,9 +19,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       })
     ).resolves.toEqual(
       expect.objectContaining({
-        data: expect.objectContaining({
-          status: 200
-        })
+        status: 200
       })
     );
   });
@@ -38,9 +36,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       })
     ).resolves.toEqual(
       expect.objectContaining({
-        data: expect.objectContaining({
-          status: 200
-        })
+        status: 200
       })
     );
   });
