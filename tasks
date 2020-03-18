@@ -228,17 +228,21 @@ case "${command}" in
       echo "Pushing the Docker image... $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG"
       docker push $REPOSITORY_URI
       ;;
+  _test_docker)
+      npm install
+      npm run test:docker
+      ;;
   test_docker)
       configure_docker_repository_uri
       get_latest_commit_hash
       configure_service_url
       export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
-      dojo -c Dojofile-dtest "./tasks _test_functional"
+      dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
   test_docker_local)
       configure_local_envs
       get_latest_commit_hash
-      dojo -c Dojofile-dtest "./tasks _test_functional"
+      dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
   tf)
       check_env
