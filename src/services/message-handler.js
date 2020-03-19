@@ -50,11 +50,11 @@ const handleMessage = async message => {
     throw new Error('Message is a negative acknowledgement');
   }
 
-  await storeMessageInEhrRepo(message, soapInformation.conversationId, soapInformation.messageId);
-  await updateLogEvent({ status: 'store message to ehr repo' });
+  await storeMessageInEhrRepo(message, soapInformation);
+  updateLogEvent({ status: 'store message to ehr repo' });
 
   if (soapInformation.action === EHR_EXTRACT_MESSAGE_ACTION) {
-    await updateLogEvent({ status: 'sending continue message' });
+    updateLogEvent({ status: 'sending continue message' });
     await sendContinueMessage(message, soapInformation.messageId);
   }
 };

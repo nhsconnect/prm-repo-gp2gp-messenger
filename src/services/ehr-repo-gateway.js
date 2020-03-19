@@ -31,7 +31,7 @@ const setTransferComplete = (conversationId, messageId) =>
       throw err;
     });
 
-export const storeMessageInEhrRepo = (message, conversationId, messageId) => {
+export const storeMessageInEhrRepo = (message, { conversationId, messageId }) => {
   return fetchStorageUrl(conversationId, messageId)
     .then(response => {
       updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });

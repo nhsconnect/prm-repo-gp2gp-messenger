@@ -21,73 +21,73 @@ describe('ehr-repo-gateway', () => {
       axios.post.mockResolvedValue({ data: 'some-url' });
     });
 
-    it('should make request with conversation id and message id', () => {
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(axios.post).toHaveBeenCalledWith(
-          `${config.ehrRepoUrl}/health-record/${conversationId}/message`,
-          {
-            messageId
-          }
-        );
-      });
+    it('should make request with conversation id and message id', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(axios.post).toHaveBeenCalledWith(
+        `${config.ehrRepoUrl}/health-record/${conversationId}/message`,
+        expect.objectContaining({
+          messageId
+        })
+      );
+      done();
     });
 
-    it('should make put request using the url from the response body', () => {
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(axios.put).toHaveBeenCalledWith('some-url', message);
-      });
+    it('should make put request using the url from the response body', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(axios.put).toHaveBeenCalledWith('some-url', message);
+      done();
     });
 
-    it('should make patch request to ehr repo service with transfer complete flag', () => {
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(
-          axios.patch
-        ).toHaveBeenCalledWith(
-          `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
-          { transferComplete: true }
-        );
-      });
+    it('should make patch request to ehr repo service with transfer complete flag', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(
+        axios.patch
+      ).toHaveBeenCalledWith(
+        `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
+        { transferComplete: true }
+      );
+      done();
     });
 
-    it('should not make patch request to ehr repo service when storing message fails', () => {
+    it('should not make patch request to ehr repo service when storing message fails', async done => {
       axios.put.mockRejectedValue('some-error');
-
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(axios.put).toHaveBeenCalledTimes(1);
-        expect(axios.patch).toHaveBeenCalledTimes(0);
-        expect(updateLogEvent).not.toHaveBeenCalledWith({
-          status: 'failed to store message to s3 via pre-signed url',
-          error: expect.anything()
-        });
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(axios.put).toHaveBeenCalledTimes(1);
+      expect(axios.patch).toHaveBeenCalledTimes(0);
+      expect(updateLogEvent).not.toHaveBeenCalledWith({
+        status: 'failed to store message to s3 via pre-signed url',
+        error: expect.anything()
       });
+      done();
     });
 
-    it('should update the log event when the transfer has completed successfully', () => {
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(updateLogEvent).toHaveBeenCalledWith({
-          ehrRepository: { transferSuccessful: true }
-        });
+    it('should update the log event when the transfer has completed successfully', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        ehrRepository: { transferSuccessful: true }
       });
+      done();
     });
 
-    it('should update the log event when the transfer has not completed successfully', () => {
+    it('should update the log event when the transfer has not completed successfully', async done => {
       axios.put.mockRejectedValue({ stack: 'some-error' });
-      return storeMessageInEhrRepo(message, conversationId, messageId).then(() => {
-        expect(updateLogEvent).toHaveBeenNthCalledWith(1, {
-          status: 'Storing EHR in s3 bucket',
-          ehrRepository: { url: 'some-url' }
-        });
-
-        expect(updateLogEvent).toHaveBeenNthCalledWith(2, {
-          status: 'failed to store message to s3 via pre-signed url',
-          error: 'some-error'
-        });
-
-        expect(updateLogEvent).toHaveBeenNthCalledWith(3, {
-          status: 'failed to store message to ehr repository',
-          error: 'some-error'
-        });
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(updateLogEvent).toHaveBeenNthCalledWith(1, {
+        status: 'Storing EHR in s3 bucket',
+        ehrRepository: { url: 'some-url' }
       });
+
+      expect(updateLogEvent).toHaveBeenNthCalledWith(2, {
+        status: 'failed to store message to s3 via pre-signed url',
+        error: 'some-error'
+      });
+
+      expect(updateLogEvent).toHaveBeenNthCalledWith(3, {
+        status: 'failed to store message to ehr repository',
+        error: 'some-error'
+      });
+
+      done();
     });
   });
 });

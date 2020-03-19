@@ -29,8 +29,10 @@ describe('handleMessage', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         ehrRequestCompletedMessage,
-        conversationId,
-        messageId
+        expect.objectContaining({
+          conversationId,
+          messageId
+        })
       );
     });
   });
