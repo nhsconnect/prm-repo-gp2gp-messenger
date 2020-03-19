@@ -1,13 +1,9 @@
 export const generateThirdFragmentResponse = () =>
-  `------=_Part_36_22395984.1528792230428
+  `----=_MIME-Boundary
 Content-Type: text/xml; charset=utf-8
 Content-Id: <soappart>
 
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" 
-    xmlns:hl7ebXML="urn:hl7-org:transport/ebxml/DSTUv1.0" 
-    xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:xlink="http://www.w3.org/1999/xlink">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Header>
         <eb:MessageHeader eb:version="2.0" soap-env:mustUnderstand="1">
             <eb:From>
@@ -41,7 +37,7 @@ Content-Id: <soappart>
         </eb:Manifest>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-------=_Part_36_22395984.1528792230428
+----=_MIME-Boundary
 Content-Type: application/xml
 Content-ID: <6B97394A-5257-4725-A2EA-C931F462DCDE@inps.co.uk/Vision/3>
 Content-Transfer-Encoding: 8bit
@@ -102,7 +98,7 @@ Content-Transfer-Encoding: 8bit
         </subject>
     </ControlActEvent>
 </COPC_IN000001UK01>
-------=_Part_36_22395984.1528792230428
+----=_MIME-Boundary
 Content-Type: image/tiff
 Content-ID: <09D8E406-B106-4CCB-A3E3-C4EBC2F17BF8@inps.co.uk/Vision/3>
 Content-Transfer-Encoding: base64
@@ -45488,4 +45484,4 @@ FhsuAAAAAAAAGAAAGxMAAAAAAAIqAAEdAAAAAAAAAAAAAAEiAAMxAAEaJgAcGwEoAAAAAAAAGwRC
 AAU7AAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZAAAZABiNCIDAfKAEgKAwAIR8AAR1CLQEqTxUg
 LyNGDARAAB5dAAAMAAlIBwpiAAU9AAAAAAAAAAAAAAAAAAAAAAAEAwAADgAAGAAAAAAAAAAAAAAA
 AAAAAAEaAAIoAAAAIiwAAhkABycACTAbAi5mAA==
-------=_Part_36_22395984.1528792230428--`;
+----=_MIME-Boundary--`;

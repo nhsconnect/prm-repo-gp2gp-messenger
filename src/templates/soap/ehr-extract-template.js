@@ -1,13 +1,9 @@
 export const generateEhrExtractResponse = () =>
-  `------=_Part_33_26096504.1528792157887
+  `----=_MIME-Boundary
 Content-Type: text/xml; charset=utf-8
 Content-Id: <soappart>
 
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" 
-    xmlns:hl7ebXML="urn:hl7-org:transport/ebxml/DSTUv1.0" 
-    xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/" 
-    xmlns:xlink="http://www.w3.org/1999/xlink">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" >
     <SOAP-ENV:Header>
         <eb:MessageHeader eb:version="2.0" soap-env:mustUnderstand="1">
             <eb:From>
@@ -41,7 +37,8 @@ Content-Id: <soappart>
         </eb:Manifest>
     </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-------=_Part_33_26096504.1528792157887
+
+----=_MIME-Boundary
 Content-Type: application/xml
 Content-ID: <50D33D75-04C6-40AF-947D-E6E9656C1EEB@inps.co.uk/Vision/3>
 Content-Transfer-Encoding: 8bit
@@ -525,4 +522,5 @@ Content-Transfer-Encoding: 8bit
         </subject>
     </ControlActEvent>
 </RCMR_IN030000UK06>
-------=_Part_33_26096504.1528792157887--`;
+
+----=_MIME-Boundary--`;
