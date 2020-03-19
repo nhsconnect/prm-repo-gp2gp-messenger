@@ -25,13 +25,25 @@ describe('handleMessage', () => {
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 
-  it('should store the message in the ehr repo', () => {
+  it('should call storeMessageInEhrRepo with message, conversationId and messageId', () => {
     return handleMessage(ehrRequestCompletedMessage).then(() => {
       expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         ehrRequestCompletedMessage,
         expect.objectContaining({
           conversationId,
           messageId
+        })
+      );
+    });
+  });
+
+  it('should call storeMessageInEhrRepo with message and manifest (array of messageIds)', () => {
+    const manifest = ['FE6A40B9-F4C6-4041-A306-EA2A149411CD'];
+    return handleMessage(ehrRequestCompletedMessage).then(() => {
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+        ehrRequestCompletedMessage,
+        expect.objectContaining({
+          manifest
         })
       );
     });

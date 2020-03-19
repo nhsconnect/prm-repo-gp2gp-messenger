@@ -8,7 +8,7 @@ class EHRRequestCompleted {
   }
 
   async handleMessage(message) {
-    return { nhsNumber: await extractNhsNumber(message) };
+    return { nhsNumber: await extractNhsNumber(message).catch(() => {}) };
   }
 }
 

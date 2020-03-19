@@ -1,14 +1,14 @@
 import {
   extractAction,
   extractConversationId,
-  extractManifestInfo,
+  extractManifestAsMessageIds,
   extractMessageId
 } from '../parser/soap';
 
 export const soapEnvelopeHandler = async message => {
   const [conversationId, manifest, messageId, action] = await Promise.all([
     extractConversationId(message),
-    extractManifestInfo(message),
+    extractManifestAsMessageIds(message),
     extractMessageId(message),
     extractAction(message)
   ]);

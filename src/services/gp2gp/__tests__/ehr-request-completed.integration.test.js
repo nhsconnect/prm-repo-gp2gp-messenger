@@ -13,10 +13,12 @@ describe('EHRRequestCompleted', () => {
       );
     });
 
-    it('should return object containing NHS Number', () => {
+    it('should return object with nhsNumber as undefined if NHS Number can not be extractedr--', () => {
       const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
-      return expect(new EHRRequestCompleted().handleMessage(message)).rejects.toEqual(
-        Error('Message does not contain NHS number')
+      return expect(new EHRRequestCompleted().handleMessage(message)).resolves.toEqual(
+        expect.objectContaining({
+          nhsNumber: undefined
+        })
       );
     });
   });

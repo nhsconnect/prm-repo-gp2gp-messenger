@@ -2,6 +2,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import config from '../config';
 import { eventFinished, updateLogEvent } from '../middleware/logging';
+import { EHRRequestCompleted } from '../services/gp2gp';
 
 axiosRetry(axios, {
   retries: 2,
@@ -12,9 +13,9 @@ axiosRetry(axios, {
   }
 });
 
-const fetchStorageUrl = (conversationId, messageId) =>
+const fetchStorageUrl = (conversationId, body) =>
   axios
-    .post(`${config.ehrRepoUrl}/health-record/${conversationId}/message`, { messageId })
+    .post(`${config.ehrRepoUrl}/health-record/${conversationId}/new/message`, body)
     .catch(err => {
       updateLogEvent({ status: 'failed to get pre-signed url', error: err.stack });
       throw err;
@@ -31,8 +32,11 @@ const setTransferComplete = (conversationId, messageId) =>
       throw err;
     });
 
-export const storeMessageInEhrRepo = (message, { conversationId, messageId }) => {
-  return fetchStorageUrl(conversationId, messageId)
+export const storeMessageInEhrRepo = async (message, soapInformation) => {
+  const { nhsNumber } = await new EHRRequestCompleted().handleMessage(message);
+  const body = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
+
+  return fetchStorageUrl(soapInformation.conversationId, body)
     .then(response => {
       updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });
       return axios
@@ -51,7 +55,7 @@ export const storeMessageInEhrRepo = (message, { conversationId, messageId }) =>
         ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
       })
     )
-    .then(() => setTransferComplete(conversationId, messageId))
+    .then(() => setTransferComplete(soapInformation.conversationId, soapInformation.messageId))
     .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }))
     .catch(err => {
       updateLogEvent({
