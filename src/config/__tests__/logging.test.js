@@ -71,16 +71,16 @@ describe('logging', () => {
   });
 
   describe('options', () => {
-    it('should contain exitOnError that is false', () => {
-      expect(options.exitOnError).toBe(false);
-    });
-
-    it('should contain format', () => {
-      expect(options.format).not.toBeNull();
-    });
-
-    it('should contain transport', () => {
+    it('should contain one transport', () => {
       expect(options.transports.length).toBe(1);
+    });
+
+    it('should be at level debug', () => {
+      expect(options.level).toBe('debug');
+    });
+
+    it('should have a formatter', () => {
+      expect(options.format).not.toBeNull();
     });
   });
 

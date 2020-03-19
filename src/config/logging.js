@@ -1,6 +1,6 @@
-import { createLogger, format, transports } from 'winston';
-import traverse from 'traverse';
 import cloneDeep from 'lodash.clonedeep';
+import traverse from 'traverse';
+import { createLogger, format, transports } from 'winston';
 import { getCorrelationId } from '../middleware/correlation';
 
 const OBFUSCATED_VALUE = '********';
@@ -20,19 +20,14 @@ const addCorrelationInfo = format(info => {
 });
 
 export const options = {
-  exitOnError: false,
+  level: 'debug',
   format: format.combine(
     addCorrelationInfo(),
     format.timestamp(),
     format.json(),
     obfuscateSecrets()
   ),
-  transports: [
-    new transports.Console({
-      handleExceptions: true,
-      format: format.combine(format.prettyPrint())
-    })
-  ]
+  transports: [new transports.Console({ handleExceptions: true })]
 };
 
 const logger = createLogger(options);
