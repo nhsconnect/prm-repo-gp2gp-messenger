@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { generateContinueRequest } from '../templates/continue-template';
-import { storeMessageInEhrRepo } from './ehr-repo-gateway';
+import { storeMessageInEhrRepo } from './gp2gp/store-message-in-ehr-repo';
 import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 import {
   containsNegativeAcknowledgement,

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import config from '../config';
-import { eventFinished, updateLogEvent } from '../middleware/logging';
-import { EHRRequestCompleted } from '../services/gp2gp';
+import config from '../../config';
+import { eventFinished, updateLogEvent } from '../../middleware/logging';
+import { EHRRequestCompleted } from './';
 
 axiosRetry(axios, {
   retries: 2,
@@ -13,7 +13,7 @@ axiosRetry(axios, {
   }
 });
 
-const fetchStorageUrl = (conversationId, body) =>
+const _fetchStorageUrl = (conversationId, body) =>
   axios
     .post(`${config.ehrRepoUrl}/health-record/${conversationId}/new/message`, body)
     .catch(err => {
@@ -22,7 +22,7 @@ const fetchStorageUrl = (conversationId, body) =>
     })
     .finally(() => eventFinished());
 
-const setTransferComplete = (conversationId, messageId) =>
+const _setTransferComplete = (conversationId, messageId) =>
   axios
     .patch(`${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`, {
       transferComplete: true
@@ -32,11 +32,12 @@ const setTransferComplete = (conversationId, messageId) =>
       throw err;
     });
 
-export const storeMessageInEhrRepo = async (message, soapInformation) => {
+const storeMessageInEhrRepo = async (message, soapInformation) => {
+  // below should be refactored -- so most would be into handler
   const { nhsNumber } = await new EHRRequestCompleted().handleMessage(message);
   const body = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
 
-  return fetchStorageUrl(soapInformation.conversationId, body)
+  return _fetchStorageUrl(soapInformation.conversationId, body)
     .then(response => {
       updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });
       return axios
@@ -55,7 +56,7 @@ export const storeMessageInEhrRepo = async (message, soapInformation) => {
         ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
       })
     )
-    .then(() => setTransferComplete(soapInformation.conversationId, soapInformation.messageId))
+    .then(() => _setTransferComplete(soapInformation.conversationId, soapInformation.messageId))
     .then(() => updateLogEvent({ ehrRepository: { transferSuccessful: true } }))
     .catch(err => {
       updateLogEvent({
@@ -65,3 +66,5 @@ export const storeMessageInEhrRepo = async (message, soapInformation) => {
     })
     .finally(() => eventFinished());
 };
+
+export { storeMessageInEhrRepo };

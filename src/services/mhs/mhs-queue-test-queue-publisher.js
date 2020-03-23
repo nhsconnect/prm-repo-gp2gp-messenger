@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import config from '../../config';
 import { connectToQueue } from '../../config/queue';
 
-const putMessageOnQueue = (client, message) => {
+const _putMessageOnQueue = (client, message) => {
   const transaction = client.begin();
   const frame = transaction.send({ destination: config.queueName });
   frame.write(message);
@@ -16,7 +16,7 @@ const sendToQueue = message =>
       if (err) {
         reject(err);
       }
-      putMessageOnQueue(client, message);
+      _putMessageOnQueue(client, message);
       client.disconnect();
       resolve();
     });

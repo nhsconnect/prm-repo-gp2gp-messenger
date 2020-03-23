@@ -1,5 +1,4 @@
 import config from '../config';
-import handleMessage from './message-handler';
 import { connectToQueue } from '../config/queue';
 import {
   eventFinished,
@@ -7,6 +6,7 @@ import {
   updateLogEventWithError,
   withContext
 } from '../middleware/logging';
+import handleMessage from './message-handler';
 
 // Transactions
 // client.begin([headers])
@@ -26,7 +26,7 @@ const onMessageCallback = (client, message) => (err, body) => {
   handleMessage(body)
     .then(() => {
       updateLogEvent({ status: 'Acknowledging Message', mhs: { mqMessageId: message.id } });
-      return client.ack(message);
+      return client.ack(message); // Acknowledges - removes from queue
     })
     .then(() => {
       updateLogEvent({ status: 'Message Handled' });

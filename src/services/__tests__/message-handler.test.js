@@ -1,7 +1,7 @@
 import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/continue-template';
-import { storeMessageInEhrRepo } from '../ehr-repo-gateway';
+import { storeMessageInEhrRepo } from '../gp2gp/store-message-in-ehr-repo';
 import handleMessage from '../message-handler';
 import * as mhsGatewayFake from '../mhs/mhs-old-queue-test-helper';
 import {
@@ -18,7 +18,7 @@ import {
 
 jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('../../middleware/logging');
-jest.mock('../ehr-repo-gateway');
+jest.mock('../gp2gp/store-message-in-ehr-repo');
 
 describe('handleMessage', () => {
   beforeEach(() => {
