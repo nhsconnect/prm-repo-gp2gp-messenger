@@ -1,13 +1,13 @@
 import { when } from 'jest-when';
-import config from '../../config';
-import { updateLogEvent } from '../../middleware/logging';
-import generateEhrRequestQuery from '../../templates/ehr-request-template';
-import testData from '../../templates/__tests__/testData.json';
-import sendEhrRequest from '../ehr-request';
-import * as mhsQueueTestHelper from '../mhs/mhs-old-queue-test-helper';
+import config from '../../../config';
+import { updateLogEvent } from '../../../middleware/logging';
+import * as mhsQueueTestHelper from '../../../services/mhs/mhs-old-queue-test-helper';
+import generateEhrRequestQuery from '../../../templates/ehr-request-template';
+import testData from '../../../templates/__tests__/testData.json';
+import sendEhrRequest from '../send-ehr-request';
 
-jest.mock('../mhs/mhs-old-queue-test-helper');
-jest.mock('../../middleware/logging');
+jest.mock('../../../services/mhs/mhs-old-queue-test-helper');
+jest.mock('../../../middleware/logging');
 
 describe('sendEhrRequest', () => {
   let ehrRequestQuery;
@@ -42,7 +42,7 @@ describe('sendEhrRequest', () => {
   const receivingAsid = testData.emisPractise.asid;
   const nhsNumber = testData.emisPatient.nhsNumber;
 
-  it('should send generated EHR request message to fake MHS when environment is not PTL', () => {
+  it('should send generated EHR request message to fake MHS when environment is not PTL', async done => {
     config.isPTL = false;
 
     when(mhsQueueTestHelper.getRoutingInformation)
@@ -52,24 +52,25 @@ describe('sendEhrRequest', () => {
       .calledWith(ehrRequestQuery)
       .mockResolvedValue();
 
-    return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      expect(mhsQueueTestHelper.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
-    });
+    await sendEhrRequest(nhsNumber, odsCode);
+    expect(mhsQueueTestHelper.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);
+    done();
   });
 
-  it('should update log event for each stage', () => {
+  it('should update log event for each stage', async done => {
     mhsQueueTestHelper.getRoutingInformation.mockResolvedValue({ asid: receivingAsid });
 
-    return sendEhrRequest(nhsNumber, odsCode).then(() => {
-      expect(updateLogEvent).toHaveBeenCalledWith({
-        status: 'fetching-routing-info',
-        ehrRequest: { nhsNumber, odsCode }
-      });
-      expect(updateLogEvent).toHaveBeenCalledWith({
-        status: 'requesting-ehr',
-        ehrRequest: { asid: receivingAsid }
-      });
-      expect(updateLogEvent).toHaveBeenCalledWith({ status: 'requested-ehr' });
+    await sendEhrRequest(nhsNumber, odsCode);
+    expect(updateLogEvent).toHaveBeenCalledWith({
+      status: 'fetching-routing-info',
+      ehrRequest: { nhsNumber, odsCode }
     });
+    expect(updateLogEvent).toHaveBeenCalledWith({
+      status: 'requesting-ehr',
+      ehrRequest: { asid: receivingAsid }
+    });
+    expect(updateLogEvent).toHaveBeenCalledWith({ status: 'requested-ehr' });
+
+    done();
   });
 });

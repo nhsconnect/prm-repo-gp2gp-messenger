@@ -1,15 +1,15 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
+import sendEhrRequest from '../api/ehr-request/send-ehr-request';
 import app from '../app';
 import config from '../config';
-import sendEhrRequest from '../services/ehr-request';
 import { getHealthCheck } from '../services/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 
-jest.mock('../services/ehr-request');
+jest.mock('../api/ehr-request/send-ehr-request');
 jest.mock('../config/logging');
 jest.mock('../services/get-health-check');
 jest.mock('../middleware/auth');

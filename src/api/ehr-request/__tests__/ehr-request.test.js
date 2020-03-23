@@ -1,13 +1,13 @@
 import request from 'supertest';
-import app from '../../app';
-import sendEhrRequest from '../../services/ehr-request';
-import MhsError from '../../services/mhs/mhs-error';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import app from '../../../app';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import MhsError from '../../../services/mhs/mhs-error';
+import sendEhrRequest from '../send-ehr-request';
 
-jest.mock('../../services/ehr-request');
-jest.mock('../../services/get-health-check');
-jest.mock('../../middleware/logging');
-jest.mock('../../middleware/auth');
+jest.mock('../send-ehr-request');
+jest.mock('../../../services/get-health-check');
+jest.mock('../../../middleware/logging');
+jest.mock('../../../middleware/auth');
 
 describe('POST /ehr-request', () => {
   const validRequestBody = { nhsNumber: 'some-nhs-number', odsCode: 'some-odsCode' };

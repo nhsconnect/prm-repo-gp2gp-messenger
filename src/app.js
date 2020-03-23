@@ -2,15 +2,15 @@ import httpContext from 'async-local-storage';
 import express from 'express';
 import { errorLogger, logger as requestLogger } from 'express-winston';
 import swaggerUi from 'swagger-ui-express';
-import ehrRequest from './api/ehr-request';
+import { ehrRequest } from './api/ehr-request';
 import errorEndpoint from './api/errorEndpoint';
 import healthCheck from './api/health';
+import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographics } from './api/patient-demographics';
 import { options } from './config/logging';
 import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
-import { healthRecordRequestRouter } from './api/health-record-requests';
 
 httpContext.enable();
 

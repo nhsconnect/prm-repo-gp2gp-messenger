@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { v4 as uuid } from 'uuid';
-import config from '../config';
-import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
-import generateEhrRequestQuery from '../templates/ehr-request-template';
-import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
+import config from '../../config';
+import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import * as mhsGatewayFake from '../../services/mhs/mhs-old-queue-test-helper';
+import generateEhrRequestQuery from '../../templates/ehr-request-template';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
   const mhs = mhsGatewayFake;
