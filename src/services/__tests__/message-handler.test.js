@@ -1,7 +1,6 @@
 import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/continue-template';
-import { storeMessageInEhrRepo } from '../gp2gp/store-message-in-ehr-repo';
 import handleMessage from '../message-handler';
 import * as mhsGatewayFake from '../mhs/mhs-old-queue-test-helper';
 import {
@@ -25,44 +24,20 @@ describe('handleMessage', () => {
     mhsGatewayFake.sendMessage.mockResolvedValue();
   });
 
-  it('should call storeMessageInEhrRepo with message, conversationId and messageId', () => {
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
-        ehrRequestCompletedMessage,
-        expect.objectContaining({
+  it('should update the log event at each stage', async done => {
+    await handleMessage(ehrRequestCompletedMessage);
+    expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
+    expect(updateLogEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.objectContaining({
           conversationId,
-          messageId
+          messageId,
+          action: 'RCMR_IN030000UK06',
+          isNegativeAcknowledgement: false
         })
-      );
-    });
-  });
-
-  it('should call storeMessageInEhrRepo with message and manifest (array of messageIds)', () => {
-    const manifest = ['FE6A40B9-F4C6-4041-A306-EA2A149411CD'];
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
-        ehrRequestCompletedMessage,
-        expect.objectContaining({
-          manifest
-        })
-      );
-    });
-  });
-
-  it('should update the log event at each stage', () => {
-    return handleMessage(ehrRequestCompletedMessage).then(() => {
-      expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: expect.objectContaining({
-            conversationId,
-            messageId,
-            action: 'RCMR_IN030000UK06',
-            isNegativeAcknowledgement: false
-          })
-        })
-      );
-    });
+      })
+    );
+    done();
   });
 
   it('should send generated continue request to fake MHS if message is EHR Request Completed and environment is not PTL', async done => {

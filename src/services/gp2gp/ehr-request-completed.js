@@ -1,4 +1,7 @@
-import { extractNhsNumber } from '../parser/message/extract-nhs-number';
+import { parseMultipartBody } from '../parser/multipart-parser';
+import { soapEnvelopeHandler } from '../soap';
+import { storeMessageInEhrRepo } from './store-message-in-ehr-repo';
+
 const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK08';
 
 class EHRRequestCompleted {
@@ -8,7 +11,9 @@ class EHRRequestCompleted {
   }
 
   async handleMessage(message) {
-    return { nhsNumber: await extractNhsNumber(message).catch(() => {}) };
+    const multipartMessage = await parseMultipartBody(message);
+    const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
+    return await storeMessageInEhrRepo(message, soapInformation);
   }
 }
 

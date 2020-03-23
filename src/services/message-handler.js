@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import config from '../config';
 import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
 import { generateContinueRequest } from '../templates/continue-template';
-import { storeMessageInEhrRepo } from './gp2gp/store-message-in-ehr-repo';
+import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from './gp2gp/ehr-request-completed';
 import * as mhsGatewayFake from './mhs/mhs-old-queue-test-helper';
 import {
   containsNegativeAcknowledgement,
@@ -11,6 +11,7 @@ import {
   extractFoundationSupplierAsid
 } from './parser/message';
 import { parseMultipartBody } from './parser/multipart-parser';
+import { extractAction } from './parser/soap';
 import { soapEnvelopeHandler } from './soap';
 
 const sendContinueMessage = async (message, messageId) => {
@@ -49,9 +50,14 @@ const handleMessage = async message => {
     updateLogEvent({ status: 'handling negative acknowledgement' });
     throw new Error('Message is a negative acknowledgement');
   }
-
-  await storeMessageInEhrRepo(message, soapInformation);
-  updateLogEvent({ status: 'store message to ehr repo' });
+  const interactionId = await extractAction(message);
+  switch (interactionId) {
+    case EHR_REQUEST_COMPLETED:
+      await new EHRRequestCompleted().handleMessage(message);
+      break;
+    default:
+      console.log('Message Handler not implemented');
+  }
 
   if (soapInformation.action === EHR_EXTRACT_MESSAGE_ACTION) {
     updateLogEvent({ status: 'sending continue message' });

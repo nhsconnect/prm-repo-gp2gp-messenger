@@ -71,8 +71,8 @@ describe('storeMessageInEhrRepo', () => {
     });
 
     it('should make a request with manifest being an array of messageIds', async done => {
-      const messageContainingNhsNumber = `<eb:Body></eb:Body>`;
-      await storeMessageInEhrRepo(messageContainingNhsNumber, {
+      const noNhsNumber = `<eb:Body></eb:Body>`;
+      await storeMessageInEhrRepo(noNhsNumber, {
         conversationId,
         messageId,
         manifest
