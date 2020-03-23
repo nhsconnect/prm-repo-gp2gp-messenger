@@ -10,6 +10,7 @@ import { options } from './config/logging';
 import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
+import { healthRecordRequestRouter } from './api/health-record-requests';
 
 httpContext.enable();
 
@@ -24,6 +25,7 @@ app.use('/ehr-request', logging.middleware, ehrRequest);
 app.use('/error', logging.middleware, errorEndpoint);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographics);
+app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
 
 app.use(errorLogger(options));
 

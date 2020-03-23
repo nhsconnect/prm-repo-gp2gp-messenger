@@ -153,4 +153,13 @@ describe('app', () => {
         .end(done);
     });
   });
+
+  describe('POST /health-record-requests/:nhsNumber', () => {
+    it('should return a 200 status code', done => {
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .expect(200)
+        .end(done);
+    });
+  });
 });

@@ -103,4 +103,13 @@ describe('app', () => {
         .end(done);
     });
   });
+
+  describe('POST /health-record-requests/:nhsNumber', () => {
+    it('should return a 401 status code for /health-record-requests/:nhsNumber when not authenticated', done => {
+      request(app)
+        .post('/health-record-requests/9999999999')
+        .expect(401)
+        .end(done);
+    });
+  });
 });
