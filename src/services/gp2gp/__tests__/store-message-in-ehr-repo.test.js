@@ -35,41 +35,6 @@ describe('storeMessageInEhrRepo', () => {
       done();
     });
 
-    it('should make request with NHS number if NHS number found in message', async done => {
-      const nhsNumber = '1234567890';
-      const messageContainingNhsNumber = `<eb:Body><patient classCode="PAT"><id root="2.16.840.1.113883.2.1.4.1" extension="${nhsNumber}"/></patient></eb:Body>`;
-      await storeMessageInEhrRepo(messageContainingNhsNumber, {
-        conversationId,
-        messageId,
-        manifest
-      });
-
-      expect(axios.post).toHaveBeenCalledWith(
-        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
-        expect.objectContaining({
-          messageId,
-          manifest,
-          nhsNumber
-        })
-      );
-      done();
-    });
-
-    it('should make request without NHS number if NHS number is not found in message', async done => {
-      const noNhsNumber = `<eb:Body></eb:Body>`;
-      await storeMessageInEhrRepo(noNhsNumber, {
-        conversationId,
-        messageId,
-        manifest
-      });
-
-      expect(axios.post).toHaveBeenCalledWith(
-        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
-        expect.not.objectContaining({ nhsNumber: undefined })
-      );
-      done();
-    });
-
     it('should make a request with manifest being an array of messageIds', async done => {
       const noNhsNumber = `<eb:Body></eb:Body>`;
       await storeMessageInEhrRepo(noNhsNumber, {

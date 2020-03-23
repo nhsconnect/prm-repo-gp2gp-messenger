@@ -4,7 +4,9 @@ import {
   conversationId,
   ehrRequestCompletedMessage,
   exampleEHRRequestCompleted,
-  messageId
+  messageId,
+  nhsNumber,
+  noNhsNumber
 } from './data/ehr-request-completed';
 
 jest.mock('axios');
@@ -51,6 +53,28 @@ describe('EHRRequestCompleted', () => {
         expect.objectContaining({
           manifest
         })
+      );
+      done();
+    });
+
+    it('should call storeMessageInEhrRepo with NHS number if NHS number found in message', async done => {
+      await new EHRRequestCompleted().handleMessage(ehrRequestCompletedMessage);
+
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+        ehrRequestCompletedMessage,
+        expect.objectContaining({
+          nhsNumber
+        })
+      );
+      done();
+    });
+
+    it('should call storeMessageInEhrRepo without NHS number if NHS number is not found in message', async done => {
+      await new EHRRequestCompleted().handleMessage(noNhsNumber);
+
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+        noNhsNumber,
+        expect.not.objectContaining({ nhsNumber: undefined })
       );
       done();
     });

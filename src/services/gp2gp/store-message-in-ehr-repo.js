@@ -2,7 +2,6 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import config from '../../config';
 import { eventFinished, updateLogEvent } from '../../middleware/logging';
-import { extractNhsNumber } from '../parser/message/extract-nhs-number';
 
 axiosRetry(axios, {
   retries: 2,
@@ -33,10 +32,7 @@ const _setTransferComplete = (conversationId, messageId) =>
     });
 
 const storeMessageInEhrRepo = async (message, soapInformation) => {
-  const nhsNumber = await extractNhsNumber(message).catch(() => {});
-  const body = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
-
-  return _fetchStorageUrl(soapInformation.conversationId, body)
+  return _fetchStorageUrl(soapInformation.conversationId, soapInformation)
     .then(response => {
       updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });
       return axios
