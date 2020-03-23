@@ -158,6 +158,12 @@ describe('app', () => {
     it('should return a 200 status code', done => {
       request(app)
         .post('/health-record-requests/1234567890')
+        .send({
+          repositoryOdsCode: 'repo_ods_code',
+          repositoryAsid: 'repo_asid',
+          practiceOdsCode: 'practice_ods_code',
+          practiceAsid: 'practice_asid'
+        })
         .expect(200)
         .end(done);
     });

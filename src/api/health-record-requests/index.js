@@ -5,6 +5,12 @@ import { healthRecordRequests, healthRecordRequestValidation } from './health-re
 
 const healthRecordRequestRouter = express.Router();
 
-healthRecordRequestRouter.post('/:nhsNumber', authenticateRequest, healthRecordRequestValidation, validate, healthRecordRequests);
+healthRecordRequestRouter.post(
+  '/:nhsNumber',
+  authenticateRequest,
+  healthRecordRequestValidation,
+  validate,
+  healthRecordRequests
+);
 
 export { healthRecordRequestRouter };
