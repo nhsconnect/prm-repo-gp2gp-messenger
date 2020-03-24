@@ -1,8 +1,9 @@
 import { updateLogEvent } from '../middleware/logging';
-import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from './gp2gp/ehr-request-completed';
+import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from './gp2gp';
 import { containsNegativeAcknowledgement } from './parser/message';
 import { parseMultipartBody } from './parser/multipart-parser';
 import { extractAction } from './parser/soap';
+import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from './pds';
 import { soapEnvelopeHandler } from './soap';
 
 const handleMessage = async message => {
@@ -30,6 +31,9 @@ const handleMessage = async message => {
   switch (interactionId) {
     case EHR_REQUEST_COMPLETED:
       handler = new EHRRequestCompleted();
+      break;
+    case PDS_GENERAL_UPDATE_REQUEST_ACCEPTED:
+      handler = new PDSGeneralUpdateRequestAccepted();
       break;
     default:
       throw new Error(`Message Handler not implemented for ${soapInformation.action}`);
