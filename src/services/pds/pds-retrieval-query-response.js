@@ -1,6 +1,6 @@
 import { handlePdsResponse } from './';
 
-const PDS_RETRIEVAL_QUERY_RESPONSE = 'QUPA_IN000010UK02';
+const PDS_RETRIEVAL_QUERY_RESPONSE = 'QUPA_IN000009UK03';
 
 class PDSRetrievalQueryResponse {
   constructor() {
