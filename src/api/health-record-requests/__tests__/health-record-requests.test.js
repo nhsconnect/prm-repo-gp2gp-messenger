@@ -2,15 +2,13 @@ import request from 'supertest';
 import app from '../../../app';
 import dateFormat from 'dateformat';
 import { buildEhrRequest } from '../health-record-requests';
-import { generateEhrRequestQuery } from '../../../templates/ehr-request-template';
+import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import { v4 as uuid } from 'uuid';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
-jest.mock('../../../templates/ehr-request-template', () => ({
-  generateEhrRequestQuery: jest.fn().mockResolvedValue('message')
-}));
+jest.mock('../../../templates/ehr-request-template');
 jest.mock('dateformat');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 
@@ -20,6 +18,7 @@ const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
     uuid.mockImplementation(() => mockUUID);
+    generateEhrRequestQuery.mockResolvedValue('message');
   });
 
   describe('healthRecordRequests', () => {

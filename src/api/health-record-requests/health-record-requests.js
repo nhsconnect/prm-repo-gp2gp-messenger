@@ -1,7 +1,7 @@
 import { param, body } from 'express-validator';
 import { v4 as uuid } from 'uuid';
 import dateFormat from 'dateformat';
-import { generateEhrRequestQuery } from '../../templates/ehr-request-template';
+import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 
 export const healthRecordRequestValidation = [

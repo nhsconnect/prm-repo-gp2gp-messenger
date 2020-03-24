@@ -16,9 +16,7 @@ jest.mock('../middleware/auth');
 jest.mock('../services/mhs/mhs-outbound-client');
 jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
-jest.mock('../templates/ehr-request-template', () => ({
-  generateEhrRequestQuery: jest.fn()
-}));
+jest.mock('../templates/ehr-request-template');
 
 const testSerialChangeNumber = '2';
 const testPatientPdsId = 'cppz';
