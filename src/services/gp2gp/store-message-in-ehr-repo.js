@@ -31,20 +31,24 @@ const _setTransferComplete = (conversationId, messageId) =>
       throw err;
     });
 
+const _putMessage = async (url, message) => {
+  updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url } });
+  return axios
+    .put(url, message)
+    .catch(err => {
+      updateLogEvent({
+        status: 'failed to store message to s3 via pre-signed url',
+        error: err.stack
+      });
+      throw err;
+    })
+    .finally(() => eventFinished());
+};
+
 const storeMessageInEhrRepo = async (message, soapInformation) => {
   return _fetchStorageUrl(soapInformation.conversationId, soapInformation)
-    .then(response => {
-      updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url: response.data } });
-      return axios
-        .put(response.data, message)
-        .catch(err => {
-          updateLogEvent({
-            status: 'failed to store message to s3 via pre-signed url',
-            error: err.stack
-          });
-          throw err;
-        })
-        .finally(() => eventFinished());
+    .then(({ data: url }) => {
+      return _putMessage(url, message);
     })
     .then(response =>
       updateLogEvent({
