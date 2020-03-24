@@ -1,4 +1,5 @@
-import logger, { obfuscateSecrets, options } from '../logging';
+import { getCorrelationId } from '../../middleware/correlation';
+import logger, { addCorrelationInfo, obfuscateSecrets, options } from '../logging';
 
 jest.mock('winston', () => ({
   ...jest.requireActual('winston'),
@@ -8,7 +9,29 @@ jest.mock('winston', () => ({
   }))
 }));
 
+jest.mock('../../middleware/correlation', () => ({
+  getCorrelationId: jest.fn()
+}));
+
 describe('logging', () => {
+  describe('addCorrelationInfo', () => {
+    it('should call getCorrelationId', () => {
+      const formatter = addCorrelationInfo();
+      formatter.transform({});
+      expect(getCorrelationId).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call getCorrelationId', () => {
+      getCorrelationId.mockImplementation(() => 'correlation-id');
+      const formatter = addCorrelationInfo();
+      expect(formatter.transform({})).toEqual(
+        expect.objectContaining({
+          correlationId: 'correlation-id'
+        })
+      );
+    });
+  });
+
   describe('obfuscateSecrets', () => {
     const formatter = obfuscateSecrets();
     const obfuscatedString = '********';

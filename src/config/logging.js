@@ -14,7 +14,7 @@ export const obfuscateSecrets = format(info => {
   return updated;
 });
 
-const addCorrelationInfo = format(info => {
+export const addCorrelationInfo = format(info => {
   info.correlationId = getCorrelationId();
   return info;
 });
