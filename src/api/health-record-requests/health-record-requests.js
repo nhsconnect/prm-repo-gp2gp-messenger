@@ -1,4 +1,7 @@
 import { param, body } from 'express-validator';
+import { v4 as uuid } from 'uuid';
+import dateFormat from 'dateformat';
+import { generateEhrRequestQuery } from '../../templates/ehr-request-template';
 
 export const healthRecordRequestValidation = [
     param('nhsNumber')
@@ -22,5 +25,27 @@ export const healthRecordRequestValidation = [
 ];
 
 export const healthRecordRequests = (req, res) => {
+    const message = buildEhrRequest(req);
     res.sendStatus(200);
 };
+
+export const buildEhrRequest = async req => {
+    const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+    const conversationId = uuid().toUpperCase();
+
+    return generateEhrRequestQuery({
+        id: conversationId,
+        timestamp,
+        receivingService: {
+            asid: req.body.practiceAsid,
+            odsCode: req.body.practiceOdsCode
+        },
+        sendingService: {
+            asid: req.body.repositoryAsid,
+            odsCode: req.body.repositoryOdsCode
+        },
+        patient: {
+            nhsNumber: req.params.nhsNumber
+        }
+    });
+}
