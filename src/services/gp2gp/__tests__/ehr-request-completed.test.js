@@ -23,8 +23,10 @@ jest.mock('../store-message-in-ehr-repo', () => ({
 }));
 
 describe('EHRRequestCompleted', () => {
-  it('should return "EHR Request Completed" when calling name', () => {
-    expect(new EHRRequestCompleted().name).toBe('EHR Request Completed');
+  it('should return "Electronic Healthcare Record Request Completed (GP2GP v1.1)" when calling name', () => {
+    expect(new EHRRequestCompleted().name).toBe(
+      'Electronic Healthcare Record Request Completed (GP2GP v1.1)'
+    );
   });
 
   it('should return EHR_REQUEST_COMPLETED when calling interactionId', () => {
