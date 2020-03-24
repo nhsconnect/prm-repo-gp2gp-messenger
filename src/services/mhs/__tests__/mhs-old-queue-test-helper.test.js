@@ -1,14 +1,9 @@
 import httpContext from 'async-local-storage';
 import config from '../../../config';
 import { connectToQueue } from '../../../config/queue';
-import { getRoutingInformation, sendMessage } from '../mhs-old-queue-test-helper';
 import { updateLogEvent } from '../../../middleware/logging';
 import { extractInteractionId } from '../../parser/message';
-import { generateFirstFragmentResponse } from '../../../templates/soap/fragment-1-template';
-import { generateSecondFragmentResponse } from '../../../templates/soap/fragment-2-template';
-import { generateThirdFragmentResponse } from '../../../templates/soap/fragment-3-template';
-import { generateBigFragmentResponse } from '../../../templates/soap/fragment-4-template';
-import { generateAcknowledgementResponse } from '../../../templates/soap/ack-template';
+import { getRoutingInformation, sendMessage } from '../mhs-old-queue-test-helper';
 
 httpContext.enable();
 
@@ -84,40 +79,6 @@ describe('mhs-gateway-fake', () => {
         expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
         return expect(mockTransaction.send).toHaveBeenCalledWith({ destination: config.queueName });
       });
-    });
-
-    it('should put 4 fragments on when continues sent', () => {
-      const continueRequest = 'COPC_IN000001UK01';
-
-      extractInteractionId.mockReturnValue(continueRequest);
-
-      return sendMessage('message')
-        .then(() => {
-          sendMessage('message');
-        })
-        .then(() => {
-          sendMessage('message');
-        })
-        .then(() => {
-          sendMessage('message');
-        })
-        .then(() => {
-          sendMessage('message');
-        })
-        .then(() => {
-          expect(updateLogEvent).toHaveBeenCalledWith({
-            mhs: { interactionId: continueRequest }
-          });
-          expect(frame.write).toHaveBeenCalledTimes(5);
-          expect(frame.end).toHaveBeenCalledTimes(5);
-          expect(mockTransaction.commit).toHaveBeenCalledTimes(5);
-          expect(frame.write).toHaveBeenNthCalledWith(1, generateFirstFragmentResponse());
-          expect(frame.write).toHaveBeenNthCalledWith(2, generateSecondFragmentResponse());
-          expect(frame.write).toHaveBeenNthCalledWith(3, generateThirdFragmentResponse());
-          expect(frame.write).toHaveBeenNthCalledWith(4, generateBigFragmentResponse());
-          expect(frame.write).toHaveBeenNthCalledWith(5, generateAcknowledgementResponse());
-          expect(mockTransaction.send).toHaveBeenCalledWith({ destination: config.queueName });
-        });
     });
   });
 

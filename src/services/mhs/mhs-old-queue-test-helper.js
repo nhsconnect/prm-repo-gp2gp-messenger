@@ -1,17 +1,8 @@
 import config from '../../config';
-import { generateEhrExtractResponse } from '../../templates/soap/ehr-extract-template';
-import { generateFirstFragmentResponse } from '../../templates/soap/fragment-1-template';
-import { generateSecondFragmentResponse } from '../../templates/soap/fragment-2-template';
-import { generateThirdFragmentResponse } from '../../templates/soap/fragment-3-template';
-import { generateBigFragmentResponse } from '../../templates/soap/fragment-4-template';
-import { generateAcknowledgementResponse } from '../../templates/soap/ack-template';
-import { updateLogEvent } from '../../middleware/logging';
-import {
-  CONTINUE_MESSAGE_ACTION,
-  EHR_REQUEST_MESSAGE_ACTION,
-  extractInteractionId
-} from '../parser/message';
 import { connectToQueue } from '../../config/queue';
+import { updateLogEvent } from '../../middleware/logging';
+import { generateEhrExtractResponse } from '../../templates/soap/ehr-extract-template';
+import { extractInteractionId } from '../parser/message';
 
 const putResponseOnQueue = (client, response) => {
   const transaction = client.begin();
@@ -23,15 +14,7 @@ const putResponseOnQueue = (client, response) => {
   transaction.commit();
 };
 
-function* messageGenerator() {
-  yield generateFirstFragmentResponse();
-  yield generateSecondFragmentResponse();
-  yield generateThirdFragmentResponse();
-  yield generateBigFragmentResponse();
-  yield generateAcknowledgementResponse();
-}
-
-const continueMessageResponse = messageGenerator();
+const EHR_REQUEST_MESSAGE_ACTION = 'RCMR_IN010000UK05'; // Electronic Healthcare Record Request Started (GP2GP v1.1)
 
 export const sendMessage = message =>
   new Promise((resolve, reject) => {
@@ -46,10 +29,6 @@ export const sendMessage = message =>
 
       if (interactionId === EHR_REQUEST_MESSAGE_ACTION) {
         putResponseOnQueue(client, generateEhrExtractResponse());
-      }
-
-      if (interactionId === CONTINUE_MESSAGE_ACTION) {
-        putResponseOnQueue(client, continueMessageResponse.next().value);
       }
 
       resolve();
