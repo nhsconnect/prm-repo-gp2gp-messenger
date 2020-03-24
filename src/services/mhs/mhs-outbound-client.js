@@ -46,11 +46,7 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
       .post(url, axiosBody, axiosHeaders)
       .then(resolve)
       .catch(error => {
-        const axiosError = new Error(
-          `POST ${url} - ${error.message || 'Request failed'} - Headers: ${JSON.stringify(
-            axiosHeaders.headers
-          )} - Body: ${JSON.stringify(axiosBody.payload)}`
-        );
+        const axiosError = new Error(`POST ${url} - ${error.message || 'Request failed'}`);
         updateLogEventWithError(axiosError);
         reject(axiosError);
       });

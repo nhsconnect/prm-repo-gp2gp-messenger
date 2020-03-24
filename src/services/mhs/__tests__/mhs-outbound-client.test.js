@@ -141,26 +141,14 @@ describe('mhs-service', () => {
     axios.post.mockRejectedValue(new Error());
     return expect(
       sendMessage({ interactionId, conversationId, message: 'message' })
-    ).rejects.toEqual(
-      Error(
-        `POST ${url} - Request failed - Headers: ${JSON.stringify({
-          ...axiosHeaders.headers
-        })} - Body: "message"`
-      )
-    );
+    ).rejects.toEqual(Error(`POST ${url} - Request failed`));
   });
 
   it('should log an Error if there is an error with axios.post request', async done => {
     axios.post.mockRejectedValue(new Error());
     await sendMessage({ interactionId, conversationId, message: 'message' }).catch(() => {});
     expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-    expect(updateLogEventWithError).toHaveBeenCalledWith(
-      Error(
-        `POST ${url} - Request failed - Headers: ${JSON.stringify({
-          ...axiosHeaders.headers
-        })} - Body: "message"`
-      )
-    );
+    expect(updateLogEventWithError).toHaveBeenCalledWith(Error(`POST ${url} - Request failed`));
     done();
   });
 });

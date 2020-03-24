@@ -20,7 +20,7 @@ const mockBody = { repositoryOdsCode, repositoryAsid, practiceOdsCode, practiceA
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   it('should generate ehr request query', done => {
-    axios.post.mockImplementation(() => Promise.resolve({ status: 200 }));
+    axios.post.mockResolvedValue({ status: 200 });
     request(app)
       .post(`/health-record-requests/${nhsNumber}`)
       .send(mockBody)
@@ -40,6 +40,22 @@ describe('POST /health-record-requests/:nhsNumber', () => {
             nhsNumber
           }
         });
+      })
+      .end(done);
+  });
+
+  it('should error when send message fails', done => {
+    axios.post.mockRejectedValue({ status: 500 });
+    request(app)
+      .post(`/health-record-requests/${nhsNumber}`)
+      .send(mockBody)
+      .expect(503)
+      .expect(res => {
+        expect(res.body).toEqual(
+          expect.objectContaining({
+            errors: expect.arrayContaining(['Sending EHR Request has failed'])
+          })
+        );
       })
       .end(done);
   });
