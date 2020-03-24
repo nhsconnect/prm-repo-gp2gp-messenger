@@ -2,6 +2,7 @@ import { param, body } from 'express-validator';
 import { v4 as uuid } from 'uuid';
 import dateFormat from 'dateformat';
 import { generateEhrRequestQuery } from '../../templates/ehr-request-template';
+import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber')
@@ -25,13 +26,16 @@ export const healthRecordRequestValidation = [
 ];
 
 export const healthRecordRequests = async (req, res) => {
-  await buildEhrRequest(req);
+  const interactionId = 'RCMR_IN010000UK05';
+  const conversationId = uuid().toUpperCase();
+
+  const message = await buildEhrRequest(req, conversationId);
+  await sendMessage({ interactionId, conversationId, message });
   res.sendStatus(200);
 };
 
-export const buildEhrRequest = async req => {
+export const buildEhrRequest = async (req, conversationId) => {
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-  const conversationId = uuid().toUpperCase();
 
   return generateEhrRequestQuery({
     id: conversationId,

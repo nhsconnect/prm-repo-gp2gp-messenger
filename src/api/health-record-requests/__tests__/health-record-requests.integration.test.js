@@ -1,11 +1,13 @@
 import request from 'supertest';
 import app from '../../../app';
+import axios from 'axios';
 import { generateEhrRequestQuery } from '../../../templates/ehr-request-template';
 
 jest.mock('../../../middleware/logging');
+jest.mock('axios');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/ehr-request-template', () => ({
-  generateEhrRequestQuery: jest.fn()
+  generateEhrRequestQuery: jest.fn().mockResolvedValue('message')
 }));
 
 const nhsNumber = '1111111111';
@@ -18,6 +20,7 @@ const mockBody = { repositoryOdsCode, repositoryAsid, practiceOdsCode, practiceA
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   it('should generate ehr request query', done => {
+    axios.post.mockImplementation(() => Promise.resolve({ status: 200 }));
     request(app)
       .post(`/health-record-requests/${nhsNumber}`)
       .send(mockBody)
