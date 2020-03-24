@@ -1,12 +1,13 @@
 import { when } from 'jest-when';
 import config from '../../../config';
-import { updateLogEvent } from '../../../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import * as mhsQueueTestHelper from '../../../services/mhs/mhs-old-queue-test-helper';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import testData from '../../../templates/__tests__/testData.json';
 import sendEhrRequest from '../send-ehr-request';
 
 jest.mock('../../../services/mhs/mhs-old-queue-test-helper');
+
 jest.mock('../../../middleware/logging');
 
 describe('sendEhrRequest', () => {
@@ -71,6 +72,15 @@ describe('sendEhrRequest', () => {
     });
     expect(updateLogEvent).toHaveBeenCalledWith({ status: 'requested-ehr' });
 
+    done();
+  });
+
+  it('should call updateLogEventWithError with error', async done => {
+    mhsQueueTestHelper.sendMessage.mockRejectedValue(Error('Something went wrong'));
+
+    await sendEhrRequest(nhsNumber, odsCode).catch(() => {});
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(Error('Something went wrong'));
     done();
   });
 });
