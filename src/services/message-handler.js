@@ -61,8 +61,7 @@ const handleMessage = async message => {
         status: 'Message Handler not implemented for interactionId',
         message: {
           ...soapInformation,
-          isNegativeAcknowledgement,
-          fullMessage: message
+          isNegativeAcknowledgement
         }
       });
   }
