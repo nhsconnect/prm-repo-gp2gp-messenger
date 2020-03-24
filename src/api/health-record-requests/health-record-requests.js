@@ -31,7 +31,12 @@ export const healthRecordRequests = async (req, res) => {
 
   const message = await buildEhrRequest(req, conversationId);
   try {
-    await sendMessage({ interactionId, conversationId, message });
+    await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode: req.body.practiceOdsCode,
+      message
+    });
     res.sendStatus(200);
   } catch (err) {
     res.status(503).send({ errors: ['Sending EHR Request has failed', err.message] });

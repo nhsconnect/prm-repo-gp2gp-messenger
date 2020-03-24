@@ -76,6 +76,20 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         })
         .end(done);
     });
+
+    it('should call sendMessage with target ods code message', done => {
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .send(body)
+        .expect(200)
+        .expect(() => {
+          expect(sendMessage).toHaveBeenCalledTimes(1);
+          expect(sendMessage).toHaveBeenCalledWith(
+            expect.objectContaining({ odsCode: body.practiceOdsCode })
+          );
+        })
+        .end(done);
+    });
   });
 
   describe('healthRecordRequestValidation', () => {
