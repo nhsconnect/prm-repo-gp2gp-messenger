@@ -64,7 +64,7 @@ pipelines:
           - docs/**/*.*
       dev_env:
         pipeline: prm-deductions-gp2gp-adaptor.dev
-        stage: functional
+        stage: deploy
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_test
