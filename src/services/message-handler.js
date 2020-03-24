@@ -26,20 +26,15 @@ const handleMessage = async message => {
   }
 
   const interactionId = await extractAction(message);
+  let handler;
   switch (interactionId) {
     case EHR_REQUEST_COMPLETED:
-      await new EHRRequestCompleted().handleMessage(message);
+      handler = new EHRRequestCompleted();
       break;
     default:
-      // TODO: Write a test
-      updateLogEvent({
-        status: 'Message Handler not implemented for interactionId',
-        message: {
-          ...soapInformation,
-          isNegativeAcknowledgement
-        }
-      });
+      throw new Error(`Message Handler not implemented for ${soapInformation.action}`);
   }
+  return handler.handleMessage(message);
 };
 
 export default handleMessage;

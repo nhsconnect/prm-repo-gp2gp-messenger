@@ -80,6 +80,19 @@ describe('mhs-gateway-fake', () => {
         return expect(mockTransaction.send).toHaveBeenCalledWith({ destination: config.queueName });
       });
     });
+
+    it('should not put fragment on queue if message is not RCMR_IN010000UK05', async done => {
+      const interactionId = 'FAKE_IN010000UK05';
+      extractInteractionId.mockReturnValue(interactionId);
+      await sendMessage('<FAKE_IN010000UK05></FAKE_IN010000UK05>');
+      expect(updateLogEvent).toHaveBeenCalledWith({
+        mhs: { interactionId }
+      });
+      expect(frame.write).toHaveBeenCalledTimes(0);
+      expect(frame.end).toHaveBeenCalledTimes(0);
+      expect(mockTransaction.commit).toHaveBeenCalledTimes(0);
+      done();
+    });
   });
 
   describe('getRoutingInformation', () => {

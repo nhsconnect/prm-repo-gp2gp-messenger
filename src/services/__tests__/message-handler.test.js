@@ -1,4 +1,5 @@
 import { updateLogEvent } from '../../middleware/logging';
+import { EHRRequestCompleted } from '../gp2gp/ehr-request-completed';
 import handleMessage from '../message-handler';
 import {
   conversationId,
@@ -7,13 +8,21 @@ import {
   messageWithoutAction,
   messageWithoutConversationId,
   messageWithoutMessageId,
-  negativeAcknowledgement
+  negativeAcknowledgement,
+  unhandledInteractionId
 } from './data/message-handler';
 
 jest.mock('../../middleware/logging');
 jest.mock('../gp2gp/store-message-in-ehr-repo');
+jest.mock('../gp2gp/ehr-request-completed');
 
 describe('handleMessage', () => {
+  beforeEach(() => {
+    EHRRequestCompleted.prototype.handleMessage = jest
+      .fn()
+      .mockImplementation(() => 'handled message');
+  });
+
   it('should update the log event at each stage', async done => {
     await handleMessage(ehrRequestCompletedMessage);
     expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
@@ -52,5 +61,21 @@ describe('handleMessage', () => {
     return expect(handleMessage(negativeAcknowledgement)).rejects.toEqual(
       new Error('Message is a negative acknowledgement')
     );
+  });
+
+  it('should reject the promise if the message action does not have a handler implemented', () => {
+    const interactionId = 'FAKE_IN030000UK06';
+    return expect(handleMessage(unhandledInteractionId)).rejects.toEqual(
+      new Error(`Message Handler not implemented for ${interactionId}`)
+    );
+  });
+
+  it('should call EHRRequestCompleted with the message if message is type RCMR_IN030000UK06', async done => {
+    await handleMessage(ehrRequestCompletedMessage);
+    expect(EHRRequestCompleted.prototype.handleMessage).toHaveBeenCalledTimes(1);
+    expect(EHRRequestCompleted.prototype.handleMessage).toHaveBeenCalledWith(
+      ehrRequestCompletedMessage
+    );
+    done();
   });
 });
