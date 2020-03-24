@@ -56,7 +56,15 @@ const handleMessage = async message => {
       await new EHRRequestCompleted().handleMessage(message);
       break;
     default:
-      console.log('Message Handler not implemented');
+      // TODO: Write a test
+      updateLogEvent({
+        status: 'Message Handler not implemented for interactionId',
+        message: {
+          ...soapInformation,
+          isNegativeAcknowledgement,
+          fullMessage: message
+        }
+      });
   }
 
   if (soapInformation.action === EHR_EXTRACT_MESSAGE_ACTION) {

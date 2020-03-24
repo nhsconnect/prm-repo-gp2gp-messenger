@@ -3,7 +3,7 @@ import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
 import { storeMessageInEhrRepo } from './store-message-in-ehr-repo';
 
-const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK08';
+const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK06';
 
 class EHRRequestCompleted {
   constructor() {
