@@ -1,27 +1,26 @@
-import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
-import { generateContinueRequest } from '../../templates/continue-template';
+import { EHRRequestCompleted } from '../gp2gp/ehr-request-completed';
 import handleMessage from '../message-handler';
-import * as mhsGatewayFake from '../mhs/mhs-old-queue-test-helper';
 import {
   conversationId,
-  ehrNotCompletedMessage,
   ehrRequestCompletedMessage,
-  foundationSupplierAsid,
   messageId,
   messageWithoutAction,
   messageWithoutConversationId,
   messageWithoutMessageId,
-  negativeAcknowledgement
+  negativeAcknowledgement,
+  unhandledInteractionId
 } from './data/message-handler';
 
-jest.mock('../mhs/mhs-old-queue-test-helper');
 jest.mock('../../middleware/logging');
 jest.mock('../gp2gp/store-message-in-ehr-repo');
+jest.mock('../gp2gp/ehr-request-completed');
 
 describe('handleMessage', () => {
   beforeEach(() => {
-    mhsGatewayFake.sendMessage.mockResolvedValue();
+    EHRRequestCompleted.prototype.handleMessage = jest
+      .fn()
+      .mockImplementation(() => 'handled message');
   });
 
   it('should update the log event at each stage', async done => {
@@ -37,25 +36,6 @@ describe('handleMessage', () => {
         })
       })
     );
-    done();
-  });
-
-  it('should send generated continue request to fake MHS if message is EHR Request Completed and environment is not PTL', async done => {
-    await handleMessage(ehrRequestCompletedMessage);
-    const continueMessage = generateContinueRequest(
-      'mocked-uuid',
-      '20190228112548',
-      foundationSupplierAsid,
-      config.deductionsAsid,
-      messageId
-    );
-    expect(mhsGatewayFake.sendMessage).toHaveBeenCalledWith(continueMessage);
-    done();
-  });
-
-  it('should not send continue request if message is not EHR Request Completed', async done => {
-    await handleMessage(ehrNotCompletedMessage);
-    expect(mhsGatewayFake.sendMessage).not.toHaveBeenCalled();
     done();
   });
 
@@ -81,5 +61,21 @@ describe('handleMessage', () => {
     return expect(handleMessage(negativeAcknowledgement)).rejects.toEqual(
       new Error('Message is a negative acknowledgement')
     );
+  });
+
+  it('should reject the promise if the message action does not have a handler implemented', () => {
+    const interactionId = 'FAKE_IN030000UK06';
+    return expect(handleMessage(unhandledInteractionId)).rejects.toEqual(
+      new Error(`Message Handler not implemented for ${interactionId}`)
+    );
+  });
+
+  it('should call EHRRequestCompleted with the message if message is type RCMR_IN030000UK06', async done => {
+    await handleMessage(ehrRequestCompletedMessage);
+    expect(EHRRequestCompleted.prototype.handleMessage).toHaveBeenCalledTimes(1);
+    expect(EHRRequestCompleted.prototype.handleMessage).toHaveBeenCalledWith(
+      ehrRequestCompletedMessage
+    );
+    done();
   });
 });

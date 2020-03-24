@@ -7,7 +7,7 @@ const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK06';
 
 class EHRRequestCompleted {
   constructor() {
-    this.name = 'EHR Request Completed';
+    this.name = 'Electronic Healthcare Record Request Completed (GP2GP v1.1)';
     this.interactionId = EHR_REQUEST_COMPLETED;
   }
 
