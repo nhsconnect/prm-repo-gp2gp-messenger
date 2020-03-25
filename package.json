@@ -64,7 +64,8 @@
   },
   "jest": {
     "coveragePathIgnorePatterns": [
-      "src/services/mhs/mhs-queue-test-queue-publisher.js"
+      "src/services/mhs/mhs-queue-test-queue-publisher.js",
+      "src/services/mhs/mhs-queue-test-queue-consumer.js"
     ],
     "testPathIgnorePatterns": [
       ".*/__tests__/data/.*"
