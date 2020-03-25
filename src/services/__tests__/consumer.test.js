@@ -55,31 +55,35 @@ describe('initialiseConsumer', () => {
     handleMessage.mockResolvedValue();
   });
 
-  it('should connect to the broker with the correct config', () => {
-    initialiseConsumer();
+  it('should connect to the broker with the correct config', async done => {
+    await initialiseConsumer();
 
     expect(ConnectFailover).toHaveBeenCalledWith(
       [connectionFailoverTemplate(true), connectionFailoverTemplate(false, 'other')],
       { maxReconnects: 1, initialReconnectDelay: 100 }
     );
+
+    done();
   });
 
-  it('should connect to the broker when there is no failover', () => {
+  it('should connect to the broker when there is no failover', async done => {
     config.queueUrls = ['stomp+ssl://some-url:some-port'];
 
-    initialiseConsumer();
+    await initialiseConsumer();
 
     expect(ConnectFailover).toHaveBeenCalledWith([connectionFailoverTemplate(true)], {
       maxReconnects: 1,
       initialReconnectDelay: 100
     });
+
+    done();
   });
 
   it('should throw if the queue urls are not configured correctly', () => {
     config.queueUrls[0] = 'some-url-without-protocol:some-port';
 
-    expect(() => initialiseConsumer()).toThrow(
-      new Error(
+    return expect(initialiseConsumer()).rejects.toEqual(
+      Error(
         'Queue url some-url-without-protocol:some-port should have the format protocol://host:port'
       )
     );
@@ -88,66 +92,69 @@ describe('initialiseConsumer', () => {
   it('should throw when there is an error connecting to the broker', () => {
     connect.mockImplementation(callback => callback(new Error(errorMessage)));
 
-    return expect(() => initialiseConsumer()).toThrow(new Error(errorMessage));
+    return expect(initialiseConsumer()).rejects.toEqual(new Error(errorMessage));
   });
 
-  it('should subscribe to the queue with the correct config', () => {
-    initialiseConsumer();
+  it('should subscribe to the queue with the correct config', async done => {
+    await initialiseConsumer();
 
     expect(client.subscribe).toHaveBeenCalledWith(
       { destination: config.queueName, ack: 'client-individual' },
       expect.anything()
     );
+    done();
   });
 
-  it('should update the log event when there is an error subscribing to the queue', () => {
+  it('should update the log event when there is an error subscribing to the queue', async done => {
     client.subscribe.mockImplementation((config, callback) =>
       callback(new Error(errorMessage), message)
     );
 
-    initialiseConsumer();
+    await initialiseConsumer().catch(() => {});
 
     expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
+    done();
   });
 
-  it('should throw when there is an error subscribing to the queue but no message', () => {
+  it('should throw when there is an error subscribing to the queue but no message', async () => {
     client.subscribe.mockImplementation((config, callback) => callback(new Error(errorMessage)));
 
-    expect(() => initialiseConsumer()).toThrow(new Error(errorMessage));
+    return expect(initialiseConsumer()).rejects.toEqual(Error(errorMessage));
   });
 
-  it('should read the message from the queue with the correct encoding', () => {
-    initialiseConsumer();
+  it('should read the message from the queue with the correct encoding', async done => {
+    await initialiseConsumer();
 
     expect(message.readString).toHaveBeenCalledWith('UTF-8', expect.anything());
+    done();
   });
 
-  it('should update log event when there is an error reading the message', () => {
+  it('should update log event when there is an error reading the message', async done => {
     message.readString.mockImplementation((encoding, callback) =>
       callback(new Error(errorMessage), 'some-message-body')
     );
 
-    initialiseConsumer();
+    await initialiseConsumer().catch(() => {});
 
     expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
+    done();
   });
 
-  it('should pass the message to the handler', () => {
-    initialiseConsumer();
+  it('should pass the message to the handler', async done => {
+    await initialiseConsumer();
     expect(handleMessage).toHaveBeenCalledWith('some-message-body');
+    done();
   });
 
-  it('should acknowledge the message after handling', done => {
-    initialiseConsumer();
+  it('should acknowledge the message after handling', async done => {
+    await initialiseConsumer();
 
-    setImmediate(() => {
-      expect(client.ack).toHaveBeenCalled();
-      done();
-    });
+    expect(client.ack).toHaveBeenCalled();
+    done();
   });
 
-  it('should log the event after handling', done => {
-    initialiseConsumer();
+  it('should log the event after handling', async done => {
+    await initialiseConsumer();
 
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', {
@@ -162,21 +169,21 @@ describe('initialiseConsumer', () => {
     });
   });
 
-  it('should send a negative acknowledgement if handling the message fails', done => {
+  it('should acknowledge the message if handling the message fails (to remove off queue)', async done => {
     handleMessage.mockRejectedValue(new Error(errorMessage));
 
-    initialiseConsumer();
+    await initialiseConsumer().catch(() => {});
 
     setImmediate(() => {
-      expect(client.nack).toHaveBeenCalled();
+      expect(client.ack).toHaveBeenCalled();
       done();
     });
   });
 
-  it('should log the error event if handling the message fails', done => {
+  it('should log the error event if handling the message fails', async done => {
     handleMessage.mockRejectedValue(new Error(errorMessage));
 
-    initialiseConsumer();
+    await initialiseConsumer().catch(() => {});
 
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
