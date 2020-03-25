@@ -23,11 +23,11 @@ describe('handleMessage', () => {
   beforeEach(() => {
     EHRRequestCompleted.prototype.handleMessage = jest
       .fn()
-      .mockImplementation(() => 'EHRRequestCompleted handled message');
+      .mockResolvedValue('EHRRequestCompleted handled message');
 
     PDSGeneralUpdateRequestAccepted.prototype.handleMessage = jest
       .fn()
-      .mockImplementation(() => 'PDSGeneralUpdateRequestAccepted handled message');
+      .mockResolvedValue('PDSGeneralUpdateRequestAccepted handled message');
   });
 
   it('should update the log event at each stage', async done => {
