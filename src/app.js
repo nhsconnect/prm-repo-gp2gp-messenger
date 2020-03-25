@@ -3,7 +3,7 @@ import express from 'express';
 import { errorLogger, logger as requestLogger } from 'express-winston';
 import swaggerUi from 'swagger-ui-express';
 import { ehrRequest } from './api/ehr-request';
-import errorEndpoint from './api/errorEndpoint';
+import error from './api/error';
 import healthCheck from './api/health';
 import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographics } from './api/patient-demographics';
@@ -22,7 +22,7 @@ app.use(requestLogger(options));
 
 app.use('/health', logging.middleware, healthCheck);
 app.use('/ehr-request', logging.middleware, ehrRequest);
-app.use('/error', logging.middleware, errorEndpoint);
+app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographics);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
