@@ -10,7 +10,6 @@ import {
 } from './data/ehr-request-completed';
 
 jest.mock('axios');
-jest.mock('axios-retry');
 jest.mock('../ehr-request-completed-handler', () => ({
   ehrRequestCompletedHandler: jest.fn()
 }));

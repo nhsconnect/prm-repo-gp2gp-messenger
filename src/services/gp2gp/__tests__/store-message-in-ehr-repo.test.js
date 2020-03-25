@@ -1,17 +1,14 @@
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import config from '../../../config';
 import { eventFinished, updateLogEvent } from '../../../middleware/logging';
 import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
 
 jest.mock('axios');
-jest.mock('axios-retry');
+
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
   eventFinished: jest.fn()
 }));
-
-axiosRetry.mockImplementation(() => jest.fn());
 
 const originalEhrRepoUrl = config.ehrRepoUrl;
 
