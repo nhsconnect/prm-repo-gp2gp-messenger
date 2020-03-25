@@ -29,10 +29,10 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       practiceAsid: 'practice_asid'
     };
 
-    it('should return a 200', done => {
+    it('should return a 204', done => {
       request(app)
         .post('/health-record-requests/1234567890')
-        .expect(200)
+        .expect(204)
         .send(body)
         .end(done);
     });
@@ -41,7 +41,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       request(app)
         .post('/health-record-requests/1234567890')
         .send(body)
-        .expect(200)
+        .expect(204)
         .expect(() => {
           expect(sendMessage).toHaveBeenCalledTimes(1);
           expect(sendMessage).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       request(app)
         .post('/health-record-requests/1234567890')
         .send(body)
-        .expect(200)
+        .expect(204)
         .expect(() => {
           expect(sendMessage).toHaveBeenCalledTimes(1);
           expect(sendMessage).toHaveBeenCalledWith(
@@ -69,7 +69,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       request(app)
         .post('/health-record-requests/1234567890')
         .send(body)
-        .expect(200)
+        .expect(204)
         .expect(() => {
           expect(sendMessage).toHaveBeenCalledTimes(1);
           expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ message: 'message' }));
@@ -81,7 +81,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       request(app)
         .post('/health-record-requests/1234567890')
         .send(body)
-        .expect(200)
+        .expect(204)
         .expect(() => {
           expect(sendMessage).toHaveBeenCalledTimes(1);
           expect(sendMessage).toHaveBeenCalledWith(

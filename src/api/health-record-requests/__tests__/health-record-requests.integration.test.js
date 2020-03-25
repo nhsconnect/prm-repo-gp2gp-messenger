@@ -22,7 +22,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   });
 
   it('should generate ehr request query', done => {
-    axios.post.mockResolvedValue({ status: 200 });
+    axios.post.mockResolvedValue({ status: 204 });
     request(app)
       .post(`/health-record-requests/${nhsNumber}`)
       .send(mockBody)

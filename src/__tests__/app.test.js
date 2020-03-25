@@ -156,7 +156,7 @@ describe('app', () => {
   });
 
   describe('POST /health-record-requests/:nhsNumber', () => {
-    it('should return a 200 status code', done => {
+    it('should return a 204 status code', done => {
       request(app)
         .post('/health-record-requests/1234567890')
         .send({
@@ -165,7 +165,7 @@ describe('app', () => {
           practiceOdsCode: 'practice_ods_code',
           practiceAsid: 'practice_asid'
         })
-        .expect(200)
+        .expect(204)
         .end(done);
     });
   });

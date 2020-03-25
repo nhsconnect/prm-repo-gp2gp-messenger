@@ -37,7 +37,7 @@ export const healthRecordRequests = async (req, res) => {
       odsCode: req.body.practiceOdsCode,
       message
     });
-    res.sendStatus(200);
+    res.sendStatus(204);
   } catch (err) {
     res.status(503).send({ errors: ['Sending EHR Request has failed', err.message] });
   }
