@@ -73,4 +73,4 @@ const initialiseConsumer = () => {
   });
 };
 
-export default initialiseConsumer;
+export { initialiseConsumer };
