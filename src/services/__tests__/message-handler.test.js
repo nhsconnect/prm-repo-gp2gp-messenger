@@ -15,7 +15,7 @@ import {
 } from './data/message-handler';
 
 jest.mock('../../middleware/logging');
-jest.mock('../gp2gp/store-message-in-ehr-repo');
+jest.mock('../gp2gp/ehr-request-completed-handler');
 jest.mock('../gp2gp/ehr-request-completed');
 jest.mock('../pds/pds-general-update-request-accepted');
 

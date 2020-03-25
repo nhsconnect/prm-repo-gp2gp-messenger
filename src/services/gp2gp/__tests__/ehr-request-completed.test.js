@@ -2,7 +2,7 @@ import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
 import { parseMultipartBody } from '../../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../../soap/soap-envelope-handler';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../ehr-request-completed';
-import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
+import { ehrRequestCompletedHandler } from '../ehr-request-completed-handler';
 
 jest.mock('../../parser/multipart-parser', () => ({
   parseMultipartBody: jest
@@ -18,8 +18,8 @@ jest.mock('../../parser/message/extract-nhs-number', () => ({
   extractNhsNumber: jest.fn().mockResolvedValue('1234567890')
 }));
 
-jest.mock('../store-message-in-ehr-repo', () => ({
-  storeMessageInEhrRepo: jest.fn()
+jest.mock('../ehr-request-completed-handler', () => ({
+  ehrRequestCompletedHandler: jest.fn()
 }));
 
 describe('EHRRequestCompleted', () => {
@@ -58,23 +58,23 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call storeMessageInEhrRepo', async done => {
+    it('should call ehrRequestCompletedHandler', async done => {
       const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
       await new EHRRequestCompleted().handleMessage(message);
-      expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
-      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+      expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);
+      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
         message,
         expect.objectContaining({ info: 'soap-information', nhsNumber: '1234567890' })
       );
       done();
     });
 
-    it('should call storeMessageInEhrRepo without nhsNumber if not extracted', async done => {
+    it('should call ehrRequestCompletedHandler without nhsNumber if not extracted', async done => {
       extractNhsNumber.mockRejectedValue('no NHS number found');
       const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
       await new EHRRequestCompleted().handleMessage(message);
-      expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
-      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
+      expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);
+      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
         message,
         expect.not.objectContaining({
           nhsNumber: '1234567890'

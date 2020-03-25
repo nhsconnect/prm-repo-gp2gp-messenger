@@ -39,7 +39,7 @@ const _setTransferComplete = async (conversationId, messageId) => {
   }
 };
 
-const _putMessage = async (url, message) => {
+const storeMessageInEhrRepo = async (url, message) => {
   try {
     const response = await axios.put(url, message);
     updateLogEvent({
@@ -57,11 +57,11 @@ const _putMessage = async (url, message) => {
   }
 };
 
-const storeMessageInEhrRepo = async (message, soapInformation) => {
+const ehrRequestCompletedHandler = async (message, soapInformation) => {
   try {
     const { data: url } = await _fetchStorageUrl(soapInformation.conversationId, soapInformation);
     updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url } });
-    await _putMessage(url, message);
+    await storeMessageInEhrRepo(url, message);
     await _setTransferComplete(soapInformation.conversationId, soapInformation.messageId);
   } catch (err) {
     updateLogEvent({
@@ -73,4 +73,4 @@ const storeMessageInEhrRepo = async (message, soapInformation) => {
   }
 };
 
-export { storeMessageInEhrRepo };
+export { ehrRequestCompletedHandler };
