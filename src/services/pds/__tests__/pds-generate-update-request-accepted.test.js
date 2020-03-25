@@ -3,6 +3,7 @@ import {
   PDSGeneralUpdateRequestAccepted,
   PDS_GENERAL_UPDATE_REQUEST_ACCEPTED
 } from '../pds-general-update-request-accepted';
+import { pdsGenerateUpdateRequest } from './data/pds-generate-update-request-accepted';
 
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn()
@@ -20,15 +21,10 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
   });
 
   describe('handleMessage', () => {
-    it('should call updateLogEvent to update status', () => {
-      const message = '<PRPA_IN000202UK01></PRPA_IN000202UK01>';
-      new PDSGeneralUpdateRequestAccepted().handleMessage(message);
+    it('should call updateLogEvent to update status', async done => {
+      await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Handling PDS General Update Request Accepted (PRPA_IN000202UK01) Message'
-        })
-      );
+      done();
     });
   });
 });

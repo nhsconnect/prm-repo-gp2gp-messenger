@@ -5,6 +5,8 @@ import {
   ehrRequestCompletedMessage,
   exampleEHRRequestCompleted,
   messageId,
+  messageWithoutConversationId,
+  messageWithoutMessageId,
   nhsNumber,
   noNhsNumber
 } from './data/ehr-request-completed';
@@ -16,6 +18,18 @@ jest.mock('../ehr-request-completed-handler', () => ({
 
 describe('EHRRequestCompleted', () => {
   describe('handleMesage', () => {
+    it('should reject the promise if message does not contain a conversation id', () => {
+      return expect(
+        new EHRRequestCompleted().handleMessage(messageWithoutConversationId)
+      ).rejects.toEqual(new Error("The key 'ConversationId' was not found in the message"));
+    });
+
+    it('should reject the promise if message does not contain a message id', () => {
+      return expect(
+        new EHRRequestCompleted().handleMessage(messageWithoutMessageId)
+      ).rejects.toEqual(new Error("The key 'MessageId' was not found in the message"));
+    });
+
     it('should call ehrRequestCompletedHandler with full message and soapInformation', async done => {
       await new EHRRequestCompleted().handleMessage(exampleEHRRequestCompleted);
       expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);

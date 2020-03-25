@@ -5,7 +5,6 @@ export const conversationId = 'some-conversation-id-123';
 export const messageId = 'some-message-id-456';
 export const foundationSupplierAsid = 'foundation-supplier-asid';
 
-
 export const ehrRequestCompletedMessage = `------=_MIME-Boundary
 Content-Type: application/xml
 Content-ID: <50D33D75-04C6-40AF-947D-E6E9656C1EEB@inps.co.uk/Vision/3>
