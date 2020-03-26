@@ -1,7 +1,7 @@
-import { updateLogEvent } from '../../middleware/logging';
-import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../gp2gp';
-import { extractAction } from '../parser/soap';
-import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../pds';
+import { updateLogEvent } from '../../../middleware/logging';
+import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
+import { extractAction } from '../../parser/soap';
+import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
 
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });

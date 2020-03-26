@@ -1,7 +1,7 @@
 import app from './app';
 import logger from './config/logging';
-import { initialiseConsumer } from './services/queue/consumer';
+import { initialiseSubscriber } from './services/queue/subscriber/subscriber';
 
-initialiseConsumer();
+initialiseSubscriber();
 
 app.listen(3000, () => logger.info('Listening on port 3000'));

@@ -1,13 +1,13 @@
 import httpContext from 'async-local-storage';
 import { connect, ConnectFailover } from 'stompit';
-import config from '../../../config';
-import logger from '../../../config/logging';
-import { initialiseConsumer } from '../consumer';
+import config from '../../../../config';
+import logger from '../../../../config/logging';
+import { initialiseSubscriber } from '../subscriber';
 import handleMessage from '../message-handler';
 
 httpContext.enable();
 
-jest.mock('../../../config/logging');
+jest.mock('../../../../config/logging');
 jest.mock('../message-handler');
 
 const errorMessage = 'some-error-happened';
@@ -56,7 +56,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should connect to the broker with the correct config', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     expect(ConnectFailover).toHaveBeenCalledWith(
       [connectionFailoverTemplate(true), connectionFailoverTemplate(false, 'other')],
@@ -69,7 +69,7 @@ describe('initialiseConsumer', () => {
   it('should connect to the broker when there is no failover', async done => {
     config.queueUrls = ['stomp+ssl://some-url:some-port'];
 
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     expect(ConnectFailover).toHaveBeenCalledWith([connectionFailoverTemplate(true)], {
       maxReconnects: 1,
@@ -82,7 +82,7 @@ describe('initialiseConsumer', () => {
   it('should throw if the queue urls are not configured correctly', () => {
     config.queueUrls[0] = 'some-url-without-protocol:some-port';
 
-    return expect(initialiseConsumer()).rejects.toEqual(
+    return expect(initialiseSubscriber()).rejects.toEqual(
       Error(
         'Queue url some-url-without-protocol:some-port should have the format protocol://host:port'
       )
@@ -92,11 +92,11 @@ describe('initialiseConsumer', () => {
   it('should throw when there is an error connecting to the broker', () => {
     connect.mockImplementation(callback => callback(new Error(errorMessage)));
 
-    return expect(initialiseConsumer()).rejects.toEqual(new Error(errorMessage));
+    return expect(initialiseSubscriber()).rejects.toEqual(new Error(errorMessage));
   });
 
   it('should subscribe to the queue with the correct config', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     expect(client.subscribe).toHaveBeenCalledWith(
       { destination: config.queueName, ack: 'client-individual' },
@@ -110,7 +110,7 @@ describe('initialiseConsumer', () => {
       callback(new Error(errorMessage), message)
     );
 
-    await initialiseConsumer().catch(() => {});
+    await initialiseSubscriber().catch(() => {});
 
     expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
     done();
@@ -119,11 +119,11 @@ describe('initialiseConsumer', () => {
   it('should throw when there is an error subscribing to the queue but no message', async () => {
     client.subscribe.mockImplementation((config, callback) => callback(new Error(errorMessage)));
 
-    return expect(initialiseConsumer()).rejects.toEqual(Error(errorMessage));
+    return expect(initialiseSubscriber()).rejects.toEqual(Error(errorMessage));
   });
 
   it('should read the message from the queue with the correct encoding', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     expect(message.readString).toHaveBeenCalledWith('UTF-8', expect.anything());
     done();
@@ -134,20 +134,20 @@ describe('initialiseConsumer', () => {
       callback(new Error(errorMessage), 'some-message-body')
     );
 
-    await initialiseConsumer().catch(() => {});
+    await initialiseSubscriber().catch(() => {});
 
     expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
     done();
   });
 
   it('should pass the message to the handler', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
     expect(handleMessage).toHaveBeenCalledWith('some-message-body');
     done();
   });
 
   it('should acknowledge the message after handling', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     setImmediate(() => {
       expect(client.ack).toHaveBeenCalled();
@@ -156,7 +156,7 @@ describe('initialiseConsumer', () => {
   });
 
   it('should log the event after handling', async done => {
-    await initialiseConsumer();
+    await initialiseSubscriber();
 
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', {
@@ -174,7 +174,7 @@ describe('initialiseConsumer', () => {
   it('should acknowledge the message if handling the message fails (to remove off queue)', async done => {
     handleMessage.mockRejectedValue(new Error(errorMessage));
 
-    await initialiseConsumer().catch(() => {});
+    await initialiseSubscriber().catch(() => {});
 
     setImmediate(() => {
       expect(client.ack).toHaveBeenCalled();
@@ -185,7 +185,7 @@ describe('initialiseConsumer', () => {
   it('should log the error event if handling the message fails', async done => {
     handleMessage.mockRejectedValue(new Error(errorMessage));
 
-    await initialiseConsumer().catch(() => {});
+    await initialiseSubscriber().catch(() => {});
 
     setImmediate(() => {
       expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
