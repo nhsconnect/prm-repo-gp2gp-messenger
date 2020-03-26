@@ -1,5 +1,5 @@
-import config from '../../config';
-import { connectToQueue } from '../../config/queue';
+import config from '../../../config';
+import { connectToQueue } from '../../../config/queue';
 
 // Consumes one message off the queue then disconnects from queue
 export const consumeOneMessage = () =>

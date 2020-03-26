@@ -63,10 +63,6 @@
     "typescript": "^3.8.3"
   },
   "jest": {
-    "coveragePathIgnorePatterns": [
-      "src/services/queue/mhs-queue-test-queue-publisher",
-      "src/services/queue/mhs-queue-test-queue-consumer.js"
-    ],
     "testPathIgnorePatterns": [
       ".*/__tests__/data/.*"
     ],

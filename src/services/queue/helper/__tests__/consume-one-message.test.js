@@ -1,8 +1,8 @@
 import { connect } from 'stompit';
-import config from '../../../config';
-import { generateEhrExtractResponse } from '../../../templates/soap/ehr-extract-template';
-import { consumeOneMessage } from '../mhs-queue-test-queue-consumer';
-import { sendToQueue } from '../mhs-queue-test-queue-publisher';
+import config from '../../../../config';
+import { generateEhrExtractResponse } from '../../../../templates/soap/ehr-extract-template';
+import { sendToQueue } from '../../mhs-queue-test-queue-publisher';
+import { consumeOneMessage } from '../consume-one-message';
 const originalConfig = { ...config };
 
 describe('consumeOneMessage', () => {
