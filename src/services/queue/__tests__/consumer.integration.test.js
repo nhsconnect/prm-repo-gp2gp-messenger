@@ -2,8 +2,8 @@ import httpContext from 'async-local-storage';
 import { EHRRequestCompleted } from '../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../pds/pds-general-update-request-accepted';
 import { initialiseConsumer } from '../consumer';
-import { consumeOneMessage } from '../helper';
-import { clearQueue, sendToQueue } from '../mhs-queue-test-queue-publisher';
+import { clearQueue, consumeOneMessage } from '../helper';
+import { sendToQueue } from '../mhs-queue-test-queue-publisher';
 import {
   ehrRequestCompletedMessage,
   pdsGeneralUpdateRequestAcceptedMessage,
