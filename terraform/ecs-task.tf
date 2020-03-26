@@ -8,6 +8,7 @@ locals {
       { name = "DEDUCTIONS_ASID", value = data.aws_ssm_parameter.deductions_asid.value },
       { name = "NODE_ENV", value = var.environment },
       { name = "MHS_QUEUE_NAME", value = "deductions.mhs" },
+      { name = "MHS_UNHANDLED_MESSAGES_QUEUE_NAME", value = "unhandled-raw-inbound" }
       { name = "MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
       { name = "MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
       { name = "S3_BUCKET_NAME", value = var.s3_bucket_name },

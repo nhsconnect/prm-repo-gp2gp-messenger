@@ -28,6 +28,7 @@ The initial version will send and receive health records that are encoded in the
    DEDUCTIONS_ODS_CODE=deduction-ods
    NODE_ENV=local
    MHS_QUEUE_NAME=gp2gp-test
+   MHS_UNHANDLED_MESSAGES_QUEUE_NAME=unhandled-inbound
    MHS_QUEUE_URL_1=tcp://localhost:61610
    MHS_QUEUE_URL_2=tcp://localhost:61613
    MHS_QUEUE_VIRTUAL_HOST=/
@@ -49,19 +50,24 @@ Run the unit tests with
 
 `npm test` or `./tasks test`
 
-Run the integration tests
+Run the integration tests.
 
-`npm run test:integration` or `./tasks test_integration`
+1. Run `docker-compose up` to set up the message queues. 
+2. Run `npm run test:integration`.
+
+Alternatively, run `./tasks test_integration` (runs the tests within a Dojo container)
 
 Run the coverage tests (unit test and integration test)
 
-`npm run test:coverage` or `./tasks test_coverage`
+1. Run `docker-compose up` to set up the message queues.
+2. Run `npm run test:coverage`.
+
+Alternatively, run `./tasks test_coverage` (runs the tests within a Dojo container)
 
 ## Start the app locally
 
-1. Run the message queues in docker by using `docker-compose up &`, make sure your .env has the following config
-
-2. Run a development server with `npm run start:local`, to start together with a linked MQ server.
+1. Run the message queues in docker by using `docker-compose up &`. Make sure your .env has the following config
+2. Run a development server with `npm run start:local`, to start together with a linked MQ server. You can access the queues using the Rabbit MQ console on: http://localhost:15672/
 3. If successful, it will print a message similar to the following in the terminal:
 
 
