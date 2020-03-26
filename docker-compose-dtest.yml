@@ -11,7 +11,7 @@ services:
       - mq-1:mq-1
       - mq-2:mq-2
     environment:
-      - AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+      - AUTHORIZATION_KEYS=auth-key-1
       - MHS_QUEUE_URL_1=tcp://mq-1:61613
       - MHS_QUEUE_URL_2=tcp://mq-2:61613
       - MHS_QUEUE_VIRTUAL_HOST=/

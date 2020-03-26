@@ -69,7 +69,7 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     uuid.mockImplementation(() => mockUUID);
 
-    process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+    process.env.AUTHORIZATION_KEYS = 'correct-key';
 
     handlePdsResponse.mockResolvedValue({
       serialChangeNumber: testSerialChangeNumber,

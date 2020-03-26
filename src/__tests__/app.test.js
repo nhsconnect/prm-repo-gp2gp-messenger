@@ -91,7 +91,7 @@ describe('app', () => {
 
       uuid.mockImplementation(() => mockUUID);
 
-      process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+      process.env.AUTHORIZATION_KEYS = 'correct-key';
 
       when(sendMessage)
         .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
@@ -127,7 +127,7 @@ describe('app', () => {
       config.deductionsAsid = 'deductionsAsid';
       uuid.mockImplementation(() => mockUUID);
 
-      process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+      process.env.AUTHORIZATION_KEYS = 'correct-key';
 
       when(sendMessage)
         .calledWith({

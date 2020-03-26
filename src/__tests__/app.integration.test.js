@@ -9,7 +9,7 @@ jest.mock('axios');
 
 describe('app', () => {
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+    process.env.AUTHORIZATION_KEYS = 'correct-key';
     axios.post.mockImplementation(() =>
       Promise.resolve({ status: 200, data: pdsRetrivealQueryResponseSuccess })
     );

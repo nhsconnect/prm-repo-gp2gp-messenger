@@ -30,7 +30,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
     return expect(
       axios.get(`${config.url}/patient-demographics/${fakeNhsNumber}`, {
         headers: {
-          Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
+          Authorization: process.env.AUTHORIZATION_KEYS
         },
         adapter
       })
