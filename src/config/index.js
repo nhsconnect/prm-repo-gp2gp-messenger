@@ -4,7 +4,6 @@ const initialiseConfig = () => ({
   deductionsAsid: process.env.DEDUCTIONS_ASID || '200000001161',
   deductionsOdsCode: process.env.DEDUCTIONS_ODS_CODE || 'B86041',
   queueName: process.env.MHS_QUEUE_NAME,
-  dlqName: process.env.MHS_DLQ_NAME,
   queueUrls: [process.env.MHS_QUEUE_URL_1, process.env.MHS_QUEUE_URL_2],
   queueVirtualHost: process.env.MHS_QUEUE_VIRTUAL_HOST,
   queueUsername: process.env.MHS_QUEUE_USERNAME,

@@ -72,7 +72,6 @@ describe('config', () => {
         process.env.DEDUCTIONS_ASID = 'deductionsAsid';
         process.env.DEDUCTIONS_ODS_CODE = 'deductionsOdsCode';
         process.env.MHS_QUEUE_NAME = 'queueName';
-        process.env.MHS_DLQ_NAME = 'dlqName';
         process.env.MHS_QUEUE_URL_1 = 'queueUrl1';
         process.env.MHS_QUEUE_URL_2 = 'queueUrl2';
         process.env.MHS_QUEUE_VIRTUAL_HOST = 'queueVirtualHost';
@@ -89,7 +88,6 @@ describe('config', () => {
           deductionsAsid: 'deductionsAsid',
           deductionsOdsCode: 'deductionsOdsCode',
           queueName: 'queueName',
-          dlqName: 'dlqName',
           queueUrls: ['queueUrl1', 'queueUrl2'],
           queueVirtualHost: 'queueVirtualHost',
           queueUsername: 'queueUsername',
