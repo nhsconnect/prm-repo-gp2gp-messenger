@@ -28,7 +28,6 @@ The initial version will send and receive health records that are encoded in the
    DEDUCTIONS_ODS_CODE=deduction-ods
    NODE_ENV=local
    MHS_QUEUE_NAME=gp2gp-test
-   MHS_UNHANDLED_MESSAGES_QUEUE_NAME=unhandled-inbound
    MHS_QUEUE_URL_1=tcp://localhost:61610
    MHS_QUEUE_URL_2=tcp://localhost:61613
    MHS_QUEUE_VIRTUAL_HOST=/
