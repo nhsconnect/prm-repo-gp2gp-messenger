@@ -1,5 +1,5 @@
 import config from '../../config';
-import { connectToQueue } from '../../config/queue';
+import { connectToQueue } from '../queue';
 import { updateLogEvent } from '../../middleware/logging';
 import { generateEhrExtractResponse } from '../../templates/soap/ehr-extract-template';
 import { extractInteractionId } from '../parser/message';

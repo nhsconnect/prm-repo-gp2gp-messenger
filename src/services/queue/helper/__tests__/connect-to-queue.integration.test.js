@@ -1,9 +1,9 @@
-import logger from '../logging';
-import { connectToQueue } from '../queue';
-import config from '../index';
+import config from '../../../../config/index';
+import logger from '../../../../config/logging';
+import { connectToQueue } from '../';
 
 jest.unmock('stompit');
-jest.mock('../logging');
+jest.mock('../../../../config/logging');
 
 const originalConfig = { ...config };
 

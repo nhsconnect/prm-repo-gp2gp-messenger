@@ -1,5 +1,5 @@
-import { connectToQueue } from '../../config/queue';
 import { getStompitQueueConfig } from '../../config/utils/get-stompit-queue-config';
+import { connectToQueue } from '../queue';
 
 const removePasscode = options => {
   return {

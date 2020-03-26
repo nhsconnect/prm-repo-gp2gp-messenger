@@ -1,5 +1,5 @@
+import { connectToQueue } from '../';
 import config from '../../../config';
-import { connectToQueue } from '../../../config/queue';
 import {
   eventFinished,
   updateLogEvent,

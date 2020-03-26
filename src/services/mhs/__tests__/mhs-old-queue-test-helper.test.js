@@ -1,13 +1,13 @@
 import httpContext from 'async-local-storage';
 import config from '../../../config';
-import { connectToQueue } from '../../../config/queue';
 import { updateLogEvent } from '../../../middleware/logging';
 import { extractInteractionId } from '../../parser/message';
+import { connectToQueue } from '../../queue';
 import { getRoutingInformation, sendMessage } from '../mhs-old-queue-test-helper';
 
 httpContext.enable();
 
-jest.mock('../../../config/queue');
+jest.mock('../../queue');
 jest.mock('../../../config/logging');
 jest.mock('../../../middleware/logging');
 jest.mock('../../parser/message');

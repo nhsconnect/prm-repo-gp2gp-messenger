@@ -1,6 +1,6 @@
 import { ConnectFailover } from 'stompit';
-import logger from './logging';
-import { getStompitQueueConfig } from './utils';
+import logger from '../../../config/logging';
+import { getStompitQueueConfig } from '../../../config/utils';
 
 export const connectToQueue = callback => {
   const queue = new ConnectFailover(getStompitQueueConfig(), {

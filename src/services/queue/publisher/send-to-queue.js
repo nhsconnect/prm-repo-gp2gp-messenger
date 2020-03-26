@@ -1,5 +1,5 @@
 import config from '../../../config';
-import { connectToQueue } from '../../../config/queue';
+import { connectToQueue } from '../';
 
 const _putMessageOnQueue = (client, message) => {
   const transaction = client.begin();
