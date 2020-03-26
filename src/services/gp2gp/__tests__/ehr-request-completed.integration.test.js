@@ -1,5 +1,5 @@
 import { EHRRequestCompleted } from '../';
-import { ehrRequestCompletedHandler } from '../../ehr';
+import { storeMessageInEhrRepo } from '../../ehr';
 import {
   conversationId,
   ehrRequestCompletedMessage,
@@ -13,7 +13,7 @@ import {
 
 jest.mock('axios');
 jest.mock('../../ehr', () => ({
-  ehrRequestCompletedHandler: jest.fn()
+  storeMessageInEhrRepo: jest.fn()
 }));
 
 describe('EHRRequestCompleted', () => {
@@ -30,10 +30,10 @@ describe('EHRRequestCompleted', () => {
       ).rejects.toEqual(new Error("The key 'MessageId' was not found in the message"));
     });
 
-    it('should call ehrRequestCompletedHandler with full message and soapInformation', async done => {
+    it('should call storeMessageInEhrRepo with full message and soapInformation', async done => {
       await new EHRRequestCompleted().handleMessage(exampleEHRRequestCompleted);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         exampleEHRRequestCompleted,
         expect.objectContaining({
           action: 'RCMR_IN030000UK06',
@@ -45,10 +45,10 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call ehrRequestCompletedHandler with message, conversationId and messageId', async done => {
+    it('should call storeMessageInEhrRepo with message, conversationId and messageId', async done => {
       await new EHRRequestCompleted().handleMessage(ehrRequestCompletedMessage);
 
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         ehrRequestCompletedMessage,
         expect.objectContaining({
           conversationId,
@@ -58,10 +58,10 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call ehrRequestCompletedHandler with message and manifest (array of messageIds)', async done => {
+    it('should call storeMessageInEhrRepo with message and manifest (array of messageIds)', async done => {
       const manifest = ['FE6A40B9-F4C6-4041-A306-EA2A149411CD'];
       await new EHRRequestCompleted().handleMessage(ehrRequestCompletedMessage);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         ehrRequestCompletedMessage,
         expect.objectContaining({
           manifest
@@ -70,10 +70,10 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call ehrRequestCompletedHandler with NHS number if NHS number found in message', async done => {
+    it('should call storeMessageInEhrRepo with NHS number if NHS number found in message', async done => {
       await new EHRRequestCompleted().handleMessage(ehrRequestCompletedMessage);
 
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         ehrRequestCompletedMessage,
         expect.objectContaining({
           nhsNumber
@@ -82,10 +82,10 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call ehrRequestCompletedHandler without NHS number if NHS number is not found in message', async done => {
+    it('should call storeMessageInEhrRepo without NHS number if NHS number is not found in message', async done => {
       await new EHRRequestCompleted().handleMessage(noNhsNumber);
 
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         noNhsNumber,
         expect.not.objectContaining({ nhsNumber: undefined })
       );

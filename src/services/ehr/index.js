@@ -1,1 +1,1 @@
-export { ehrRequestCompletedHandler } from './ehr-request-completed-handler';
+export { storeMessageInEhrRepo } from './store-message-in-ehr-repo';

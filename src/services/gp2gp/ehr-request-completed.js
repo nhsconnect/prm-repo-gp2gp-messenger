@@ -1,4 +1,4 @@
-import { ehrRequestCompletedHandler } from '../ehr';
+import { storeMessageInEhrRepo } from '../ehr';
 import { extractNhsNumber } from '../parser/message';
 import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
@@ -16,7 +16,7 @@ class EHRRequestCompleted {
     const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
     const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
     const newSoapInformation = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
-    return await ehrRequestCompletedHandler(message, newSoapInformation);
+    return await storeMessageInEhrRepo(message, newSoapInformation);
   }
 }
 

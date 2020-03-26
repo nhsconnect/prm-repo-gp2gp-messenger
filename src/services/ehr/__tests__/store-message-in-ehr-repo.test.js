@@ -1,80 +1,118 @@
 import axios from 'axios';
 import config from '../../../config';
-import { eventFinished, updateLogEvent } from '../../../middleware/logging';
+import { updateLogEvent } from '../../../middleware/logging';
 import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
 
 jest.mock('axios');
 
-jest.mock('../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn(),
-  eventFinished: jest.fn()
-}));
+jest.mock('../../../middleware/logging');
 
 const originalEhrRepoUrl = config.ehrRepoUrl;
 
 describe('storeMessageInEhrRepo', () => {
   const message = 'some-message';
-  const url = 'https://s3-upload-url';
+  const conversationId = 'some-conversation-id';
+  const messageId = 'some-message-id';
+  const manifest = [];
 
   beforeEach(() => {
     config.ehrRepoUrl = 'https://ehr-repo-url';
-    axios.put.mockResolvedValue({ status: 200, statusText: 'status-text' });
+    axios.patch.mockResolvedValue({ status: 200 });
+    axios.put.mockResolvedValue({ status: 200 });
+    axios.post.mockResolvedValue({ data: 'some-url' });
   });
 
   afterEach(() => {
     config.ehrRepoUrl = originalEhrRepoUrl;
   });
 
-  it('should make a call to specified url with conversation ID and message', async done => {
-    await storeMessageInEhrRepo(url, message);
-    expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith(url, message);
-    done();
-  });
-
-  it('should call updateLogEvent with response details', async done => {
-    await storeMessageInEhrRepo(url, message);
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith({
-      ehrRepository: expect.objectContaining({ responseCode: 200, responseMessage: 'status-text' })
+  describe('get pre-signed url from EHR Repository', () => {
+    it('should make request with conversation id, manifest (array of messageIds) and message id', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId, manifest });
+      expect(axios.post).toHaveBeenCalledWith(
+        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
+        expect.objectContaining({
+          messageId,
+          manifest
+        })
+      );
+      done();
     });
-    done();
-  });
 
-  it('should call eventFinished', async done => {
-    await storeMessageInEhrRepo(url, message);
-    expect(eventFinished).toHaveBeenCalledTimes(1);
-    done();
-  });
-
-  it('should throw an error if axios.put throws', () => {
-    axios.put.mockImplementation(() => {
-      throw new Error('some-error');
+    it('should make a request with manifest being an array of messageIds', async done => {
+      const noNhsNumber = `<eb:Body></eb:Body>`;
+      await storeMessageInEhrRepo(noNhsNumber, {
+        conversationId,
+        messageId,
+        manifest
+      });
+      expect(axios.post).toHaveBeenCalledWith(
+        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
+        expect.not.objectContaining({ nhsNumber: undefined })
+      );
+      done();
     });
-    return expect(storeMessageInEhrRepo(url, message)).rejects.toEqual(Error('some-error'));
   });
 
-  it('should call updateLogEvent with the error if axios.put throws', async done => {
-    axios.put.mockImplementation(() => {
-      throw new Error('some-error');
+  describe('upload artifact to S3 using pre-signed URL', () => {
+    it('should make put request using the url from the response body', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(axios.put).toHaveBeenCalledWith('some-url', message);
+      done();
     });
-    await storeMessageInEhrRepo(url, message).catch(() => {});
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
+
+    it('should update the log event when the transfer has not completed successfully', async done => {
+      axios.put.mockRejectedValue({ stack: 'some-error' });
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(updateLogEvent).toHaveBeenNthCalledWith(1, {
+        status: 'Storing EHR in s3 bucket',
+        ehrRepository: { url: 'some-url' }
+      });
+
+      expect(updateLogEvent).toHaveBeenNthCalledWith(2, {
+        status: 'failed to store message to s3 via pre-signed url',
+        error: 'some-error'
+      });
+
+      expect(updateLogEvent).toHaveBeenNthCalledWith(3, {
+        status: 'failed to store message to ehr repository',
+        error: 'some-error'
+      });
+
+      done();
+    });
+
+    it('should not make patch request to ehr repo service when storing message fails', async done => {
+      axios.put.mockRejectedValue('some-error');
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(axios.put).toHaveBeenCalledTimes(1);
+      expect(axios.patch).toHaveBeenCalledTimes(0);
+      expect(updateLogEvent).not.toHaveBeenCalledWith({
         status: 'failed to store message to s3 via pre-signed url',
         error: expect.anything()
-      })
-    );
-    done();
+      });
+      done();
+    });
   });
 
-  it('should call eventFinished if axios.put throws', async done => {
-    axios.put.mockImplementation(() => {
-      throw new Error('some-error');
+  describe('Tell EHR Repository that transfer of fragment is complete', () => {
+    it('should make patch request to ehr repo service with transfer complete flag', async done => {
+      await storeMessageInEhrRepo(message, { conversationId, messageId });
+      expect(
+        axios.patch
+      ).toHaveBeenCalledWith(
+        `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
+        { transferComplete: true }
+      );
+      done();
     });
-    await storeMessageInEhrRepo(url, message).catch(() => {});
-    expect(eventFinished).toHaveBeenCalledTimes(1);
+  });
+
+  it('should update the log event when the transfer has completed successfully', async done => {
+    await storeMessageInEhrRepo(message, { conversationId, messageId });
+    expect(updateLogEvent).toHaveBeenCalledWith({
+      ehrRepository: { transferSuccessful: true }
+    });
     done();
   });
 });

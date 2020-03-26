@@ -1,4 +1,4 @@
-import { ehrRequestCompletedHandler } from '../../ehr';
+import { storeMessageInEhrRepo } from '../../ehr';
 import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
 import { parseMultipartBody } from '../../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../../soap/soap-envelope-handler';
@@ -19,7 +19,7 @@ jest.mock('../../parser/message/extract-nhs-number', () => ({
 }));
 
 jest.mock('../../ehr', () => ({
-  ehrRequestCompletedHandler: jest.fn()
+  storeMessageInEhrRepo: jest.fn()
 }));
 
 describe('EHRRequestCompleted', () => {
@@ -58,23 +58,23 @@ describe('EHRRequestCompleted', () => {
       done();
     });
 
-    it('should call ehrRequestCompletedHandler', async done => {
+    it('should call storeMessageInEhrRepo', async done => {
       const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
       await new EHRRequestCompleted().handleMessage(message);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         message,
         expect.objectContaining({ info: 'soap-information', nhsNumber: '1234567890' })
       );
       done();
     });
 
-    it('should call ehrRequestCompletedHandler without nhsNumber if not extracted', async done => {
+    it('should call storeMessageInEhrRepo without nhsNumber if not extracted', async done => {
       extractNhsNumber.mockRejectedValue('no NHS number found');
       const message = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
       await new EHRRequestCompleted().handleMessage(message);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledTimes(1);
-      expect(ehrRequestCompletedHandler).toHaveBeenCalledWith(
+      expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
+      expect(storeMessageInEhrRepo).toHaveBeenCalledWith(
         message,
         expect.not.objectContaining({
           nhsNumber: '1234567890'

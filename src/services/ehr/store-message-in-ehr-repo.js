@@ -1,20 +1,22 @@
-import axios from 'axios';
 import { eventFinished, updateLogEvent } from '../../middleware/logging';
+import { fetchStorageUrl } from './fetch-ehr-repo-storage-url';
+import { putMessageInEhrRepo } from './put-message-in-ehr-repo';
+import { setTransferComplete } from './set-ehr-repo-transfer-complete';
 
-export const storeMessageInEhrRepo = async (url, message) => {
+const storeMessageInEhrRepo = async (message, soapInformation) => {
   try {
-    const response = await axios.put(url, message);
-    updateLogEvent({
-      ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
-    });
-    return response;
+    const { data: url } = await fetchStorageUrl(soapInformation.conversationId, soapInformation);
+    updateLogEvent({ status: 'Storing EHR in s3 bucket', ehrRepository: { url } });
+    await putMessageInEhrRepo(url, message);
+    await setTransferComplete(soapInformation.conversationId, soapInformation.messageId);
   } catch (err) {
     updateLogEvent({
-      status: 'failed to store message to s3 via pre-signed url',
+      status: 'failed to store message to ehr repository',
       error: err.stack
     });
-    throw err;
   } finally {
     eventFinished();
   }
 };
+
+export { storeMessageInEhrRepo };
