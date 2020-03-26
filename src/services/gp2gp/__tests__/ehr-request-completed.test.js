@@ -1,8 +1,8 @@
+import { ehrRequestCompletedHandler } from '../../ehr';
 import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
 import { parseMultipartBody } from '../../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../../soap/soap-envelope-handler';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../ehr-request-completed';
-import { ehrRequestCompletedHandler } from '../ehr-request-completed-handler';
 
 jest.mock('../../parser/multipart-parser', () => ({
   parseMultipartBody: jest
@@ -18,7 +18,7 @@ jest.mock('../../parser/message/extract-nhs-number', () => ({
   extractNhsNumber: jest.fn().mockResolvedValue('1234567890')
 }));
 
-jest.mock('../ehr-request-completed-handler', () => ({
+jest.mock('../../ehr', () => ({
   ehrRequestCompletedHandler: jest.fn()
 }));
 

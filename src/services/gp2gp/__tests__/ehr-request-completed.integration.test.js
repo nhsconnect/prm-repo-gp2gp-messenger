@@ -1,5 +1,5 @@
 import { EHRRequestCompleted } from '../';
-import { ehrRequestCompletedHandler } from '../ehr-request-completed-handler';
+import { ehrRequestCompletedHandler } from '../../ehr';
 import {
   conversationId,
   ehrRequestCompletedMessage,
@@ -12,7 +12,7 @@ import {
 } from './data/ehr-request-completed';
 
 jest.mock('axios');
-jest.mock('../ehr-request-completed-handler', () => ({
+jest.mock('../../ehr', () => ({
   ehrRequestCompletedHandler: jest.fn()
 }));
 

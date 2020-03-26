@@ -1,7 +1,7 @@
+import { ehrRequestCompletedHandler } from '../ehr';
 import { extractNhsNumber } from '../parser/message';
 import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
-import { ehrRequestCompletedHandler } from './ehr-request-completed-handler';
 
 const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK06';
 
