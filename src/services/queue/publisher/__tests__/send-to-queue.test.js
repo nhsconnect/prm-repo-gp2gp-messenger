@@ -1,12 +1,12 @@
-import { ConnectFailover } from 'stompit';
-import config from '../../../config';
-import { getStompitQueueConfig } from '../../../config/utils/get-stompit-queue-config';
-import { generateEhrExtractResponse } from '../../../templates/soap/ehr-extract-template';
-import { sendToQueue } from '../mhs-queue-test-queue-publisher';
-import { connect } from 'stompit';
+import { connect, ConnectFailover } from 'stompit';
+import config from '../../../../config';
+import { getStompitQueueConfig } from '../../../../config/utils/get-stompit-queue-config';
+import { generateEhrExtractResponse } from '../../../../templates/soap/ehr-extract-template';
+import { sendToQueue } from '../send-to-queue';
+
 const originalConfig = { ...config };
 
-describe('mhs-queue-test-queue-publisher', () => {
+describe('publisher', () => {
   afterEach(() => {
     config.queueUrls = originalConfig.queueUrls;
     config.queueUsername = originalConfig.queueUsername;

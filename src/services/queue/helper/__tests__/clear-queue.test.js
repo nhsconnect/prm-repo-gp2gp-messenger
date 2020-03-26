@@ -1,4 +1,4 @@
-import { sendToQueue } from '../../mhs-queue-test-queue-publisher';
+import { sendToQueue } from '../../publisher/send-to-queue';
 import { clearQueue } from '../clear-queue';
 import { consumeOneMessage } from '../consume-one-message';
 

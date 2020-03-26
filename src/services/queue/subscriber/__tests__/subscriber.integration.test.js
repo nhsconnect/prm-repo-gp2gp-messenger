@@ -1,14 +1,14 @@
 import httpContext from 'async-local-storage';
 import { EHRRequestCompleted } from '../../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../../pds/pds-general-update-request-accepted';
-import { initialiseSubscriber } from '../subscriber';
 import { clearQueue, consumeOneMessage } from '../../helper';
-import { sendToQueue } from '../../mhs-queue-test-queue-publisher';
+import { sendToQueue } from '../../publisher/send-to-queue';
 import {
   ehrRequestCompletedMessage,
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
 } from '../data/subscriber';
+import { initialiseSubscriber } from '../subscriber';
 
 httpContext.enable();
 jest.unmock('stompit');

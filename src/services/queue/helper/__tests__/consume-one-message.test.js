@@ -1,7 +1,7 @@
 import { connect } from 'stompit';
 import config from '../../../../config';
 import { generateEhrExtractResponse } from '../../../../templates/soap/ehr-extract-template';
-import { sendToQueue } from '../../mhs-queue-test-queue-publisher';
+import { sendToQueue } from '../../publisher/send-to-queue';
 import { consumeOneMessage } from '../consume-one-message';
 const originalConfig = { ...config };
 
