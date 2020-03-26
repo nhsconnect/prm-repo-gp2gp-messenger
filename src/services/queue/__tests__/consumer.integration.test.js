@@ -1,9 +1,9 @@
 import httpContext from 'async-local-storage';
+import { EHRRequestCompleted } from '../../gp2gp/ehr-request-completed';
+import { PDSGeneralUpdateRequestAccepted } from '../../pds/pds-general-update-request-accepted';
 import { initialiseConsumer } from '../consumer';
-import { EHRRequestCompleted } from '../gp2gp/ehr-request-completed';
-import { consumeOneMessage } from '../mhs/mhs-queue-test-queue-consumer';
-import { clearQueue, sendToQueue } from '../mhs/mhs-queue-test-queue-publisher';
-import { PDSGeneralUpdateRequestAccepted } from '../pds/pds-general-update-request-accepted';
+import { consumeOneMessage } from '../mhs-queue-test-queue-consumer';
+import { clearQueue, sendToQueue } from '../mhs-queue-test-queue-publisher';
 import {
   ehrRequestCompletedMessage,
   pdsGeneralUpdateRequestAcceptedMessage,
@@ -12,9 +12,9 @@ import {
 
 httpContext.enable();
 jest.unmock('stompit');
-jest.mock('../gp2gp/ehr-request-completed');
-jest.mock('../pds/pds-general-update-request-accepted');
-jest.mock('../../middleware/logging');
+jest.mock('../../gp2gp/ehr-request-completed');
+jest.mock('../../pds/pds-general-update-request-accepted');
+jest.mock('../../../middleware/logging');
 
 describe('initialiseConsumer', () => {
   let client;

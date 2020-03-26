@@ -1,14 +1,13 @@
 import config from '../../config';
 import { connectToQueue } from '../../config/queue';
 
-// NB: ONLY USE FOR TESTS
 // Consumes one message off the queue then disconnects from queue
 export const consumeOneMessage = () =>
   new Promise((resolve, reject) => {
     const subscribeCallback = client => (err, message) => {
       message.readString('utf-8', (error, body) => {
         if (error) {
-          reject(error); // TO TEST
+          reject(error);
         }
         client.ack(message);
         client.disconnect();

@@ -1,7 +1,7 @@
-import { updateLogEvent } from '../../middleware/logging';
-import { EHRRequestCompleted } from '../gp2gp/ehr-request-completed';
+import { updateLogEvent } from '../../../middleware/logging';
+import { EHRRequestCompleted } from '../../gp2gp/ehr-request-completed';
+import { PDSGeneralUpdateRequestAccepted } from '../../pds/pds-general-update-request-accepted';
 import handleMessage from '../message-handler';
-import { PDSGeneralUpdateRequestAccepted } from '../pds/pds-general-update-request-accepted';
 import {
   ehrRequestCompletedMessage,
   messageWithoutAction,
@@ -9,9 +9,9 @@ import {
   unhandledInteractionId
 } from './data/message-handler';
 
-jest.mock('../../middleware/logging');
-jest.mock('../gp2gp/ehr-request-completed');
-jest.mock('../pds/pds-general-update-request-accepted');
+jest.mock('../../../middleware/logging');
+jest.mock('../../gp2gp/ehr-request-completed');
+jest.mock('../../pds/pds-general-update-request-accepted');
 
 describe('handleMessage', () => {
   beforeEach(() => {

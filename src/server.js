@@ -1,6 +1,6 @@
 import app from './app';
 import logger from './config/logging';
-import { initialiseConsumer } from './services/consumer';
+import { initialiseConsumer } from './services/queue/consumer';
 
 initialiseConsumer();
 

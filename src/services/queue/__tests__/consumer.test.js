@@ -1,13 +1,13 @@
 import httpContext from 'async-local-storage';
 import { connect, ConnectFailover } from 'stompit';
-import config from '../../config';
-import logger from '../../config/logging';
+import config from '../../../config';
+import logger from '../../../config/logging';
 import { initialiseConsumer } from '../consumer';
 import handleMessage from '../message-handler';
 
 httpContext.enable();
 
-jest.mock('../../config/logging');
+jest.mock('../../../config/logging');
 jest.mock('../message-handler');
 
 const errorMessage = 'some-error-happened';

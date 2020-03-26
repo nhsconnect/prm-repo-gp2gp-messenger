@@ -1,11 +1,11 @@
-import config from '../config';
-import { connectToQueue } from '../config/queue';
+import config from '../../config';
+import { connectToQueue } from '../../config/queue';
 import {
   eventFinished,
   updateLogEvent,
   updateLogEventWithError,
   withContext
-} from '../middleware/logging';
+} from '../../middleware/logging';
 import handleMessage from './message-handler';
 
 // Transactions
@@ -16,6 +16,7 @@ import handleMessage from './message-handler';
 // The server may terminate the connection with an error frame if it cannot commit the transaction. In this case, an error event would be emitted from the client object.
 // transaction.abort([options])
 
+// TODO: Move into another folder for queue things?
 const onMessageCallback = (client, message, { reject }) => async (err, body) => {
   if (err) {
     updateLogEventWithError(err);
@@ -31,6 +32,8 @@ const onMessageCallback = (client, message, { reject }) => async (err, body) => 
     updateLogEvent({ status: 'Message Handled' });
   } catch (err) {
     updateLogEventWithError(err);
+    // Negative acknowledgement - puts the message back on the queue
+    // Should put it on another queue?
     client.ack(message);
     reject(err);
   } finally {
@@ -53,6 +56,7 @@ const subscribeCallback = (client, { resolve, reject }) => (err, message) => {
   });
 };
 
+// below should take in a queueName?
 const initialiseConsumer = () =>
   new Promise((resolve, reject) => {
     connectToQueue((err, client) => {
