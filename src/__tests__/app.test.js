@@ -4,14 +4,14 @@ import { v4 as uuid } from 'uuid';
 import sendEhrRequest from '../api/ehr-request/send-ehr-request';
 import app from '../app';
 import config from '../config';
-import { getHealthCheck } from '../services/get-health-check';
+import { getHealthCheck } from '../services/health-check/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 
 jest.mock('../api/ehr-request/send-ehr-request');
 jest.mock('../config/logging');
-jest.mock('../services/get-health-check');
+jest.mock('../services/health-check/get-health-check');
 jest.mock('../middleware/auth');
 jest.mock('../services/mhs/mhs-outbound-client');
 jest.mock('../templates/generate-pds-retrieval-request');

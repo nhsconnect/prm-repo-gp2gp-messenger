@@ -5,7 +5,7 @@ import MhsError from '../../../services/mhs/mhs-error';
 import sendEhrRequest from '../send-ehr-request';
 
 jest.mock('../send-ehr-request');
-jest.mock('../../../services/get-health-check');
+jest.mock('../../../services/health-check/get-health-check');
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 

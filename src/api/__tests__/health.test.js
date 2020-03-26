@@ -1,10 +1,10 @@
 import request from 'supertest';
 import app from '../../app';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
-import { getHealthCheck } from '../../services/get-health-check';
+import { getHealthCheck } from '../../services/health-check/get-health-check';
 
 jest.mock('../../config/logging');
-jest.mock('../../services/get-health-check');
+jest.mock('../../services/health-check/get-health-check');
 jest.mock('../../middleware/logging');
 const mockErrorResponse = 'Error: An error has occurred';
 

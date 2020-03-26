@@ -1,6 +1,6 @@
-import { checkMHSHealth } from '../queue';
 import { connect } from 'stompit';
-import config from '../index';
+import config from '../../../config/index';
+import { checkMHSHealth } from '../check-mhs-health';
 
 const mockErrorResponse = 'Error: exhausted connection failover';
 

@@ -1,5 +1,5 @@
-import { updateLogEvent } from '../middleware/logging';
-import { checkMHSHealth } from '../config/queue';
+import { updateLogEvent } from '../../middleware/logging';
+import { checkMHSHealth } from './check-mhs-health';
 
 export function getHealthCheck() {
   updateLogEvent({ status: 'Starting health check' });

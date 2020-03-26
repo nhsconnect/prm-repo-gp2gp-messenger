@@ -1,12 +1,12 @@
-import { getHealthCheck } from '../get-health-check';
-import config from '../../config';
 import { S3 } from 'aws-sdk';
 import { connect } from 'stompit';
+import config from '../../../config';
+import { getHealthCheck } from '../get-health-check';
 
 jest.mock('aws-sdk');
 jest.mock('aws-sdk');
-jest.mock('../../config/logging');
-jest.mock('../../middleware/logging');
+jest.mock('../../../config/logging');
+jest.mock('../../../middleware/logging');
 
 const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
 const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
