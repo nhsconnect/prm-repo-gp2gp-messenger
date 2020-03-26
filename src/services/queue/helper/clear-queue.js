@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
+import { sendToQueue } from '../';
 import config from '../../../config';
 import { connectToQueue } from '../../../config/queue';
-import { sendToQueue } from '../publisher/send-to-queue';
 
 export const clearQueue = async () => {
   const endOfQueueMessage = `EOQ-${uuid()}`;

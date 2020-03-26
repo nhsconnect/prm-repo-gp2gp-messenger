@@ -1,8 +1,7 @@
 import httpContext from 'async-local-storage';
+import { clearQueue, consumeOneMessage, sendToQueue } from '../../';
 import { EHRRequestCompleted } from '../../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../../pds/pds-general-update-request-accepted';
-import { clearQueue, consumeOneMessage } from '../../helper';
-import { sendToQueue } from '../../publisher/send-to-queue';
 import {
   ehrRequestCompletedMessage,
   pdsGeneralUpdateRequestAcceptedMessage,

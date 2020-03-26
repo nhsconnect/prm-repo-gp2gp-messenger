@@ -1,6 +1,6 @@
 import { generateEhrExtractResponse } from '../../../../templates/soap/ehr-extract-template';
-import { clearQueue, consumeOneMessage } from '../../helper';
-import { sendToQueue } from '../send-to-queue';
+import { clearQueue, consumeOneMessage } from '../../';
+import { sendToQueue } from '../../';
 
 jest.unmock('stompit');
 

@@ -1,6 +1,5 @@
-import { sendToQueue } from '../../publisher/send-to-queue';
-import { clearQueue } from '../clear-queue';
-import { consumeOneMessage } from '../consume-one-message';
+import { clearQueue, consumeOneMessage } from '../';
+import { sendToQueue } from '../../';
 
 jest.unmock('stompit');
 
