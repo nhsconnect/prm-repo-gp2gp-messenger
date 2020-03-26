@@ -149,8 +149,10 @@ describe('initialiseConsumer', () => {
   it('should acknowledge the message after handling', async done => {
     await initialiseConsumer();
 
-    expect(client.ack).toHaveBeenCalled();
-    done();
+    setImmediate(() => {
+      expect(client.ack).toHaveBeenCalled();
+      done();
+    });
   });
 
   it('should log the event after handling', async done => {

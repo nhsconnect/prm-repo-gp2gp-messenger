@@ -16,7 +16,7 @@ import handleMessage from './message-handler';
 // The server may terminate the connection with an error frame if it cannot commit the transaction. In this case, an error event would be emitted from the client object.
 // transaction.abort([options])
 
-const onMessageCallback = (client, message, { reject }) => (err, body) => {
+const onMessageCallback = (client, message, { reject }) => async (err, body) => {
   if (err) {
     updateLogEventWithError(err);
     eventFinished();
@@ -24,19 +24,18 @@ const onMessageCallback = (client, message, { reject }) => (err, body) => {
     return;
   }
 
-  return handleMessage(body)
-    .then(() => {
-      updateLogEvent({ status: 'Acknowledging Message', mhs: { mqMessageId: message.id } });
-      return client.ack(message); // Acknowledges - removes from queue
-    })
-    .then(() => updateLogEvent({ status: 'Message Handled' }))
-    .catch(err => {
-      updateLogEventWithError(err);
-
-      client.ack(message);
-      reject(err);
-    })
-    .finally(() => eventFinished());
+  try {
+    await handleMessage(body);
+    updateLogEvent({ status: 'Acknowledging Message', mhs: { mqMessageId: message.id } });
+    client.ack(message); // Acknowledges - removes from queue
+    updateLogEvent({ status: 'Message Handled' });
+  } catch (err) {
+    updateLogEventWithError(err);
+    client.ack(message);
+    reject(err);
+  } finally {
+    eventFinished();
+  }
 };
 
 const subscribeCallback = (client, { resolve, reject }) => (err, message) => {
