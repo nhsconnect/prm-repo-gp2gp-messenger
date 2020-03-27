@@ -13,7 +13,7 @@ describe('POST /ehr-request', () => {
   const validRequestBody = { nhsNumber: 'some-nhs-number', odsCode: 'some-odsCode' };
 
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+    process.env.AUTHORIZATION_KEYS = 'correct-key';
     sendEhrRequest.mockResolvedValue();
   });
 

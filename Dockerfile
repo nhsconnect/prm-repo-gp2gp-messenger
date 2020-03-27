@@ -14,7 +14,7 @@ RUN apk add --no-cache tini bash
 
 COPY run-server.sh /usr/bin/run-gp2gp-server
 
-ENV AUTHORIZATION_KEYS="auth-key-1,auth-key-2" \
+ENV AUTHORIZATION_KEYS="auth-key-1" \
   MHS_QUEUE_VIRTUAL_HOST="/" \
   DEDUCTIONS_ASID=deduction-asid \
   DEDUCTIONS_ODS_CODE=deduction-ods \

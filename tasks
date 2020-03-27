@@ -29,7 +29,7 @@ function check_nhs_service {
 }
 
 function configure_local_envs {
-  export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+  export AUTHORIZATION_KEYS=auth-key-1
   export MHS_QUEUE_URL_1=tcp://mq-1:61613
   export MHS_QUEUE_URL_2=tcp://mq-2:61613
   export MHS_QUEUE_USERNAME=guest
@@ -236,7 +236,7 @@ case "${command}" in
       configure_docker_repository_uri
       get_latest_commit_hash
       configure_service_url
-      export AUTHORIZATION_KEYS=auth-key-1,auth-key-2
+      export AUTHORIZATION_KEYS=auth-key-1
       dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
   test_docker_local)

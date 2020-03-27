@@ -1,11 +1,9 @@
-import { getStompitQueueConfig } from '../get-stompit-queue-config';
 import config from '../../';
+import { getStompitQueueConfig } from '../get-stompit-queue-config';
 
 const originalConfig = { ...config };
 
 describe('getStompitQueueConfig', () => {
-  const mockQueueName = 'Mock Queue Name';
-
   const hosts = [
     {
       host: 'mq-1',
@@ -28,7 +26,6 @@ describe('getStompitQueueConfig', () => {
     config.queueUsername = 'guest';
     config.queuePassword = 'guest';
     config.queueVirtualHost = '/';
-    config.queueName = mockQueueName;
   });
 
   afterEach(() => {
@@ -36,7 +33,6 @@ describe('getStompitQueueConfig', () => {
     config.queueUsername = originalConfig.queueUsername;
     config.queuePassword = originalConfig.queuePassword;
     config.queueVirtualHost = originalConfig.queueVirtualHost;
-    config.queueName = originalConfig.queueName;
   });
 
   it('should output an array that is the same length as config queueUrls', () => {

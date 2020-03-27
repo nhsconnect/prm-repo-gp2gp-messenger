@@ -2,8 +2,8 @@ import httpContext from 'async-local-storage';
 import { connect, ConnectFailover } from 'stompit';
 import config from '../../../../config';
 import logger from '../../../../config/logging';
-import { initialiseSubscriber } from '../subscriber';
 import handleMessage from '../message-handler';
+import { initialiseSubscriber } from '../subscriber';
 
 httpContext.enable();
 
@@ -29,12 +29,15 @@ const message = { readString: jest.fn(), pipe: jest.fn() };
 
 const originalConfig = { ...config };
 
+const MOCK_QUEUE_NAME = 'mocked-queue-name';
+
 describe('initialiseConsumer', () => {
   afterEach(() => {
     config.queueUrls = originalConfig.queueUrls;
     config.queueUsername = originalConfig.queueUsername;
     config.queuePassword = originalConfig.queuePassword;
     config.queueVirtualHost = originalConfig.queueVirtualHost;
+    config.queueName = originalConfig.queueName;
   });
 
   beforeEach(() => {
@@ -42,6 +45,7 @@ describe('initialiseConsumer', () => {
     config.queueUsername = 'some-username';
     config.queuePassword = 'some-password';
     config.queueVirtualHost = '/';
+    config.queueName = MOCK_QUEUE_NAME;
 
     message.readString.mockImplementation((encoding, callback) =>
       callback(null, 'some-message-body')
@@ -99,7 +103,7 @@ describe('initialiseConsumer', () => {
     await initialiseSubscriber();
 
     expect(client.subscribe).toHaveBeenCalledWith(
-      { destination: config.queueName, ack: 'client-individual' },
+      { destination: MOCK_QUEUE_NAME, ack: 'client-individual' },
       expect.anything()
     );
     done();

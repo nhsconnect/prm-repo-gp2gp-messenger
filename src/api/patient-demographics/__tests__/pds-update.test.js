@@ -32,7 +32,7 @@ function generateLogEvent(message) {
 
 describe('POST /patient-demographics/:nhsNumber', () => {
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+    process.env.AUTHORIZATION_KEYS = 'correct-key';
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
     uuid.mockImplementation(() => mockUUID);
