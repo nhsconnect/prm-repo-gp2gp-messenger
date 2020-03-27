@@ -1,7 +1,7 @@
 import config from '../../../../config';
 import { updateLogEvent } from '../../../../middleware/logging';
 import { sendToQueue } from '../../publisher/send-to-queue';
-import { DefaultMessage } from '../default-message-handler';
+import { DefaultMessage } from '../default-message';
 
 const originalConfig = { ...config };
 const mockedUnhandledMessageQueueName = 'mockedUnhandledMessageQueueName';

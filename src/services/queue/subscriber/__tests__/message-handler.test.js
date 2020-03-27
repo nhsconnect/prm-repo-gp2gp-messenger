@@ -1,17 +1,19 @@
 import { updateLogEvent } from '../../../../middleware/logging';
 import { EHRRequestCompleted } from '../../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../../pds/pds-general-update-request-accepted';
-import handleMessage from '../message-handler';
 import {
   ehrRequestCompletedMessage,
   messageWithoutAction,
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
 } from '../data/message-handler';
+import { DefaultMessage } from '../default-message';
+import handleMessage from '../message-handler';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../../../gp2gp/ehr-request-completed');
 jest.mock('../../../pds/pds-general-update-request-accepted');
+jest.mock('../default-message');
 
 describe('handleMessage', () => {
   beforeEach(() => {
@@ -22,6 +24,10 @@ describe('handleMessage', () => {
     PDSGeneralUpdateRequestAccepted.prototype.handleMessage = jest
       .fn()
       .mockResolvedValue('PDSGeneralUpdateRequestAccepted handled message');
+
+    DefaultMessage.prototype.handleMessage = jest
+      .fn()
+      .mockResolvedValue('DefaultMessage handled message');
   });
 
   it('should update the log event with handling-message', async done => {
@@ -36,10 +42,11 @@ describe('handleMessage', () => {
     );
   });
 
-  it('should reject the promise if the message action does not have a handler implemented', () => {
-    return expect(handleMessage(unhandledInteractionId)).rejects.toEqual(
-      new Error(`Message Handler not implemented`)
-    );
+  it('should call DefaultMessage if the message action does not have a handler implemented', async done => {
+    await handleMessage(unhandledInteractionId);
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith(unhandledInteractionId);
+    done();
   });
 
   it('should call EHRRequestCompleted with the message if message is type RCMR_IN030000UK06', async done => {

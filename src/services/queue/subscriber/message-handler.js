@@ -2,6 +2,7 @@ import { updateLogEvent } from '../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
 import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
+import { DefaultMessage } from './default-message';
 
 const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });
@@ -20,7 +21,7 @@ const handleMessage = async message => {
       break;
 
     default:
-      throw new Error('Message Handler not implemented');
+      handler = new DefaultMessage();
   }
 
   return handler.handleMessage(message);
