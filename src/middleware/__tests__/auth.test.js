@@ -1,13 +1,18 @@
 import request from 'supertest';
+import { pdsRetrieval } from '../../api/patient-demographics/pds-retrieval';
 import app from '../../app';
 
 jest.mock('../logging');
+jest.mock('../../api/patient-demographics/pds-retrieval');
 
 // In all other unit tests we want to pass through all of this logic and should therefore call jest.mock
 // jest.mock('../auth') will call the manual mock in __mocks__ automatically
 describe('auth', () => {
   beforeEach(() => {
     process.env.AUTHORIZATION_KEYS = 'correct-key';
+    pdsRetrieval.mockImplementation((req, res) => {
+      res.sendStatus(201);
+    });
   });
 
   afterEach(() => {
@@ -17,11 +22,11 @@ describe('auth', () => {
   });
 
   describe('authenticated successfully', () => {
-    it('should return HTTP 503 when correctly authenticated', done => {
+    it('should return HTTP 201 when correctly authenticated', done => {
       request(app)
         .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
-        .expect(503)
+        .expect(201)
         .end(done);
     });
   });
@@ -106,7 +111,7 @@ describe('auth', () => {
   describe('should only authenticate with exact value of the auth key', () => {
     it('should return HTTP 403 when authorization key is incorrect', done => {
       request(app)
-        .get(`/patient-demographics/0000000000`)
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'co')
         .expect(403)
         .end(done);
@@ -115,7 +120,7 @@ describe('auth', () => {
     it('should return HTTP 403 when authorization key is partial string', done => {
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
       request(app)
-        .get(`/patient-demographics/0000000000`)
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
         .expect(403)
         .end(done);
@@ -124,9 +129,9 @@ describe('auth', () => {
     it('should return HTTP 201 when authorization keys have a comma but are one string ', done => {
       process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
       request(app)
-        .get(`/patient-demographics/0000000000`)
+        .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key,other-key')
-        .expect(503)
+        .expect(201)
         .end(done);
     });
   });
