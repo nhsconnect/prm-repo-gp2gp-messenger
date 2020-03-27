@@ -4,6 +4,7 @@ import { updateLogEvent, updateLogEventWithError } from '../../../middleware/log
 import * as mhsQueueTestHelper from '../../../services/mhs/mhs-old-queue-test-helper';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import testData from '../../../templates/__tests__/testData.json';
+import { MOCKED_UUID } from '../../../__mocks__/uuid';
 import sendEhrRequest from '../send-ehr-request';
 
 jest.mock('../../../services/mhs/mhs-old-queue-test-helper');
@@ -18,7 +19,7 @@ describe('sendEhrRequest', () => {
     config.deductionsOdsCode = 'some-ods-code';
 
     ehrRequestQuery = generateEhrRequestQuery({
-      id: 'mocked-uuid',
+      id: MOCKED_UUID,
       timestamp: '20190228112548',
       receivingService: {
         asid: receivingAsid,
