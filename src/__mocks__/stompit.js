@@ -8,6 +8,13 @@ export const mockTransaction = {
   commit: jest.fn()
 };
 
+export const MOCKED_MESSAGE_ON_QUEUE = 'mock-message'
+export const mockMessageStream = {
+  readString: jest.fn().mockImplementation((_, callback) => {
+    callback(false, MOCKED_MESSAGE_ON_QUEUE);
+  })
+};
+
 export const mockClient = {
   headers: {
     'heart-beat': '0,0',
@@ -21,7 +28,7 @@ export const mockClient = {
     port: '61613',
     ssl: false
   },
-  subscribe: jest.fn(),
+  subscribe: jest.fn().mockImplementation((_, callback) => callback(false, mockMessageStream)),
   begin: jest.fn().mockImplementation(() => mockTransaction),
   on: jest.fn(),
   ack: jest.fn().mockResolvedValue(),

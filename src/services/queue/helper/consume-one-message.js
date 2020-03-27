@@ -1,17 +1,17 @@
-import config from '../../../config';
 import { connectToQueue } from '../';
+import config from '../../../config';
 
 // Consumes one message off the queue then disconnects from queue
-export const consumeOneMessage = () =>
+export const consumeOneMessage = (options = {}) =>
   new Promise((resolve, reject) => {
-    const subscribeCallback = client => (err, message) => {
-      message.readString('utf-8', (error, body) => {
+    const subscribeCallback = client => (err, stream) => {
+      stream.readString('utf-8', (error, message) => {
         if (error) {
           reject(error);
         }
-        client.ack(message);
+        client.ack(stream);
         client.disconnect();
-        resolve(body);
+        resolve(message);
       });
     };
 
@@ -28,7 +28,7 @@ export const consumeOneMessage = () =>
       }, 500);
 
       client.subscribe(
-        { destination: config.queueName, ack: 'client-individual' },
+        { destination: config.queueName, ack: 'client-individual', ...options },
         subscribeCallback(client)
       );
     });
