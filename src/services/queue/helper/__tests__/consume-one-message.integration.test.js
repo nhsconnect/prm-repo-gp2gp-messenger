@@ -1,40 +1,33 @@
-import { clearQueue, consumeOneMessage } from '../';
-import config from '../../../../config';
+import { v4 as uuid } from 'uuid';
+import { consumeOneMessage } from '../';
 import { sendToQueue } from '../../publisher';
 
 jest.unmock('stompit');
-
-const originalConfig = { ...config };
+jest.unmock('uuid');
 
 describe('consumeOneMessage', () => {
-  afterEach(async () => {
-    await clearQueue();
-    config.queueName = originalConfig.queueName;
-  });
-
-  beforeEach(() => {
-    config.queueName = 'gp2gp-test-queue-two';
-  });
-
   it('should return message from the queue', async done => {
-    await sendToQueue('message 1');
-    const message = await consumeOneMessage();
+    const mockQueueName = uuid();
+    await sendToQueue('message 1', { destination: mockQueueName });
+    const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual('message 1');
     done();
   });
 
   it('should return each message from the queue', async done => {
-    await sendToQueue('message 1');
-    const message = await consumeOneMessage();
+    const mockQueueName = uuid();
+    await sendToQueue('message 1', { destination: mockQueueName });
+    const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual('message 1');
-    await sendToQueue('message 2');
-    const messageTwo = await consumeOneMessage();
+    await sendToQueue('message 2', { destination: mockQueueName });
+    const messageTwo = await consumeOneMessage({ destination: mockQueueName });
     expect(messageTwo).toEqual('message 2');
     done();
   });
 
   it('should return empty object if no messages on the queue', async done => {
-    const message = await consumeOneMessage();
+    const mockQueueName = uuid();
+    const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual({});
     done();
   });

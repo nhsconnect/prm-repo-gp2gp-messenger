@@ -1,27 +1,27 @@
+import { v4 as uuid } from 'uuid';
 import { clearQueue, consumeOneMessage } from '../';
 import { sendToQueue } from '../../';
 
 jest.unmock('stompit');
+jest.unmock('uuid');
 
 describe('clearQueue', () => {
-  afterEach(async () => {
-    await clearQueue();
-  });
-
   it('should clear the queue when multiple messages have been added', async done => {
-    await sendToQueue('message 1');
-    await sendToQueue('message 2');
-    await sendToQueue('message 3');
-    await sendToQueue('message 4');
-    await clearQueue();
-    const message = await consumeOneMessage();
+    const mockQueueName = uuid();
+    await sendToQueue('message 1', { destination: mockQueueName });
+    await sendToQueue('message 2', { destination: mockQueueName });
+    await sendToQueue('message 3', { destination: mockQueueName });
+    await sendToQueue('message 4', { destination: mockQueueName });
+    await clearQueue({ destination: mockQueueName });
+    const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual({});
     done();
   });
 
   it('should not fail if queue is empty when clearing queue', async done => {
-    await clearQueue();
-    const message = await consumeOneMessage();
+    const mockQueueName = uuid();
+    await clearQueue({ destination: mockQueueName });
+    const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual({});
     done();
   });
