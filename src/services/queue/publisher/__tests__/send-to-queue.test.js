@@ -11,8 +11,9 @@ jest.mock('../put-message-on-queue');
 jest.mock('../../helper/connect-to-queue');
 
 const MOCK_MESSAGE = generateEhrExtractResponse();
+const MOCK_QUEUE_NAME = 'gp2gp-test';
 
-describe('publisher', () => {
+describe('sendToQueue', () => {
   afterEach(() => {
     config.queueUrls = originalConfig.queueUrls;
     config.queueUsername = originalConfig.queueUsername;
@@ -26,39 +27,79 @@ describe('publisher', () => {
     config.queueUsername = 'guest';
     config.queuePassword = 'guest';
     config.queueVirtualHost = '/';
-    config.queueName = 'gp2gp-test';
+    config.queueName = MOCK_QUEUE_NAME;
 
     connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 
-  describe('sendToQueue', () => {
-    it('should call connectToQueue with a function', async done => {
-      await sendToQueue(MOCK_MESSAGE);
-      expect(connectToQueue).toHaveBeenCalledTimes(1);
-      expect(connectToQueue).toHaveBeenCalledWith(expect.any(Function));
-      done();
-    });
+  it('should call connectToQueue with a function', async done => {
+    await sendToQueue(MOCK_MESSAGE);
+    expect(connectToQueue).toHaveBeenCalledTimes(1);
+    expect(connectToQueue).toHaveBeenCalledWith(expect.any(Function));
+    done();
+  });
 
-    it('should call putMessageOnQueue with the client and message', async done => {
-      await sendToQueue(MOCK_MESSAGE);
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(mockClient, MOCK_MESSAGE);
-      done();
-    });
+  it('should call putMessageOnQueue with the client', async done => {
+    await sendToQueue(MOCK_MESSAGE);
+    expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
+    expect(putMessageOnQueue).toHaveBeenCalledWith(
+      mockClient,
+      expect.anything(),
+      expect.anything()
+    );
+    done();
+  });
 
-    it('should reject with an error if there is an error when connecting to the queue', () => {
-      connectToQueue.mockImplementation(callback => callback('some-connection-error', null));
-      return expect(sendToQueue(MOCK_MESSAGE)).rejects.toBe('some-connection-error');
-    });
+  it('should call putMessageOnQueue with the message', async done => {
+    await sendToQueue(MOCK_MESSAGE);
+    expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
+    expect(putMessageOnQueue).toHaveBeenCalledWith(
+      expect.anything(),
+      MOCK_MESSAGE,
+      expect.anything()
+    );
+    done();
+  });
 
-    it('should call client.disconnect', async done => {
-      await sendToQueue(MOCK_MESSAGE);
-      expect(mockClient.disconnect).toHaveBeenCalledTimes(1);
-      done();
-    });
+  it('should call putMessageOnQueue with default options - {destination: queueName}', async done => {
+    await sendToQueue(MOCK_MESSAGE);
+    expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
+    expect(putMessageOnQueue).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.objectContaining({
+        destination: MOCK_QUEUE_NAME
+      })
+    );
+    done();
+  });
 
-    it('should should resolve the promise with the client', () => {
-      return expect(sendToQueue(MOCK_MESSAGE)).resolves.toEqual(mockClient);
-    });
+  it('should call putMessageOnQueue with passed in options', async done => {
+    const mockOptions = {
+      destination: 'another-queue-destination'
+    };
+    await sendToQueue(MOCK_MESSAGE, mockOptions);
+    expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
+    expect(putMessageOnQueue).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.objectContaining(mockOptions)
+    );
+    done();
+  });
+
+  it('should reject with an error if there is an error when connecting to the queue', () => {
+    connectToQueue.mockImplementation(callback => callback('some-connection-error', null));
+    return expect(sendToQueue(MOCK_MESSAGE)).rejects.toBe('some-connection-error');
+  });
+
+  it('should call client.disconnect', async done => {
+    await sendToQueue(MOCK_MESSAGE);
+    expect(mockClient.disconnect).toHaveBeenCalledTimes(1);
+    done();
+  });
+
+  it('should should resolve the promise with the client', () => {
+    return expect(sendToQueue(MOCK_MESSAGE)).resolves.toEqual(mockClient);
   });
 });

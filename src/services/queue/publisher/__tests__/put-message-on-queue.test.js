@@ -19,32 +19,26 @@ describe('putMessageOnQueue', () => {
     expect(mockClient.begin).toHaveBeenCalledTimes(1);
   });
 
-  it('should call transaction.send with default options - {destination: queueName}', () => {
-    putMessageOnQueue(mockClient, MOCK_MESSAGE);
+  it('should call transaction.send with options if passed in', () => {
+    const mockOptions = { destination: 'another-queue-name' };
+    putMessageOnQueue(mockClient, MOCK_MESSAGE, mockOptions);
     expect(mockTransaction.send).toHaveBeenCalledTimes(1);
-    expect(mockTransaction.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        destination: MOCK_QUEUE_NAME
-      })
-    );
+    expect(mockTransaction.send).toHaveBeenCalledWith(expect.objectContaining(mockOptions));
   });
 
   it('should call stream.write with message', () => {
-    const mockOptions = { destination: 'another-queue-name' };
-    putMessageOnQueue(mockClient, MOCK_MESSAGE, mockOptions);
+    putMessageOnQueue(mockClient, MOCK_MESSAGE);
     expect(mockStream.write).toHaveBeenCalledTimes(1);
     expect(mockStream.write).toHaveBeenCalledWith(MOCK_MESSAGE);
   });
 
   it('should call stream.end', () => {
-    const mockOptions = { destination: 'another-queue-name' };
-    putMessageOnQueue(mockClient, MOCK_MESSAGE, mockOptions);
+    putMessageOnQueue(mockClient, MOCK_MESSAGE);
     expect(mockStream.end).toHaveBeenCalledTimes(1);
   });
 
   it('should call transaction.send', () => {
-    const mockOptions = { destination: 'another-queue-name' };
-    putMessageOnQueue(mockClient, MOCK_MESSAGE, mockOptions);
+    putMessageOnQueue(mockClient, MOCK_MESSAGE);
     expect(mockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 });
