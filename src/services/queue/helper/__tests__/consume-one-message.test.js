@@ -1,9 +1,5 @@
 import config from '../../../../config';
-import {
-  mockClient,
-  MOCKED_MESSAGE_ON_QUEUE,
-  mockMessageStream
-} from '../../../../__mocks__/stompit';
+import { mockClient, mockedMessageOnQueue, mockMessageStream } from '../../../../__mocks__/stompit';
 import { connectToQueue } from '../connect-to-queue';
 import { consumeOneMessage } from '../consume-one-message';
 
@@ -11,23 +7,22 @@ const originalConfig = { ...config };
 
 jest.mock('../connect-to-queue');
 
-describe('consumeOneMessage', () => {
-  let defaultOptions;
+const mockedQueueName = 'gp2gp-test';
+const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' };
 
-  afterEach(async () => {
+describe('consumeOneMessage', () => {
+  afterEach(() => {
     config.queueName = originalConfig.queueName;
+    mockClient.subscribe.mockImplementation((_, callback) => callback(false, mockMessageStream));
   });
 
   beforeEach(() => {
     config.queueName = 'gp2gp-test';
-
-    mockClient.subscribe.mockImplementation((_, callback) => callback(false, mockMessageStream));
     connectToQueue.mockImplementation(callback => callback(false, mockClient));
-    defaultOptions = { destination: config.queueName, ack: 'client-individual' };
   });
 
   it('should consume a message from the queue', () => {
-    return expect(consumeOneMessage()).resolves.toEqual(MOCKED_MESSAGE_ON_QUEUE);
+    return expect(consumeOneMessage()).resolves.toEqual(mockedMessageOnQueue);
   });
 
   it('should call connectToQueue', async done => {
@@ -54,10 +49,15 @@ describe('consumeOneMessage', () => {
 
     it('should call client.subscribe with options when passed in, along with default options', async done => {
       const options = { option: 'option' };
+      const expectedOptions = {
+        destination: mockedQueueName,
+        ack: 'client-individual',
+        option: 'option'
+      };
       await consumeOneMessage(options);
       expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
       expect(mockClient.subscribe).toHaveBeenCalledWith(
-        expect.objectContaining({ ...options, ...defaultOptions }),
+        expect.objectContaining(expectedOptions),
         expect.any(Function)
       );
       done();
@@ -65,17 +65,6 @@ describe('consumeOneMessage', () => {
 
     it('should call client.subscribe with options that replace default options', async done => {
       const options = { destination: 'another-queue-name', ack: 'client' };
-      await consumeOneMessage(options);
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
-        expect.objectContaining(options),
-        expect.any(Function)
-      );
-      done();
-    });
-
-    it('should call client.subscribe with options when passed in', async done => {
-      const options = { option: 'option' };
       await consumeOneMessage(options);
       expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
       expect(mockClient.subscribe).toHaveBeenCalledWith(
@@ -123,9 +112,10 @@ describe('consumeOneMessage', () => {
       return expect(consumeOneMessage()).rejects.toEqual(messageStreamError);
     });
 
-    it('should call client.ack', async done => {
+    it('should call client.ack with the message stream', async done => {
       await consumeOneMessage();
       expect(mockClient.ack).toHaveBeenCalledTimes(1);
+      expect(mockClient.ack).toHaveBeenCalledWith(mockMessageStream);
       done();
     });
 

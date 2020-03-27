@@ -8,10 +8,10 @@ export const mockTransaction = {
   commit: jest.fn()
 };
 
-export const MOCKED_MESSAGE_ON_QUEUE = 'mock-message'
+export const mockedMessageOnQueue = 'mock-message';
 export const mockMessageStream = {
   readString: jest.fn().mockImplementation((_, callback) => {
-    callback(false, MOCKED_MESSAGE_ON_QUEUE);
+    callback(false, mockedMessageOnQueue);
   })
 };
 
