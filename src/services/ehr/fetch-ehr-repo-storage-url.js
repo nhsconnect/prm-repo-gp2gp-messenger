@@ -2,12 +2,9 @@ import axios from 'axios';
 import config from '../../config';
 import { eventFinished, updateLogEvent } from '../../middleware/logging';
 
-export const fetchStorageUrl = async (conversationId, body) => {
+export const fetchStorageUrl = async body => {
   try {
-    return await axios.post(
-      `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
-      body
-    );
+    return await axios.post(`${config.ehrRepoUrl}/fragments`, body);
   } catch (err) {
     updateLogEvent({ status: 'failed to get pre-signed url', error: err.stack });
     throw err;

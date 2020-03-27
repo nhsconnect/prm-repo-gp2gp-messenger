@@ -2,14 +2,12 @@ import axios from 'axios';
 import config from '../../config';
 import { updateLogEvent } from '../../middleware/logging';
 
-export const setTransferComplete = async (conversationId, messageId) => {
+export const setTransferComplete = async body => {
   try {
-    const response = await axios.patch(
-      `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
-      {
-        transferComplete: true
-      }
-    );
+    const response = await axios.patch(`${config.ehrRepoUrl}/fragments`, {
+      body,
+      transferComplete: true
+    });
     updateLogEvent({ ehrRepository: { transferSuccessful: true } });
     return response;
   } catch (err) {

@@ -12,8 +12,7 @@ jest.mock('../../../middleware/logging', () => ({
 const originalEhrRepoUrl = config.ehrRepoUrl;
 
 describe('setTransferComplete', () => {
-  const conversationId = 'some-conversation-id';
-  const messageId = 'some-message-id';
+  const body = 'some-request-body';
 
   beforeEach(() => {
     config.ehrRepoUrl = 'https://ehr-repo-url';
@@ -25,11 +24,12 @@ describe('setTransferComplete', () => {
   });
 
   it('should make a call to ehr storage endpoint with conversation ID and message', async done => {
-    await setTransferComplete(conversationId, messageId);
+    await setTransferComplete(body);
     expect(axios.patch).toHaveBeenCalledTimes(1);
     expect(axios.patch).toHaveBeenCalledWith(
-      `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
+      `${config.ehrRepoUrl}/fragments`,
       expect.objectContaining({
+        body,
         transferComplete: true
       })
     );
@@ -40,16 +40,14 @@ describe('setTransferComplete', () => {
     axios.patch.mockImplementation(() => {
       throw new Error('some-error');
     });
-    return expect(setTransferComplete(conversationId, messageId)).rejects.toEqual(
-      Error('some-error')
-    );
+    return expect(setTransferComplete(body)).rejects.toEqual(Error('some-error'));
   });
 
   it('should call updateLogEvent with the error if axios.patch throws', async done => {
     axios.patch.mockImplementation(() => {
       throw new Error('some-error');
     });
-    await setTransferComplete(conversationId, messageId).catch(() => {});
+    await setTransferComplete(body).catch(() => {});
     expect(updateLogEvent).toHaveBeenCalledTimes(1);
     expect(updateLogEvent).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -12,8 +12,7 @@ jest.mock('../../../middleware/logging', () => ({
 const originalEhrRepoUrl = config.ehrRepoUrl;
 
 describe('fetchStorageUrl', () => {
-  const message = 'some-message';
-  const conversationId = 'some-conversation-id';
+  const body = 'some-request-body';
 
   beforeEach(() => {
     config.ehrRepoUrl = 'https://ehr-repo-url';
@@ -24,18 +23,15 @@ describe('fetchStorageUrl', () => {
     config.ehrRepoUrl = originalEhrRepoUrl;
   });
 
-  it('should make a call fetch url with conversation ID and message', async done => {
-    await fetchStorageUrl(conversationId, message);
+  it('should make a call fetch url with soap message as body', async done => {
+    await fetchStorageUrl(body);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(
-      `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
-      message
-    );
+    expect(axios.post).toHaveBeenCalledWith(`${config.ehrRepoUrl}/fragments`, body);
     done();
   });
 
   it('should call eventFinished', async done => {
-    await fetchStorageUrl(conversationId, message);
+    await fetchStorageUrl(body);
     expect(eventFinished).toHaveBeenCalledTimes(1);
     done();
   });
@@ -44,14 +40,14 @@ describe('fetchStorageUrl', () => {
     axios.post.mockImplementation(() => {
       throw new Error('some-error');
     });
-    return expect(fetchStorageUrl(conversationId, message)).rejects.toEqual(Error('some-error'));
+    return expect(fetchStorageUrl(body)).rejects.toEqual(Error('some-error'));
   });
 
   it('should call updateLogEvent with the error if axios.post throws', async done => {
     axios.post.mockImplementation(() => {
       throw new Error('some-error');
     });
-    await fetchStorageUrl(conversationId, message).catch(() => {});
+    await fetchStorageUrl(body).catch(() => { });
     expect(updateLogEvent).toHaveBeenCalledTimes(1);
     expect(updateLogEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -66,7 +62,7 @@ describe('fetchStorageUrl', () => {
     axios.post.mockImplementation(() => {
       throw new Error('some-error');
     });
-    await fetchStorageUrl(conversationId, message).catch(() => {});
+    await fetchStorageUrl(body).catch(() => { });
     expect(eventFinished).toHaveBeenCalledTimes(1);
     done();
   });

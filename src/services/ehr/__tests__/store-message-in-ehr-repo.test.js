@@ -30,9 +30,10 @@ describe('storeMessageInEhrRepo', () => {
     it('should make request with conversation id, manifest (array of messageIds) and message id', async done => {
       await storeMessageInEhrRepo(message, { conversationId, messageId, manifest });
       expect(axios.post).toHaveBeenCalledWith(
-        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
+        `${config.ehrRepoUrl}/fragments`,
         expect.objectContaining({
           messageId,
+          conversationId,
           manifest
         })
       );
@@ -47,7 +48,7 @@ describe('storeMessageInEhrRepo', () => {
         manifest
       });
       expect(axios.post).toHaveBeenCalledWith(
-        `${config.ehrRepoUrl}/health-record/${conversationId}/new/message`,
+        `${config.ehrRepoUrl}/fragments`,
         expect.not.objectContaining({ nhsNumber: undefined })
       );
       done();
@@ -98,12 +99,13 @@ describe('storeMessageInEhrRepo', () => {
   describe('Tell EHR Repository that transfer of fragment is complete', () => {
     it('should make patch request to ehr repo service with transfer complete flag', async done => {
       await storeMessageInEhrRepo(message, { conversationId, messageId });
-      expect(
-        axios.patch
-      ).toHaveBeenCalledWith(
-        `${config.ehrRepoUrl}/health-record/${conversationId}/message/${messageId}`,
-        { transferComplete: true }
-      );
+      expect(axios.patch).toHaveBeenCalledWith(`${config.ehrRepoUrl}/fragments`, {
+        body: {
+          conversationId,
+          messageId
+        },
+        transferComplete: true
+      });
       done();
     });
   });
