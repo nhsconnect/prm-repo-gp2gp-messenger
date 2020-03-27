@@ -1,3 +1,13 @@
+export const mockStream = {
+  write: jest.fn(),
+  end: jest.fn()
+};
+
+export const mockTransaction = {
+  send: jest.fn().mockImplementation(() => mockStream),
+  commit: jest.fn()
+};
+
 export const mockClient = {
   headers: {
     'heart-beat': '0,0',
@@ -12,13 +22,7 @@ export const mockClient = {
     ssl: false
   },
   subscribe: jest.fn(),
-  begin: jest.fn().mockImplementation(() => ({
-    send: jest.fn().mockImplementation(() => ({
-      write: jest.fn(),
-      end: jest.fn()
-    })),
-    commit: jest.fn()
-  })),
+  begin: jest.fn().mockImplementation(() => mockTransaction),
   on: jest.fn(),
   ack: jest.fn().mockResolvedValue(),
   nack: jest.fn().mockResolvedValue(),

@@ -1,9 +1,9 @@
 import config from '../../../config';
 
-export const putMessageOnQueue = (client, message) => {
+export const putMessageOnQueue = (client, message, options = { destination: config.queueName }) => {
   const transaction = client.begin();
-  const frame = transaction.send({ destination: config.queueName });
-  frame.write(message);
-  frame.end();
+  const stream = transaction.send(options);
+  stream.write(message);
+  stream.end();
   transaction.commit();
 };
