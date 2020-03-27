@@ -9,19 +9,10 @@ const originalConfig = { ...config };
 describe('consumeOneMessage', () => {
   afterEach(async () => {
     await clearQueue();
-
-    config.queueUrls = originalConfig.queueUrls;
-    config.queueUsername = originalConfig.queueUsername;
     config.queueName = originalConfig.queueName;
-    config.queuePassword = originalConfig.queuePassword;
-    config.queueVirtualHost = originalConfig.queueVirtualHost;
   });
 
   beforeEach(() => {
-    config.queueUrls = ['tcp://localhost:61620', 'tcp://localhost:61621'];
-    config.queueUsername = 'guest';
-    config.queuePassword = 'guest';
-    config.queueVirtualHost = '/';
     config.queueName = 'gp2gp-test-queue-two';
   });
 
