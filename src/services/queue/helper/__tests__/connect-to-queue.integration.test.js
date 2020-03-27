@@ -1,4 +1,4 @@
-import config from '../../../../config/index';
+import config from '../../../../config';
 import logger from '../../../../config/logging';
 import { connectToQueue } from '../';
 
