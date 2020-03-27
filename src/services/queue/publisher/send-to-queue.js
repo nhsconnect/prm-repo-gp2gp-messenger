@@ -1,13 +1,5 @@
-import config from '../../../config';
 import { connectToQueue } from '../';
-
-const _putMessageOnQueue = (client, message) => {
-  const transaction = client.begin();
-  const frame = transaction.send({ destination: config.queueName });
-  frame.write(message);
-  frame.end();
-  transaction.commit();
-};
+import { putMessageOnQueue } from './put-message-on-queue';
 
 const sendToQueue = message =>
   new Promise((resolve, reject) => {
@@ -15,9 +7,9 @@ const sendToQueue = message =>
       if (err) {
         reject(err);
       }
-      _putMessageOnQueue(client, message);
+      putMessageOnQueue(client, message);
       client.disconnect();
-      resolve();
+      resolve(client);
     });
   });
 

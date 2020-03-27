@@ -1,4 +1,4 @@
-const mockClient = {
+export const mockClient = {
   headers: {
     'heart-beat': '0,0',
     server: 'RabbitMQ/3.7.8',
