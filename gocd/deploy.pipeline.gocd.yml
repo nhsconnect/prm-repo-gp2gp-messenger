@@ -41,19 +41,6 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
-      - functional:
-          clean_workspace: true
-          jobs:
-            test:
-              resources:
-                - deductions-private
-                - dev
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks test_functional
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
     label_template: '${git[:8]}'

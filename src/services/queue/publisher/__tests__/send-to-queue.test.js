@@ -20,6 +20,8 @@ describe('sendToQueue', () => {
     config.queueName = originalConfig.queueName;
     config.queuePassword = originalConfig.queuePassword;
     config.queueVirtualHost = originalConfig.queueVirtualHost;
+
+    connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 
   beforeEach(() => {
@@ -28,8 +30,6 @@ describe('sendToQueue', () => {
     config.queuePassword = 'guest';
     config.queueVirtualHost = '/';
     config.queueName = MOCK_QUEUE_NAME;
-
-    connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 
   it('should call connectToQueue with a function', async done => {

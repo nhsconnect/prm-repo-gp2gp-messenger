@@ -18,6 +18,9 @@ describe('consumeOneMessage', () => {
 
   beforeEach(() => {
     config.queueName = 'gp2gp-test';
+  });
+
+  afterEach(() => {
     connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 

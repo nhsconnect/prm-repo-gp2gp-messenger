@@ -16,7 +16,6 @@ const mockedMessage = 'mocked-message';
 describe('clearQueue', () => {
   beforeEach(() => {
     config.queueName = mockedQueueName;
-    connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 
   afterEach(() => {
@@ -25,6 +24,7 @@ describe('clearQueue', () => {
     mockMessageStream.readString.mockImplementation((_, callback) => {
       callback(false, mockedMessage);
     });
+    connectToQueue.mockImplementation(callback => callback(false, mockClient));
   });
 
   describe('sendToQueue', () => {
