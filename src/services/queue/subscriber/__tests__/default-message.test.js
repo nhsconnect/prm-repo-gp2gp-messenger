@@ -11,9 +11,13 @@ jest.mock('../../../../middleware/logging', () => ({
   updateLogEvent: jest.fn()
 }));
 
+const mockMessage = 'mock-message';
+const defaultMessage = new DefaultMessage();
+
 describe('DefaultMessage', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     config.unhandledMessagesQueueName = mockedUnhandledMessageQueueName;
+    await defaultMessage.handleMessage(mockMessage);
   });
 
   afterEach(() => {
@@ -24,36 +28,42 @@ describe('DefaultMessage', () => {
     expect(new DefaultMessage().name).toBe('Unhandled Message');
   });
 
-  describe('handleMessage', () => {
-    it('should call sendToQueue with message', async done => {
-      const message = 'message';
-      await new DefaultMessage().handleMessage(message);
-      expect(sendToQueue).toHaveBeenCalledTimes(1);
-      expect(sendToQueue).toHaveBeenCalledWith(message, expect.any(Object));
-      done();
-    });
-
-    it('should call sendToQueue with mockedUnhandledMessageQueueName', async done => {
-      await new DefaultMessage().handleMessage('message');
-      expect(sendToQueue).toHaveBeenCalledTimes(1);
-      expect(sendToQueue).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          destination: mockedUnhandledMessageQueueName
+  it('should call updateLogEvent to update parser information', async done => {
+    expect(updateLogEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        parser: expect.objectContaining({
+          name: defaultMessage.name,
+          interactionId: defaultMessage.interactionId
         })
-      );
-      done();
-    });
+      })
+    );
+    done();
+  });
 
-    it('should update status to "Redirecting Message to unhandled message queue" using updateLogEvent', async done => {
-      await new DefaultMessage().handleMessage('message');
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Redirecting Message to unhandled message queue'
-        })
-      );
-      done();
-    });
+  it('should call sendToQueue with message', async done => {
+    expect(sendToQueue).toHaveBeenCalledTimes(1);
+    expect(sendToQueue).toHaveBeenCalledWith(mockMessage, expect.any(Object));
+    done();
+  });
+
+  it('should call sendToQueue with mockedUnhandledMessageQueueName', async done => {
+    expect(sendToQueue).toHaveBeenCalledTimes(1);
+    expect(sendToQueue).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        destination: mockedUnhandledMessageQueueName
+      })
+    );
+    done();
+  });
+
+  it('should update status to "Redirecting Message to unhandled message queue" using updateLogEvent', async done => {
+    expect(updateLogEvent).toHaveBeenCalledTimes(1);
+    expect(updateLogEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: `Redirecting ${defaultMessage.interactionId} Message to ${mockedUnhandledMessageQueueName}`
+      })
+    );
+    done();
   });
 });

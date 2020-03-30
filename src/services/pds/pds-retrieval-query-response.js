@@ -9,6 +9,7 @@ class PDSRetrievalQueryResponse {
   }
 
   handleMessage(message) {
+    // update log event (Where are we?)
     return handlePdsResponse(message);
   }
 }

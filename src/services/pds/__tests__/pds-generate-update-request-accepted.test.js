@@ -21,9 +21,48 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
   });
 
   describe('handleMessage', () => {
-    it('should call updateLogEvent to update status', async done => {
+    it('should call updateLogEvent to update status to "Parsing PRPA_IN000202UK01 Message', async done => {
+      const pdsRequestAccepted = new PDSGeneralUpdateRequestAccepted();
+      await pdsRequestAccepted.handleMessage(pdsGenerateUpdateRequest);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Parsing PRPA_IN000202UK01 Message'
+        })
+      );
+      done();
+    });
+
+    it('should call updateLogEvent to update parser information', async done => {
+      const pdsRequestAccepted = new PDSGeneralUpdateRequestAccepted();
+      await pdsRequestAccepted.handleMessage(pdsGenerateUpdateRequest);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          parser: expect.objectContaining({
+            name: pdsRequestAccepted.name,
+            interactionId: pdsRequestAccepted.interactionId
+          })
+        })
+      );
+      done();
+    });
+
+    it('should call updateLogEvent to update status to "SOAP Information Extracted"', async done => {
       await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'SOAP Information Extracted'
+        })
+      );
+      done();
+    });
+
+    it('should call updateLogEvent to update messageDetails with soap information', async done => {
+      await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messageDetails: expect.any(Object)
+        })
+      );
       done();
     });
   });

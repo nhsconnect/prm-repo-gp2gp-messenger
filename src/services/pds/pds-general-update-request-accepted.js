@@ -9,13 +9,16 @@ class PDSGeneralUpdateRequestAccepted {
   }
 
   async handleMessage(message) {
+    updateLogEvent({
+      status: 'Parsing PRPA_IN000202UK01 Message',
+      parser: { name: this.name, interactionId: this.interactionId }
+    });
     const multipartMessage = await parseMultipartBody(message);
     const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
     updateLogEvent({
-      status: 'Handling PDS General Update Request Accepted (PRPA_IN000202UK01) Message',
-      message: soapInformation
+      status: 'SOAP Information Extracted',
+      messageDetails: soapInformation
     });
-    return;
   }
 }
 

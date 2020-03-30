@@ -3,15 +3,21 @@ import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
 import { DefaultMessage } from './';
 import { parseMultipartBody } from '../../parser';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 
 export const handleMessage = async message => {
   let interactionId;
 
   try {
-    interactionId = await extractAction(parseMultipartBody(message)[0].body);
+    const multipartMessage = parseMultipartBody(message);
+    updateLogEvent({ status: 'Extracting Action from Message', message: multipartMessage });
+    interactionId = await extractAction(multipartMessage[0].body);
   } catch (err) {
-    interactionId = '';
+    updateLogEventWithError(err);
+    interactionId = 'undefined';
   }
+
+  updateLogEvent({ interactionId });
 
   let handler;
 
