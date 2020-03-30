@@ -21,6 +21,6 @@ services:
       - MHS_QUEUE_USERNAME=guest
       - MHS_QUEUE_PASSWORD=guest
   mq-1:
-    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    image: rmohr/activemq:5.15.9-alpine
   mq-2:
-    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    image: rmohr/activemq:5.15.9-alpine

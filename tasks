@@ -32,8 +32,8 @@ function configure_local_envs {
   export AUTHORIZATION_KEYS=auth-key-1
   export MHS_QUEUE_URL_1=tcp://mq-1:61613
   export MHS_QUEUE_URL_2=tcp://mq-2:61613
-  export MHS_QUEUE_USERNAME=guest
-  export MHS_QUEUE_PASSWORD=guest
+  export MHS_QUEUE_USERNAME=admin
+  export MHS_QUEUE_PASSWORD=admin
   export MHS_QUEUE_NAME=gp2gp-test
   export MHS_QUEUE_VIRTUAL_HOST="/"
   export REPOSITORY_URI=$IMAGE_REPO_NAME

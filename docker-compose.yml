@@ -1,12 +1,12 @@
 version: '3.7'
 services:
   mq-1:
-    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    image: rmohr/activemq:5.15.9-alpine
     ports:
       - 61620:61613
-      - 15672:15672
+      - 8161:8161
   mq-2:
-    image: resilva87/docker-rabbitmq-stomp:3.0.0
+    image: rmohr/activemq:5.15.9-alpine
     ports:
       - 61621:61613
-      - 15673:15672
+      - 8162:8161
