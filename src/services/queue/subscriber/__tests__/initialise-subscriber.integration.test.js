@@ -1,4 +1,6 @@
 import httpContext from 'async-local-storage';
+import { v4 as uuid } from 'uuid';
+import { initialiseSubscriber } from '../';
 import { clearQueue, consumeOneMessage, sendToQueue } from '../../';
 import { EHRRequestCompleted } from '../../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../../pds/pds-general-update-request-accepted';
@@ -7,16 +9,18 @@ import {
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
 } from './data/subscriber';
-import { initialiseSubscriber } from '../';
 
 httpContext.enable();
+
 jest.unmock('stompit');
+jest.unmock('uuid');
 jest.mock('../../../gp2gp/ehr-request-completed');
 jest.mock('../../../pds/pds-general-update-request-accepted');
 jest.mock('../../../../middleware/logging');
 
 describe('initialiseConsumer', () => {
   let client;
+  let uniqueQueueName = uuid();
 
   const mockEhrHandleMessage = jest
     .fn()
@@ -29,26 +33,27 @@ describe('initialiseConsumer', () => {
     EHRRequestCompleted.prototype.handleMessage = mockEhrHandleMessage;
     PDSGeneralUpdateRequestAccepted.prototype.handleMessage = mockPdsHandleMessage;
 
-    client = await initialiseSubscriber();
+    uniqueQueueName = uuid();
+    client = await initialiseSubscriber({ destination: uniqueQueueName });
   });
 
   afterEach(async () => {
     client.destroy();
-    await clearQueue();
+    await clearQueue({ destination: uniqueQueueName });
   });
 
   describe('when RCMR_IN030000UK06 (EHR Request Completed) Message is put on the queue', () => {
     it('should consume the message off the queue', async done => {
-      await sendToQueue(ehrRequestCompletedMessage);
-      const message = await consumeOneMessage();
+      await sendToQueue(ehrRequestCompletedMessage, { destination: uniqueQueueName });
+      const message = await consumeOneMessage({ destination: uniqueQueueName });
       expect(message).toEqual({});
       done();
     });
 
     it('should call EHRRequestCompleted.handleMessage()', async done => {
-      await sendToQueue(ehrRequestCompletedMessage);
+      await sendToQueue(ehrRequestCompletedMessage, { destination: uniqueQueueName });
       // Below needed to wait for message to be consumed
-      await consumeOneMessage();
+      await consumeOneMessage({ destination: uniqueQueueName });
       expect(mockEhrHandleMessage).toHaveBeenCalledTimes(1);
       expect(mockEhrHandleMessage).toHaveBeenCalledWith(ehrRequestCompletedMessage);
       done();
@@ -57,16 +62,16 @@ describe('initialiseConsumer', () => {
 
   describe('when PRPA_IN000202UK01 (PDS General Update Request Accepted) Message is put on the queue', () => {
     it('should consume the message off the queue', async done => {
-      await sendToQueue(pdsGeneralUpdateRequestAcceptedMessage);
-      const message = await consumeOneMessage();
+      await sendToQueue(pdsGeneralUpdateRequestAcceptedMessage, { destination: uniqueQueueName });
+      const message = await consumeOneMessage({ destination: uniqueQueueName });
       expect(message).toEqual({});
       done();
     });
 
     it('should call PDSGeneralUpdateRequestAccepted.handleMessage()', async done => {
-      await sendToQueue(pdsGeneralUpdateRequestAcceptedMessage);
+      await sendToQueue(pdsGeneralUpdateRequestAcceptedMessage, { destination: uniqueQueueName });
       // Below needed to wait for message to be consumed
-      await consumeOneMessage();
+      await consumeOneMessage({ destination: uniqueQueueName });
       expect(mockPdsHandleMessage).toHaveBeenCalledTimes(1);
       expect(mockPdsHandleMessage).toHaveBeenCalledWith(pdsGeneralUpdateRequestAcceptedMessage);
       done();
@@ -75,16 +80,16 @@ describe('initialiseConsumer', () => {
 
   describe('when unhandled Interaction ID Message is put on the queue', () => {
     it('should consume the message off the queue (or else infinite loop)', async done => {
-      await sendToQueue(unhandledInteractionId);
-      const message = await consumeOneMessage();
+      await sendToQueue(unhandledInteractionId, { destination: uniqueQueueName });
+      const message = await consumeOneMessage({ destination: uniqueQueueName });
       expect(message).toEqual({});
       done();
     });
 
     it('should not call PDSGeneralUpdateRequestAccepted.handleMessage() or EHRRequestCompleted.handleMessage()', async done => {
-      await sendToQueue(unhandledInteractionId);
+      await sendToQueue(unhandledInteractionId, { destination: uniqueQueueName });
       // Below needed to wait for message to be consumed
-      await consumeOneMessage();
+      await consumeOneMessage({ destination: uniqueQueueName });
       expect(mockEhrHandleMessage).toHaveBeenCalledTimes(0);
       expect(mockPdsHandleMessage).toHaveBeenCalledTimes(0);
       done();

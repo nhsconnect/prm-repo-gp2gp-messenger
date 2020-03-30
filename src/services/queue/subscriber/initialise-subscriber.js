@@ -1,9 +1,9 @@
+import config from '../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { connectToQueue } from '../helper';
-import config from '../../../config';
 import { subscriberReadMessageCallback } from './subscriber-read-message-callback';
 
-const initialiseSubscriber = () =>
+const initialiseSubscriber = (options = {}) =>
   new Promise((resolve, reject) => {
     connectToQueue((err, client) => {
       if (err) {
@@ -17,7 +17,7 @@ const initialiseSubscriber = () =>
       });
 
       client.subscribe(
-        { destination: config.queueName, ack: 'client-individual' },
+        { destination: config.queueName, ack: 'client-individual', ...options },
         subscriberReadMessageCallback(client)
       );
 

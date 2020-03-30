@@ -1,9 +1,9 @@
 import config from '../../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
-import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
-import { initialiseSubscriber } from '../initialise-subscriber';
 import { mockClient } from '../../../../__mocks__/stompit';
 import { connectToQueue } from '../../helper/connect-to-queue';
+import { initialiseSubscriber } from '../initialise-subscriber';
+import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../subscriber-read-message-callback');
@@ -14,6 +14,28 @@ const mockQueueName = 'mock-queue';
 const mockError = 'mock-error';
 
 describe('initialiseSubscriber', () => {
+  describe('configuration', () => {
+    beforeEach(async () => {
+      config.queueName = mockQueueName;
+    });
+
+    afterEach(() => {
+      config.queueName = originalConfig.queueName;
+    });
+
+    it('should call client.subscribe with new queueName when passed in, and ack: "client-individual"', async done => {
+      await initialiseSubscriber({ destination: 'new-queue-name' });
+      expect(mockClient.subscribe).toHaveBeenCalledWith(
+        expect.objectContaining({
+          destination: 'new-queue-name',
+          ack: 'client-individual'
+        }),
+        expect.any(Function)
+      );
+      done();
+    });
+  });
+
   describe('on success', () => {
     beforeEach(async () => {
       config.queueName = mockQueueName;
