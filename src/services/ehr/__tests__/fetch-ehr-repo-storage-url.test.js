@@ -47,7 +47,7 @@ describe('fetchStorageUrl', () => {
     axios.post.mockImplementation(() => {
       throw new Error('some-error');
     });
-    await fetchStorageUrl(body).catch(() => { });
+    await fetchStorageUrl(body).catch(() => {});
     expect(updateLogEvent).toHaveBeenCalledTimes(1);
     expect(updateLogEvent).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -62,7 +62,7 @@ describe('fetchStorageUrl', () => {
     axios.post.mockImplementation(() => {
       throw new Error('some-error');
     });
-    await fetchStorageUrl(body).catch(() => { });
+    await fetchStorageUrl(body).catch(() => {});
     expect(eventFinished).toHaveBeenCalledTimes(1);
     done();
   });

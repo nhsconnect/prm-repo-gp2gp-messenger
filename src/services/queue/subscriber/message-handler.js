@@ -2,9 +2,9 @@ import { updateLogEvent } from '../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
 import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
-import { DefaultMessage } from './default-message';
+import { DefaultMessage } from './';
 
-const handleMessage = async message => {
+export const handleMessage = async message => {
   updateLogEvent({ status: 'handling-message' });
 
   const interactionId = await extractAction(message);
@@ -26,5 +26,3 @@ const handleMessage = async message => {
 
   return handler.handleMessage(message);
 };
-
-export default handleMessage;

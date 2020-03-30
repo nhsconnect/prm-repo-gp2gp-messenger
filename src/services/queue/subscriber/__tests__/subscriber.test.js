@@ -1,14 +1,15 @@
-import httpContext from 'async-local-storage';
 import { connect, ConnectFailover } from 'stompit';
 import config from '../../../../config';
-import logger from '../../../../config/logging';
-import handleMessage from '../message-handler';
+import { handleMessage } from '../';
 import { initialiseSubscriber } from '../subscriber';
+import {
+  eventFinished,
+  updateLogEvent,
+  updateLogEventWithError
+} from '../../../../middleware/logging';
 
-httpContext.enable();
-
-jest.mock('../../../../config/logging');
 jest.mock('../message-handler');
+jest.mock('../../../../middleware/logging');
 
 const errorMessage = 'some-error-happened';
 
@@ -116,7 +117,9 @@ describe('initialiseConsumer', () => {
 
     await initialiseSubscriber().catch(() => {});
 
-    expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(Error(errorMessage));
+    expect(eventFinished).toHaveBeenCalledTimes(1);
     done();
   });
 
@@ -140,7 +143,10 @@ describe('initialiseConsumer', () => {
 
     await initialiseSubscriber().catch(() => {});
 
-    expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(Error(errorMessage));
+    expect(eventFinished).toHaveBeenCalledTimes(1);
+
     done();
   });
 
@@ -162,17 +168,19 @@ describe('initialiseConsumer', () => {
   it('should log the event after handling', async done => {
     await initialiseSubscriber();
 
-    setImmediate(() => {
-      expect(logger.info).toHaveBeenCalledWith('Event finished', {
-        event: {
-          status: 'Message Handled',
-          mhs: {
-            mqMessageId: undefined
-          }
-        }
-      });
-      done();
-    });
+    expect(updateLogEvent).toHaveBeenCalledTimes(2);
+    expect(updateLogEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'Subscribing to MQ'
+      })
+    );
+    expect(updateLogEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'Consuming received message'
+      })
+    );
+
+    done();
   });
 
   it('should acknowledge the message if handling the message fails (to remove off queue)', async done => {
@@ -192,20 +200,28 @@ describe('initialiseConsumer', () => {
     await initialiseSubscriber().catch(() => {});
 
     setImmediate(() => {
-      expect(logger.info).toHaveBeenCalledWith('Event finished', errorMessageTemplate());
+      // To refactor
+      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+      expect(updateLogEventWithError).toHaveBeenCalledWith(Error(errorMessage));
+      expect(updateLogEvent).toHaveBeenCalledTimes(3);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Subscribing to MQ'
+        })
+      );
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Consuming received message'
+        })
+      );
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Message Handled'
+        })
+      );
       done();
     });
   });
-});
-
-const errorMessageTemplate = () => ({
-  event: {
-    status: 'Consuming received message',
-    error: {
-      message: errorMessage,
-      stack: expect.any(String)
-    }
-  }
 });
 
 const connectionFailoverTemplate = (isSSL, altPrefix = 'some') => ({

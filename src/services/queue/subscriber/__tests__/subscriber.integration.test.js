@@ -6,8 +6,8 @@ import {
   ehrRequestCompletedMessage,
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
-} from '../data/subscriber';
-import { initialiseSubscriber } from '../subscriber';
+} from './data/subscriber';
+import { initialiseSubscriber } from '../';
 
 httpContext.enable();
 jest.unmock('stompit');

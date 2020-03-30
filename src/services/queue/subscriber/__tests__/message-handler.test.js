@@ -6,9 +6,8 @@ import {
   messageWithoutAction,
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
-} from '../data/message-handler';
-import { DefaultMessage } from '../default-message';
-import handleMessage from '../message-handler';
+} from './data/message-handler';
+import { DefaultMessage, handleMessage } from '../';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../../../gp2gp/ehr-request-completed');

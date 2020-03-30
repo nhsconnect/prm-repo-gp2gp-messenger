@@ -1,9 +1,26 @@
-import config from '../../../../config';
+import config from '../../../../../config';
 
 export const nhsNumber = '9465731285';
 export const conversationId = 'some-conversation-id-123';
 export const messageId = 'some-message-id-456';
 export const foundationSupplierAsid = 'foundation-supplier-asid';
+
+export const messageWithoutAction = `
+------=_MIME-Boundary
+<SOAP-ENV:Envelope>
+  <SOAP-ENV:Header>
+    <eb:CPAId>S2036482A2160104</eb:CPAId>
+    <eb:ConversationId>${conversationId}</eb:ConversationId>
+    <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
+    <eb:MessageData>
+        <eb:MessageId>${messageId}</eb:MessageId>
+        <eb:Timestamp>2018-06-12T08:29:16Z</eb:Timestamp>
+    </eb:MessageData>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+------=_MIME-Boundary--`;
 
 export const ehrRequestCompletedMessage = `------=_MIME-Boundary
 Content-Type: application/xml

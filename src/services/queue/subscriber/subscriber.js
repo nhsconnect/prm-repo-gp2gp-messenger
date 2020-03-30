@@ -6,15 +6,7 @@ import {
   updateLogEventWithError,
   withContext
 } from '../../../middleware/logging';
-import handleMessage from './message-handler';
-
-// Transactions
-// client.begin([headers])
-// transaction.send(headers, [options])
-// transaction.commit([options])
-// option: onReceipt get confirmation from the server that this transaction was successfully committed.
-// The server may terminate the connection with an error frame if it cannot commit the transaction. In this case, an error event would be emitted from the client object.
-// transaction.abort([options])
+import { handleMessage } from './';
 
 const onMessageCallback = (client, message, { reject }) => async (err, body) => {
   if (err) {
@@ -26,16 +18,15 @@ const onMessageCallback = (client, message, { reject }) => async (err, body) => 
 
   try {
     await handleMessage(body);
-    updateLogEvent({ status: 'Acknowledging Message', mhs: { mqMessageId: message.id } });
-    client.ack(message); // Acknowledges - removes from queue
-    updateLogEvent({ status: 'Message Handled' });
+    updateLogEvent({ status: 'Acknowledging Message', queue: { mqMessageId: message.id } });
+    client.ack(message);
   } catch (err) {
     updateLogEventWithError(err);
-    // Negative acknowledgement - puts the message back on the queue
-    // Should put it on another queue?
+
     client.ack(message);
     reject(err);
   } finally {
+    updateLogEvent({ status: 'Message Handled' });
     eventFinished();
   }
 };

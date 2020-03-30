@@ -1,6 +1,6 @@
 import app from './app';
 import logger from './config/logging';
-import { initialiseSubscriber } from './services/queue/subscriber/subscriber';
+import { initialiseSubscriber } from './services/queue/subscriber';
 
 initialiseSubscriber();
 
