@@ -22,18 +22,18 @@ describe('subscriberOnMessageCallback', () => {
       await callback(false, mockBody);
     });
 
-    it('should call update log event status on success with "Acknowledging Message"', () => {
+    it('should call updateLogEvent status on success with "Handling Message"', () => {
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'Acknowledging Message'
+          status: 'Handling Message'
         })
       );
     });
 
-    it('should call update log event status on success with "Message Handled"', () => {
+    it('should call update log event status on success with "Acknowledged Message"', () => {
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'Message Handled Successfully'
+          status: 'Acknowledged Message'
         })
       );
     });
@@ -52,6 +52,14 @@ describe('subscriberOnMessageCallback', () => {
     beforeEach(async () => {
       handleMessage.mockResolvedValue();
       await callback(mockError);
+    });
+
+    it('should call updateLogEvent status on error with "Handling Message"', () => {
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Handling Message'
+        })
+      );
     });
 
     it('should call updateLogEventWithError with the error', () => {
@@ -86,6 +94,14 @@ describe('subscriberOnMessageCallback', () => {
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
       expect(eventFinished).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call update log event status on success with "Acknowledged Message"', () => {
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: 'Acknowledged Message'
+        })
+      );
     });
   });
 });

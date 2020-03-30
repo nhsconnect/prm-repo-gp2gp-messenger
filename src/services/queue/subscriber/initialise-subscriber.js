@@ -11,7 +11,10 @@ const initialiseSubscriber = () =>
         reject(err);
       }
 
-      updateLogEvent({ status: 'Subscribing to MQ', queue: { name: config.queueName } });
+      updateLogEvent({
+        status: 'Initialising Subscriber',
+        queue: { name: config.queueName, ackType: 'client-individual' }
+      });
 
       client.subscribe(
         { destination: config.queueName, ack: 'client-individual' },

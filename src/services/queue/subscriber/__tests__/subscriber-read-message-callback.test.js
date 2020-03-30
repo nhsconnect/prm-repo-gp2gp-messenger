@@ -23,7 +23,7 @@ describe('subscriberReadMessageCallback', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'Consuming received message'
+          status: 'Subscriber has Received Message'
         })
       );
     });
@@ -43,7 +43,7 @@ describe('subscriberReadMessageCallback', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'Consuming received message'
+          status: 'Subscriber has Received Message'
         })
       );
     });

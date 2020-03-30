@@ -1,7 +1,7 @@
-export const extractAction = message => {
-  const matches = message.match(/<eb:Action>(.*?)<\/eb:Action>/);
-  if (!matches) {
-    throw new Error('Message does not contain action');
-  }
-  return matches[1];
+import { XmlParser } from '../xml-parser';
+
+export const extractAction = async message => {
+  return await new XmlParser()
+    .parse(message)
+    .then(messageObject => messageObject.findFirst('Action'));
 };

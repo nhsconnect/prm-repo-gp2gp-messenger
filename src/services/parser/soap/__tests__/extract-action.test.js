@@ -6,8 +6,6 @@ describe('extractAction', () => {
         </eb:Body>
     `;
 
-  const expectedErrorMessage = 'Message does not contain action';
-
   const testAction = 'RCMR_IN030000UK06';
 
   const realExample = `
@@ -26,14 +24,16 @@ describe('extractAction', () => {
     `;
 
   it('should extract the conversationId from XML body', () => {
-    expect(extractAction(exampleResolveXML)).toBe(testAction);
+    return expect(extractAction(exampleResolveXML)).resolves.toBe(testAction);
   });
 
   it('should extract the conversationId from XML body in a real example', () => {
-    expect(extractAction(realExample)).toBe(testAction);
+    return expect(extractAction(realExample)).resolves.toBe(testAction);
   });
 
   it('should throw and error when conversationId does not exist', () => {
-    expect(() => extractAction(exampleErrorXML)).toThrow(Error(expectedErrorMessage));
+    return expect(extractAction(exampleErrorXML)).rejects.toEqual(
+      Error("The key 'Action' was not found in the message")
+    );
   });
 });

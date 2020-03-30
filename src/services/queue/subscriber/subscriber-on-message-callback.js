@@ -6,6 +6,8 @@ import {
 import { handleMessage } from './';
 
 export const subscriberOnMessageCallback = (client, message) => async (err, body) => {
+  updateLogEvent({ status: 'Handling Message', queue: { messageId: message.id, body } });
+
   if (err) {
     updateLogEventWithError(err);
     eventFinished();
@@ -14,13 +16,11 @@ export const subscriberOnMessageCallback = (client, message) => async (err, body
 
   try {
     await handleMessage(body);
-    updateLogEvent({ status: 'Acknowledging Message', queue: { mqMessageId: message.id } });
-    client.ack(message);
-    updateLogEvent({ status: 'Message Handled Successfully' });
   } catch (err) {
     updateLogEventWithError(err);
-    client.ack(message);
   } finally {
+    client.ack(message);
+    updateLogEvent({ status: 'Acknowledged Message' });
     eventFinished();
   }
 };

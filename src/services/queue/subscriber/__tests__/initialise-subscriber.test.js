@@ -28,7 +28,7 @@ describe('initialiseSubscriber', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          status: 'Subscribing to MQ'
+          status: 'Initialising Subscriber'
         })
       );
     });
@@ -37,7 +37,16 @@ describe('initialiseSubscriber', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          queue: { name: mockQueueName }
+          queue: expect.objectContaining({ name: mockQueueName })
+        })
+      );
+    });
+
+    it('should call updateLogEvent with queue ackType', () => {
+      expect(updateLogEvent).toHaveBeenCalledTimes(1);
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queue: expect.objectContaining({ ackType: 'client-individual' })
         })
       );
     });

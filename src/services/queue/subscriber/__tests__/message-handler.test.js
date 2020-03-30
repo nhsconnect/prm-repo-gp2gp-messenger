@@ -1,4 +1,3 @@
-import { updateLogEvent } from '../../../../middleware/logging';
 import { EHRRequestCompleted } from '../../../gp2gp/ehr-request-completed';
 import { PDSGeneralUpdateRequestAccepted } from '../../../pds/pds-general-update-request-accepted';
 import {
@@ -29,16 +28,18 @@ describe('handleMessage', () => {
       .mockResolvedValue('DefaultMessage handled message');
   });
 
-  it('should update the log event with handling-message', async done => {
-    await handleMessage(ehrRequestCompletedMessage);
-    expect(updateLogEvent).toHaveBeenCalledWith({ status: 'handling-message' });
+  it('should call DefaultMessage if handleMessage cannot find the action', async done => {
+    await handleMessage(messageWithoutAction);
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith(messageWithoutAction);
     done();
   });
 
-  it('should reject the promise if message does not contain a action', () => {
-    return expect(handleMessage(messageWithoutAction)).rejects.toEqual(
-      new Error('Message does not contain action')
-    );
+  it('should call DefaultMessage if handleMessage cannot parse multipart', async done => {
+    await handleMessage('random-string');
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
+    expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith('random-string');
+    done();
   });
 
   it('should call DefaultMessage if the message action does not have a handler implemented', async done => {
