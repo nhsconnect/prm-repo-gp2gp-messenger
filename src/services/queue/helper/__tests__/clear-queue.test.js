@@ -31,7 +31,7 @@ describe('clearQueue', () => {
     it('should call sendToQueue with EOQ-MOCKED_UUID', async done => {
       await clearQueue();
       expect(sendToQueue).toHaveBeenCalledTimes(1);
-      expect(sendToQueue).toHaveBeenCalledWith(`EOQ-${MOCKED_UUID}`);
+      expect(sendToQueue).toHaveBeenCalledWith(`EOQ-${MOCKED_UUID}`, expect.any(Object));
       done();
     });
   });

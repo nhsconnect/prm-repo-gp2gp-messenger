@@ -5,7 +5,7 @@ import config from '../../../config';
 export const clearQueue = async (options = {}) => {
   const endOfQueueMessage = `EOQ-${uuid()}`;
 
-  await sendToQueue(endOfQueueMessage);
+  await sendToQueue(endOfQueueMessage, options);
 
   return new Promise((resolve, reject) =>
     connectToQueue((err, client) => {

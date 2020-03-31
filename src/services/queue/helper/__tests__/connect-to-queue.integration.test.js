@@ -22,11 +22,14 @@ describe('connectToQueue', () => {
     return connectToQueue(testCallback);
   });
 
-  it('should connect to the correct queue successfully ', done => {
+  it('should connect to the correct queue successfully ', async done => {
     const testCallback = () => {
       expect(logger.error).not.toHaveBeenCalled();
       done();
     };
-    return connectToQueue(testCallback);
+
+    const client = await connectToQueue(testCallback);
+    client.abort();
+    done();
   });
 });
