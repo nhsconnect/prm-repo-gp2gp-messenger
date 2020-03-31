@@ -38,8 +38,8 @@ describe('initialiseConsumer', () => {
   });
 
   afterEach(async () => {
-    await clearQueue({ destination: uniqueQueueName });
     client.destroy();
+    await clearQueue({ destination: uniqueQueueName });
   });
 
   describe('when RCMR_IN030000UK06 (EHR Request Completed) Message is put on the queue', () => {

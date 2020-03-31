@@ -35,10 +35,31 @@ describe('generateQueueConfig', () => {
     config.queueUsername = originalConfig.queueUsername;
     config.queuePassword = originalConfig.queuePassword;
     config.queueVirtualHost = originalConfig.queueVirtualHost;
+
+    if (process.env.NHS_ENVIRONMENT) {
+      delete process.env.NHS_ENVIRONMENT;
+    }
   });
 
   it(`should create the queue config from host URL ${mockQueueUrls[0]}`, () => {
     expect(generateQueueConfig(mockQueueUrls[0])).toEqual(hosts[0]);
+  });
+
+  it(`should set port to 61614 when NHS_ENVIRONMENT is set`, () => {
+    process.env.NHS_ENVIRONMENT = 'dev';
+    expect(generateQueueConfig(mockQueueUrls[0])).toEqual(
+      expect.objectContaining({
+        port: '61614'
+      })
+    );
+  });
+
+  it(`should set port to config value when NHS_ENVIRONMENT is not set`, () => {
+    expect(generateQueueConfig(mockQueueUrls[0])).toEqual(
+      expect.objectContaining({
+        port: hosts[0].port
+      })
+    );
   });
 
   it(`should create the queue config from URL ${mockQueueUrls[1]}`, () => {

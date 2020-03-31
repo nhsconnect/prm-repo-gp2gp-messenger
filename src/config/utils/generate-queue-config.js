@@ -6,7 +6,7 @@ const generateQueueConfig = url => {
 
   return {
     host: urlParts[2],
-    port: urlParts[3],
+    port: process.env.NHS_ENVIRONMENT ? '61614' : urlParts[3],
     ssl: urlParts[1].includes('ssl'),
     username: config.queueUsername,
     password: config.queuePassword,
