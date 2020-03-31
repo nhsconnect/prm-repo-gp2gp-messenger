@@ -9,7 +9,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
     timer:
-      spec: 0 0 8 ? * MON,TUE,WED,THU,FRI *
+      spec: 0 30 7 ? * MON,TUE,WED,THU,FRI *
     stages:
       - update:
           clean_workspace: true
