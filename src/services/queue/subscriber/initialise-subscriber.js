@@ -13,7 +13,7 @@ const initialiseSubscriber = (options = {}) =>
 
       updateLogEvent({
         status: 'Initialising Subscriber',
-        queue: { name: config.queueName, ackType: 'client-individual' }
+        queue: { name: config.queueName, ...options, ackType: options.ack || 'client-individual' }
       });
 
       client.subscribe(

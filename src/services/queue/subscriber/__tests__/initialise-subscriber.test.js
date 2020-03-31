@@ -23,7 +23,7 @@ describe('initialiseSubscriber', () => {
       config.queueName = originalConfig.queueName;
     });
 
-    it('should call client.subscribe with new queueName when passed in, and ack: "client-individual"', async done => {
+    it('should call client.subscribe with new queueName when passed in, and not override default options', async done => {
       await initialiseSubscriber({ destination: 'new-queue-name' });
       expect(mockClient.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -31,6 +31,30 @@ describe('initialiseSubscriber', () => {
           ack: 'client-individual'
         }),
         expect.any(Function)
+      );
+      done();
+    });
+
+    it('should call updateLogEvent with new queueName when passed in', async done => {
+      await initialiseSubscriber({ destination: 'new-queue-name' });
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queue: expect.objectContaining({
+            destination: 'new-queue-name'
+          })
+        })
+      );
+      done();
+    });
+
+    it('should call updateLogEvent with new ack type when passed in', async done => {
+      await initialiseSubscriber({ ack: 'client' });
+      expect(updateLogEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queue: expect.objectContaining({
+            ackType: 'client'
+          })
+        })
       );
       done();
     });

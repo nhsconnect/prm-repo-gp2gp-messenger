@@ -19,8 +19,8 @@ jest.mock('../../../pds/pds-general-update-request-accepted');
 jest.mock('../../../../middleware/logging');
 
 describe('initialiseConsumer', () => {
+  let uniqueQueueName;
   let client;
-  let uniqueQueueName = uuid();
 
   const mockEhrHandleMessage = jest
     .fn()
@@ -38,13 +38,15 @@ describe('initialiseConsumer', () => {
   });
 
   afterEach(async () => {
-    client.destroy();
     await clearQueue({ destination: uniqueQueueName });
+    client.destroy();
   });
 
   describe('when RCMR_IN030000UK06 (EHR Request Completed) Message is put on the queue', () => {
     it('should consume the message off the queue', async done => {
-      await sendToQueue(ehrRequestCompletedMessage, { destination: uniqueQueueName });
+      await sendToQueue(ehrRequestCompletedMessage, {
+        destination: uniqueQueueName
+      });
       const message = await consumeOneMessage({ destination: uniqueQueueName });
       expect(message).toEqual({});
       done();
