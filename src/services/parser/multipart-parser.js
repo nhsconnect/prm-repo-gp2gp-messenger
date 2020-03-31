@@ -14,7 +14,7 @@ const getFullBoundaryText = multipartMessage => {
 
   if (!boundaryMatch) return '';
 
-  return boundaryMatch[0].substring(boundaryMatch[0].indexOf('--') || 0);
+  return boundaryMatch[0].substring(boundaryMatch[0].indexOf('----') || 0);
 };
 
 const extractBoundaryContent = rawMultipartMessage => {
