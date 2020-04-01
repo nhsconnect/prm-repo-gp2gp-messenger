@@ -1,9 +1,9 @@
 import config from '../../../../config';
-import logger from '../../../../config/logging';
 import { connectToQueue } from '../';
+import { updateLogEventWithError } from '../../../../middleware/logging';
 
 jest.unmock('stompit');
-jest.mock('../../../../config/logging');
+jest.mock('../../../../middleware/logging');
 
 const originalConfig = { ...config };
 
@@ -16,7 +16,7 @@ describe('connectToQueue', () => {
     config.queueUrls = ['tcp://mq-1:1234'];
 
     const testCallback = () => {
-      expect(logger.error).toHaveBeenCalled();
+      expect(updateLogEventWithError).toHaveBeenCalled();
       done();
     };
     return connectToQueue(testCallback);
@@ -24,7 +24,7 @@ describe('connectToQueue', () => {
 
   it('should connect to the correct queue successfully ', async done => {
     const testCallback = () => {
-      expect(logger.error).not.toHaveBeenCalled();
+      expect(updateLogEventWithError).not.toHaveBeenCalled();
       done();
     };
 

@@ -39,7 +39,9 @@ export const mockClient = {
 
 export const connect = jest.fn().mockImplementation(callback => callback(false, mockClient));
 
+export const mockOn = jest.fn();
+
 export const ConnectFailover = jest.fn().mockImplementation(() => ({
-  on: jest.fn(),
+  on: mockOn,
   connect: connect
 }));
