@@ -48,8 +48,10 @@ describe('initialiseConsumer', () => {
         destination: uniqueQueueName
       });
       const message = await consumeOneMessage({ destination: uniqueQueueName });
-      expect(message).toEqual({});
-      done();
+      setImmediate(() => {
+        expect(message).toEqual({});
+        done();
+      });
     });
 
     it('should call EHRRequestCompleted.handleMessage()', async done => {
@@ -66,8 +68,10 @@ describe('initialiseConsumer', () => {
     it('should consume the message off the queue', async done => {
       await sendToQueue(pdsGeneralUpdateRequestAcceptedMessage, { destination: uniqueQueueName });
       const message = await consumeOneMessage({ destination: uniqueQueueName });
-      expect(message).toEqual({});
-      done();
+      setImmediate(() => {
+        expect(message).toEqual({});
+        done();
+      });
     });
 
     it('should call PDSGeneralUpdateRequestAccepted.handleMessage()', async done => {
@@ -84,8 +88,10 @@ describe('initialiseConsumer', () => {
     it('should consume the message off the queue (or else infinite loop)', async done => {
       await sendToQueue(unhandledInteractionId, { destination: uniqueQueueName });
       const message = await consumeOneMessage({ destination: uniqueQueueName });
-      expect(message).toEqual({});
-      done();
+      setImmediate(() => {
+        expect(message).toEqual({});
+        done();
+      });
     });
 
     it('should not call PDSGeneralUpdateRequestAccepted.handleMessage() or EHRRequestCompleted.handleMessage()', async done => {

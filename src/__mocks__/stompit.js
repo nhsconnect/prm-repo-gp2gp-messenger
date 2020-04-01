@@ -5,7 +5,8 @@ export const mockStream = {
 
 export const mockTransaction = {
   send: jest.fn().mockImplementation(() => mockStream),
-  commit: jest.fn()
+  commit: jest.fn(),
+  id: '1'
 };
 
 export const mockedMessageOnQueue = 'mock-message';
