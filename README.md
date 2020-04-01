@@ -104,3 +104,34 @@ curl -X POST "http://localhost:3000/ehr-request" -H "accept: application/json" -
 ## Start the app in production mode
 
 Compile the code with `npm run build`, and then start the server with `npm start`.
+
+# Testing Locally (Dev/Test)
+
+When debugging, it may be useful to be able to connect to either the `dev` or `test` message queues.
+
+## Config
+
+Update the .env file with the following config items can be found in SSM properties under the following locations:
+
+| Parameters         | SSM Parameter                                                |
+|--------------------|--------------------------------------------------------------|
+| MHS_QUEUE_URL_1    | /NHS/${NHS_ENVIRONMENT}-${ORG_CODE}/amqp-endpoint/0          |
+| MHS_QUEUE_URL_2    | /NHS/${NHS_ENVIRONMENT}-${ORG_CODE}/amqp-endpoint/1          |
+| MHS_QUEUE_USERNAME | /nhs/${NHS_ENVIRONMENT}/mq/admin-username                    |
+| MHS_QUEUE_PASSWORD | /nhs/${NHS_ENVIRONMENT}/mq/admin-password                    |
+| MHS_QUEUE_NAME     | Please set this to something different than in Terraform     |
+
+Ensure you have VPN connection set up to both `dev` and `test` environments:
+[CLICK HERE](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1832779966/VPN+for+Deductions+Services)
+
+## Setup
+
+In AmazonMQ settings for either the `dev` or `test` provision. Edit the `deductor-amq-broker-${NHS_ENVIRONMENT}` 
+security group inbound rules. Add new rule that allows All TCP from the `${NHS_ENVIRONMENT} VPN VM security group`, 
+apply before running the following:
+
+```
+// Starts the server locally using `.env`
+$ NHS_ENVIRONMENT=test npm run start:local
+```
+
