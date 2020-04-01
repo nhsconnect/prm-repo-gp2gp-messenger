@@ -1,4 +1,7 @@
+import { DefaultMessage, handleMessage } from '../';
+import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../../gp2gp/ehr-request-completed';
+import { parseMultipartBody } from '../../../parser';
 import {
   PDSGeneralUpdateRequestAccepted,
   PDS_GENERAL_UPDATE_REQUEST_ACCEPTED
@@ -9,9 +12,6 @@ import {
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
 } from './data/message-handler';
-import { DefaultMessage, handleMessage } from '../';
-import { parseMultipartBody } from '../../../parser';
-import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../../../gp2gp/ehr-request-completed');
@@ -145,12 +145,12 @@ describe('handleMessage', () => {
       done();
     });
 
-    it('should call updateLogEvent with the multipart message', async done => {
+    it('should call updateLogEvent with the multipart message headers', async done => {
       await handleMessage(unhandledInteractionId);
       const multipartMessage = await parseMultipartBody(unhandledInteractionId);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: expect.objectContaining(multipartMessage)
+          messageHeaders: multipartMessage.map(message => message.headers || 'unknown')
         })
       );
       done();

@@ -1,11 +1,11 @@
-import { subscriberOnMessageCallback } from '../subscriber-on-message-callback';
-import { mockClient } from '../../../../__mocks__/stompit';
-import { handleMessage } from '../message-handler';
 import {
   eventFinished,
   updateLogEvent,
   updateLogEventWithError
 } from '../../../../middleware/logging';
+import { mockClient } from '../../../../__mocks__/stompit';
+import { handleMessage } from '../message-handler';
+import { subscriberOnMessageCallback } from '../subscriber-on-message-callback';
 
 jest.mock('../message-handler');
 jest.mock('../../../../middleware/logging');
@@ -26,14 +26,6 @@ describe('subscriberOnMessageCallback', () => {
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'Handling Message'
-        })
-      );
-    });
-
-    it('should call update log event status on success with "Acknowledged Message"', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Acknowledged Message'
         })
       );
     });
@@ -94,14 +86,6 @@ describe('subscriberOnMessageCallback', () => {
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
       expect(eventFinished).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call update log event status on success with "Acknowledged Message"', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Acknowledged Message'
-        })
-      );
     });
   });
 });
