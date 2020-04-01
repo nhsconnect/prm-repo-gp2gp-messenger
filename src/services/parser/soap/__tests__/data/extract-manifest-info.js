@@ -32,3 +32,16 @@ export const multipleManifestReferences = `
         </eb:Manifest>
     </SOAP-ENV:Body>
     `;
+
+export const manifestIdNotUuid = `
+<SOAP:Body>
+  <eb:Manifest SOAP:mustUnderstand="1" eb:version="2.0">
+    <eb:Reference xlink:href="cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A">
+      <eb:Schema eb:location="http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd" eb:version="2.0"/>
+      <hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
+    </eb:Reference>
+    <eb:Reference xlink:href="cid:attachment1.0@test.com" eb:id="_A86EB130-6E7F-11EA-9384-E83935108FD5">
+      <eb:Description xml:lang="en-gb">A86EB130-6E7F-11EA-9384-E83935108FD5_patient-attachment.txt.txt</eb:Description>
+    </eb:Reference>
+  </eb:Manifest>
+</SOAP:Body>`;
