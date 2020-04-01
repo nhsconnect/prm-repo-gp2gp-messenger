@@ -45,3 +45,5 @@ export const ConnectFailover = jest.fn().mockImplementation(() => ({
   on: mockOn,
   connect: connect
 }));
+
+export const ChannelPool = jest.fn();
