@@ -5,7 +5,7 @@ import {
 } from '../../../middleware/logging';
 import { handleMessage } from './';
 
-export const subscriberOnMessageCallback = (client, message) => async (err, body) => {
+export const subscriberOnMessageCallback = (channel, message) => async (err, body) => {
   updateLogEvent({ status: 'Handling Message', queue: { messageId: message.id } });
 
   if (err) {
@@ -19,7 +19,7 @@ export const subscriberOnMessageCallback = (client, message) => async (err, body
   } catch (err) {
     updateLogEventWithError(err);
   } finally {
-    client.ack(message);
+    channel.ack(message);
     eventFinished();
   }
 };

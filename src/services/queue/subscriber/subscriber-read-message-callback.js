@@ -6,7 +6,7 @@ import {
   withContext
 } from '../../../middleware/logging';
 
-export const subscriberReadMessageCallback = client => (err, messageStream) => {
+export const subscriberReadMessageCallback = channel => (err, messageStream) => {
   withContext(() => {
     updateLogEvent({ status: 'Subscriber has Received Message' });
 
@@ -16,6 +16,6 @@ export const subscriberReadMessageCallback = client => (err, messageStream) => {
       return;
     }
 
-    messageStream.readString('UTF-8', subscriberOnMessageCallback(client, messageStream));
+    messageStream.readString('UTF-8', subscriberOnMessageCallback(channel, messageStream));
   });
 };

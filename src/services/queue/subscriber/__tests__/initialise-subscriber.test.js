@@ -1,7 +1,6 @@
 import config from '../../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
-import { mockClient } from '../../../../__mocks__/stompit';
-import { connectToQueue } from '../../helper/connect-to-queue';
+import { mockChannel, mockClient } from '../../../../__mocks__/stompit';
 import { initialiseSubscriber } from '../initialise-subscriber';
 import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
 
@@ -23,7 +22,7 @@ describe('initialiseSubscriber', () => {
       config.queueName = originalConfig.queueName;
     });
 
-    it('should call client.subscribe with new queueName when passed in, and not override default options', async done => {
+    it('should call channel.subscribe with new queueName when passed in, and not override default options', async done => {
       await initialiseSubscriber({ destination: 'new-queue-name' });
       expect(mockClient.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -97,7 +96,7 @@ describe('initialiseSubscriber', () => {
       );
     });
 
-    it('should call client.subscribe with queueName', () => {
+    it('should call channel.subscribe with queueName', () => {
       expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
       expect(mockClient.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -107,7 +106,7 @@ describe('initialiseSubscriber', () => {
       );
     });
 
-    it('should call client.subscribe with client-individual acknowledgements', () => {
+    it('should call channel.subscribe with client-individual acknowledgements', () => {
       expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
       expect(mockClient.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -129,10 +128,10 @@ describe('initialiseSubscriber', () => {
 
   describe('on error', () => {
     beforeEach(() => {
-      connectToQueue.mockImplementation(callback => callback(mockError, mockClient));
+      mockChannel.mockImplementation(callback => callback(mockError, mockClient));
     });
 
-    it('should call connect to queue', async done => {
+    it('should call updateLogEventWithError with error', async done => {
       await initialiseSubscriber().catch(() => {});
 
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);

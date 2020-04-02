@@ -1,11 +1,11 @@
 import config from '../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
-import { connectToQueue } from '../helper';
+import { channelPool } from '../helper';
 import { subscriberReadMessageCallback } from './subscriber-read-message-callback';
 
 const initialiseSubscriber = (options = {}) =>
   new Promise((resolve, reject) => {
-    connectToQueue((err, client) => {
+    channelPool.channel((err, channel) => {
       if (err) {
         updateLogEventWithError(err);
         reject(err);
@@ -16,12 +16,12 @@ const initialiseSubscriber = (options = {}) =>
         queue: { name: config.queueName, ...options, ackType: options.ack || 'client-individual' }
       });
 
-      client.subscribe(
+      channel.subscribe(
         { destination: config.queueName, ack: 'client-individual', ...options },
-        subscriberReadMessageCallback(client)
+        subscriberReadMessageCallback(channel)
       );
 
-      resolve(client);
+      resolve(channel);
     });
   });
 
