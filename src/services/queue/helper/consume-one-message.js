@@ -1,21 +1,22 @@
-import { connectToQueue } from '../';
+import { channelPool } from '../';
 import config from '../../../config';
 
 // Consumes one message off the queue then disconnects from queue
 export const consumeOneMessage = (options = {}) =>
   new Promise((resolve, reject) => {
-    const subscribeCallback = client => (err, stream) => {
-      stream.readString('utf-8', (error, message) => {
+    const subscribeCallback = channel => (err, messageStream, subscription) => {
+      messageStream.readString('utf-8', async (error, message) => {
         if (error) {
           reject(error);
         }
-        client.ack(stream);
-        client.disconnect();
+        await channel.ack(messageStream);
+        subscription.unsubscribe();
+        channel.close();
         resolve(message);
       });
     };
 
-    connectToQueue((error, client) => {
+    channelPool.channel((error, channel) => {
       if (error) {
         reject(error);
       }
@@ -24,12 +25,12 @@ export const consumeOneMessage = (options = {}) =>
       // it will unsubscribe and disconnect after 0.5s if no messages have been detected
       setTimeout(() => {
         resolve({});
-        client.disconnect();
+        channel.close();
       }, 500);
 
-      client.subscribe(
+      channel.subscribe(
         { destination: config.queueName, ack: 'client-individual', ...options },
-        subscribeCallback(client)
+        subscribeCallback(channel)
       );
     });
   });

@@ -58,7 +58,7 @@ export const mockChannel = {
   },
   subscribe: jest.fn().mockImplementation((_, callback) =>
     callback(false, mockMessageStream, {
-      unsubscribe: jest.fn().mockImplementation(() => console.log('UNSUBSCRIBING '))
+      unsubscribe: jest.fn()
     })
   ),
   begin: jest.fn().mockImplementation(() => mockTransaction),

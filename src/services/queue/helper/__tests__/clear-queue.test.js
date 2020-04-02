@@ -39,8 +39,8 @@ describe('clearQueue', () => {
     });
   });
 
-  describe('connectToQueue', () => {
-    it('should call connectToQueue with callback function', async done => {
+  describe('channelPool.channel', () => {
+    it('should call channelPool.channel with callback function', async done => {
       await clearQueue();
       expect(channelPool.channel).toHaveBeenCalledTimes(1);
       expect(channelPool.channel).toHaveBeenCalledWith(expect.any(Function));
