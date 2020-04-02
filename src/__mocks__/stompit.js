@@ -42,13 +42,36 @@ export const connect = jest.fn().mockImplementation(callback => callback(false, 
 
 export const mockOn = jest.fn();
 
-export const mockChannel = jest.fn().mockImplementation(callback => callback(false, mockClient));
+export const mockChannel = {
+  headers: {
+    'heart-beat': '0,0',
+    server: 'RabbitMQ/3.7.8',
+    session: 'session/aAS4hrR',
+    version: '1.2'
+  },
+  _options: {
+    connectHeaders: { host: '/', login: 'guest', passcode: '*****' },
+    host: 'mq-1',
+    port: '61613',
+    ssl: false
+  },
+  subscribe: jest.fn().mockImplementation((_, callback) => callback(false, mockMessageStream)),
+  begin: jest.fn().mockImplementation(() => mockTransaction),
+  on: jest.fn(),
+  ack: jest.fn().mockResolvedValue(),
+  nack: jest.fn().mockResolvedValue(),
+  disconnect: jest.fn(),
+  send: jest.fn().mockImplementation((options, message, callback) => callback(null)),
+  close: jest.fn()
+};
+
+export const channel = jest.fn().mockImplementation(callback => callback(false, mockChannel));
 
 export const ConnectFailover = jest.fn().mockImplementation(() => ({
   on: mockOn,
-  connect: connect
+  connect
 }));
 
 export const ChannelPool = jest.fn().mockImplementation(() => ({
-  channel: mockChannel
+  channel
 }));
