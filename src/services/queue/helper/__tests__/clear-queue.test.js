@@ -1,11 +1,11 @@
 import config from '../../../../config';
 import { mockClient, mockMessageStream } from '../../../../__mocks__/stompit';
 import { MOCKED_UUID } from '../../../../__mocks__/uuid';
-import { sendToQueueOld } from '../../publisher/send-to-queue-old';
+import { sendToQueue } from '../../publisher/send-to-queue';
 import { clearQueue } from '../clear-queue';
 import { connectToQueue } from '../connect-to-queue';
 
-jest.mock('../../publisher/send-to-queue-old');
+jest.mock('../../publisher/send-to-queue');
 jest.mock('../connect-to-queue');
 
 const originalConfig = config;
@@ -28,10 +28,10 @@ describe('clearQueue', () => {
   });
 
   describe('sendToQueue', () => {
-    it('should call sendToQueueOld with EOQ-MOCKED_UUID', async done => {
+    it('should call sendToQueue with EOQ-MOCKED_UUID', async done => {
       await clearQueue();
-      expect(sendToQueueOld).toHaveBeenCalledTimes(1);
-      expect(sendToQueueOld).toHaveBeenCalledWith(`EOQ-${MOCKED_UUID}`, expect.any(Object));
+      expect(sendToQueue).toHaveBeenCalledTimes(1);
+      expect(sendToQueue).toHaveBeenCalledWith(`EOQ-${MOCKED_UUID}`, expect.any(Object));
       done();
     });
   });

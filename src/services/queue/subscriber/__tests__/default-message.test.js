@@ -1,12 +1,12 @@
 import config from '../../../../config';
 import { updateLogEvent } from '../../../../middleware/logging';
-import { sendToQueueOld } from '../../publisher/send-to-queue-old';
+import { sendToQueue } from '../../publisher/send-to-queue';
 import { DefaultMessage } from '../default-message';
 
 const originalConfig = { ...config };
 const mockedUnhandledMessageQueueName = 'mockedUnhandledMessageQueueName';
 
-jest.mock('../../publisher/send-to-queue-old');
+jest.mock('../../publisher/send-to-queue');
 jest.mock('../../../../middleware/logging', () => ({
   updateLogEvent: jest.fn()
 }));
@@ -40,15 +40,15 @@ describe('DefaultMessage', () => {
     done();
   });
 
-  it('should call sendToQueueOld with message', async done => {
-    expect(sendToQueueOld).toHaveBeenCalledTimes(1);
-    expect(sendToQueueOld).toHaveBeenCalledWith(mockMessage, expect.any(Object));
+  it('should call sendToQueue with message', async done => {
+    expect(sendToQueue).toHaveBeenCalledTimes(1);
+    expect(sendToQueue).toHaveBeenCalledWith(mockMessage, expect.any(Object));
     done();
   });
 
-  it('should call sendToQueueOld with mockedUnhandledMessageQueueName', async done => {
-    expect(sendToQueueOld).toHaveBeenCalledTimes(1);
-    expect(sendToQueueOld).toHaveBeenCalledWith(
+  it('should call sendToQueue with mockedUnhandledMessageQueueName', async done => {
+    expect(sendToQueue).toHaveBeenCalledTimes(1);
+    expect(sendToQueue).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
         destination: mockedUnhandledMessageQueueName

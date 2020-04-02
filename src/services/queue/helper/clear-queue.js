@@ -1,11 +1,11 @@
 import { v4 as uuid } from 'uuid';
-import { connectToQueue, sendToQueueOld } from '../';
+import { connectToQueue, sendToQueue } from '../';
 import config from '../../../config';
 
 export const clearQueue = async (options = {}) => {
   const endOfQueueMessage = `EOQ-${uuid()}`;
 
-  await sendToQueueOld(endOfQueueMessage, options);
+  await sendToQueue(endOfQueueMessage, options);
 
   return new Promise((resolve, reject) =>
     connectToQueue((err, client) => {

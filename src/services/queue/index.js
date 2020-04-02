@@ -1,3 +1,3 @@
 export { clearQueue, connectToQueue, consumeOneMessage } from './helper';
-export { sendToQueueOld } from './publisher';
+export { sendToQueue } from './publisher';
 export { initialiseSubscriber } from './subscriber';
