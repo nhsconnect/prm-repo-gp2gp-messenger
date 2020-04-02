@@ -1,8 +1,9 @@
 import config from '../../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
-import { mockChannel, mockClient } from '../../../../__mocks__/stompit';
+import { mockChannel } from '../../../../__mocks__/stompit';
 import { initialiseSubscriber } from '../initialise-subscriber';
 import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
+import { channelPool } from '../../helper';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../subscriber-read-message-callback');
@@ -24,7 +25,7 @@ describe('initialiseSubscriber', () => {
 
     it('should call channel.subscribe with new queueName when passed in, and not override default options', async done => {
       await initialiseSubscriber({ destination: 'new-queue-name' });
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
           destination: 'new-queue-name',
           ack: 'client-individual'
@@ -97,8 +98,8 @@ describe('initialiseSubscriber', () => {
     });
 
     it('should call channel.subscribe with queueName', () => {
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
           destination: mockQueueName
         }),
@@ -107,8 +108,8 @@ describe('initialiseSubscriber', () => {
     });
 
     it('should call channel.subscribe with client-individual acknowledgements', () => {
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
           ack: 'client-individual'
         }),
@@ -118,17 +119,21 @@ describe('initialiseSubscriber', () => {
 
     it('should call subscriberReadMessageCallback with the mockClient', () => {
       expect(subscriberReadMessageCallback).toHaveBeenCalledTimes(1);
-      expect(subscriberReadMessageCallback).toHaveBeenCalledWith(mockClient);
+      expect(subscriberReadMessageCallback).toHaveBeenCalledWith(mockChannel);
     });
 
     it('should resolve with the client', () => {
-      return expect(initialiseSubscriber()).resolves.toEqual(mockClient);
+      return expect(initialiseSubscriber()).resolves.toEqual(mockChannel);
     });
   });
 
   describe('on error', () => {
     beforeEach(() => {
-      mockChannel.mockImplementation(callback => callback(mockError, mockClient));
+      channelPool.channel.mockImplementation(callback => callback(mockError));
+    });
+
+    afterEach(() => {
+      channelPool.channel.mockImplementation(callback => callback(null, mockChannel));
     });
 
     it('should call updateLogEventWithError with error', async done => {
