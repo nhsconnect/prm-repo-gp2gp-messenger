@@ -20,7 +20,7 @@ jest.mock('../../../../middleware/logging');
 
 describe('initialiseConsumer', () => {
   let uniqueQueueName;
-  let client;
+  let channel;
 
   const mockEhrHandleMessage = jest
     .fn()
@@ -34,11 +34,11 @@ describe('initialiseConsumer', () => {
     PDSGeneralUpdateRequestAccepted.prototype.handleMessage = mockPdsHandleMessage;
 
     uniqueQueueName = uuid();
-    client = await initialiseSubscriber({ destination: uniqueQueueName });
+    channel = await initialiseSubscriber({ destination: uniqueQueueName });
   });
 
   afterEach(async () => {
-    client.destroy();
+    channel.close();
     await clearQueue({ destination: uniqueQueueName });
   });
 
