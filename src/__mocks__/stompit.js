@@ -34,16 +34,21 @@ export const mockClient = {
   on: jest.fn(),
   ack: jest.fn().mockResolvedValue(),
   nack: jest.fn().mockResolvedValue(),
-  disconnect: jest.fn()
+  disconnect: jest.fn(),
+  close: jest.fn()
 };
 
 export const connect = jest.fn().mockImplementation(callback => callback(false, mockClient));
 
 export const mockOn = jest.fn();
 
+export const mockChannel = jest.fn().mockImplementation(callback => callback(false, mockClient));
+
 export const ConnectFailover = jest.fn().mockImplementation(() => ({
   on: mockOn,
   connect: connect
 }));
 
-export const ChannelPool = jest.fn();
+export const ChannelPool = jest.fn().mockImplementation(() => ({
+  channel: mockChannel
+}));
