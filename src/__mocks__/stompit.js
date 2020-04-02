@@ -55,12 +55,15 @@ export const mockChannel = {
     port: '61613',
     ssl: false
   },
-  subscribe: jest.fn().mockImplementation((_, callback) => callback(false, mockMessageStream)),
+  subscribe: jest.fn().mockImplementation((_, callback) =>
+    callback(false, mockMessageStream, {
+      unsubscribe: jest.fn().mockImplementation(() => console.log('UNSUBSCRIBING '))
+    })
+  ),
   begin: jest.fn().mockImplementation(() => mockTransaction),
   on: jest.fn(),
   ack: jest.fn().mockResolvedValue(),
   nack: jest.fn().mockResolvedValue(),
-  disconnect: jest.fn(),
   send: jest.fn().mockImplementation((options, message, callback) => callback(null)),
   close: jest.fn()
 };

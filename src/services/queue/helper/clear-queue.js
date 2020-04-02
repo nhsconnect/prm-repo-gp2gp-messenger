@@ -1,37 +1,39 @@
 import { v4 as uuid } from 'uuid';
-import { connectToQueue, sendToQueue } from '../';
+import { channelPool, sendToQueue } from '../';
 import config from '../../../config';
 
 export const clearQueue = async (options = {}) => {
   const endOfQueueMessage = `EOQ-${uuid()}`;
 
   await sendToQueue(endOfQueueMessage, options);
-
-  return new Promise((resolve, reject) =>
-    connectToQueue((err, client) => {
+  return new Promise((resolve, reject) => {
+    channelPool.channel((err, channel) => {
       if (err) {
         reject(err);
       }
 
-      client.subscribe(
+      channel.subscribe(
         { destination: config.queueName, ack: 'client-individual', ...options },
-        (error, stream) => {
+        (error, messageStream, subscription) => {
           if (error) {
             reject(error);
           }
 
-          stream.readString('utf-8', async (error, message) => {
+          messageStream.readString('utf-8', async (error, message) => {
             if (error) {
               reject(error);
             }
 
-            await client.ack(stream);
-            if (message === endOfQueueMessage) client.disconnect();
+            await channel.ack(messageStream);
+
+            if (message === endOfQueueMessage) {
+              subscription.unsubscribe();
+              channel.close();
+            }
+            resolve();
           });
         }
       );
-
-      resolve(client);
-    })
-  );
+    });
+  });
 };

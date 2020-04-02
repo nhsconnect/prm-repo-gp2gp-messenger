@@ -1,17 +1,18 @@
 import config from '../../../../config';
-import { mockClient, mockMessageStream } from '../../../../__mocks__/stompit';
+import { mockChannel, mockMessageStream } from '../../../../__mocks__/stompit';
 import { MOCKED_UUID } from '../../../../__mocks__/uuid';
 import { sendToQueue } from '../../publisher/send-to-queue';
 import { clearQueue } from '../clear-queue';
-import { connectToQueue } from '../connect-to-queue';
+import channelPool from '../configure-channel-pool';
 
 jest.mock('../../publisher/send-to-queue');
-jest.mock('../connect-to-queue');
+jest.mock('../configure-channel-pool');
 
 const originalConfig = config;
 const mockedQueueName = 'mocked-queue-name';
 const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' };
 const mockedMessage = 'mocked-message';
+const mockUnsubscribe = jest.fn();
 
 describe('clearQueue', () => {
   beforeEach(() => {
@@ -20,11 +21,13 @@ describe('clearQueue', () => {
 
   afterEach(() => {
     config.queueName = originalConfig.queueName;
-    mockClient.subscribe.mockImplementation((_, callback) => callback(false, mockMessageStream));
+    mockChannel.subscribe.mockImplementation((_, callback) =>
+      callback(false, mockMessageStream, { unsubscribe: mockUnsubscribe })
+    );
     mockMessageStream.readString.mockImplementation((_, callback) => {
       callback(false, mockedMessage);
     });
-    connectToQueue.mockImplementation(callback => callback(false, mockClient));
+    channelPool.channel.mockImplementation(callback => callback(false, mockChannel));
   });
 
   describe('sendToQueue', () => {
@@ -39,30 +42,30 @@ describe('clearQueue', () => {
   describe('connectToQueue', () => {
     it('should call connectToQueue with callback function', async done => {
       await clearQueue();
-      expect(connectToQueue).toHaveBeenCalledTimes(1);
-      expect(connectToQueue).toHaveBeenCalledWith(expect.any(Function));
+      expect(channelPool.channel).toHaveBeenCalledTimes(1);
+      expect(channelPool.channel).toHaveBeenCalledWith(expect.any(Function));
       done();
     });
 
     it('should reject with error when error connecting with the queue', () => {
       const connectQueueError = Error('something-went-wrong');
-      connectToQueue.mockImplementation(callback => callback(connectQueueError, mockClient));
+      channelPool.channel.mockImplementation(callback => callback(connectQueueError, mockChannel));
       return expect(clearQueue()).rejects.toEqual(connectQueueError);
     });
   });
 
-  describe('client.subscribe', () => {
-    it('should call client.subscribe with default options and function', async done => {
+  describe('channel.subscribe', () => {
+    it('should call channel.subscribe with default options and function', async done => {
       await clearQueue();
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining(defaultOptions),
         expect.any(Function)
       );
       done();
     });
 
-    it('should call client.subscribe with passed in options as well as default options', async done => {
+    it('should call channel.subscribe with passed in options as well as default options', async done => {
       const options = { anotherOption: 'another-one' };
       const expectedOptions = {
         destination: mockedQueueName,
@@ -70,25 +73,25 @@ describe('clearQueue', () => {
         anotherOption: 'another-one'
       };
       await clearQueue(options);
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining(expectedOptions),
         expect.any(Function)
       );
       done();
     });
 
-    it('should reject with error if unable to subscribe to client', () => {
-      const clientWithError = Error('something-went-wrong');
-      mockClient.subscribe.mockImplementation((_, callback) =>
-        callback(clientWithError, mockMessageStream)
+    it('should reject with error if unable to subscribe to channel', () => {
+      const channelWithError = Error('something-went-wrong');
+      mockChannel.subscribe.mockImplementation((_, callback) =>
+        callback(channelWithError, mockMessageStream, { unsubscribe: mockUnsubscribe })
       );
-      return expect(clearQueue()).rejects.toEqual(clientWithError);
+      return expect(clearQueue()).rejects.toEqual(channelWithError);
     });
   });
 
-  describe('stream.readString', () => {
-    it('should call message stream.readString with utf-8 and a function', async done => {
+  describe('messageStream.readString', () => {
+    it('should call message messageStream.readString with utf-8 and a function', async done => {
       await clearQueue();
       expect(mockMessageStream.readString).toHaveBeenCalledTimes(1);
       expect(mockMessageStream.readString).toHaveBeenCalledWith('utf-8', expect.any(Function));
@@ -103,25 +106,34 @@ describe('clearQueue', () => {
       return expect(clearQueue()).rejects.toEqual(readStringError);
     });
 
-    it('should call client.ack with the message stream', async done => {
+    it('should call channel.ack with the message stream', async done => {
       await clearQueue();
-      expect(mockClient.ack).toHaveBeenCalledTimes(1);
-      expect(mockClient.ack).toHaveBeenCalledWith(mockMessageStream);
+      expect(mockChannel.ack).toHaveBeenCalledTimes(1);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessageStream);
       done();
     });
 
-    it('should not call client.disconnect if message is not endOfQueueMessage', async done => {
+    it('should not call channel.close if message is not endOfQueueMessage', async done => {
       await clearQueue();
-      expect(mockClient.disconnect).toHaveBeenCalledTimes(0);
+      expect(mockChannel.close).toHaveBeenCalledTimes(0);
       done();
     });
 
-    it('should call client.disconnect if message is endOfQueueMessage', async done => {
+    it('should call channel.close if message is endOfQueueMessage', async done => {
       mockMessageStream.readString.mockImplementation((_, callback) => {
         callback(false, `EOQ-${MOCKED_UUID}`);
       });
       await clearQueue();
-      expect(mockClient.disconnect).toHaveBeenCalledTimes(1);
+      expect(mockChannel.close).toHaveBeenCalledTimes(1);
+      done();
+    });
+
+    it('should call subscription.unsubscribe if message is endOfQueueMessage', async done => {
+      mockMessageStream.readString.mockImplementation((_, callback) => {
+        callback(false, `EOQ-${MOCKED_UUID}`);
+      });
+      await clearQueue();
+      expect(mockChannel.close).toHaveBeenCalledTimes(1);
       done();
     });
   });
