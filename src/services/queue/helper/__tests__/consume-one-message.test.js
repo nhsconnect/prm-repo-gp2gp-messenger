@@ -1,11 +1,15 @@
 import config from '../../../../config';
-import { mockClient, mockedMessageOnQueue, mockMessageStream } from '../../../../__mocks__/stompit';
-import { connectToQueue } from '../connect-to-queue';
+import {
+  mockChannel,
+  mockedMessageOnQueue,
+  mockMessageStream
+} from '../../../../__mocks__/stompit';
+import channelPool from '../../helper/configure-channel-pool';
 import { consumeOneMessage } from '../consume-one-message';
 
 const originalConfig = { ...config };
 
-jest.mock('../connect-to-queue');
+jest.mock('../../helper/configure-channel-pool');
 
 const mockedQueueName = 'gp2gp-test';
 const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' };
@@ -13,7 +17,10 @@ const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' 
 describe('consumeOneMessage', () => {
   afterEach(() => {
     config.queueName = originalConfig.queueName;
-    mockClient.subscribe.mockImplementation((_, callback) => callback(false, mockMessageStream));
+    mockChannel.subscribe.mockImplementation((_, callback) =>
+      callback(false, mockMessageStream, { unsubscribe: jest.fn() })
+    );
+    channelPool.channel.mockImplementation(callback => callback(false, mockChannel));
   });
 
   beforeEach(() => {
@@ -21,36 +28,38 @@ describe('consumeOneMessage', () => {
   });
 
   afterEach(() => {
-    connectToQueue.mockImplementation(callback => callback(false, mockClient));
+    mockChannel.subscribe.mockImplementation(callback =>
+      callback(false, mockChannel, { unsubscribe: jest.fn() })
+    );
   });
 
   it('should consume a message from the queue', () => {
     return expect(consumeOneMessage()).resolves.toEqual(mockedMessageOnQueue);
   });
 
-  it('should call connectToQueue', async done => {
+  it('should call channelPool.channel', async done => {
     await consumeOneMessage();
-    expect(connectToQueue).toHaveBeenCalledTimes(1);
-    expect(connectToQueue).toHaveBeenCalledWith(expect.any(Function));
+    expect(channelPool.channel).toHaveBeenCalledTimes(1);
+    expect(channelPool.channel).toHaveBeenCalledWith(expect.any(Function));
     done();
   });
 
-  describe('connectToQueue', () => {
-    it('should call client.subscribe', async done => {
+  describe('channelPool.subscribe', () => {
+    it('should call channel.subscribe', async done => {
       await consumeOneMessage();
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(expect.any(Object), expect.any(Function));
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(expect.any(Object), expect.any(Function));
       done();
     });
 
-    it('should call client.subscribe with default options', async done => {
+    it('should call channel.subscribe with default options', async done => {
       await consumeOneMessage();
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(defaultOptions, expect.any(Function));
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(defaultOptions, expect.any(Function));
       done();
     });
 
-    it('should call client.subscribe with options when passed in, along with default options', async done => {
+    it('should call channel.subscribe with options when passed in, along with default options', async done => {
       const options = { option: 'option' };
       const expectedOptions = {
         destination: mockedQueueName,
@@ -58,27 +67,29 @@ describe('consumeOneMessage', () => {
         option: 'option'
       };
       await consumeOneMessage(options);
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining(expectedOptions),
         expect.any(Function)
       );
       done();
     });
 
-    it('should call client.subscribe with options that replace default options', async done => {
+    it('should call channel.subscribe with options that replace default options', async done => {
       const options = { destination: 'another-queue-name', ack: 'client' };
       await consumeOneMessage(options);
-      expect(mockClient.subscribe).toHaveBeenCalledTimes(1);
-      expect(mockClient.subscribe).toHaveBeenCalledWith(
+      expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
+      expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining(options),
         expect.any(Function)
       );
       done();
     });
 
-    it('should return an error if client is unable to connect', () => {
-      connectToQueue.mockImplementation(callback => callback('some-connection-error', mockClient));
+    it('should return an error if channel is unable to connect', () => {
+      channelPool.channel.mockImplementation(callback =>
+        callback('some-connection-error', mockChannel)
+      );
       return expect(consumeOneMessage()).rejects.toBe('some-connection-error');
     });
   });
@@ -109,22 +120,22 @@ describe('consumeOneMessage', () => {
         })
       };
 
-      mockClient.subscribe.mockImplementation((_, callback) =>
+      mockChannel.subscribe.mockImplementation((_, callback) =>
         callback(messageStreamError, mockMessageStreamError)
       );
       return expect(consumeOneMessage()).rejects.toEqual(messageStreamError);
     });
 
-    it('should call client.ack with the message stream', async done => {
+    it('should call channel.ack with the message stream', async done => {
       await consumeOneMessage();
-      expect(mockClient.ack).toHaveBeenCalledTimes(1);
-      expect(mockClient.ack).toHaveBeenCalledWith(mockMessageStream);
+      expect(mockChannel.ack).toHaveBeenCalledTimes(1);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessageStream);
       done();
     });
 
-    it('should call client.disconnect', async done => {
+    it('should call channel.disconnect', async done => {
       await consumeOneMessage();
-      expect(mockClient.disconnect).toHaveBeenCalledTimes(1);
+      expect(mockChannel.close).toHaveBeenCalledTimes(1);
       done();
     });
   });
