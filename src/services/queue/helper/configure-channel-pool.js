@@ -9,3 +9,5 @@ export const configureChannelPool = () => {
     freeExcessTimeout: null
   });
 };
+
+export default configureChannelPool();
