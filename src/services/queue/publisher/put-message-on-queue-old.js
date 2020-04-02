@@ -1,6 +1,6 @@
 import { updateLogEvent } from '../../../middleware/logging';
 
-export const putMessageOnQueue = (client, message, options) => {
+export const putMessageOnQueueOld = (client, message, options) => {
   updateLogEvent({
     status: 'Putting Message on queue',
     queue: {

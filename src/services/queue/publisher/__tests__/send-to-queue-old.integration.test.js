@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { consumeOneMessage, sendToQueue } from '../../';
+import { consumeOneMessage, sendToQueueOld } from '../../';
 
 jest.unmock('stompit');
 jest.unmock('uuid');
@@ -10,7 +10,7 @@ const secondMockMessage = 'another-message';
 describe('sendToQueue', () => {
   it('should put a message on the queue that can then be consumed', async done => {
     const mockQueueName = uuid();
-    await sendToQueue(firstMockMessage, { destination: mockQueueName });
+    await sendToQueueOld(firstMockMessage, { destination: mockQueueName });
     const message = await consumeOneMessage({ destination: mockQueueName });
     expect(message).toEqual(firstMockMessage);
     done();
@@ -21,8 +21,8 @@ describe('sendToQueue', () => {
       const mockQueueName = uuid();
       const mockSecondQueueName = uuid();
 
-      await sendToQueue(firstMockMessage, { destination: mockQueueName });
-      await sendToQueue(secondMockMessage, { destination: mockSecondQueueName });
+      await sendToQueueOld(firstMockMessage, { destination: mockQueueName });
+      await sendToQueueOld(secondMockMessage, { destination: mockSecondQueueName });
 
       const messageOnDefaultQueue = await consumeOneMessage({ destination: mockQueueName });
       const uhandledMessage = await consumeOneMessage({

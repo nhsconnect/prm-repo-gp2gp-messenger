@@ -49,7 +49,7 @@ group Example Get EHR Record (OPENTEST)
 
         gp2gp --[NHS_WARM_YELLOW]--> gp2gp : sendMessage(RCMR_IN010000UK05)
 
-        gp2gp -[NHS_WARM_YELLOW]-> mq : sendToQueue(RCMR_IN030000UK06)
+        gp2gp -[NHS_WARM_YELLOW]-> mq : sendToQueueOld(RCMR_IN030000UK06)
             note left: Template RCMR_IN030000UK06 \
             \n\ Contains EHR Extract
             activate mq

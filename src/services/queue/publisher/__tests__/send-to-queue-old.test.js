@@ -3,12 +3,12 @@ import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/
 import { generateEhrExtractResponse } from '../../../../templates/soap/ehr-extract-template';
 import { mockClient } from '../../../../__mocks__/stompit';
 import { connectToQueue } from '../../helper/connect-to-queue';
-import { putMessageOnQueue } from '../put-message-on-queue';
-import { sendToQueue } from '../send-to-queue';
+import { putMessageOnQueueOld } from '../put-message-on-queue-old';
+import { sendToQueueOld } from '../send-to-queue-old';
 
 const originalConfig = { ...config };
 
-jest.mock('../put-message-on-queue');
+jest.mock('../put-message-on-queue-old');
 jest.mock('../../helper/connect-to-queue');
 jest.mock('../../../../middleware/logging');
 
@@ -35,12 +35,12 @@ describe('sendToQueue', () => {
   });
 
   it('should should resolve the promise with the client', () => {
-    return expect(sendToQueue(MOCK_MESSAGE)).resolves.toEqual(mockClient);
+    return expect(sendToQueueOld(MOCK_MESSAGE)).resolves.toEqual(mockClient);
   });
 
   describe('on success', () => {
     beforeEach(async () => {
-      await sendToQueue(MOCK_MESSAGE);
+      await sendToQueueOld(MOCK_MESSAGE);
     });
 
     it('should call connectToQueue with a function', () => {
@@ -68,27 +68,27 @@ describe('sendToQueue', () => {
       );
     });
 
-    it('should call putMessageOnQueue with the client', () => {
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(
+    it('should call putMessageOnQueueOld with the client', () => {
+      expect(putMessageOnQueueOld).toHaveBeenCalledTimes(1);
+      expect(putMessageOnQueueOld).toHaveBeenCalledWith(
         mockClient,
         expect.anything(),
         expect.anything()
       );
     });
 
-    it('should call putMessageOnQueue with the message', () => {
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(
+    it('should call putMessageOnQueueOld with the message', () => {
+      expect(putMessageOnQueueOld).toHaveBeenCalledTimes(1);
+      expect(putMessageOnQueueOld).toHaveBeenCalledWith(
         expect.anything(),
         MOCK_MESSAGE,
         expect.anything()
       );
     });
 
-    it('should call putMessageOnQueue with default options - {destination: queueName}', () => {
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(
+    it('should call putMessageOnQueueOld with default options - {destination: queueName}', () => {
+      expect(putMessageOnQueueOld).toHaveBeenCalledTimes(1);
+      expect(putMessageOnQueueOld).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -111,13 +111,13 @@ describe('sendToQueue', () => {
   });
 
   describe('passing in options', () => {
-    it('should call putMessageOnQueue with destination that replaces default', async done => {
+    it('should call putMessageOnQueueOld with destination that replaces default', async done => {
       const mockOptions = {
         destination: 'another-queue-destination'
       };
-      await sendToQueue(MOCK_MESSAGE, mockOptions);
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(
+      await sendToQueueOld(MOCK_MESSAGE, mockOptions);
+      expect(putMessageOnQueueOld).toHaveBeenCalledTimes(1);
+      expect(putMessageOnQueueOld).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining(mockOptions)
@@ -125,13 +125,13 @@ describe('sendToQueue', () => {
       done();
     });
 
-    it('should call putMessageOnQueue with passed in options along with default options', async done => {
+    it('should call putMessageOnQueueOld with passed in options along with default options', async done => {
       const mockOptions = {
         anotherOption: 'another-Option'
       };
-      await sendToQueue(MOCK_MESSAGE, mockOptions);
-      expect(putMessageOnQueue).toHaveBeenCalledTimes(1);
-      expect(putMessageOnQueue).toHaveBeenCalledWith(
+      await sendToQueueOld(MOCK_MESSAGE, mockOptions);
+      expect(putMessageOnQueueOld).toHaveBeenCalledTimes(1);
+      expect(putMessageOnQueueOld).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -146,7 +146,7 @@ describe('sendToQueue', () => {
       const mockOptions = {
         anotherOption: 'another-Option'
       };
-      await sendToQueue(MOCK_MESSAGE, mockOptions);
+      await sendToQueueOld(MOCK_MESSAGE, mockOptions);
       expect(updateLogEvent.mock.calls[0][0]).toEqual(
         expect.objectContaining({
           queue: expect.objectContaining({
@@ -161,12 +161,12 @@ describe('sendToQueue', () => {
   describe('on error', () => {
     it('should reject with an error if there is an error when connecting to the queue', () => {
       connectToQueue.mockImplementation(callback => callback('some-connection-error', null));
-      return expect(sendToQueue(MOCK_MESSAGE)).rejects.toBe('some-connection-error');
+      return expect(sendToQueueOld(MOCK_MESSAGE)).rejects.toBe('some-connection-error');
     });
 
     it('should call updateLogEventWithError with err', async done => {
       connectToQueue.mockImplementation(callback => callback('some-connection-error', null));
-      await sendToQueue(MOCK_MESSAGE).catch(() => {});
+      await sendToQueueOld(MOCK_MESSAGE).catch(() => {});
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
       expect(updateLogEventWithError).toHaveBeenCalledWith('some-connection-error');
       done();
