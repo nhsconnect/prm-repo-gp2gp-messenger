@@ -1,7 +1,7 @@
 import { sendToQueue } from '../send-to-queue';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
 import { channelPool } from '../../helper';
-import { mockChannel } from '../../../../__mocks__/stompit';
+import { mockChannel, mockTransaction } from '../../../../__mocks__/stompit';
 import config from '../../../../config';
 jest.mock('../../../../middleware/logging');
 
@@ -15,6 +15,7 @@ describe('sendToQueue', () => {
 
   afterEach(() => {
     channelPool.channel.mockImplementation(callback => callback(null, mockChannel));
+    mockTransaction.commit.mockImplementation(callback => callback(null));
   });
 
   it('should call updateLogEvent with "Sending message to Queue"', () => {
@@ -38,48 +39,42 @@ describe('sendToQueue', () => {
   });
 
   it('should call channel.send', () => {
-    expect(mockChannel.send).toHaveBeenCalledTimes(1);
-    expect(mockChannel.send).toHaveBeenCalledWith(
+    expect(mockChannel.begin).toHaveBeenCalledTimes(1);
+    expect(mockChannel.begin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        destination: config.queueName
+      })
+    );
+  });
+
+  it('should call channel.send', () => {
+    expect(mockTransaction.send).toHaveBeenCalledTimes(1);
+    expect(mockTransaction.send).toHaveBeenCalledWith(
       expect.objectContaining({
         destination: config.queueName
       }),
-      expect.anything(),
-      expect.any(Function)
+      expect.anything()
     );
   });
 
   it('should call channel.send with message', () => {
-    expect(mockChannel.send).toHaveBeenCalledWith(
-      expect.any(Object),
-      message,
-      expect.any(Function)
-    );
-  });
-
-  it('should call error updateLogEvent when an error occurs in channel.send', async done => {
-    const invokeError = {
-      send: jest.fn().mockImplementation((options, message, callback) => callback(mockError)),
-      close: jest.fn()
-    };
-
-    channelPool.channel.mockImplementation(callback => callback(null, invokeError));
-
-    await sendToQueue(message).catch(() => {});
-
-    expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
-
-    done();
+    expect(mockTransaction.send).toHaveBeenCalledWith(expect.any(Object), message);
   });
 
   it('should override config.queueName when options are passed in', async done => {
     await sendToQueue(message, { destination: 'some-different-queue' }).catch(() => {});
 
-    expect(mockChannel.send).toHaveBeenCalledWith(
+    expect(mockChannel.begin).toHaveBeenCalledWith(
+      expect.objectContaining({
+        destination: 'some-different-queue'
+      })
+    );
+
+    expect(mockTransaction.send).toHaveBeenCalledWith(
       expect.objectContaining({
         destination: 'some-different-queue'
       }),
-      expect.anything(),
-      expect.any(Function)
+      message
     );
 
     done();
@@ -95,5 +90,17 @@ describe('sendToQueue', () => {
         status: 'Sent Message Successfully'
       })
     );
+  });
+
+  it('should call transaction.abort if commit fails', () => {
+    mockTransaction.commit.mockImplementation(callback => callback(mockError));
+    sendToQueue(message);
+    expect(mockTransaction.abort).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call updateLogEventWithError if commit fails', () => {
+    mockTransaction.commit.mockImplementation(callback => callback(mockError));
+    sendToQueue(message);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
   });
 });

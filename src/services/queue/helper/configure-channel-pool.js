@@ -5,7 +5,7 @@ export const configureChannelPool = () => {
   return new ChannelPool(getQueueConnections(), {
     minChannels: 0,
     minFreeChannels: 0,
-    maxChannels: 10,
+    maxChannels: Infinity,
     freeExcessTimeout: null
   });
 };

@@ -28,11 +28,11 @@ describe('configureChannelPool', () => {
     );
   });
 
-  it('should call ChannelPool with maximum number of channels as 10', () => {
+  it('should call ChannelPool with maximum number of channels as Infinity', () => {
     expect(ChannelPool).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
-        maxChannels: 10
+        maxChannels: Infinity
       })
     );
   });

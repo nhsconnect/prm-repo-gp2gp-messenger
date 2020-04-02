@@ -8,7 +8,7 @@ const SECRET_KEYS = ['passcode', 'data'];
 
 export const obfuscateSecrets = format(info => {
   const updated = cloneDeep(info);
-  traverse(updated).forEach(function() {
+  traverse(updated).forEach(function () {
     if (SECRET_KEYS.includes(this.key)) this.update(OBFUSCATED_VALUE);
   });
   return updated;
