@@ -121,7 +121,7 @@ describe('consumeOneMessage', () => {
       };
 
       mockChannel.subscribe.mockImplementation((_, callback) =>
-        callback(messageStreamError, mockMessageStreamError)
+        callback(messageStreamError, mockMessageStreamError, { unsubscribe: jest.fn() })
       );
       return expect(consumeOneMessage()).rejects.toEqual(messageStreamError);
     });
