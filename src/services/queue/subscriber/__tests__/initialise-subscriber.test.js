@@ -117,7 +117,7 @@ describe('initialiseSubscriber', () => {
       );
     });
 
-    it('should call subscriberReadMessageCallback with the mockClient', () => {
+    it('should call subscriberReadMessageCallback with the mockChannel', () => {
       expect(subscriberReadMessageCallback).toHaveBeenCalledTimes(1);
       expect(subscriberReadMessageCallback).toHaveBeenCalledWith(mockChannel);
     });

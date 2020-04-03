@@ -3,7 +3,7 @@ import {
   updateLogEvent,
   updateLogEventWithError
 } from '../../../../middleware/logging';
-import { mockClient } from '../../../../__mocks__/stompit';
+import { mockChannel } from '../../../../__mocks__/stompit';
 import { handleMessage } from '../message-handler';
 import { subscriberOnMessageCallback } from '../subscriber-on-message-callback';
 
@@ -13,7 +13,7 @@ jest.mock('../../../../middleware/logging');
 const mockMessage = 'mock-message';
 const mockBody = 'mock-body';
 const mockError = 'mock-error';
-const callback = subscriberOnMessageCallback(mockClient, mockMessage);
+const callback = subscriberOnMessageCallback(mockChannel, mockMessage);
 
 describe('subscriberOnMessageCallback', () => {
   describe('on success', () => {
@@ -31,8 +31,8 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call client.ack with message on success', () => {
-      expect(mockClient.ack).toHaveBeenCalledTimes(1);
-      expect(mockClient.ack).toHaveBeenCalledWith(mockMessage);
+      expect(mockChannel.ack).toHaveBeenCalledTimes(1);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
 
     it('should call eventFinished on success', () => {
@@ -80,8 +80,8 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call client.ack with message on failure', () => {
-      expect(mockClient.ack).toHaveBeenCalledTimes(1);
-      expect(mockClient.ack).toHaveBeenCalledWith(mockMessage);
+      expect(mockChannel.ack).toHaveBeenCalledTimes(1);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {

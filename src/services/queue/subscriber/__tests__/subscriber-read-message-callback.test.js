@@ -1,4 +1,4 @@
-import { mockClient, mockMessageStream } from '../../../../__mocks__/stompit';
+import { mockChannel, mockMessageStream } from '../../../../__mocks__/stompit';
 import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
 import {
   eventFinished,
@@ -11,7 +11,7 @@ jest.mock('../../../../middleware/logging');
 jest.mock('../subscriber-on-message-callback');
 
 const mockError = 'mock-error';
-const mockCallback = subscriberReadMessageCallback(mockClient);
+const mockCallback = subscriberReadMessageCallback(mockChannel);
 
 describe('subscriberReadMessageCallback', () => {
   describe('on success', () => {

@@ -1,8 +1,11 @@
-import { connect } from 'stompit';
 import config from '../../../config/index';
+import { mockChannel } from '../../../__mocks__/stompit';
+import { connectToQueue } from '../../queue/helper/connect-to-queue';
 import { checkMHSHealth } from '../check-mhs-health';
 
 const mockErrorResponse = 'Error: exhausted connection failover';
+
+jest.mock('../../queue/helper/connect-to-queue');
 
 const originalConfig = { ...config };
 
@@ -20,6 +23,10 @@ describe('queue', () => {
       config.queueUsername = 'guest';
       config.queuePassword = 'guest';
       config.queueVirtualHost = '/';
+
+      connectToQueue.mockImplementation(callback =>
+        callback(false, { ...mockChannel, disconnect: jest.fn() })
+      );
     });
 
     it('should return writable true if it can connect and write to MHS queue', () => {
@@ -29,7 +36,7 @@ describe('queue', () => {
     });
 
     it('should return writable false with an error if it can not connect to MHS', () => {
-      connect.mockImplementation(callback => callback(mockErrorResponse));
+      connectToQueue.mockImplementation(callback => callback(mockErrorResponse));
 
       return checkMHSHealth().then(result => {
         return expect(result).toStrictEqual(getExpectedResults(false));
