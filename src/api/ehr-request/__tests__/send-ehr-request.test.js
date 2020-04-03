@@ -20,7 +20,7 @@ describe('sendEhrRequest', () => {
 
     ehrRequestQuery = generateEhrRequestQuery({
       id: MOCKED_UUID,
-      timestamp: '20190228112548',
+      timestamp: '20200403092516',
       receivingService: {
         asid: receivingAsid,
         odsCode: odsCode
@@ -50,9 +50,7 @@ describe('sendEhrRequest', () => {
     when(mhsQueueTestHelper.getRoutingInformation)
       .calledWith(odsCode)
       .mockResolvedValue({ asid: receivingAsid });
-    when(mhsQueueTestHelper.sendMessage)
-      .calledWith(ehrRequestQuery)
-      .mockResolvedValue();
+    when(mhsQueueTestHelper.sendMessage).calledWith(ehrRequestQuery).mockResolvedValue();
 
     await sendEhrRequest(nhsNumber, odsCode);
     expect(mhsQueueTestHelper.sendMessage).toHaveBeenCalledWith(ehrRequestQuery);

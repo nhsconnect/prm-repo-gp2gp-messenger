@@ -1,12 +1,11 @@
-const generateEhrRequestQuery = require('../ehr-request-template');
-const { v4: uuid } = require('uuid');
-const dateFormat = require('dateformat');
-const testData = require('./testData.json');
+import { v4 as uuid } from 'uuid';
+import generateEhrRequestQuery from '../ehr-request-template';
+import testData from './testData.json';
 
 describe('generateEhrRequestQuery', () => {
   const testObjectMissing = {
     id: uuid().toUpperCase(),
-    timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+    timestamp: '20200403092516',
     sendingService: {
       odsCode: testData.mhs.odsCode,
       asid: testData.mhs.asid
@@ -54,7 +53,7 @@ describe('generateEhrRequestQuery', () => {
     expect(() =>
       generateEhrRequestQuery({
         id: uuid().toUpperCase(),
-        timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss')
+        timestamp: '20200403092516'
       })
     ).toThrowError(
       'Check template parameter error: asid is undefined, odsCode is undefined, asid is undefined, odsCode is undefined'

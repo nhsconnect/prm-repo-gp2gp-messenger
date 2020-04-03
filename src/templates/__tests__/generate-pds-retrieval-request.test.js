@@ -1,14 +1,12 @@
 const generatePdsRetrievalQuery = require('../generate-pds-retrieval-request');
-const dateFormat = require('dateformat');
 const testData = require('./testData.json');
 
 const mockUUID = 'dce9a411-ad97-426b-86b6-55baf2d0d6e4'.toUpperCase();
-const timestamp = dateFormat(new Date(1993, 6, 28, 14, 39, 7), 'yyyymmddHHMMss');
 
 describe('generatePdsRetrievalQuery', () => {
   const testObjectMissing = {
     id: mockUUID,
-    timestamp,
+    timestamp: '20200403092516',
     receivingService: {
       asid: testData.pds.asid
     },
@@ -77,7 +75,7 @@ describe('generatePdsRetrievalQuery', () => {
     return expect(
       generatePdsRetrievalQuery({
         id: mockUUID,
-        timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
+        timestamp: '20200403092516',
         patient: {
           nhsNumber: testData.tppPatient.nhsNumber
         }

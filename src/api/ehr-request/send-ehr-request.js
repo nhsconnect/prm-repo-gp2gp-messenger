@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dateFormat from 'dateformat';
 import { v4 as uuid } from 'uuid';
 import config from '../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
@@ -18,7 +18,7 @@ const sendEhrRequest = (nhsNumber, odsCode) => {
     .then(({ asid }) => {
       updateLogEvent({ status: 'requesting-ehr', ehrRequest: { asid } });
 
-      const timestamp = dayjs().format('YYYYMMDDHHmmss');
+      const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
       const ehrRequestQuery = generateEhrRequestQuery({
         id: uuid(),
         timestamp: timestamp,
