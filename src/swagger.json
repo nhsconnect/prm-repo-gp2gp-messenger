@@ -18,13 +18,9 @@
   "paths": {
     "/ehr-request": {
       "post": {
-        "tags": [
-          "ehr-request"
-        ],
-        "summary": "Sends EHR request",
-        "consumes": [
-          "application/json"
-        ],
+        "tags": ["ehr-request"],
+        "summary": "Puts a RCMR_IN030000UK06 message on the message queue for testing purposes",
+        "consumes": ["application/json"],
         "parameters": [
           {
             "in": "body",
@@ -67,13 +63,9 @@
     },
     "/health-record-requests/{nhsNumber}": {
       "post": {
-        "tags": [
-          "health-record-requests"
-        ],
+        "tags": ["health-record-requests"],
         "summary": "Sends EHR request",
-        "consumes": [
-          "application/json"
-        ],
+        "consumes": ["application/json"],
         "parameters": [
           {
             "in": "path",
@@ -123,9 +115,7 @@
     },
     "/health": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "summary": "Checks system and dependency health",
         "responses": {
           "200": {
@@ -154,9 +144,7 @@
     },
     "/patient-demographics/{nhsNumber}": {
       "get": {
-        "tags": [
-          "patient-demographics"
-        ],
+        "tags": ["patient-demographics"],
         "summary": "Uses an NHS number to make a PDS request to confirm communication with MHS",
         "parameters": [
           {
@@ -194,9 +182,7 @@
         ]
       },
       "patch": {
-        "tags": [
-          "patient-demographics"
-        ],
+        "tags": ["patient-demographics"],
         "summary": "Updates ODS code in PDS to Deductions Repo ODS code",
         "parameters": [
           {
@@ -241,9 +227,7 @@
     },
     "/error": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "summary": "Generate error log",
         "responses": {
           "201": {
@@ -319,10 +303,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "pdsId",
-        "serialChangeNumber"
-      ]
+      "required": ["pdsId", "serialChangeNumber"]
     },
     "EhrRequest": {
       "type": "object",
@@ -334,10 +315,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "nhsNumber",
-        "odsCode"
-      ]
+      "required": ["nhsNumber", "odsCode"]
     },
     "ValidationErrors": {
       "type": "object",
