@@ -15,7 +15,8 @@
     "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' --ignore '**/__tests__/*' && cp src/*.json build",
     "start": "node build/server.js",
     "start:local": "babel-node -r dotenv/config src/server.js",
-    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
+    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js",
+    "pre-commit": "npm run lint && npm run test:unit"
   },
   "repository": {
     "type": "git",
@@ -51,6 +52,7 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.3.0",
     "jest": "^25.2.7",
     "jest-when": "^2.7.1",
     "nodemon": "^2.0.2",
