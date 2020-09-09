@@ -1,6 +1,6 @@
 import xml2js from 'xml2js';
 
-const XmlParser = function() {
+const XmlParser = function () {
   this.options = {
     // Changes key name from '_' to 'innerText'
     charkey: 'innerText',
@@ -21,7 +21,7 @@ const XmlParser = function() {
   return this;
 };
 
-XmlParser.prototype.parse = function(rawXml) {
+XmlParser.prototype.parse = function (rawXml) {
   rawXml = rawXml.toString().replace('\ufeff', '');
   return new xml2js.Parser(this.options)
     .parseStringPromise(rawXml)
@@ -29,11 +29,11 @@ XmlParser.prototype.parse = function(rawXml) {
     .then(() => this);
 };
 
-XmlParser.prototype.findAll = function(key, maxDepth = 50) {
+XmlParser.prototype.findAll = function (key, maxDepth = 50) {
   return searchData(this.data, key, maxDepth);
 };
 
-XmlParser.prototype.findFirst = function(key) {
+XmlParser.prototype.findFirst = function (key) {
   const foundAll = this.findAll(key);
 
   if (foundAll.length === 0) {

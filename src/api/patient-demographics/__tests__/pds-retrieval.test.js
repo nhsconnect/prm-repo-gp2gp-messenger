@@ -124,10 +124,7 @@ describe('/patient-demographics/:nhsNumber', () => {
   });
 
   it('should return a 200 with MHS message passed back', done => {
-    request(app)
-      .get('/patient-demographics/9999999999')
-      .expect(200)
-      .end(done);
+    request(app).get('/patient-demographics/9999999999').expect(200).end(done);
   });
 
   it('should return a 200 and update the logs', done => {
@@ -161,10 +158,7 @@ describe('/patient-demographics/:nhsNumber', () => {
   });
 
   it('should return a 200', done => {
-    request(app)
-      .get('/patient-demographics/9999999999')
-      .expect(200)
-      .end(done);
+    request(app).get('/patient-demographics/9999999999').expect(200).end(done);
   });
 
   it('should return an error if :nhsNumber is less than 10 digits', done => {
