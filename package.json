@@ -15,8 +15,12 @@
     "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' --ignore '**/__tests__/*' && cp src/*.json build",
     "start": "node build/server.js",
     "start:local": "babel-node -r dotenv/config src/server.js",
-    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js",
-    "pre-commit": "npm run lint && npm run test:unit"
+    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run test:unit"
+    }
   },
   "repository": {
     "type": "git",
