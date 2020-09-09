@@ -8,9 +8,7 @@ import { PDSRetrievalQueryResponse } from '../../services/pds';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
 
 export const pdsRetrievalValidation = [
-  param('nhsNumber')
-    .isNumeric()
-    .withMessage("'nhsNumber' provided is not numeric"),
+  param('nhsNumber').isNumeric().withMessage("'nhsNumber' provided is not numeric"),
   param('nhsNumber')
     .isLength({ min: 10, max: 10 })
     .withMessage("'nhsNumber' provided is not 10 characters")

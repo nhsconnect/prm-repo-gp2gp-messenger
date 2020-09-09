@@ -61,10 +61,7 @@ describe('app', () => {
     });
 
     it('should return a 200 status code', done => {
-      request(app)
-        .get('/health')
-        .expect(200)
-        .end(done);
+      request(app).get('/health').expect(200).end(done);
     });
   });
 
@@ -76,11 +73,7 @@ describe('app', () => {
     });
 
     it('should return a 202 status code', done => {
-      request(app)
-        .post('/ehr-request')
-        .send(validRequestBody)
-        .expect(202)
-        .end(done);
+      request(app).post('/ehr-request').send(validRequestBody).expect(202).end(done);
     });
   });
 
@@ -101,10 +94,7 @@ describe('app', () => {
     });
 
     it('should return a 200', done => {
-      request(app)
-        .get('/patient-demographics/9999999999')
-        .expect(200)
-        .end(done);
+      request(app).get('/patient-demographics/9999999999').expect(200).end(done);
     });
 
     it('should return on object containing serialChangeNumber and patientPdsId', done => {
