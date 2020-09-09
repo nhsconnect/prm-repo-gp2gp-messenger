@@ -23,13 +23,19 @@ describe('app', () => {
 
   describe('GET /', () => {
     it('should return a 404 status code', done => {
-      request(app).get('/').expect(404).end(done);
+      request(app)
+        .get('/')
+        .expect(404)
+        .end(done);
     });
   });
 
   describe('GET /any-text - an unspecified endpoint', () => {
     it('should return a 404 status code', done => {
-      request(app).get('/any-text').expect(404).end(done);
+      request(app)
+        .get('/any-text')
+        .expect(404)
+        .end(done);
     });
 
     describe('Swagger Documentation', () => {
@@ -91,13 +97,19 @@ describe('app', () => {
     });
 
     it('should return a 404 status code without nhsNumber parameter', done => {
-      request(app).get('/patient-demographics').expect(404).end(done);
+      request(app)
+        .get('/patient-demographics')
+        .expect(404)
+        .end(done);
     });
   });
 
   describe('POST /health-record-requests/:nhsNumber', () => {
     it('should return a 401 status code for /health-record-requests/:nhsNumber when not authenticated', done => {
-      request(app).post('/health-record-requests/9999999999').expect(401).end(done);
+      request(app)
+        .post('/health-record-requests/9999999999')
+        .expect(401)
+        .end(done);
     });
   });
 });

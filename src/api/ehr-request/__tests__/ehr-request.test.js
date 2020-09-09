@@ -24,7 +24,11 @@ describe('POST /ehr-request', () => {
   });
 
   it('should return a 202 status code', done => {
-    request(app).post('/ehr-request').send(validRequestBody).expect(202).end(done);
+    request(app)
+      .post('/ehr-request')
+      .send(validRequestBody)
+      .expect(202)
+      .end(done);
   });
 
   it('should return a 422 and error when NHS number was not provided', done => {

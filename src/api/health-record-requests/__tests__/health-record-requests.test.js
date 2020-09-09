@@ -30,7 +30,11 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     };
 
     it('should return a 204', done => {
-      request(app).post('/health-record-requests/1234567890').expect(204).send(body).end(done);
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .expect(204)
+        .send(body)
+        .end(done);
     });
 
     it('should call sendMessage with interactionId', done => {
@@ -90,7 +94,10 @@ describe('POST /health-record-requests/:nhsNumber', () => {
 
   describe('healthRecordRequestValidation', () => {
     it('should return a 422 if nhsNumber is not 10 digits', done => {
-      request(app).post('/health-record-requests/123456').expect(422).end(done);
+      request(app)
+        .post('/health-record-requests/123456')
+        .expect(422)
+        .end(done);
     });
 
     it('should return correct error message if nhsNumber is not 10 digits', done => {

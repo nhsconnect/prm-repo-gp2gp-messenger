@@ -7,7 +7,9 @@ import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 
 export const pdsUpdateValidation = [
-  param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
+  param('nhsNumber')
+    .isNumeric()
+    .withMessage(`'nhsNumber' provided is not numeric`),
   param('nhsNumber')
     .isLength({ min: 10, max: 10 })
     .withMessage("'nhsNumber' provided is not 10 characters"),
@@ -18,7 +20,10 @@ export const pdsUpdateValidation = [
     .not()
     .isEmpty()
     .withMessage(`'serialChangeNumber' has not been provided`),
-  body('pdsId').not().isEmpty().withMessage(`'pdsId' has not been provided`)
+  body('pdsId')
+    .not()
+    .isEmpty()
+    .withMessage(`'pdsId' has not been provided`)
 ];
 
 export const pdsUpdate = async (req, res, next) => {
