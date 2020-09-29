@@ -166,13 +166,13 @@ When debugging, it may be useful to be able to connect to either the `dev` or `t
 
 Update the .env file with the following config items can be found in SSM properties under the following locations:
 
-| Parameters         | SSM Parameter                                                |
-|--------------------|--------------------------------------------------------------|
-| MHS_QUEUE_URL_1    | /NHS/${NHS_ENVIRONMENT}-${ORG_CODE}/amqp-endpoint/0          |
-| MHS_QUEUE_URL_2    | /NHS/${NHS_ENVIRONMENT}-${ORG_CODE}/amqp-endpoint/1          |
-| MHS_QUEUE_USERNAME | /nhs/${NHS_ENVIRONMENT}/mq/admin-username                    |
-| MHS_QUEUE_PASSWORD | /nhs/${NHS_ENVIRONMENT}/mq/admin-password                    |
-| MHS_QUEUE_NAME     | Please set this to something different than in Terraform     |
+| Parameters         | SSM Parameter                                                         |
+|--------------------|-----------------------------------------------------------------------|
+| MHS_QUEUE_URL_1    | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/amqp-endpoint-0  |
+| MHS_QUEUE_URL_2    | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/amqp-endpoint-1  |
+| MHS_QUEUE_USERNAME | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/mq-admin-username|
+| MHS_QUEUE_PASSWORD | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/mq-admin-password|
+| MHS_QUEUE_NAME     | Please set this to something different than in Terraform              |
 
 Ensure you have VPN connection set up to both `dev` and `test` environments:
 [CLICK HERE](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1832779966/VPN+for+Deductions+Services)

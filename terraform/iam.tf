@@ -93,11 +93,11 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
     ]
 
     resources = [
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/authorization_keys",
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/nhs/${var.environment}/mq/app-username",
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/nhs/${var.environment}/mq/app-password",
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/deductions_asid",
-      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/NHS/${var.environment}-${local.account_id}/${var.component_name}/deductions_ods_code"
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/prm-deductions-component-template/user-input/${var.component_name}-authorization-keys",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-username",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-password",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/${var.component_name}-deductions-asid",
+      "arn:aws:ssm:${var.region}:${local.account_id}:parameter/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/${var.component_name}-deductions-ods-code"
     ]
   }
 }

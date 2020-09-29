@@ -1,81 +1,69 @@
 data "aws_caller_identity" "current" {}
 
 data "aws_ssm_parameter" "root_zone_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/root_zone_id"
+  name = "/repo/prm-deductions-base-infra/output/root-zone-id
 }
 
 data "aws_ssm_parameter" "private_zone_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/${var.environment}/private_root_zone_id"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/private-root-zone-id"
 }
 
 data "aws_ssm_parameter" "authorization_keys" {
-  name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/gp2gp-adaptor/authorization_keys"
+  name = "/repo/${var.environment}/prm-deductions-component-template/user-input/gp2gp-adaptor-authorization-keys"
 }
 
 data "aws_ssm_parameter" "deductions_ods_code" {
-  name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/gp2gp-adaptor/deductions_ods_code"
+  name = "/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/gp2gp-adaptor-deductions-ods-code"
 }
 
 data "aws_ssm_parameter" "deductions_asid" {
-  name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/gp2gp-adaptor/deductions_asid"
+  name = "/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/gp2gp-adaptor-deductions-asid"
 }
 
 data "aws_ssm_parameter" "stomp-endpoint_0" {
-  name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/stomp-endpoint/0"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/stomp-endpoint-0"
 }
 
 data "aws_ssm_parameter" "stomp-endpoint_1" {
-  name = "/NHS/${var.environment}-${data.aws_caller_identity.current.account_id}/stomp-endpoint/1"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/stomp-endpoint-1"
 }
 
 data "aws_ssm_parameter" "amq-username" {
-  name = "/nhs/${var.environment}/mq/app-username"
+  name = "/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-username"
 }
 
 data "aws_ssm_parameter" "amq-password" {
-  name = "/nhs/${var.environment}/mq/app-password"
+  name = "/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-password"
 }
 
 data "aws_ssm_parameter" "deductions_private_ecs_cluster_id" {
-  name = "/nhs/${var.environment}/deductions_private_ecs_cluster_id"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-ecs-cluster-id"
 }
 
 data "aws_ssm_parameter" "deductions_private_private_subnets" {
-  name = "/nhs/${var.environment}/deductions_private_private_subnets"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-private-subnets"
 }
-
-# data "aws_ssm_parameter" "deductions_private_alb_dns" {
-#   name = "/nhs/${var.environment}/deductions_private_alb_dns"
-# }
 
 data "aws_ssm_parameter" "deductions_private_vpc_id" {
-  name = "/nhs/${var.environment}/deductions_private_vpc_id"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/private-vpc-id"
 }
 
-# data "aws_ssm_parameter" "deductions_private_alb_httpl_arn" {
-#   name = "/nhs/${var.environment}/deductions_private_alb_httpl_arn"
-# }
-
-# data "aws_ssm_parameter" "deductions_private_alb_httpsl_arn" {
-#   name = "/nhs/${var.environment}/deductions_private_alb_httpsl_arn"
-# }
-
 data "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
-  name = "/nhs/${var.environment}/deductions_private_int_alb_httpl_arn"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-int-alb-httpl-arn"
 }
 
 data "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
-  name = "/nhs/${var.environment}/deductions_private_int_alb_httpsl_arn"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-int-alb-httpsl-arn"
 }
 
 data "aws_ssm_parameter" "deductions_private_gp2gp_adaptor_sg_id" {
-  name = "/nhs/${var.environment}/deductions_private_gp2gp_adaptor_sg_id"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-gp2gp-adaptor-sg-id"
 }
 
 data "aws_ssm_parameter" "mhs_outbound_url" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/mhs-${var.environment}/outbound_url"
+  name = "/repo/${var.environment}/prm-mhs-infra/output/mhs-outbound-url"
 }
 
 data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
-   name = "/nhs/${var.environment}/deductions_private_alb_internal_dns"
+  name = "/repo/${var.environment}/prm-deductions-infra/output/deductions-private-alb-internal-dns"
 }
