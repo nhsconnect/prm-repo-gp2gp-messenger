@@ -168,8 +168,8 @@ Update the .env file with the following config items can be found in SSM propert
 
 | Parameters         | SSM Parameter                                                             |
 |--------------------|---------------------------------------------------------------------------|
-| MHS_QUEUE_URL_1    | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/amqp-endpoint-0      |
-| MHS_QUEUE_URL_2    | /repo/${NHS_ENVIRONMENT}/prm-deductions-infra/output/amqp-endpoint-1      |
+| MHS_QUEUE_URL_1    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-0      |
+| MHS_QUEUE_URL_2    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-1      |
 | MHS_QUEUE_USERNAME | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-username                     |
 | MHS_QUEUE_PASSWORD | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-password                     |
 | MHS_QUEUE_NAME     | Please set this to something different than in Terraform                  |
