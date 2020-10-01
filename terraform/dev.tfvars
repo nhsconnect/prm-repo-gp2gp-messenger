@@ -1,6 +1,7 @@
 environment    = "dev"
 component_name = "gp2gp-adaptor"
 dns_name       = "gp2gp-adaptor"
+repo_name      = "prm-deductions-gp2gp-adaptor"
 
 s3_bucket_name       = "dev-gp2gp-bucket"
 
