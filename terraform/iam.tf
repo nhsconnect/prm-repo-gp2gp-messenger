@@ -21,9 +21,8 @@ resource "aws_iam_role" "gp2gp" {
   description        = "Role assumed by ${var.component_name} ECS task"
 
   tags = {
-    Terraform = "true"
     Environment = var.environment
-    Deductions-Component = var.component_name
+    CreatedBy = var.repo_name
   }
 }
 

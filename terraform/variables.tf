@@ -3,6 +3,11 @@ variable "region" {
   default = "eu-west-2"
 }
 
+variable "repo_name" {
+  type = string
+  default = "prm-deductions-gp2gp-adaptor"
+}
+
 variable "environment" {}
 
 variable "component_name" {}

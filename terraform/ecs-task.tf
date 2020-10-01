@@ -47,8 +47,7 @@ resource "aws_ecs_task_definition" "task" {
     })
 
   tags = {
-    Terraform = "true"
     Environment = var.environment
-    Deductions-Component = var.component_name
+    CreatedBy = var.repo_name
   }
 }
