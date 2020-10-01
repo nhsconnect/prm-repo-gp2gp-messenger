@@ -9,15 +9,15 @@ data "aws_ssm_parameter" "private_zone_id" {
 }
 
 data "aws_ssm_parameter" "authorization_keys" {
-  name = "/repo/${var.environment}/prm-deductions-component-template/user-input/gp2gp-adaptor-authorization-keys"
+  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-authorization-keys"
 }
 
 data "aws_ssm_parameter" "deductions_ods_code" {
-  name = "/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/gp2gp-adaptor-deductions-ods-code"
+  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-deductions-ods-code"
 }
 
 data "aws_ssm_parameter" "deductions_asid" {
-  name = "/repo/${var.environment}/prm-deductions-gp2gp-adaptor/user-input/gp2gp-adaptor-deductions-asid"
+  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-deductions-asid"
 }
 
 data "aws_ssm_parameter" "stomp-endpoint_0" {
@@ -29,11 +29,11 @@ data "aws_ssm_parameter" "stomp-endpoint_1" {
 }
 
 data "aws_ssm_parameter" "amq-username" {
-  name = "/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-username"
+  name = "/repo/${var.environment}/user-input/mq-app-username"
 }
 
 data "aws_ssm_parameter" "amq-password" {
-  name = "/repo/${var.environment}/prm-deductions-infra/user-input/mq-app-password"
+  name = "/repo/${var.environment}/user-input/mq-app-password"
 }
 
 data "aws_ssm_parameter" "deductions_private_ecs_cluster_id" {
