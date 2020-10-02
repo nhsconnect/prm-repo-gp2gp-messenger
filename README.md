@@ -12,7 +12,6 @@ The initial version will send and receive health records that are encoded in the
 
 - Node 12.x
 
-
 ## Access to AWS
 
 In order to get sufficient access to work with terraform or AWS CLI:
@@ -65,7 +64,24 @@ Run the following command to confirm the role was assumed correctly:
 
 `aws sts get-caller-identity`
 
-## Set up
+## AWS SSM Parameters Design Principles
+
+When creating the new ssm keys, please follow the agreed convention as per the design specified below:
+
+* all parts of the keys are lower case
+* the words are separated by dashes (`kebab case`)
+* `env` is optional
+  
+### Design:
+Please follow this design to ensure the ssm keys are easy to maintain and navigate through:
+
+| Type               | Design                                  | Example                                               |
+| -------------------| ----------------------------------------| ------------------------------------------------------|
+| **User-specified** |`/repo/<env>?/user-input/`               | `/repo/${var.environment}/user-input/db-username`     |
+| **Auto-generated** |`/repo/<env>?/output/<name-of-git-repo>/`| `/repo/output/prm-deductions-base-infra/root-zone-id` |
+
+
+# Set up
 
 1. Run `npm install` to install all node dependencies.
 2. Create a .env file at the root of the directory
