@@ -46,8 +46,7 @@ function configure_service_url {
   if [[ -z "${NHS_ENVIRONMENT}" ]]; then
     export SERVICE_URL=http://${NHS_SERVICE}:3000
   else
-    parameter_name="/repo/${NHS_ENVIRONMENT}/output/${NHS_SERVICE}/service-url"
-    export SERVICE_URL=$(get_aws_ssm_secret ${parameter_name})
+    export SERVICE_URL="https://${NHS_ENVIRONMENT}.gp2gp-adaptor.patient-deductions.nhs.uk"
   fi
 }
 
