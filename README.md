@@ -2,7 +2,7 @@
 
 This is a Proof of Concept implementation of a component to handle the sending and receiving of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
 
-The goal is to confirm the GP2GP message format can be used to transfer Orphan and Standard Records into a secure NHS repository.
+The goal is to confirm the GP2GP message format can be used to transfer orphaned and stranded Records into a secure NHS repository.
 
 This component will communicate with the Message Handler Service (MHS) [GitHub nhsconnect/integration-adaptors](https://github.com/nhsconnect/integration-adaptors) and other components being developed by the Orphan and Stranded Record programme.
 
