@@ -4,7 +4,7 @@ import { createLogger, format, transports } from 'winston';
 import { getCorrelationId } from '../middleware/correlation';
 
 const OBFUSCATED_VALUE = '********';
-const SECRET_KEYS = ['passcode', 'data'];
+const SECRET_KEYS = ['passcode', 'data', 'authorization'];
 
 export const obfuscateSecrets = format(info => {
   const updated = cloneDeep(info);
@@ -22,10 +22,10 @@ export const addCorrelationInfo = format(info => {
 export const options = {
   level: 'debug',
   format: format.combine(
+    obfuscateSecrets(),
     addCorrelationInfo(),
     format.timestamp(),
-    format.json(),
-    obfuscateSecrets()
+    format.json()
   ),
   transports: [new transports.Console({ handleExceptions: true })]
 };
