@@ -11,9 +11,9 @@ describe('generateUpdateOdsRequest', () => {
       asid: testData.pds.asid
     },
     sendingService: {
-      asid: testData.mhs.asid,
-      odsCode: 'mhs.odsCode'
-    }
+      asid: testData.mhs.asid
+    },
+    newOdsCode: 'mhs.odsCode'
   };
 
   const testObjectComplete = {
@@ -43,7 +43,7 @@ describe('generateUpdateOdsRequest', () => {
         }
       })
     ).toThrowError(
-      'Check template parameter error: asid is undefined, asid is undefined, odsCode is undefined'
+      'Check template parameter error: asid is undefined, asid is undefined, newOdsCode is undefined'
     );
   });
 

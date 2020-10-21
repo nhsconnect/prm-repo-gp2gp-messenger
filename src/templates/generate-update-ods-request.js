@@ -1,6 +1,13 @@
 const checkTemplateArguments = require('./utils/check_params');
 
-const generateUpdateOdsRequest = ({ id, timestamp, receivingService, sendingService, patient }) => {
+const generateUpdateOdsRequest = ({
+  id,
+  timestamp,
+  receivingService,
+  sendingService,
+  newOdsCode,
+  patient
+}) => {
   const inputObject = {
     id,
     timestamp,
@@ -10,9 +17,9 @@ const generateUpdateOdsRequest = ({ id, timestamp, receivingService, sendingServ
     },
     sendingService: {
       asid: undefined,
-      odsCode: undefined,
       ...(sendingService || {})
     },
+    newOdsCode: newOdsCode,
     patient: {
       nhsNumber: undefined,
       pdsId: undefined,
@@ -29,7 +36,8 @@ const template = ({
   id,
   timestamp,
   receivingService: { asid: receivingAsid },
-  sendingService: { asid: sendingAsid, odsCode: newOdsCode },
+  sendingService: { asid: sendingAsid },
+  newOdsCode: newOdsCode,
   patient: { nhsNumber, pdsId, pdsUpdateChangeNumber }
 }) =>
   ` 

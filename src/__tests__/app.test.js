@@ -111,7 +111,7 @@ describe('app', () => {
     });
   });
 
-  describe('POST /patient-demographics/:nhsNumber', () => {
+  describe('PATCH /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
       config.pdsAsid = 'pdsAsid';
       config.deductionsAsid = 'deductionsAsid';
@@ -135,7 +135,8 @@ describe('app', () => {
         .patch('/patient-demographics/9442964410')
         .send({
           serialChangeNumber: '123',
-          pdsId: 'cppz'
+          pdsId: 'cppz',
+          newOdsCode: '12345'
         })
         .expect(204)
         .expect(res => {

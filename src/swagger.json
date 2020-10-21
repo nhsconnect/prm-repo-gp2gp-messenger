@@ -301,6 +301,9 @@
         },
         "serialChangeNumber": {
           "type": "string"
+        },
+        "newOdsCode": {
+          "type": "string"
         }
       },
       "required": ["pdsId", "serialChangeNumber"]

@@ -18,7 +18,8 @@ export const pdsUpdateValidation = [
     .not()
     .isEmpty()
     .withMessage(`'serialChangeNumber' has not been provided`),
-  body('pdsId').not().isEmpty().withMessage(`'pdsId' has not been provided`)
+  body('pdsId').not().isEmpty().withMessage(`'pdsId' has not been provided`),
+  body('newOdsCode').not().isEmpty().withMessage(`'newOdsCode' has not been provided`)
 ];
 
 export const pdsUpdate = async (req, res, next) => {
@@ -31,7 +32,8 @@ export const pdsUpdate = async (req, res, next) => {
       id: conversationId,
       timestamp,
       receivingService: { asid: config.pdsAsid },
-      sendingService: { asid: config.deductionsAsid, odsCode: config.deductionsOdsCode },
+      sendingService: { asid: config.deductionsAsid },
+      newOdsCode: req.body.newOdsCode,
       patient: {
         nhsNumber: req.params.nhsNumber,
         pdsId: req.body.pdsId,

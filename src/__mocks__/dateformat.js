@@ -1,4 +1,5 @@
 import { when } from 'jest-when';
 const dateFormat = jest.fn();
-when(dateFormat).calledWith(expect.anything(), 'yyyymmddHHMMss').mockReturnValue('20200403092516');
+export const fakeDateNow = '20200403092516';
+when(dateFormat).calledWith(expect.anything(), 'yyyymmddHHMMss').mockReturnValue(fakeDateNow);
 export default dateFormat;

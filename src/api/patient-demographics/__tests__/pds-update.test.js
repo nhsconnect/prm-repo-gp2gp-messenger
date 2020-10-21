@@ -6,6 +6,7 @@ import config from '../../../config';
 import { updateLogEvent } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../../templates/generate-update-ods-request';
+import { fakeDateNow } from '../../../__mocks__/dateformat';
 
 jest.mock('../../../config/logging');
 jest.mock('../../../middleware/logging');
@@ -35,6 +36,7 @@ describe('POST /patient-demographics/:nhsNumber', () => {
     process.env.AUTHORIZATION_KEYS = 'correct-key';
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
+    config.deductionsOdsCode = 'deductionsOds';
     uuid.mockImplementation(() => mockUUID);
 
     when(sendMessage)
@@ -60,11 +62,37 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        newOdsCode: '12345'
       })
       .expect(204)
       .expect(res => {
         expect(res.body).toEqual({});
+      })
+      .end(done);
+  });
+
+  it('should call generateUpdateOdsRequest with correct values', done => {
+    request(app)
+      .patch('/patient-demographics/9442964410')
+      .send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
+        newOdsCode: '12345'
+      })
+      .expect(() => {
+        expect(generateUpdateOdsRequest).toHaveBeenCalledWith({
+          id: mockUUID.toUpperCase(),
+          timestamp: fakeDateNow,
+          receivingService: { asid: config.pdsAsid },
+          sendingService: { asid: config.deductionsAsid },
+          newOdsCode: '12345',
+          patient: {
+            nhsNumber: '9442964410',
+            pdsId: 'cppz',
+            pdsUpdateChangeNumber: '123'
+          }
+        });
       })
       .end(done);
   });
@@ -75,7 +103,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/944410')
       .send({
         serialChangeNumber: '123',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        newOdsCode: '12345'
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -95,7 +124,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: 'xxx',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        newOdsCode: '12345'
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -114,7 +144,28 @@ describe('POST /patient-demographics/:nhsNumber', () => {
     request(app)
       .patch('/patient-demographics/9442964410')
       .send({
-        serialChangeNumber: '123'
+        serialChangeNumber: '123',
+        newOdsCode: '12345'
+      })
+      .expect(422)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        expect(res.body).toEqual({
+          errors: errorMessage
+        });
+        expect(updateLogEvent).toHaveBeenCalledTimes(1);
+        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+      })
+      .end(done);
+  });
+
+  it('should return an error if :newOdsCode is not provided', done => {
+    const errorMessage = [{ newOdsCode: "'newOdsCode' has not been provided" }];
+    request(app)
+      .patch('/patient-demographics/9442964410')
+      .send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz'
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -135,7 +186,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        newOdsCode: '12345'
       })
       .expect(res => {
         expect(res.status).toBe(503);
@@ -151,7 +203,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        newOdsCode: '12345'
       })
       .expect(res => {
         expect(res.status).toBe(503);
