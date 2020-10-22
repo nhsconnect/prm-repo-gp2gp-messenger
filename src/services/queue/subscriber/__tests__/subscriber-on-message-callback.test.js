@@ -85,7 +85,7 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(2);
+      expect(eventFinished).toHaveBeenCalledTimes(3);
     });
   });
 });

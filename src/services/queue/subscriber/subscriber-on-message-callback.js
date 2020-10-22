@@ -17,7 +17,9 @@ export const subscriberOnMessageCallback = (channel, message) => async (err, bod
   try {
     await handleMessage(body);
   } catch (err) {
+    updateLogEvent({ status: 'Handling of message failed - no ACK sent' });
     updateLogEventWithError(err);
+    eventFinished();
   } finally {
     channel.ack(message);
     eventFinished();
