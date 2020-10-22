@@ -5,7 +5,8 @@ import {
 } from './data/pds-generate-update-request-accepted';
 
 jest.mock('../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn()
+  updateLogEvent: jest.fn(),
+  eventFinished: jest.fn()
 }));
 
 describe('PDSGeneralUpdateRequestAccepted', () => {
