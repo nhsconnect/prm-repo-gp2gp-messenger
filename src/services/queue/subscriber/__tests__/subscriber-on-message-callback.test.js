@@ -36,7 +36,7 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call eventFinished on success', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
+      expect(eventFinished).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -60,7 +60,7 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
+      expect(eventFinished).toHaveBeenCalledTimes(2);
     });
 
     it('should return from callback', async () => {
@@ -85,7 +85,7 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
+      expect(eventFinished).toHaveBeenCalledTimes(2);
     });
   });
 });
