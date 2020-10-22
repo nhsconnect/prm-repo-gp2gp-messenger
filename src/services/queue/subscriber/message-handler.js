@@ -7,7 +7,7 @@ import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
 import { parseMultipartBody } from '../../parser';
 import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
-import { DefaultMessage } from './';
+// import { DefaultMessage } from './';
 
 export const handleMessage = async message => {
   let interactionId;
@@ -41,10 +41,20 @@ export const handleMessage = async message => {
       break;
 
     default:
-      handler = new DefaultMessage();
+      handler = new DoNothing();
   }
 
   const result = handler.handleMessage(message);
   eventFinished();
   return result;
 };
+
+class DoNothing {
+  handleMessage(message) {
+    updateLogEvent({
+      status: 'Unhandled message',
+      message: message
+    });
+    eventFinished();
+  }
+}
