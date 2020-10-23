@@ -10,6 +10,10 @@ jest.mock('../../../middleware/logging', () => ({
   eventFinished: jest.fn()
 }));
 
+jest.mock('../../gp-to-repo/send-pds-update', () => ({
+  sendPdsUpdate: jest.fn()
+}));
+
 describe('PDSGeneralUpdateRequestAccepted', () => {
   it('should return "PDS General Update Request Accepted" when calling name', () => {
     expect(new PDSGeneralUpdateRequestAccepted().name).toBe('PDS General Update Request Accepted');
@@ -57,11 +61,12 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
       done();
     });
 
-    it('should call updateLogEvent to update messageDetails with soap information', async done => {
+    it('should call updateLogEvent to update messageDetails with soap information and conversation ID', async done => {
       await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          messageDetails: expect.any(Object)
+          messageDetails: expect.any(Object),
+          conversationId: expect.any(String)
         })
       );
       done();
