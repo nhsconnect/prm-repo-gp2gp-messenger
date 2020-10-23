@@ -7,12 +7,13 @@ const LOG_EVENT_KEY = 'logEvent';
 
 export const updateLogEvent = event => {
   httpContext.set(LOG_EVENT_KEY, merge(httpContext.get(LOG_EVENT_KEY), event));
-  logger.info('Event updated', { event: httpContext.get(LOG_EVENT_KEY) });
+  logger.info('Event updated with', { event: event });
 };
 
 export const updateLogEventWithError = err => {
-  updateLogEvent({ error: { ...err, message: err.message, stack: err.stack } });
-  logger.info('Event updated', { event: httpContext.get(LOG_EVENT_KEY) });
+  let event = { error: { ...err, message: err.message, stack: err.stack } };
+  updateLogEvent(event);
+  logger.info('Event updated with', { event: event });
 };
 
 export const middleware = (req, res, next) => {

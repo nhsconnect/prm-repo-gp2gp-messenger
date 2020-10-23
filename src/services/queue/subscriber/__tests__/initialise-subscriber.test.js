@@ -28,7 +28,7 @@ describe('initialiseSubscriber', () => {
       expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
           destination: 'new-queue-name',
-          ack: 'client-individual'
+          ack: 'auto'
         }),
         expect.any(Function)
       );
@@ -52,7 +52,7 @@ describe('initialiseSubscriber', () => {
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           queue: expect.objectContaining({
-            ackType: 'client'
+            ack: 'client'
           })
         })
       );
@@ -83,16 +83,16 @@ describe('initialiseSubscriber', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          queue: expect.objectContaining({ name: mockQueueName })
+          queue: expect.objectContaining({ destination: mockQueueName })
         })
       );
     });
 
-    it('should call updateLogEvent with queue ackType', () => {
+    it('should call updateLogEvent with queue ack', () => {
       expect(updateLogEvent).toHaveBeenCalledTimes(1);
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
-          queue: expect.objectContaining({ ackType: 'client-individual' })
+          queue: expect.objectContaining({ ack: 'auto' })
         })
       );
     });
@@ -111,7 +111,7 @@ describe('initialiseSubscriber', () => {
       expect(mockChannel.subscribe).toHaveBeenCalledTimes(1);
       expect(mockChannel.subscribe).toHaveBeenCalledWith(
         expect.objectContaining({
-          ack: 'client-individual'
+          ack: 'auto'
         }),
         expect.any(Function)
       );

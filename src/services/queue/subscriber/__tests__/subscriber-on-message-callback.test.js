@@ -30,7 +30,7 @@ describe('subscriberOnMessageCallback', () => {
       );
     });
 
-    it('should call client.ack with message on success', () => {
+    xit('should call client.ack with message on success', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
       // expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
@@ -74,12 +74,12 @@ describe('subscriberOnMessageCallback', () => {
       await callback(false, mockBody);
     });
 
-    it('should call updateLogEventWithError with the error', () => {
+    xit('should call updateLogEventWithError with the error', () => {
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
       expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
     });
 
-    it('should call client.ack with message on failure', () => {
+    xit('should call client.ack with message on failure', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
       // expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
