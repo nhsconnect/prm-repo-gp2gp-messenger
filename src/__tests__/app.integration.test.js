@@ -9,15 +9,15 @@ jest.mock('axios');
 
 describe('app', () => {
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key';
+    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
     axios.post.mockImplementation(() =>
       Promise.resolve({ status: 200, data: pdsRetrivealQueryResponseSuccess })
     );
   });
 
   afterEach(() => {
-    if (process.env.AUTHORIZATION_KEYS) {
-      delete process.env.AUTHORIZATION_KEYS;
+    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
+      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
     }
   });
 

@@ -9,15 +9,15 @@ jest.mock('../../api/patient-demographics/pds-retrieval');
 // jest.mock('../auth') will call the manual mock in __mocks__ automatically
 describe('auth', () => {
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key';
+    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
     pdsRetrieval.mockImplementation((req, res) => {
       res.sendStatus(201);
     });
   });
 
   afterEach(() => {
-    if (process.env.AUTHORIZATION_KEYS) {
-      delete process.env.AUTHORIZATION_KEYS;
+    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
+      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
     }
   });
 
@@ -33,8 +33,8 @@ describe('auth', () => {
 
   describe('AUTHORIZATION_KEYS environment variables not provides', () => {
     beforeEach(() => {
-      if (process.env.AUTHORIZATION_KEYS) {
-        delete process.env.AUTHORIZATION_KEYS;
+      if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
+        delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
       }
     });
 
@@ -115,7 +115,7 @@ describe('auth', () => {
     });
 
     it('should return HTTP 403 when authorization key is partial string', done => {
-      process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+      process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key,other-key';
       request(app)
         .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
@@ -124,7 +124,7 @@ describe('auth', () => {
     });
 
     it('should return HTTP 201 when authorization keys have a comma but are one string ', done => {
-      process.env.AUTHORIZATION_KEYS = 'correct-key,other-key';
+      process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key,other-key';
       request(app)
         .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key,other-key')

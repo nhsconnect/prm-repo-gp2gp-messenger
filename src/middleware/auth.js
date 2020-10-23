@@ -1,11 +1,11 @@
 export const authenticateRequest = (req, res, next) => {
-  if (!process.env.AUTHORIZATION_KEYS) {
+  if (!process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
     res.status(412).json({
       error: `Server-side Authorization keys have not been set, cannot authenticate`
     });
     return;
   }
-  const validAuthorizationKeys = process.env.AUTHORIZATION_KEYS;
+  const validAuthorizationKeys = process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
 
   const authorizationKey = req.get('Authorization');
 

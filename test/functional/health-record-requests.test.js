@@ -15,7 +15,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     return expect(
       axios.post(`${process.env.SERVICE_URL}/health-record-requests/${nhsNumber}`, body, {
         headers: {
-          Authorization: process.env.AUTHORIZATION_KEYS
+          Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS
         },
         adapter
       })

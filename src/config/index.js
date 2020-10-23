@@ -15,7 +15,8 @@ const initialiseConfig = () => ({
   pdsAsid: process.env.PDS_ASID || '928942012545',
   mhsOutboundUrl: process.env.MHS_OUTBOUND_URL,
   nodeEnv: process.env.NODE_ENV || 'local',
-  url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`
+  url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`,
+  gpToRepoAuthKeys: process.env.GP_TO_REPO_AUTHORIZATION_KEYS
 });
 
 export default initialiseConfig();

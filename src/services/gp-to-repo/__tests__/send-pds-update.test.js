@@ -9,24 +9,29 @@ jest.mock('../../../middleware/logging', () => ({
   eventFinished: jest.fn()
 }));
 
-const originalGpToRepoUrl = config.originalGpToRepoUrl;
 const conversationId = '31079679-ef31-4d97-af0d-d1fda73cd8a5';
+const originalGpToRepoAuthKeys = config.gpToRepoAuthKeys;
+const originalGpToRepoUrl = config.gpToRepoUrl;
 
 describe('sendPdsUpdate', () => {
   beforeEach(() => {
-    config.gpToRepoUrl = 'https://gp-to-repo-url';
     axios.patch.mockResolvedValue({ status: 204 });
+    config.gpToRepoAuthKeys = 'fake-keys';
+    config.gpToRepoUrl = 'fake-url';
   });
 
   afterEach(() => {
+    config.gpToRepoAuthKeys = originalGpToRepoAuthKeys;
     config.gpToRepoUrl = originalGpToRepoUrl;
   });
 
   it('should make a PATCH request to GPToRepo with conversation ID', async done => {
+    const axiosHeaders = { headers: { Authorization: `${config.gpToRepoAuthKeys}` } };
     await sendPdsUpdate(conversationId);
     expect(axios.patch).toHaveBeenCalledTimes(1);
     expect(axios.patch).toHaveBeenCalledWith(
-      `${config.gpToRepoUrl}/deduction-requests/${conversationId}/pds-update`
+      `${config.gpToRepoUrl}/deduction-requests/${conversationId}/pds-update`,
+      axiosHeaders
     );
     done();
   });

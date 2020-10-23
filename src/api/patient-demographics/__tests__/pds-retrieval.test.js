@@ -69,7 +69,7 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     uuid.mockImplementation(() => mockUUID);
 
-    process.env.AUTHORIZATION_KEYS = 'correct-key';
+    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
 
     handlePdsResponse.mockResolvedValue({
       serialChangeNumber: testSerialChangeNumber,
@@ -115,8 +115,8 @@ describe('/patient-demographics/:nhsNumber', () => {
   });
 
   afterEach(() => {
-    if (process.env.AUTHORIZATION_KEYS) {
-      delete process.env.AUTHORIZATION_KEYS;
+    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
+      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
     }
 
     config.pdsAsid = process.env.PDS_ASID;

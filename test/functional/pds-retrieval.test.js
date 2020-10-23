@@ -13,7 +13,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
     return expect(
       axios.get(`${config.url}/patient-demographics/${nhsNumber}`, {
         headers: {
-          Authorization: process.env.AUTHORIZATION_KEYS.split(',')[0]
+          Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS.split(',')[0]
         },
         adapter
       })
@@ -30,7 +30,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
     return expect(
       axios.get(`${config.url}/patient-demographics/${fakeNhsNumber}`, {
         headers: {
-          Authorization: process.env.AUTHORIZATION_KEYS
+          Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS
         },
         adapter
       })

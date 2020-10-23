@@ -13,13 +13,13 @@ describe('POST /ehr-request', () => {
   const validRequestBody = { nhsNumber: 'some-nhs-number', odsCode: 'some-odsCode' };
 
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key';
+    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
     sendEhrRequest.mockResolvedValue();
   });
 
   afterEach(() => {
-    if (process.env.AUTHORIZATION_KEYS) {
-      delete process.env.AUTHORIZATION_KEYS;
+    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
+      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
     }
   });
 

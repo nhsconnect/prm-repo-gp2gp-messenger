@@ -8,7 +8,7 @@ data "aws_ssm_parameter" "private_zone_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-root-zone-id"
 }
 
-data "aws_ssm_parameter" "authorization_keys" {
+data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys" {
   name = "/repo/${var.environment}/user-input/gp2gp-adaptor-authorization-keys"
 }
 
@@ -66,4 +66,12 @@ data "aws_ssm_parameter" "mhs_outbound_url" {
 
 data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-alb-internal-dns"
+}
+
+data "aws_ssm_parameter" "gp_to_repo_url" {
+  name = "/repo/${var.environment}/output/prm-deductions-gp-to-repo/service-url"
+}
+
+data "aws_ssm_parameter" "gp_to_repo_authorization_keys" {
+  name = "/repo/${var.environment}/user-input/gp-to-repo-authorization-keys"
 }

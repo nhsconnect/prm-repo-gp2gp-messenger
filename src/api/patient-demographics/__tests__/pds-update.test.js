@@ -33,7 +33,7 @@ function generateLogEvent(message) {
 
 describe('POST /patient-demographics/:nhsNumber', () => {
   beforeEach(() => {
-    process.env.AUTHORIZATION_KEYS = 'correct-key';
+    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
     config.deductionsOdsCode = 'deductionsOds';
