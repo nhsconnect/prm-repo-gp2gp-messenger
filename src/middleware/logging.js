@@ -5,11 +5,15 @@ import { setCorrelationInfo } from './correlation';
 
 const LOG_EVENT_KEY = 'logEvent';
 
-export const updateLogEvent = event =>
+export const updateLogEvent = event => {
   httpContext.set(LOG_EVENT_KEY, merge(httpContext.get(LOG_EVENT_KEY), event));
+  logger.info('Event updated', { event: httpContext.get(LOG_EVENT_KEY) });
+};
 
-export const updateLogEventWithError = err =>
+export const updateLogEventWithError = err => {
   updateLogEvent({ error: { ...err, message: err.message, stack: err.stack } });
+  logger.info('Event updated', { event: httpContext.get(LOG_EVENT_KEY) });
+};
 
 export const middleware = (req, res, next) => {
   httpContext.scope();
