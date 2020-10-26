@@ -19,7 +19,6 @@ export const subscriberOnMessageCallback = (channel, message) => async (err, bod
   } catch (err) {
     updateLogEventWithError(err);
   } finally {
-    channel.ack(message);
     eventFinished();
   }
 };
