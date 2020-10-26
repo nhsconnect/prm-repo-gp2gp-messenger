@@ -30,13 +30,13 @@ describe('subscriberOnMessageCallback', () => {
       );
     });
 
-    xit('should call client.ack with message on success', () => {
+    it('should call client.ack with message on success', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
-      // expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
 
     it('should call eventFinished on success', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(2);
+      expect(eventFinished).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -60,7 +60,7 @@ describe('subscriberOnMessageCallback', () => {
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(2);
+      expect(eventFinished).toHaveBeenCalledTimes(1);
     });
 
     it('should return from callback', async () => {
@@ -74,18 +74,18 @@ describe('subscriberOnMessageCallback', () => {
       await callback(false, mockBody);
     });
 
-    xit('should call updateLogEventWithError with the error', () => {
+    it('should call updateLogEventWithError with the error', () => {
       expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
       expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
     });
 
-    xit('should call client.ack with message on failure', () => {
+    it('should call client.ack with message on failure', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
-      // expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
+      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
     });
 
     it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(3);
+      expect(eventFinished).toHaveBeenCalledTimes(1);
     });
   });
 });

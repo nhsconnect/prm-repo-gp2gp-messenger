@@ -106,21 +106,21 @@ describe('handleMessage', () => {
       done();
     });
 
-    xit('should call DefaultMessage if handleMessage cannot find the action', async done => {
+    it('should call DefaultMessage if handleMessage cannot find the action', async done => {
       await handleMessage(messageWithoutAction);
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith(messageWithoutAction);
       done();
     });
 
-    xit('should call DefaultMessage if handleMessage cannot parse multipart', async done => {
+    it('should call DefaultMessage if handleMessage cannot parse multipart', async done => {
       await handleMessage('random-string');
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith('random-string');
       done();
     });
 
-    xit('should call DefaultMessage if parse multipart throws error', async done => {
+    it('should call DefaultMessage if parse multipart throws error', async done => {
       parseMultipartBody.mockImplementation(() => new Error('error'));
       await handleMessage('message');
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
@@ -128,7 +128,7 @@ describe('handleMessage', () => {
       done();
     });
 
-    xit('should call DefaultMessage if the message action does not have a handler implemented', async done => {
+    it('should call DefaultMessage if the message action does not have a handler implemented', async done => {
       await handleMessage(unhandledInteractionId);
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledTimes(1);
       expect(DefaultMessage.prototype.handleMessage).toHaveBeenCalledWith(unhandledInteractionId);

@@ -1,4 +1,4 @@
-import { eventFinished, updateLogEvent } from '../../middleware/logging';
+import { updateLogEvent } from '../../middleware/logging';
 import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
 import { sendPdsUpdate } from '../gp-to-repo/send-pds-update';
@@ -16,7 +16,6 @@ class PDSGeneralUpdateRequestAccepted {
       status: 'Parsing PRPA_IN000202UK01 Message',
       parser: { name: this.name, interactionId: this.interactionId }
     });
-    eventFinished();
     const multipartMessage = await parseMultipartBody(message);
     const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
     const conversationId = soapInformation.conversationId;

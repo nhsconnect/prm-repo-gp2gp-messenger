@@ -11,14 +11,15 @@ const initialiseSubscriber = (options = {}) =>
         reject(err);
       }
 
-      const subscribeParams = { destination: config.queueName, ack: 'auto', ...options };
-
       updateLogEvent({
         status: 'Initialising Subscriber',
-        queue: subscribeParams
+        queue: { name: config.queueName, ...options, ackType: options.ack || 'client-individual' }
       });
 
-      channel.subscribe(subscribeParams, subscriberReadMessageCallback(channel));
+      channel.subscribe(
+        { destination: config.queueName, ack: 'client-individual', ...options },
+        subscriberReadMessageCallback(channel)
+      );
 
       resolve(channel);
     });

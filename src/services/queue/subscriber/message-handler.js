@@ -1,13 +1,9 @@
-import {
-  eventFinished,
-  updateLogEvent,
-  updateLogEventWithError
-} from '../../../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
 import { parseMultipartBody } from '../../parser';
 import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
-// import { DefaultMessage } from './';
+import { DefaultMessage } from './';
 
 export const handleMessage = async message => {
   let interactionId;
@@ -18,16 +14,13 @@ export const handleMessage = async message => {
       status: 'Extracting Action from Message',
       messageHeaders: multipartMessage.map(message => message.headers || 'unknown')
     });
-    eventFinished();
     interactionId = await extractAction(multipartMessage[0].body);
   } catch (err) {
     updateLogEventWithError(err);
-    eventFinished();
     interactionId = 'undefined';
   }
 
   updateLogEvent({ interactionId });
-  eventFinished();
 
   let handler;
 
@@ -41,20 +34,8 @@ export const handleMessage = async message => {
       break;
 
     default:
-      handler = new DoNothing();
+      handler = new DefaultMessage();
   }
 
-  const result = handler.handleMessage(message);
-  eventFinished();
-  return result;
+  return handler.handleMessage(message);
 };
-
-class DoNothing {
-  handleMessage(message) {
-    updateLogEvent({
-      status: 'Unhandled message',
-      message: message
-    });
-    eventFinished();
-  }
-}
