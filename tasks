@@ -29,7 +29,7 @@ function check_nhs_service {
 }
 
 function configure_local_envs {
-  export AUTHORIZATION_KEYS=auth-key-1
+  export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
   export MHS_QUEUE_URL_1=tcp://mq-1:61613
   export MHS_QUEUE_URL_2=tcp://mq-2:61613
   export MHS_QUEUE_USERNAME=admin
@@ -39,6 +39,7 @@ function configure_local_envs {
   export REPOSITORY_URI=$IMAGE_REPO_NAME
   export NODE_ENV=local
   export MHS_OUTBOUND_URL="https://mhs-outbound-url"
+  export GP_TO_REPO_AUTHORIZATION_KEYS=auth-key-2
   configure_service_url
 }
 
@@ -62,7 +63,14 @@ function configure_aws_service_auth_keys {
     check_env
     get_aws_account_id
     parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/${NHS_SERVICE}-authorization-keys"
-    export AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
+    export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
+}
+
+function configure_aws_service_gp_to_repo_auth_keys {
+    check_env
+    get_aws_account_id
+    parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/gp-to-repo-authorization-keys"
+    export GP_TO_REPO_AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
 }
 
 function get_aws_ssm_secret {
@@ -235,7 +243,7 @@ case "${command}" in
       configure_docker_repository_uri
       get_latest_commit_hash
       configure_service_url
-      export AUTHORIZATION_KEYS=auth-key-1
+      export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
       dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
   test_docker_local)
