@@ -7,7 +7,8 @@ describe('pds-response-handler', () => {
       return handlePdsResponse(pdsRetrivealQueryResponseSuccess).then(parsedMessage => {
         expect(parsedMessage).toEqual({
           serialChangeNumber: '138',
-          patientPdsId: 'cppz'
+          patientPdsId: 'cppz',
+          odsCode: 'B86041'
         });
       });
     });

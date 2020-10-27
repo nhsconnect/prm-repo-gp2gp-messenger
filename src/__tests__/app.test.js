@@ -20,6 +20,7 @@ jest.mock('../templates/ehr-request-template');
 
 const testSerialChangeNumber = '2';
 const testPatientPdsId = 'cppz';
+const testOdsCode = 'B12345';
 const interactionId = 'QUPA_IN000008UK02';
 const interactionIdUpdate = 'PRPA_IN000203UK03';
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
@@ -39,6 +40,11 @@ const message = `
           <low value="20140212"/>
         </effectiveTime>
         <id root="2.16.840.1.113883.2.1.3.2.4.18.1" extension="${testPatientPdsId}"/>
+        <performer typeCode="PRF">
+         <assignedEntity classCode="ASSIGNED">
+            <id root="2.16.840.1.113883.2.1.4.3" extension="${testOdsCode}"/>
+          </assignedEntity>
+        </performer>
       </patientCareProvisionEvent>
   </PDSResponse>`;
 
@@ -104,7 +110,8 @@ describe('app', () => {
         .expect(res =>
           expect(res.body.data).toEqual({
             serialChangeNumber: testSerialChangeNumber,
-            patientPdsId: testPatientPdsId
+            patientPdsId: testPatientPdsId,
+            odsCode: testOdsCode
           })
         )
         .end(done);
