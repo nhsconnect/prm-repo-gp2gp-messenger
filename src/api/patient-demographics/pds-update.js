@@ -1,6 +1,5 @@
 import dateFormat from 'dateformat';
 import { body, param } from 'express-validator';
-import { v4 as uuid } from 'uuid';
 import config from '../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
@@ -19,14 +18,16 @@ export const pdsUpdateValidation = [
     .isEmpty()
     .withMessage(`'serialChangeNumber' has not been provided`),
   body('pdsId').not().isEmpty().withMessage(`'pdsId' has not been provided`),
-  body('newOdsCode').not().isEmpty().withMessage(`'newOdsCode' has not been provided`)
+  body('newOdsCode').not().isEmpty().withMessage(`'newOdsCode' has not been provided`),
+  body('conversationId').isUUID('4').withMessage("'conversationId' provided is not of type UUIDv4"),
+  body('conversationId').not().isEmpty().withMessage(`'conversationId' has not been provided`)
 ];
 
 export const pdsUpdate = async (req, res, next) => {
   try {
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const interactionId = 'PRPA_IN000203UK03';
-    const conversationId = uuid().toUpperCase();
+    const conversationId = req.body.conversationId.toUpperCase();
 
     const message = await generateUpdateOdsRequest({
       id: conversationId,

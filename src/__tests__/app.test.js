@@ -122,7 +122,6 @@ describe('app', () => {
     beforeEach(() => {
       config.pdsAsid = 'pdsAsid';
       config.deductionsAsid = 'deductionsAsid';
-      uuid.mockImplementation(() => mockUUID);
 
       process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
 
@@ -143,7 +142,8 @@ describe('app', () => {
         .send({
           serialChangeNumber: '123',
           pdsId: 'cppz',
-          newOdsCode: '12345'
+          newOdsCode: '12345',
+          conversationId: mockUUID.toUpperCase()
         })
         .expect(204)
         .expect(res => {

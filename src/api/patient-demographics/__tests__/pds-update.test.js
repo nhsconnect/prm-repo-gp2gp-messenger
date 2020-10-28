@@ -1,6 +1,5 @@
 import { when } from 'jest-when';
 import request from 'supertest';
-import { v4 as uuid } from 'uuid';
 import app from '../../../app';
 import config from '../../../config';
 import { updateLogEvent } from '../../../middleware/logging';
@@ -20,6 +19,7 @@ const fakerequest =
 const interactionId = 'PRPA_IN000203UK03';
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
+const error503MockUuid = '893b17bc-5369-4ca1-a6aa-579f2f5cb318';
 
 function generateLogEvent(message) {
   return {
@@ -37,9 +37,13 @@ describe('POST /patient-demographics/:nhsNumber', () => {
     config.pdsAsid = 'pdsAsid';
     config.deductionsAsid = 'deductionsAsid';
     config.deductionsOdsCode = 'deductionsOds';
-    uuid.mockImplementation(() => mockUUID);
 
     when(sendMessage)
+      .calledWith({
+        interactionId,
+        conversationId: error503MockUuid.toUpperCase(),
+        message: fakerequest
+      })
       .mockResolvedValue({ status: 503, data: 'MHS Error' })
       .calledWith({
         interactionId,
@@ -63,7 +67,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: mockUUID
       })
       .expect(204)
       .expect(res => {
@@ -78,7 +83,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: mockUUID
       })
       .expect(() => {
         expect(generateUpdateOdsRequest).toHaveBeenCalledWith({
@@ -104,7 +110,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: mockUUID
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -125,7 +132,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .send({
         serialChangeNumber: 'xxx',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: mockUUID
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -145,6 +153,29 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
+        newOdsCode: '12345',
+        conversationId: mockUUID
+      })
+      .expect(422)
+      .expect('Content-Type', /json/)
+      .expect(res => {
+        expect(res.body).toEqual({
+          errors: errorMessage
+        });
+        expect(updateLogEvent).toHaveBeenCalledTimes(1);
+        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+      })
+      .end(done);
+  });
+
+  it('should return an error if :conversationId is not a uuid', done => {
+    const errorMessage = [{ conversationId: "'conversationId' provided is not of type UUIDv4" }];
+    request(app)
+      .patch('/patient-demographics/9442964410')
+      .send({
+        conversationId: 'wrong-format-not-uuid',
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
         newOdsCode: '12345'
       })
       .expect(422)
@@ -165,7 +196,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
-        pdsId: 'cppz'
+        pdsId: 'cppz',
+        conversationId: mockUUID
       })
       .expect(422)
       .expect('Content-Type', /json/)
@@ -180,14 +212,13 @@ describe('POST /patient-demographics/:nhsNumber', () => {
   });
 
   it('should return a 503 with error message if mhs returns a 500 status code', done => {
-    uuid.mockImplementation(() => mockErrorUUID);
-
     request(app)
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: mockErrorUUID
       })
       .expect(res => {
         expect(res.status).toBe(503);
@@ -197,14 +228,13 @@ describe('POST /patient-demographics/:nhsNumber', () => {
   });
 
   it('should return a 503 with error message if mhs returns a 503 status code', done => {
-    uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
-
     request(app)
       .patch('/patient-demographics/9442964410')
       .send({
         serialChangeNumber: '123',
         pdsId: 'cppz',
-        newOdsCode: '12345'
+        newOdsCode: '12345',
+        conversationId: error503MockUuid
       })
       .expect(res => {
         expect(res.status).toBe(503);
