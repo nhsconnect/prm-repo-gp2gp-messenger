@@ -9,6 +9,7 @@
     "test:unit": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config",
     "test:integration": "jest \"src/.*\\integration.test\\.js\" --detectOpenHandles --forceExit --setupFiles dotenv/config",
     "test:functional": "jest test/functional/*",
+    "test:functional:opentest": "jest \"test/functional/(?!(.*\\health-record-requests.test.js))\"",
     "test:docker": "jest test/docker/*",
     "test:watch": "jest \"src/(?!(.*\\integration.test\\.js))\" --setupFiles dotenv/config --watch",
     "test:coverage": "jest src/ --maxWorkers=1 --coverage --detectOpenHandles --forceExit --setupFiles dotenv/config",

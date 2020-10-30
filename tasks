@@ -210,7 +210,11 @@ case "${command}" in
       ;;
   _test_functional)
       npm install
-      npm run test:functional
+      if [[ "${NHS_ENVIRONMENT}" == "dev" ]]; then
+        npm run test:functional:opentest
+      else
+        npm run test:functional
+      fi
       ;;
   test_functional)
       configure_aws_service_auth_keys
