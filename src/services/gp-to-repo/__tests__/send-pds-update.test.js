@@ -31,6 +31,7 @@ describe('sendPdsUpdate', () => {
     expect(axios.patch).toHaveBeenCalledTimes(1);
     expect(axios.patch).toHaveBeenCalledWith(
       `${config.gpToRepoUrl}/deduction-requests/${conversationId}/pds-update`,
+      {},
       axiosHeaders
     );
     done();
