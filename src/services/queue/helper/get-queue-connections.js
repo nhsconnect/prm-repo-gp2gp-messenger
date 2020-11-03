@@ -1,6 +1,10 @@
 import { ConnectFailover } from 'stompit';
 import { getStompitQueueConfig } from '../../../config/utils';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import {
+  eventFinished,
+  updateLogEvent,
+  updateLogEventWithError
+} from '../../../middleware/logging';
 
 export const getQueueConnections = () => {
   const connections = new ConnectFailover(getStompitQueueConfig(), {
@@ -15,10 +19,12 @@ export const getQueueConnections = () => {
         transportPath: connector.serverProperties.remoteAddress.transportPath
       }
     });
+    eventFinished();
   });
 
   connections.on('error', err => {
     updateLogEventWithError(new Error(`Connection.onError: ${err.message}`));
+    eventFinished();
   });
 
   return connections;
