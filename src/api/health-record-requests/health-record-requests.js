@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { eventFinished, updateLogEvent } from '../../middleware/logging';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -28,8 +29,11 @@ export const healthRecordRequests = async (req, res) => {
       message
     });
     res.sendStatus(204);
+    updateLogEvent({ status: 'EHR Request sent', conversationId: conversationId });
   } catch (err) {
     res.status(503).send({ errors: ['Sending EHR Request has failed', err.message] });
+  } finally {
+    eventFinished();
   }
 };
 
