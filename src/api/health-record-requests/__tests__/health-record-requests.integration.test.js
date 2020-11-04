@@ -13,8 +13,15 @@ const repositoryOdsCode = '12';
 const repositoryAsid = '64834';
 const practiceOdsCode = '098';
 const practiceAsid = '09';
+const conversationId = '2d8ac681-0721-4d0c-8b76-5a26987829fb';
 
-const mockBody = { repositoryOdsCode, repositoryAsid, practiceOdsCode, practiceAsid };
+const mockBody = {
+  repositoryOdsCode,
+  repositoryAsid,
+  practiceOdsCode,
+  practiceAsid,
+  conversationId
+};
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
