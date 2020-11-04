@@ -161,7 +161,8 @@ describe('app', () => {
           repositoryOdsCode: 'repo_ods_code',
           repositoryAsid: 'repo_asid',
           practiceOdsCode: 'practice_ods_code',
-          practiceAsid: 'practice_asid'
+          practiceAsid: 'practice_asid',
+          conversationId: mockUUID.toUpperCase()
         })
         .expect(204)
         .end(done);

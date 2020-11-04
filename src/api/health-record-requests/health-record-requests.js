@@ -1,5 +1,4 @@
 import { param, body } from 'express-validator';
-import { v4 as uuid } from 'uuid';
 import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
@@ -13,12 +12,14 @@ export const healthRecordRequestValidation = [
   body('repositoryOdsCode').notEmpty().withMessage("'repositoryOdsCode' is not configured"),
   body('repositoryAsid').notEmpty().withMessage("'repositoryAsid' is not configured"),
   body('practiceOdsCode').notEmpty().withMessage("'practiceOdsCode' is not configured"),
-  body('practiceAsid').notEmpty().withMessage("'practiceAsid' is not configured")
+  body('practiceAsid').notEmpty().withMessage("'practiceAsid' is not configured"),
+  body('conversationId').isUUID('4').withMessage("'conversationId' provided is not of type UUIDv4"),
+  body('conversationId').notEmpty().withMessage("'conversationId' is not configured")
 ];
 
 export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
-  const conversationId = uuid().toUpperCase();
+  const conversationId = req.body.conversationId.toUpperCase();
 
   const message = await buildEhrRequest(req, conversationId);
   try {

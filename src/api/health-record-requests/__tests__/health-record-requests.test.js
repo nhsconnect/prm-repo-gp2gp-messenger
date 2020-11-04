@@ -3,7 +3,6 @@ import app from '../../../app';
 import dateFormat from 'dateformat';
 import { buildEhrRequest } from '../health-record-requests';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
-import { v4 as uuid } from 'uuid';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 
 jest.mock('../../../middleware/logging');
@@ -17,12 +16,12 @@ const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
-    uuid.mockImplementation(() => mockUUID);
     generateEhrRequestQuery.mockResolvedValue('message');
   });
 
   describe('healthRecordRequests', () => {
     const body = {
+      conversationId: mockUUID,
       repositoryOdsCode: 'repo_ods_code',
       repositoryAsid: 'repo_asid',
       practiceOdsCode: 'practice_ods_code',
@@ -173,6 +172,37 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           expect(res.body).toEqual(
             expect.objectContaining({
               errors: expect.arrayContaining([{ practiceAsid: "'practiceAsid' is not configured" }])
+            })
+          );
+        })
+        .end(done);
+    });
+
+    it('should return correct error message if conversationId is not configured', done => {
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .expect(res => {
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              errors: expect.arrayContaining([
+                { conversationId: "'conversationId' is not configured" }
+              ])
+            })
+          );
+        })
+        .end(done);
+    });
+
+    it('should return correct error message if conversationId is not an uuid', done => {
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .send({ conversationId: 'not-an-uuid' })
+        .expect(res => {
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              errors: expect.arrayContaining([
+                { conversationId: "'conversationId' provided is not of type UUIDv4" }
+              ])
             })
           );
         })
