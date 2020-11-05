@@ -1,15 +1,17 @@
 import request from 'supertest';
-import app from '../../../app';
 import dateFormat from 'dateformat';
-import { buildEhrRequest } from '../health-record-requests';
+import app from '../../../app';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
+import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
+import { buildEhrRequest } from '../health-record-requests';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/ehr-request-template');
 jest.mock('dateformat');
 jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../services/mhs/mhs-route-client');
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
@@ -24,8 +26,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       conversationId: mockUUID,
       repositoryOdsCode: 'repo_ods_code',
       repositoryAsid: 'repo_asid',
-      practiceOdsCode: 'practice_ods_code',
-      practiceAsid: 'practice_asid'
+      practiceOdsCode: 'practice_ods_code'
     };
 
     it('should return a 204', done => {
@@ -82,6 +83,32 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           expect(sendMessage).toHaveBeenCalledWith(
             expect.objectContaining({ odsCode: body.practiceOdsCode })
           );
+        })
+        .end(done);
+    });
+
+    it('should get practice ASID from MHS based on practice ods code', done => {
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .send(body)
+        .expect(204)
+        .expect(() => {
+          expect(getPracticeAsid).toHaveBeenCalledTimes(1);
+          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode);
+        })
+        .end(done);
+    });
+
+    it('should return 503 when MHS route lookup fails', done => {
+      getPracticeAsid.mockRejectedValue(new Error('lookup failed'));
+
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .send(body)
+        .expect(503)
+        .expect(() => {
+          expect(getPracticeAsid).toHaveBeenCalledTimes(1);
+          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode);
         })
         .end(done);
     });
@@ -165,19 +192,6 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .end(done);
     });
 
-    it('should return correct error message if practice asid is not configured', done => {
-      request(app)
-        .post('/health-record-requests/1234567890')
-        .expect(res => {
-          expect(res.body).toEqual(
-            expect.objectContaining({
-              errors: expect.arrayContaining([{ practiceAsid: "'practiceAsid' is not configured" }])
-            })
-          );
-        })
-        .end(done);
-    });
-
     it('should return correct error message if conversationId is not configured', done => {
       request(app)
         .post('/health-record-requests/1234567890')
@@ -221,14 +235,13 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         nhsNumber
       },
       body: {
-        practiceAsid,
         practiceOdsCode,
         repositoryAsid,
         repositoryOdsCode
       }
     };
     it('should call buildEhrRequest with valid id to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({ id: mockUUID })
       );
@@ -237,15 +250,15 @@ describe('POST /health-record-requests/:nhsNumber', () => {
 
     it('should call buildEhrRequest with valid timestamp to generate request', async done => {
       dateFormat.mockImplementation(() => mockTimestamp);
-      await buildEhrRequest(exampleRequest, mockUUID);
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({ timestamp: mockTimestamp })
       );
       done();
     });
 
-    it('should call buildEhrRequest with receiving asid to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+    it('should call buildEhrRequest with practice asid to generate request', async done => {
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
           receivingService: expect.objectContaining({
@@ -256,8 +269,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       done();
     });
 
-    it('should call buildEhrRequest with receiving ods code to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+    it('should call buildEhrRequest with practice ods code to generate request', async done => {
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
           receivingService: expect.objectContaining({
@@ -268,8 +281,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       done();
     });
 
-    it('should call buildEhrRequest with sending asid to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+    it('should call buildEhrRequest with repository asid to generate request', async done => {
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
           sendingService: expect.objectContaining({
@@ -280,8 +293,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       done();
     });
 
-    it('should call buildEhrRequest with sending ods code to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+    it('should call buildEhrRequest with repository ods code to generate request', async done => {
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
           sendingService: expect.objectContaining({
@@ -293,7 +306,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     });
 
     it('should call buildEhrRequest with patient nhsNumber to generate request', async done => {
-      await buildEhrRequest(exampleRequest, mockUUID);
+      await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
           patient: expect.objectContaining({

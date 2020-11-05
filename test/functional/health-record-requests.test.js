@@ -9,7 +9,6 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       repositoryOdsCode: 'B86041',
       repositoryAsid: '200000001161',
       practiceOdsCode: 'M85019',
-      practiceAsid: '200000000149',
       conversationId: '2d8ac681-0721-4d0c-8b76-5a26987829fb'
     };
 

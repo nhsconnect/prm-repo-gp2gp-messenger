@@ -1,12 +1,14 @@
 import request from 'supertest';
-import app from '../../../app';
 import axios from 'axios';
+import app from '../../../app';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
+import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 
 jest.mock('../../../middleware/logging');
 jest.mock('axios');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/ehr-request-template');
+jest.mock('../../../services/mhs/mhs-route-client');
 
 const nhsNumber = '1111111111';
 const repositoryOdsCode = '12';
@@ -19,13 +21,13 @@ const mockBody = {
   repositoryOdsCode,
   repositoryAsid,
   practiceOdsCode,
-  practiceAsid,
   conversationId
 };
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
     generateEhrRequestQuery.mockResolvedValue('message');
+    getPracticeAsid.mockResolvedValue(practiceAsid);
   });
 
   it('should generate ehr request query', done => {

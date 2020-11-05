@@ -64,6 +64,10 @@ data "aws_ssm_parameter" "mhs_outbound_url" {
   name = "/repo/${var.environment}/output/prm-mhs-infra/mhs-outbound-url"
 }
 
+data "aws_ssm_parameter" "mhs_route_url" {
+  name = "/repo/${var.environment}/output/prm-mhs-infra/mhs-route-url"
+}
+
 data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-alb-internal-dns"
 }

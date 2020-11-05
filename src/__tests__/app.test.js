@@ -8,12 +8,14 @@ import { getHealthCheck } from '../services/health-check/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
+import { getPracticeAsid } from '../services/mhs/mhs-route-client';
 
 jest.mock('../api/ehr-request/send-ehr-request');
 jest.mock('../config/logging');
 jest.mock('../services/health-check/get-health-check');
 jest.mock('../middleware/auth');
 jest.mock('../services/mhs/mhs-outbound-client');
+jest.mock('../services/mhs/mhs-route-client');
 jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
 jest.mock('../templates/ehr-request-template');
@@ -154,6 +156,7 @@ describe('app', () => {
   });
 
   describe('POST /health-record-requests/:nhsNumber', () => {
+    getPracticeAsid.mockResolvedValue('practice_asid');
     it('should return a 204 status code', done => {
       request(app)
         .post('/health-record-requests/1234567890')
@@ -161,7 +164,6 @@ describe('app', () => {
           repositoryOdsCode: 'repo_ods_code',
           repositoryAsid: 'repo_asid',
           practiceOdsCode: 'practice_ods_code',
-          practiceAsid: 'practice_asid',
           conversationId: mockUUID.toUpperCase()
         })
         .expect(204)

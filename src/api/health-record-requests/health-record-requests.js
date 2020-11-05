@@ -3,6 +3,7 @@ import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { eventFinished, updateLogEvent } from '../../middleware/logging';
+import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -12,7 +13,6 @@ export const healthRecordRequestValidation = [
   body('repositoryOdsCode').notEmpty().withMessage("'repositoryOdsCode' is not configured"),
   body('repositoryAsid').notEmpty().withMessage("'repositoryAsid' is not configured"),
   body('practiceOdsCode').notEmpty().withMessage("'practiceOdsCode' is not configured"),
-  body('practiceAsid').notEmpty().withMessage("'practiceAsid' is not configured"),
   body('conversationId').isUUID('4').withMessage("'conversationId' provided is not of type UUIDv4"),
   body('conversationId').notEmpty().withMessage("'conversationId' is not configured")
 ];
@@ -21,8 +21,10 @@ export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
   const conversationId = req.body.conversationId.toUpperCase();
 
-  const message = await buildEhrRequest(req, conversationId);
   try {
+    const asid = await getPracticeAsid(req.body.practiceOdsCode);
+    const message = await buildEhrRequest(req, conversationId, asid);
+
     await sendMessage({
       interactionId,
       conversationId,
@@ -38,14 +40,14 @@ export const healthRecordRequests = async (req, res) => {
   }
 };
 
-export const buildEhrRequest = async (req, conversationId) => {
+export const buildEhrRequest = async (req, conversationId, practiceAsid) => {
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 
   return generateEhrRequestQuery({
     id: conversationId,
     timestamp,
     receivingService: {
-      asid: req.body.practiceAsid,
+      asid: practiceAsid,
       odsCode: req.body.practiceOdsCode
     },
     sendingService: {

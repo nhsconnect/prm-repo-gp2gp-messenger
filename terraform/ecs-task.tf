@@ -14,6 +14,7 @@ locals {
       { name = "EHR_REPO_URL", value = "http://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
       { name = "GP_TO_REPO_URL", value = "http://${var.environment}.gp-to-repo.patient-deductions.nhs.uk" },
       { name = "MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.mhs_outbound_url.value },
+      { name = "MHS_ROUTE_URL", value = data.aws_ssm_parameter.mhs_route_url.value },
     ]
     secret_environment_variables = [
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },

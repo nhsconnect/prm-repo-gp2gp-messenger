@@ -14,8 +14,7 @@ RUN apk add --no-cache tini bash
 
 COPY run-server.sh /usr/bin/run-gp2gp-server
 
-ENV AUTHORIZATION_KEYS="auth-key-1" \
-  MHS_QUEUE_VIRTUAL_HOST="/" \
+ENV MHS_QUEUE_VIRTUAL_HOST="/" \
   DEDUCTIONS_ASID=deduction-asid \
   DEDUCTIONS_ODS_CODE=deduction-ods \
   NODE_ENV=local \
@@ -23,7 +22,14 @@ ENV AUTHORIZATION_KEYS="auth-key-1" \
   MHS_QUEUE_URL_1=tcp://localhost:61613 \
   MHS_QUEUE_URL_2="" \
   MHS_QUEUE_USERNAME="" \
-  MHS_QUEUE_PASSWORD=""
+  MHS_QUEUE_PASSWORD="" \
+  S3_BUCKET_NAME="" \
+  EHR_REPO_URL="" \
+  GP_TO_REPO_URL="" \
+  MHS_OUTBOUND_URL="" \
+  MHS_ROUTE_URL="" \
+  GP2GP_ADAPTOR_AUTHORIZATION_KEYS="auth-key-1" \
+  GP_TO_REPO_AUTHORIZATION_KEYS=""
 
 RUN npm install
 

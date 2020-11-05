@@ -105,6 +105,7 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
    EHR_REPO_URL=http://ehr-repo.com
    PDS_ASID=
    MHS_OUTBOUND_URL=
+   MHS_ROUTE_URL=
    ```
 
 - Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
