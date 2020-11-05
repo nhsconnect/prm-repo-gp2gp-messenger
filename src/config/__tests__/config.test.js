@@ -81,6 +81,7 @@ describe('config', () => {
         process.env.EHR_REPO_URL = 'ehrRepoUrl';
         process.env.PDS_ASID = 'pdsAsid';
         process.env.MHS_OUTBOUND_URL = 'mhsOutboundUrl';
+        process.env.MHS_ROUTE_URL = 'mhsRouteUrl';
         process.env.NODE_ENV = 'nodeEnv';
         process.env.SERVICE_URL = 'url';
 
@@ -97,6 +98,7 @@ describe('config', () => {
             ehrRepoUrl: 'ehrRepoUrl',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
+            mhsRouteUrl: 'mhsRouteUrl',
             nodeEnv: 'nodeEnv',
             url: 'url'
           })

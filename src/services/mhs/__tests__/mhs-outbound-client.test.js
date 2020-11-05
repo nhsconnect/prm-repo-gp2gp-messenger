@@ -17,7 +17,7 @@ const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const interactionId = 'QUPA_IN040000UK32';
 const url = 'http://url.com';
 
-describe('mhs-service', () => {
+describe('mhs-outbound-client', () => {
   const message = 'message';
 
   const axiosHeaders = {

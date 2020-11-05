@@ -60,6 +60,7 @@
     "husky": "^4.3.0",
     "jest": "^26.5.3",
     "jest-when": "^2.7.2",
+    "nock": "^13.0.4",
     "nodemon": "^2.0.5",
     "prettier": "^2.1.2",
     "supertest": "^5.0.0"
