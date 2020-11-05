@@ -3,7 +3,11 @@ import {
   PDSGeneralUpdateRequestAccepted,
   PDS_GENERAL_UPDATE_REQUEST_ACCEPTED
 } from '../pds-general-update-request-accepted';
-import { pdsGenerateUpdateRequest } from './data/pds-generate-update-request-accepted';
+import {
+  conversationId,
+  pdsGenerateUpdateRequest
+} from './data/pds-generate-update-request-accepted';
+import { sendPdsUpdate } from '../../gp-to-repo';
 
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn()
@@ -65,9 +69,15 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
       expect(updateLogEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           messageDetails: expect.any(Object),
-          conversationId: expect.any(String)
+          conversationId: conversationId
         })
       );
+      done();
+    });
+
+    it('should call updateLogEvent to update messageDetails with soap information and conversation ID', async done => {
+      await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
+      expect(sendPdsUpdate).toHaveBeenCalledWith(conversationId);
       done();
     });
   });
