@@ -258,7 +258,7 @@
         "practiceOdsCode": {
           "type": "string"
         },
-        "practiceAsid": {
+        "conversationId": {
           "type": "string"
         }
       }
