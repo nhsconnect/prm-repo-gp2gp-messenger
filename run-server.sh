@@ -5,10 +5,10 @@
 
 MQ_CONNECTION_TIMEOUT=30
 
-MQ_HOST_1=$(echo $MHS_QUEUE_URL_1 | awk -F "://" '{print $2}' |  awk -F ":" '{print $1}')
-MQ_PORT_1=$(echo $MHS_QUEUE_URL_1 | awk -F "://" '{print $2}' |  awk -F ":" '{print $2}')
-MQ_HOST_2=$(echo $MHS_QUEUE_URL_2 | awk -F "://" '{print $2}' |  awk -F ":" '{print $1}')
-MQ_PORT_2=$(echo $MHS_QUEUE_URL_2 | awk -F "://" '{print $2}' |  awk -F ":" '{print $2}')
+MQ_HOST_1=$(echo $GP2GP_ADAPTOR_MHS_QUEUE_URL_1 | awk -F "://" '{print $2}' |  awk -F ":" '{print $1}')
+MQ_PORT_1=$(echo $GP2GP_ADAPTOR_MHS_QUEUE_URL_1 | awk -F "://" '{print $2}' |  awk -F ":" '{print $2}')
+MQ_HOST_2=$(echo $GP2GP_ADAPTOR_MHS_QUEUE_URL_2 | awk -F "://" '{print $2}' |  awk -F ":" '{print $1}')
+MQ_PORT_2=$(echo $GP2GP_ADAPTOR_MHS_QUEUE_URL_2 | awk -F "://" '{print $2}' |  awk -F ":" '{print $2}')
 
 echo "Waiting for any MQ port to be open"
 count=0

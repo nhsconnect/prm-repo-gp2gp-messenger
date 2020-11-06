@@ -42,8 +42,8 @@ describe('mhs-outbound-client', () => {
   });
 
   afterEach(() => {
-    config.deductionsAsid = process.env.DEDUCTIONS_ASID;
-    config.mhsOutboundUrl = process.env.MHS_OUTBOUND_URL;
+    config.deductionsAsid = process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
+    config.mhsOutboundUrl = process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL;
   });
 
   it('should reject with an Error if interactionId is not passed in', () => {

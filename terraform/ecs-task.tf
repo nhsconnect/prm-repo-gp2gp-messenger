@@ -4,23 +4,23 @@ locals {
     task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
     task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
     environment_variables        = [
-      { name = "DEDUCTIONS_ODS_CODE", value = data.aws_ssm_parameter.deductions_ods_code.value },
-      { name = "DEDUCTIONS_ASID", value = data.aws_ssm_parameter.deductions_asid.value },
+      { name = "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE.value },
+      { name = "GP2GP_ADAPTOR_REPOSITORY_ASID", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ASID.value },
       { name = "NODE_ENV", value = var.environment },
-      { name = "MHS_QUEUE_NAME", value = "raw-inbound" },
-      { name = "MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
-      { name = "MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
-      { name = "S3_BUCKET_NAME", value = var.s3_bucket_name },
-      { name = "EHR_REPO_URL", value = "http://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
-      { name = "GP_TO_REPO_URL", value = "http://${var.environment}.gp-to-repo.patient-deductions.nhs.uk" },
-      { name = "MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.mhs_outbound_url.value },
-      { name = "MHS_ROUTE_URL", value = data.aws_ssm_parameter.mhs_route_url.value },
+      { name = "GP2GP_ADAPTOR_MHS_QUEUE_NAME", value = "raw-inbound" },
+      { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
+      { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
+      { name = "GP2GP_ADAPTOR_S3_BUCKET_NAME", value = var.s3_bucket_name },
+      { name = "GP2GP_ADAPTOR_EHR_REPO_URL", value = "http://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
+      { name = "GP2GP_ADAPTOR_GP_TO_REPO_URL", value = "http://${var.environment}.gp-to-repo.patient-deductions.nhs.uk" },
+      { name = "GP2GP_ADAPTOR_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_OUTBOUND_URL.value },
+      { name = "GP2GP_ADAPTOR_MHS_ROUTE_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_ROUTE_URL.value },
     ]
     secret_environment_variables = [
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },
-      { name = "GP_TO_REPO_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp_to_repo_authorization_keys.arn },
-      { name = "MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },
-      { name = "MHS_QUEUE_PASSWORD", valueFrom = data.aws_ssm_parameter.amq-password.arn },
+      { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO", valueFrom = data.aws_ssm_parameter.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO.arn },
+      { name = "GP2GP_ADAPTOR_MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },
+      { name = "GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD", valueFrom = data.aws_ssm_parameter.amq-password.arn },
     ]
 }
 

@@ -30,15 +30,15 @@ function check_nhs_service {
 
 function configure_local_envs {
   export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
-  export MHS_QUEUE_URL_1=tcp://mq-1:61613
-  export MHS_QUEUE_URL_2=tcp://mq-2:61613
-  export MHS_QUEUE_USERNAME=admin
-  export MHS_QUEUE_PASSWORD=admin
-  export MHS_QUEUE_NAME=gp2gp-test
-  export MHS_QUEUE_VIRTUAL_HOST="/"
+  export GP2GP_ADAPTOR_MHS_QUEUE_URL_1=tcp://mq-1:61613
+  export GP2GP_ADAPTOR_MHS_QUEUE_URL_2=tcp://mq-2:61613
+  export GP2GP_ADAPTOR_MHS_QUEUE_USERNAME=admin
+  export GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD=admin
+  export GP2GP_ADAPTOR_MHS_QUEUE_NAME=gp2gp-test
+  export GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST="/"
   export REPOSITORY_URI=$IMAGE_REPO_NAME
   export NODE_ENV=local
-  export GP_TO_REPO_AUTHORIZATION_KEYS=auth-key-2
+  export GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO=auth-key-2
   configure_service_url
 }
 
@@ -69,7 +69,7 @@ function configure_aws_service_gp_to_repo_auth_keys {
     check_env
     get_aws_account_id
     parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/gp-to-repo-authorization-keys"
-    export GP_TO_REPO_AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
+    export GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO=$(get_aws_ssm_secret ${parameter_name})
 }
 
 function get_aws_ssm_secret {

@@ -120,7 +120,7 @@ describe('/patient-demographics/:nhsNumber', () => {
     }
 
     config.pdsAsid = process.env.PDS_ASID;
-    config.deductionsAsid = process.env.DEDUCTIONS_ASID;
+    config.deductionsAsid = process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
   });
 
   it('should return a 200 with MHS message passed back', done => {

@@ -46,7 +46,7 @@ aws_access_key_id = <your-aws-access-key-id>
 aws_secret_access_key = <your-aws-secret-access-key>
 ```
 
-## Assume role with elevated permissions 
+## Assume role with elevated permissions
 
 ### Install `assume-role` locally:
 `brew install remind101/formulae/assume-role`
@@ -71,7 +71,7 @@ When creating the new ssm keys, please follow the agreed convention as per the d
 * all parts of the keys are lower case
 * the words are separated by dashes (`kebab case`)
 * `env` is optional
-  
+
 ### Design:
 Please follow this design to ensure the ssm keys are easy to maintain and navigate through:
 
@@ -87,31 +87,31 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
 2. Create a .env file at the root of the directory
 3. Copy the contents of the [.env.sample](./.env.sample) file at the root of the directory, and paste into the .env file. The .env.sample file contains template environment variables.
 4. If you would like to run locally, following the steps below, otherwise fill in the required fields.
-   - Note: The `AUTHORIZATION_KEYS` should be a string.
+   - Note: The `GP2GP_ADAPTOR_AUTHORIZATION_KEYS` should be a string.
 5. The app will use a fake MHS when `NODE_ENV` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
 
    ```
-   AUTHORIZATION_KEYS=auth-key-1
-   MHS_QUEUE_VIRTUAL_HOST="/"
-   DEDUCTIONS_ASID=deduction-asid
-   DEDUCTIONS_ODS_CODE=deduction-ods
+   GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
+   GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST="/"
+   GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
+   GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
    NODE_ENV=local
-   MHS_QUEUE_NAME=gp2gp-test
-   MHS_QUEUE_URL_1=tcp://localhost:61610
-   MHS_QUEUE_URL_2=tcp://localhost:61613
-   MHS_QUEUE_VIRTUAL_HOST=/
-   MHS_QUEUE_USERNAME=
-   MHS_QUEUE_PASSWORD=
-   EHR_REPO_URL=http://ehr-repo.com
+   GP2GP_ADAPTOR_MHS_QUEUE_NAME=gp2gp-test
+   GP2GP_ADAPTOR_MHS_QUEUE_URL_1=tcp://localhost:61610
+   GP2GP_ADAPTOR_MHS_QUEUE_URL_2=tcp://localhost:61613
+   GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST=/
+   GP2GP_ADAPTOR_MHS_QUEUE_USERNAME=
+   GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD=
+   GP2GP_ADAPTOR_EHR_REPO_URL=http://ehr-repo.com
    PDS_ASID=
-   MHS_OUTBOUND_URL=
-   MHS_ROUTE_URL=
+   GP2GP_ADAPTOR_MHS_OUTBOUND_URL=
+   GP2GP_ADAPTOR_MHS_ROUTE_URL=
    ```
 
-- Locally, the variables `AUTHORIZATION_KEYS`, `DEDUCTIONS_ASID`, `DEDUCTIONS_ODS_CODE` and `MHS_QUEUE_NAME` can be set
-  to any value and the variables `MHS_QUEUE_USERNAME` and `MHS_QUEUE_PASSWORD` do not need to be set at
+- Locally, the variables `GP2GP_ADAPTOR_AUTHORIZATION_KEYS`, `GP2GP_ADAPTOR_REPOSITORY_ASID`, `GP2GP_ADAPTOR_REPOSITORY_ODS_CODE` and `GP2GP_ADAPTOR_MHS_QUEUE_NAME` can be set
+  to any value and the variables `GP2GP_ADAPTOR_MHS_QUEUE_USERNAME` and `GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD` do not need to be set at
   all.
-- `MHS_QUEUE_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
+- `GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST` should be set to `/` on a typical rabbitmq setup, but it might other values depending on what queue hosting is used.
 
 ## Running the tests
 
@@ -121,7 +121,7 @@ Run the unit tests with
 
 Run the integration tests.
 
-1. Run `docker-compose up` to set up the message queues. 
+1. Run `docker-compose up` to set up the message queues.
 2. Run `npm run test:integration`.
 
 Alternatively, run `./tasks test_integration` (runs the tests within a Dojo container)
@@ -142,12 +142,12 @@ Alternatively, run `./tasks test_coverage` (runs the tests within a Dojo contain
 
 ```.env
 // .env
-MHS_QUEUE_NAME=<any-name>
-MHS_QUEUE_URL_1=tcp://localhost:61620
-MHS_QUEUE_URL_2=tcp://localhost:61621
-MHS_QUEUE_VIRTUAL_HOST=/
-MHS_QUEUE_USERNAME=admin
-MHS_QUEUE_PASSWORD=admin
+GP2GP_ADAPTOR_MHS_QUEUE_NAME=<any-name>
+GP2GP_ADAPTOR_MHS_QUEUE_URL_1=tcp://localhost:61620
+GP2GP_ADAPTOR_MHS_QUEUE_URL_2=tcp://localhost:61621
+GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST=/
+GP2GP_ADAPTOR_MHS_QUEUE_USERNAME=admin
+GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD=admin
 ```
 
 ```
@@ -185,23 +185,22 @@ Update the .env file with the following config items can be found in SSM propert
 
 | Parameters         | SSM Parameter                                                             |
 |--------------------|---------------------------------------------------------------------------|
-| MHS_QUEUE_URL_1    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-0      |
-| MHS_QUEUE_URL_2    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-1      |
-| MHS_QUEUE_USERNAME | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-username                     |
-| MHS_QUEUE_PASSWORD | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-password                     |
-| MHS_QUEUE_NAME     | Please set this to something different than in Terraform                  |
+| GP2GP_ADAPTOR_MHS_QUEUE_URL_1    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-0      |
+| GP2GP_ADAPTOR_MHS_QUEUE_URL_2    | /repo/${NHS_ENVIRONMENT}/output/prm-deductions-infra/amqp-endpoint-1      |
+| GP2GP_ADAPTOR_MHS_QUEUE_USERNAME | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-username                     |
+| GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD | /repo/${NHS_ENVIRONMENT}/user-input/mq-admin-password                     |
+| GP2GP_ADAPTOR_MHS_QUEUE_NAME     | Please set this to something different than in Terraform                  |
 
 Ensure you have VPN connection set up to both `dev` and `test` environments:
 [CLICK HERE](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1832779966/VPN+for+Deductions+Services)
 
 ## Setup
 
-In AmazonMQ settings for either the `dev` or `test` provision. Edit the `deductor-amq-broker-${NHS_ENVIRONMENT}` 
-security group inbound rules. Add new rule that allows All TCP from the `${NHS_ENVIRONMENT} VPN VM security group`, 
+In AmazonMQ settings for either the `dev` or `test` provision. Edit the `deductor-amq-broker-${NHS_ENVIRONMENT}`
+security group inbound rules. Add new rule that allows All TCP from the `${NHS_ENVIRONMENT} VPN VM security group`,
 apply before running the following:
 
 ```
 // Starts the server locally using `.env`
 $ NHS_ENVIRONMENT=test npm run start:local
 ```
-

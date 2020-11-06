@@ -27,22 +27,22 @@ describe('config', () => {
 
   describe('deductionsAsid', () => {
     afterEach(() => {
-      process.env.DEDUCTIONS_ASID = originalEnv.DEDUCTIONS_ASID;
+      process.env.GP2GP_ADAPTOR_REPOSITORY_ASID = originalEnv.GP2GP_ADAPTOR_REPOSITORY_ASID;
     });
 
-    it('should return 200000001161 when DEDUCTIONS_ASID is not set', () => {
-      if (process.env.DEDUCTIONS_ASID) delete process.env.DEDUCTIONS_ASID;
+    it('should return 200000001161 when GP2GP_ADAPTOR_REPOSITORY_ASID is not set', () => {
+      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ASID) delete process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
       expect(initialiseConfig().deductionsAsid).toEqual('200000001161');
     });
   });
 
   describe('deductionsOdsCode', () => {
     afterEach(() => {
-      process.env.DEDUCTIONS_ODS_CODE = originalEnv.DEDUCTIONS_ODS_CODE;
+      process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE = originalEnv.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
     });
 
-    it('should return B86041 when DEDUCTIONS_ODS_CODE is not set', () => {
-      if (process.env.DEDUCTIONS_ODS_CODE) delete process.env.DEDUCTIONS_ODS_CODE;
+    it('should return B86041 when GP2GP_ADAPTOR_REPOSITORY_ODS_CODE is not set', () => {
+      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE) delete process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
       expect(initialiseConfig().deductionsOdsCode).toEqual('B86041');
     });
   });
@@ -69,19 +69,19 @@ describe('config', () => {
       });
 
       it('should map config with process.env values if set', () => {
-        process.env.DEDUCTIONS_ASID = 'deductionsAsid';
-        process.env.DEDUCTIONS_ODS_CODE = 'deductionsOdsCode';
-        process.env.MHS_QUEUE_NAME = 'queueName';
-        process.env.MHS_QUEUE_URL_1 = 'queueUrl1';
-        process.env.MHS_QUEUE_URL_2 = 'queueUrl2';
-        process.env.MHS_QUEUE_VIRTUAL_HOST = 'queueVirtualHost';
-        process.env.MHS_QUEUE_USERNAME = 'queueUsername';
-        process.env.MHS_QUEUE_PASSWORD = 'queuePassword';
-        process.env.S3_BUCKET_NAME = 'awsS3BucketName';
-        process.env.EHR_REPO_URL = 'ehrRepoUrl';
+        process.env.GP2GP_ADAPTOR_REPOSITORY_ASID = 'deductionsAsid';
+        process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE = 'deductionsOdsCode';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_NAME = 'queueName';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_1 = 'queueUrl1';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_2 = 'queueUrl2';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST = 'queueVirtualHost';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_USERNAME = 'queueUsername';
+        process.env.GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD = 'queuePassword';
+        process.env.GP2GP_ADAPTOR_S3_BUCKET_NAME = 'awsS3BucketName';
+        process.env.GP2GP_ADAPTOR_EHR_REPO_URL = 'ehrRepoUrl';
         process.env.PDS_ASID = 'pdsAsid';
-        process.env.MHS_OUTBOUND_URL = 'mhsOutboundUrl';
-        process.env.MHS_ROUTE_URL = 'mhsRouteUrl';
+        process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
+        process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'mhsRouteUrl';
         process.env.NODE_ENV = 'nodeEnv';
         process.env.SERVICE_URL = 'url';
 

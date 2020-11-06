@@ -36,8 +36,8 @@ describe('sendEhrRequest', () => {
   });
 
   afterEach(() => {
-    config.deductionsAsid = process.env.DEDUCTIONS_ASID;
-    config.deductionsOdsCode = process.env.DEDUCTIONS_ODS_CODE;
+    config.deductionsAsid = process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
+    config.deductionsOdsCode = process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
   });
 
   const odsCode = testData.emisPractise.odsCode;

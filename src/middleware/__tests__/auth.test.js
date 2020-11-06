@@ -31,14 +31,14 @@ describe('auth', () => {
     });
   });
 
-  describe('AUTHORIZATION_KEYS environment variables not provides', () => {
+  describe('GP2GP_ADAPTOR_AUTHORIZATION_KEYS environment variables not provides', () => {
     beforeEach(() => {
       if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
         delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
       }
     });
 
-    it('should return 412 if AUTHORIZATION_KEYS have not been set', done => {
+    it('should return 412 if GP2GP_ADAPTOR_AUTHORIZATION_KEYS have not been set', done => {
       request(app)
         .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')
@@ -46,7 +46,7 @@ describe('auth', () => {
         .end(done);
     });
 
-    it('should return an explicit error message in the body if AUTHORIZATION_KEYS have not been set', done => {
+    it('should return an explicit error message in the body if GP2GP_ADAPTOR_AUTHORIZATION_KEYS have not been set', done => {
       request(app)
         .get('/patient-demographics/0000000000')
         .set('Authorization', 'correct-key')

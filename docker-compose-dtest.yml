@@ -11,15 +11,15 @@ services:
       - mq-1:mq-1
       - mq-2:mq-2
     environment:
-      - AUTHORIZATION_KEYS=auth-key-1
-      - MHS_QUEUE_URL_1=tcp://mq-1:61613
-      - MHS_QUEUE_URL_2=tcp://mq-2:61613
-      - MHS_QUEUE_VIRTUAL_HOST=/
-      - DEDUCTIONS_ASID=deduction-asid
-      - DEDUCTIONS_ODS_CODE=deduction-ods
-      - MHS_QUEUE_NAME=gp2gp-test
-      - MHS_QUEUE_USERNAME=guest
-      - MHS_QUEUE_PASSWORD=guest
+      - GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
+      - GP2GP_ADAPTOR_MHS_QUEUE_URL_1=tcp://mq-1:61613
+      - GP2GP_ADAPTOR_MHS_QUEUE_URL_2=tcp://mq-2:61613
+      - GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST=/
+      - GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
+      - GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
+      - GP2GP_ADAPTOR_MHS_QUEUE_NAME=gp2gp-test
+      - GP2GP_ADAPTOR_MHS_QUEUE_USERNAME=guest
+      - GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD=guest
   mq-1:
     image: rmohr/activemq:5.15.9-alpine
   mq-2:
