@@ -1,8 +1,11 @@
+import { v4 as uuid } from 'uuid';
+
 const checkTemplateArguments = require('./utils/check_params');
 
 const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingService, patient }) => {
   const inputObject = {
     id,
+    ehrRequestHL7Id: uuid().toUpperCase(),
     timestamp,
     receivingService: {
       asid: undefined,
@@ -27,6 +30,7 @@ const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingServi
 const template = ({
   id,
   timestamp,
+  ehrRequestHL7Id,
   receivingService: { asid: receivingAsid, odsCode: receivingOdsCode },
   sendingService: { asid: sendingAsid, odsCode: sendingOdsCode },
   patient: { nhsNumber }
@@ -61,7 +65,7 @@ const template = ({
         </author1>
         <subject contextConductionInd="false" typeCode="SUBJ">
             <EhrRequest classCode="EXTRACT" moodCode="RQO">
-              <id root="BBBBA01A-A9D1-A411-F824-9F7A00A33757"/>
+              <id root="${ehrRequestHL7Id}"/>
               <recordTarget typeCode="RCT">
                   <patient classCode="PAT">
                       <id root="2.16.840.1.113883.2.1.4.1" extension="${nhsNumber}"/>
