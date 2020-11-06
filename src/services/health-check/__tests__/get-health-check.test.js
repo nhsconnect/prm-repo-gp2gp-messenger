@@ -1,39 +1,33 @@
 import { S3 } from 'aws-sdk';
 import { connect } from 'stompit';
-import config from '../../../config';
 import { getHealthCheck } from '../get-health-check';
 
 jest.mock('aws-sdk');
 jest.mock('aws-sdk');
 jest.mock('../../../config/logging');
+jest.mock('../../../config/', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    queueUsername: 'guest',
+    queuePassword: 'guest',
+    queueVirtualHost: '/'
+  })
+}));
 jest.mock('../../../middleware/logging');
 
-const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
-const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
-const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
 const mockErrorResponse = 'Error: exhausted connection failover';
 
-const originalConfig = { ...config };
-
 describe('get-health-check', () => {
-  beforeEach(() => {
-    config.queueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-    config.queueUsername = 'guest';
-    config.queuePassword = 'guest';
-    config.queueVirtualHost = '/';
+  const mockPutObject = jest.fn().mockImplementation((config, callback) => callback());
+  const mockDeleteObject = jest.fn().mockImplementation((config, callback) => callback());
+  const mockHeadBucket = jest.fn().mockImplementation((config, callback) => callback());
 
+  beforeEach(() => {
     S3.mockImplementation(() => ({
       putObject: mockPutObject,
       deleteObject: mockDeleteObject,
       headBucket: mockHeadBucket
     }));
-  });
-
-  afterEach(() => {
-    config.queueUrls = originalConfig.queueUrls;
-    config.queueUsername = originalConfig.queueUsername;
-    config.queuePassword = originalConfig.queuePassword;
-    config.queueVirtualHost = originalConfig.queueVirtualHost;
   });
 
   describe('getHealthCheck', () => {

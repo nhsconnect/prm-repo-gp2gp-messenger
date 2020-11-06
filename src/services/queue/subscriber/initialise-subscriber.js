@@ -1,10 +1,12 @@
-import config from '../../../config';
+import { initialiseConfig } from '../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { channelPool } from '../helper';
 import { subscriberReadMessageCallback } from './subscriber-read-message-callback';
 
-const initialiseSubscriber = (options = {}) =>
-  new Promise((resolve, reject) => {
+export const initialiseSubscriber = (options = {}) => {
+  const config = initialiseConfig();
+
+  return new Promise((resolve, reject) => {
     channelPool.channel((err, channel) => {
       if (err) {
         updateLogEventWithError(err);
@@ -27,5 +29,4 @@ const initialiseSubscriber = (options = {}) =>
       resolve(channel);
     });
   });
-
-export { initialiseSubscriber };
+};

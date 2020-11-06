@@ -1,16 +1,16 @@
 import axios from 'axios';
 import dateFormat from 'dateformat';
 import { v4 as uuid } from 'uuid';
-import config from '../../../config';
+import { initialiseConfig } from '../../../config';
 import { updateLogEventWithError } from '../../../middleware/logging';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 import testData from '../../../templates/__tests__/testData.json';
 import { sendMessage, stripXMLMessage } from '../mhs-outbound-client';
 
-jest.mock('../../../config/logging');
-jest.mock('../../../middleware/logging');
-
 jest.mock('axios');
+jest.mock('../../../config/logging');
+jest.mock('../../../config');
+jest.mock('../../../middleware/logging');
 
 const conversationId = uuid().toUpperCase();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
@@ -19,7 +19,6 @@ const url = 'http://url.com';
 
 describe('mhs-outbound-client', () => {
   const message = 'message';
-
   const axiosHeaders = {
     headers: {
       'Content-Type': 'application/json',
@@ -30,20 +29,11 @@ describe('mhs-outbound-client', () => {
       'from-asid': testData.mhs.asid
     }
   };
-
-  const axiosBody = {
-    payload: message
-  };
+  const axiosBody = { payload: message };
+  initialiseConfig.mockReturnValue({ deductionsAsid: testData.mhs.asid, mhsOutboundUrl: url });
 
   beforeEach(() => {
-    config.deductionsAsid = testData.mhs.asid;
-    config.mhsOutboundUrl = url;
     axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));
-  });
-
-  afterEach(() => {
-    config.deductionsAsid = process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
-    config.mhsOutboundUrl = process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL;
   });
 
   it('should reject with an Error if interactionId is not passed in', () => {

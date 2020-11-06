@@ -3,7 +3,6 @@ import request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import sendEhrRequest from '../api/ehr-request/send-ehr-request';
 import app from '../app';
-import config from '../config';
 import { getHealthCheck } from '../services/health-check/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
@@ -12,6 +11,13 @@ import { getPracticeAsid } from '../services/mhs/mhs-route-client';
 
 jest.mock('../api/ehr-request/send-ehr-request');
 jest.mock('../config/logging');
+jest.mock('../config/', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    pdsAsid: 'pdsAsid',
+    deductionsAsid: 'deductionsAsid'
+  })
+}));
 jest.mock('../services/health-check/get-health-check');
 jest.mock('../middleware/auth');
 jest.mock('../services/mhs/mhs-outbound-client');
@@ -20,17 +26,18 @@ jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
 jest.mock('../templates/ehr-request-template');
 
-const testSerialChangeNumber = '2';
-const testPatientPdsId = 'cppz';
-const testOdsCode = 'B12345';
-const interactionId = 'QUPA_IN000008UK02';
-const interactionIdUpdate = 'PRPA_IN000203UK03';
-const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
-const fakerequest =
-  '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></QUPA_IN000008UK02>';
-const fakerequestUpdate =
-  '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';
-const message = `
+describe('app', () => {
+  const testSerialChangeNumber = '2';
+  const testPatientPdsId = 'cppz';
+  const testOdsCode = 'B12345';
+  const interactionId = 'QUPA_IN000008UK02';
+  const interactionIdUpdate = 'PRPA_IN000203UK03';
+  const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
+  const fakerequest =
+    '<QUPA_IN000008UK02 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></QUPA_IN000008UK02>';
+  const fakerequestUpdate =
+    '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';
+  const message = `
   <PDSResponse xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="OBS" moodCode="EVN" xsi:schemaLocation="urn:hl7-org:v3 ../../Schemas/PRPA_MT000201UK03.xsd">
         <pertinentSerialChangeNumber classCode="OBS" moodCode="EVN">
           <code code="2" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.35"/>
@@ -50,7 +57,6 @@ const message = `
       </patientCareProvisionEvent>
   </PDSResponse>`;
 
-describe('app', () => {
   describe('GET /health', () => {
     beforeEach(() => {
       getHealthCheck.mockReturnValue(
@@ -87,13 +93,8 @@ describe('app', () => {
 
   describe('GET /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
-      config.pdsAsid = 'pdsAsid';
-      config.deductionsAsid = 'deductionsAsid';
-
       uuid.mockImplementation(() => mockUUID);
-
       process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
-
       when(sendMessage)
         .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
         .mockResolvedValue({ status: 200, data: message });
@@ -122,9 +123,6 @@ describe('app', () => {
 
   describe('PATCH /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
-      config.pdsAsid = 'pdsAsid';
-      config.deductionsAsid = 'deductionsAsid';
-
       process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
 
       when(sendMessage)
@@ -157,6 +155,7 @@ describe('app', () => {
 
   describe('POST /health-record-requests/:nhsNumber', () => {
     getPracticeAsid.mockResolvedValue('practice_asid');
+
     it('should return a 204 status code', done => {
       request(app)
         .post('/health-record-requests/1234567890')

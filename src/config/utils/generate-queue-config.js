@@ -1,6 +1,7 @@
-import config from '../';
+import { initialiseConfig } from '../';
 
-const generateQueueConfig = url => {
+export const generateQueueConfig = url => {
+  const config = initialiseConfig();
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
   if (!urlParts) throw new Error(`Queue url ${url} should have the format protocol://host:port`);
 
@@ -13,5 +14,3 @@ const generateQueueConfig = url => {
     vhost: config.queueVirtualHost
   };
 };
-
-export { generateQueueConfig };

@@ -1,4 +1,3 @@
-import config from '../../../../config';
 import {
   mockChannel,
   mockedMessageOnQueue,
@@ -7,24 +6,23 @@ import {
 import channelPool from '../../helper/configure-channel-pool';
 import { consumeOneMessage } from '../consume-one-message';
 
-const originalConfig = { ...config };
-
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    queueName: 'gp2gp-test'
+  })
+}));
 jest.mock('../../helper/configure-channel-pool');
 
-const mockedQueueName = 'gp2gp-test';
-const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' };
-
 describe('consumeOneMessage', () => {
+  const mockQueueName = 'gp2gp-test';
+  const defaultOptions = { destination: mockQueueName, ack: 'client-individual' };
+
   afterEach(() => {
-    config.queueName = originalConfig.queueName;
     mockChannel.subscribe.mockImplementation((_, callback) =>
       callback(false, mockMessageStream, { unsubscribe: jest.fn() })
     );
     channelPool.channel.mockImplementation(callback => callback(false, mockChannel));
-  });
-
-  beforeEach(() => {
-    config.queueName = 'gp2gp-test';
   });
 
   afterEach(() => {
@@ -62,7 +60,7 @@ describe('consumeOneMessage', () => {
     it('should call channel.subscribe with options when passed in, along with default options', async done => {
       const options = { option: 'option' };
       const expectedOptions = {
-        destination: mockedQueueName,
+        destination: mockQueueName,
         ack: 'client-individual',
         option: 'option'
       };

@@ -1,23 +1,22 @@
-import config from '../../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
 import { mockChannel, mockTransaction } from '../../../../__mocks__/stompit';
 import { channelPool } from '../../helper';
 import { sendToQueue } from '../send-to-queue';
 
 jest.mock('../../../../middleware/logging');
-
-const originalConfig = config;
-const mockError = new Error('some-send-to-queue-error');
-const message = 'some-message';
-const mockedQueueName = 'mocked-queue-name';
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueName: 'mocked-queue-name',
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+  })
+}));
 
 describe('sendToQueue', () => {
-  beforeEach(async () => {
-    config.queueName = mockedQueueName;
-  });
+  const mockError = new Error('some-send-to-queue-error');
+  const mockQueueName = 'mocked-queue-name';
+  const message = 'some-message';
 
   afterEach(() => {
-    config.queueName = originalConfig.queueName;
     channelPool.channel.mockImplementation(callback => callback(null, mockChannel));
     mockTransaction.commit.mockImplementation(callback => callback(null));
   });
@@ -43,7 +42,7 @@ describe('sendToQueue', () => {
       expect(mockChannel.begin).toHaveBeenCalledTimes(1);
       expect(mockChannel.begin).toHaveBeenCalledWith(
         expect.objectContaining({
-          destination: config.queueName
+          destination: mockQueueName
         })
       );
     });
@@ -52,7 +51,7 @@ describe('sendToQueue', () => {
       expect(mockTransaction.send).toHaveBeenCalledTimes(1);
       expect(mockTransaction.send).toHaveBeenCalledWith(
         expect.objectContaining({
-          destination: config.queueName
+          destination: mockQueueName
         }),
         expect.anything()
       );

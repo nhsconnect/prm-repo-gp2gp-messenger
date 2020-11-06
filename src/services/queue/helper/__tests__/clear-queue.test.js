@@ -1,4 +1,3 @@
-import config from '../../../../config';
 import { mockChannel, mockMessageStream } from '../../../../__mocks__/stompit';
 import { MOCKED_UUID } from '../../../../__mocks__/uuid';
 import { sendToQueue } from '../../publisher/send-to-queue';
@@ -6,21 +5,21 @@ import { clearQueue } from '../clear-queue';
 import channelPool from '../configure-channel-pool';
 
 jest.mock('../../publisher/send-to-queue');
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueName: 'mocked-queue-name',
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+  })
+}));
 jest.mock('../configure-channel-pool');
 
-const originalConfig = config;
-const mockedQueueName = 'mocked-queue-name';
-const defaultOptions = { destination: mockedQueueName, ack: 'client-individual' };
-const mockedMessage = 'mocked-message';
-const mockUnsubscribe = jest.fn();
-
 describe('clearQueue', () => {
-  beforeEach(() => {
-    config.queueName = mockedQueueName;
-  });
+  const mockQueueName = 'mocked-queue-name';
+  const defaultOptions = { destination: mockQueueName, ack: 'client-individual' };
+  const mockedMessage = 'mocked-message';
+  const mockUnsubscribe = jest.fn();
 
   afterEach(() => {
-    config.queueName = originalConfig.queueName;
     mockChannel.subscribe.mockImplementation((_, callback) =>
       callback(false, mockMessageStream, { unsubscribe: mockUnsubscribe })
     );
@@ -68,7 +67,7 @@ describe('clearQueue', () => {
     it('should call channel.subscribe with passed in options as well as default options', async done => {
       const options = { anotherOption: 'another-one' };
       const expectedOptions = {
-        destination: mockedQueueName,
+        destination: mockQueueName,
         ack: 'client-individual',
         anotherOption: 'another-one'
       };

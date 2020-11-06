@@ -1,7 +1,7 @@
-import config from '../../';
+import { initialiseConfig } from '../../';
 import { generateHostsConfig } from '../generate-hosts-config';
 
-const originalConfig = { ...config };
+jest.mock('../../');
 
 describe('generateHostsConfig', () => {
   const hosts = [
@@ -25,17 +25,11 @@ describe('generateHostsConfig', () => {
 
   const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
   const mockQueueUrlsMissingFirst = ['', 'tcp://mq-2:61613'];
-
-  beforeEach(() => {
-    config.queueUsername = 'guest';
-    config.queuePassword = 'guest';
-    config.queueVirtualHost = '/';
-  });
-
-  afterEach(() => {
-    config.queueUsername = originalConfig.queueUsername;
-    config.queuePassword = originalConfig.queuePassword;
-    config.queueVirtualHost = originalConfig.queueVirtualHost;
+  initialiseConfig.mockReturnValue({
+    queueUrls: mockQueueUrls,
+    queueUsername: 'guest',
+    queuePassword: 'guest',
+    queueVirtualHost: '/'
   });
 
   it('should throw an error if input is not an array', () => {

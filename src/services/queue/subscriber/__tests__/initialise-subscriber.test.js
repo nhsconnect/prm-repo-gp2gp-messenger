@@ -1,28 +1,24 @@
-import config from '../../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
 import { mockChannel } from '../../../../__mocks__/stompit';
+import { channelPool } from '../../helper';
 import { initialiseSubscriber } from '../initialise-subscriber';
 import { subscriberReadMessageCallback } from '../subscriber-read-message-callback';
-import { channelPool } from '../../helper';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../subscriber-read-message-callback');
 jest.mock('../../helper/connect-to-queue');
-
-const originalConfig = { ...config };
-const mockQueueName = 'mock-queue';
-const mockError = 'mock-error';
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    queueName: 'mock-queue'
+  })
+}));
 
 describe('initialiseSubscriber', () => {
+  const mockQueueName = 'mock-queue';
+  const mockError = 'mock-error';
+
   describe('configuration', () => {
-    beforeEach(async () => {
-      config.queueName = mockQueueName;
-    });
-
-    afterEach(() => {
-      config.queueName = originalConfig.queueName;
-    });
-
     it('should call channel.subscribe with new queueName when passed in, and not override default options', async done => {
       await initialiseSubscriber({ destination: 'new-queue-name' });
       expect(mockChannel.subscribe).toHaveBeenCalledWith(
@@ -62,12 +58,7 @@ describe('initialiseSubscriber', () => {
 
   describe('on success', () => {
     beforeEach(async () => {
-      config.queueName = mockQueueName;
       await initialiseSubscriber();
-    });
-
-    afterEach(() => {
-      config.queueName = originalConfig.queueName;
     });
 
     it('should call updateLogEvent with "Subscribing to MQ"', () => {

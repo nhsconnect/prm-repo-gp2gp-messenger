@@ -1,27 +1,25 @@
-import config from '../../../../config';
 import { updateLogEvent } from '../../../../middleware/logging';
 import { sendToQueue } from '../../publisher/send-to-queue';
 import { DefaultMessage } from '../default-message';
 
-const originalConfig = { ...config };
-const mockedUnhandledMessageQueueName = 'mockedUnhandledMessageQueueName';
-
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    unhandledMessagesQueueName: 'mockedUnhandledMessageQueueName',
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+  })
+}));
 jest.mock('../../publisher/send-to-queue');
 jest.mock('../../../../middleware/logging', () => ({
   updateLogEvent: jest.fn()
 }));
 
-const mockMessage = 'mock-message';
-const defaultMessage = new DefaultMessage();
-
 describe('DefaultMessage', () => {
-  beforeEach(async () => {
-    config.unhandledMessagesQueueName = mockedUnhandledMessageQueueName;
-    await defaultMessage.handleMessage(mockMessage);
-  });
+  const mockUnhandledMessagesQueueName = 'mockedUnhandledMessageQueueName';
+  const mockMessage = 'mock-message';
+  const defaultMessage = new DefaultMessage();
 
-  afterEach(() => {
-    config.unhandledMessagesQueueName = originalConfig.unhandledMessagesQueueName;
+  beforeEach(async () => {
+    await defaultMessage.handleMessage(mockMessage);
   });
 
   it('should return "Unhandled Message" when calling name', () => {
@@ -51,7 +49,7 @@ describe('DefaultMessage', () => {
     expect(sendToQueue).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        destination: mockedUnhandledMessageQueueName
+        destination: mockUnhandledMessagesQueueName
       })
     );
     done();
@@ -61,7 +59,7 @@ describe('DefaultMessage', () => {
     expect(updateLogEvent).toHaveBeenCalledTimes(1);
     expect(updateLogEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        status: `Redirecting ${defaultMessage.interactionId} Message to ${mockedUnhandledMessageQueueName}`
+        status: `Redirecting ${defaultMessage.interactionId} Message to ${mockUnhandledMessagesQueueName}`
       })
     );
     done();

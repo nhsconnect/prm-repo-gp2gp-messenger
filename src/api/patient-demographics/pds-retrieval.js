@@ -1,7 +1,7 @@
 import dateFormat from 'dateformat';
 import { param } from 'express-validator';
 import { v4 as uuid } from 'uuid';
-import config from '../../config';
+import { initialiseConfig } from '../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { PDSRetrievalQueryResponse } from '../../services/pds';
@@ -19,6 +19,8 @@ export const pdsRetrieval = async (req, res, next) => {
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
   const conversationId = uuid().toUpperCase();
   const responseBody = { conversationId, data: {}, errors: [] };
+  const config = initialiseConfig();
+
   try {
     const message = await generatePdsRetrievalQuery({
       id: conversationId,

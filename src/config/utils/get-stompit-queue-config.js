@@ -1,4 +1,4 @@
-import config from '../';
+import { initialiseConfig } from '../index';
 import { generateQueueConfig } from './generate-queue-config';
 
 const formatQueueConfig = queueUrl => {
@@ -16,11 +16,11 @@ const formatQueueConfig = queueUrl => {
   };
 };
 
-const getStompitQueueConfig = () => {
+export const getStompitQueueConfig = () => {
+  const config = initialiseConfig();
+
   return config.queueUrls.reduce((stompConfig, queueUrl) => {
     if (queueUrl) stompConfig.push(formatQueueConfig(queueUrl));
     return stompConfig;
   }, []);
 };
-
-export { getStompitQueueConfig };

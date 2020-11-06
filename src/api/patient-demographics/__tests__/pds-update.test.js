@@ -1,42 +1,35 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import app from '../../../app';
-import config from '../../../config';
 import { updateLogEvent } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../../templates/generate-update-ods-request';
 import { fakeDateNow } from '../../../__mocks__/dateformat';
 
 jest.mock('../../../config/logging');
+jest.mock('../../../config/', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    pdsAsid: 'pdsAsid',
+    deductionsAsid: 'deductionsAsid',
+    deductionsOdsCode: 'deductionsOds',
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+  })
+}));
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../templates/generate-update-ods-request');
 
-const fakerequest =
-  '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';
-
-const interactionId = 'PRPA_IN000203UK03';
-const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
-const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
-const error503MockUuid = '893b17bc-5369-4ca1-a6aa-579f2f5cb318';
-
-function generateLogEvent(message) {
-  return {
-    status: 'validation-failed',
-    validation: {
-      errors: message,
-      status: 'failed'
-    }
-  };
-}
-
 describe('POST /patient-demographics/:nhsNumber', () => {
+  const fakerequest =
+    '<PRPA_IN000203UK03 xmlns="urn:hl7-org:v3" xmlns:hl7="urn:hl7-org:v3"></PRPA_IN000203UK03>';
+  const interactionId = 'PRPA_IN000203UK03';
+  const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
+  const mockErrorUUID = 'fd9271ea-9086-4f7e-8993-0271518fdb6f';
+  const error503MockUuid = '893b17bc-5369-4ca1-a6aa-579f2f5cb318';
+
   beforeEach(() => {
     process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
-    config.pdsAsid = 'pdsAsid';
-    config.deductionsAsid = 'deductionsAsid';
-    config.deductionsOdsCode = 'deductionsOds';
 
     when(sendMessage)
       .calledWith({
@@ -90,8 +83,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(generateUpdateOdsRequest).toHaveBeenCalledWith({
           id: mockUUID.toUpperCase(),
           timestamp: fakeDateNow,
-          receivingService: { asid: config.pdsAsid },
-          sendingService: { asid: config.deductionsAsid },
+          receivingService: { asid: 'pdsAsid' },
+          sendingService: { asid: 'deductionsAsid' },
           newOdsCode: '12345',
           patient: {
             nhsNumber: '9442964410',
@@ -243,3 +236,13 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 });
+
+const generateLogEvent = message => {
+  return {
+    status: 'validation-failed',
+    validation: {
+      errors: message,
+      status: 'failed'
+    }
+  };
+};

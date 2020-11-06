@@ -1,6 +1,6 @@
-const portNumber = 3000;
+export const portNumber = 3000;
 
-const initialiseConfig = () => ({
+export const initialiseConfig = () => ({
   deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID || '200000001161',
   deductionsOdsCode: process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || 'B86041',
   queueName: process.env.GP2GP_ADAPTOR_MHS_QUEUE_NAME,
@@ -19,7 +19,3 @@ const initialiseConfig = () => ({
   url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`,
   gpToRepoAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO
 });
-
-export default initialiseConfig();
-
-export { portNumber, initialiseConfig };

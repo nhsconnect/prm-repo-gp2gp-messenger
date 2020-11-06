@@ -1,33 +1,29 @@
 import axios from 'axios';
-import config from '../../../config';
+import { initialiseConfig } from '../../../config';
 import { updateLogEvent } from '../../../middleware/logging';
 import { setTransferComplete } from '../set-ehr-repo-transfer-complete';
 
 jest.mock('axios');
+jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
   eventFinished: jest.fn()
 }));
 
-const originalEhrRepoUrl = config.ehrRepoUrl;
-
 describe('setTransferComplete', () => {
   const body = 'some-request-body';
+  const mockEhrRepoUrl = 'https://ehr-repo-url';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
-    config.ehrRepoUrl = 'https://ehr-repo-url';
     axios.patch.mockResolvedValue({ data: 'some-url' });
-  });
-
-  afterEach(() => {
-    config.ehrRepoUrl = originalEhrRepoUrl;
   });
 
   it('should make a call to ehr storage endpoint with conversation ID and message', async done => {
     await setTransferComplete(body);
     expect(axios.patch).toHaveBeenCalledTimes(1);
     expect(axios.patch).toHaveBeenCalledWith(
-      `${config.ehrRepoUrl}/fragments`,
+      `${mockEhrRepoUrl}/fragments`,
       expect.objectContaining({
         body,
         transferComplete: true

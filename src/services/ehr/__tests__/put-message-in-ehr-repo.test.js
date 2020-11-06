@@ -1,28 +1,23 @@
 import axios from 'axios';
-import config from '../../../config';
+import { initialiseConfig } from '../../../config';
 import { eventFinished, updateLogEvent } from '../../../middleware/logging';
 import { putMessageInEhrRepo } from '../put-message-in-ehr-repo';
 
 jest.mock('axios');
-
+jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
   eventFinished: jest.fn()
 }));
 
-const originalEhrRepoUrl = config.ehrRepoUrl;
-
 describe('putMessageInEhrRepo', () => {
   const message = 'some-message';
   const url = 'https://s3-upload-url';
+  const mockEhrRepoUrl = 'https://ehr-repo-url';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
-    config.ehrRepoUrl = 'https://ehr-repo-url';
     axios.put.mockResolvedValue({ status: 200, statusText: 'status-text' });
-  });
-
-  afterEach(() => {
-    config.ehrRepoUrl = originalEhrRepoUrl;
   });
 
   it('should make a call to specified url with conversation ID and message', async done => {

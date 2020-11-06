@@ -1,20 +1,16 @@
-import config from '../../../../config';
 import { connectToQueue } from '../';
 import { updateLogEventWithError } from '../../../../middleware/logging';
 
 jest.unmock('stompit');
 jest.mock('../../../../middleware/logging');
-
-const originalConfig = { ...config };
+jest.mock('../../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:1234']
+  })
+}));
 
 describe('connectToQueue', () => {
-  afterEach(() => {
-    config.queueUrls = originalConfig.queueUrls;
-  });
-
   it('should log out error message if failed to connect the test url', done => {
-    config.queueUrls = ['tcp://mq-1:1234'];
-
     const testCallback = () => {
       expect(updateLogEventWithError).toHaveBeenCalled();
       done();

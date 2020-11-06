@@ -1,7 +1,7 @@
-import config from '../../';
+import { initialiseConfig } from '../../';
 import { getStompitQueueConfig } from '../get-stompit-queue-config';
 
-const originalConfig = { ...config };
+jest.mock('../../');
 
 describe('getStompitQueueConfig', () => {
   const hosts = [
@@ -19,38 +19,52 @@ describe('getStompitQueueConfig', () => {
     }
   ];
 
-  const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-
-  beforeEach(() => {
-    config.queueUrls = mockQueueUrls;
-    config.queueUsername = 'guest';
-    config.queuePassword = 'guest';
-    config.queueVirtualHost = '/';
-  });
-
-  afterEach(() => {
-    config.queueUrls = originalConfig.queueUrls;
-    config.queueUsername = originalConfig.queueUsername;
-    config.queuePassword = originalConfig.queuePassword;
-    config.queueVirtualHost = originalConfig.queueVirtualHost;
-  });
-
   it('should output an array that is the same length as config queueUrls', () => {
+    const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
+    initialiseConfig.mockReturnValue({
+      queueUrls: mockQueueUrls,
+      queueUsername: 'guest',
+      queuePassword: 'guest',
+      queueVirtualHost: '/'
+    });
+
     expect(Array.isArray(getStompitQueueConfig())).toBe(true);
     expect(getStompitQueueConfig().length).toEqual(hosts.length);
   });
 
   it('should correctly format the config to match stompit config requirements', () => {
+    const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
+    initialiseConfig.mockReturnValue({
+      queueUrls: mockQueueUrls,
+      queueUsername: 'guest',
+      queuePassword: 'guest',
+      queueVirtualHost: '/'
+    });
+
     expect(getStompitQueueConfig()).toEqual(hosts);
   });
 
   it('should remove any empty urls from config.queueUrls before parsing', () => {
-    config.queueUrls = ['tcp://mq-1:61613', ''];
+    const mockQueueUrls = ['tcp://mq-1:61613', ''];
+    initialiseConfig.mockReturnValue({
+      queueUrls: mockQueueUrls,
+      queueUsername: 'guest',
+      queuePassword: 'guest',
+      queueVirtualHost: '/'
+    });
+
     expect(getStompitQueueConfig()).toEqual([hosts[0]]);
   });
 
   it('should return an empty array if there are no queueUrls defined in config', () => {
-    config.queueUrls = ['', ''];
+    const mockQueueUrls = ['', ''];
+    initialiseConfig.mockReturnValue({
+      queueUrls: mockQueueUrls,
+      queueUsername: 'guest',
+      queuePassword: 'guest',
+      queueVirtualHost: '/'
+    });
+
     expect(getStompitQueueConfig()).toEqual([]);
   });
 });

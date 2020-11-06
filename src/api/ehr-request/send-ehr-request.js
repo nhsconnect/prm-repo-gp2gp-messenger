@@ -1,12 +1,13 @@
 import dateFormat from 'dateformat';
 import { v4 as uuid } from 'uuid';
-import config from '../../config';
+import { initialiseConfig } from '../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import * as mhsGatewayFake from '../../services/mhs/mhs-old-queue-test-helper';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 
 const sendEhrRequest = (nhsNumber, odsCode) => {
   const mhs = mhsGatewayFake;
+  const config = initialiseConfig();
 
   updateLogEvent({
     status: 'fetching-routing-info',

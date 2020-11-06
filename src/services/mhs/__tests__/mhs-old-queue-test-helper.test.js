@@ -1,5 +1,4 @@
 import httpContext from 'async-local-storage';
-import config from '../../../config';
 import { updateLogEvent } from '../../../middleware/logging';
 import { mockChannel } from '../../../__mocks__/stompit';
 import { extractInteractionId } from '../../parser/message';
@@ -8,25 +7,21 @@ import { getRoutingInformation, sendMessage } from '../mhs-old-queue-test-helper
 
 httpContext.enable();
 
-jest.mock('../../queue');
-
 jest.mock('../../../config/logging');
+jest.mock('../../../config/', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    queueName: 'test-queue'
+  })
+}));
 jest.mock('../../../middleware/logging');
 jest.mock('../../parser/message');
-
-const mockQueueName = 'test-queue';
-
-const originalConfig = config;
+jest.mock('../../queue');
 
 describe('mhs-gateway-fake', () => {
   describe('sendMessage', () => {
-    beforeEach(() => {
-      config.queueName = mockQueueName;
-    });
-
     afterEach(() => {
       channelPool.channel.mockImplementation(callback => callback(false, mockChannel));
-      config.queueName = originalConfig.queueName;
     });
 
     it('should reject when an error has occurred', () => {

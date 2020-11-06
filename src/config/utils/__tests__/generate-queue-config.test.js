@@ -1,7 +1,7 @@
-import config from '../../';
+import { initialiseConfig } from '../../';
 import { generateQueueConfig } from '../generate-queue-config';
 
-const originalConfig = { ...config };
+jest.mock('../../');
 
 describe('generateQueueConfig', () => {
   const hosts = [
@@ -22,20 +22,15 @@ describe('generateQueueConfig', () => {
       vhost: '/'
     }
   ];
-
   const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-
-  beforeEach(() => {
-    config.queueUsername = 'guest';
-    config.queuePassword = 'guest';
-    config.queueVirtualHost = '/';
+  initialiseConfig.mockReturnValue({
+    queueUrls: mockQueueUrls,
+    queueUsername: 'guest',
+    queuePassword: 'guest',
+    queueVirtualHost: '/'
   });
 
   afterEach(() => {
-    config.queueUsername = originalConfig.queueUsername;
-    config.queuePassword = originalConfig.queuePassword;
-    config.queueVirtualHost = originalConfig.queueVirtualHost;
-
     if (process.env.NHS_ENVIRONMENT) {
       delete process.env.NHS_ENVIRONMENT;
     }

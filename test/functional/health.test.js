@@ -1,8 +1,9 @@
 import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
-import config from '../../src/config';
+import { initialiseConfig } from '../../src/config';
 
 describe('/health', () => {
+  const config = initialiseConfig();
   it('should return 200', () => {
     return expect(
       axios.get(`${config.url}/health`, {

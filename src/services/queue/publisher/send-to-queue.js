@@ -1,8 +1,10 @@
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { initialiseConfig } from '../../../config';
 import { channelPool } from '../helper';
-import config from '../../../config';
 
 export const sendToQueue = (message, options = {}) => {
+  const config = initialiseConfig();
+
   return new Promise((resolve, reject) => {
     updateLogEvent({ status: 'Sending Message to Queue' });
 

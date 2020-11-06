@@ -1,5 +1,6 @@
-import config from '../../../../../config';
+import { initialiseConfig } from '../../../../../config';
 
+const config = initialiseConfig();
 export const nhsNumber = '9465731285';
 export const conversationId = 'some-conversation-id-123';
 export const messageId = 'some-message-id-456';

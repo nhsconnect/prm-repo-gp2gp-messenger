@@ -1,5 +1,4 @@
 import { when } from 'jest-when';
-import config from '../../../config';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import * as mhsQueueTestHelper from '../../../services/mhs/mhs-old-queue-test-helper';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
@@ -8,16 +7,20 @@ import { MOCKED_UUID } from '../../../__mocks__/uuid';
 import sendEhrRequest from '../send-ehr-request';
 
 jest.mock('../../../services/mhs/mhs-old-queue-test-helper');
-
+jest.mock('../../../config', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    deductionsAsid: 'some-asid',
+    deductionsOdsCode: 'some-ods-code',
+    isPTL: false
+  })
+}));
 jest.mock('../../../middleware/logging');
 
 describe('sendEhrRequest', () => {
   let ehrRequestQuery;
 
   beforeEach(() => {
-    config.deductionsAsid = 'some-asid';
-    config.deductionsOdsCode = 'some-ods-code';
-
     ehrRequestQuery = generateEhrRequestQuery({
       id: MOCKED_UUID,
       timestamp: '20200403092516',
@@ -26,8 +29,8 @@ describe('sendEhrRequest', () => {
         odsCode: odsCode
       },
       sendingService: {
-        asid: config.deductionsAsid,
-        odsCode: config.deductionsOdsCode
+        asid: 'some-asid',
+        odsCode: 'some-ods-code'
       },
       patient: {
         nhsNumber: nhsNumber
@@ -35,18 +38,11 @@ describe('sendEhrRequest', () => {
     });
   });
 
-  afterEach(() => {
-    config.deductionsAsid = process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
-    config.deductionsOdsCode = process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
-  });
-
   const odsCode = testData.emisPractise.odsCode;
   const receivingAsid = testData.emisPractise.asid;
   const nhsNumber = testData.emisPatient.nhsNumber;
 
   it('should send generated EHR request message to fake MHS when environment is not PTL', async done => {
-    config.isPTL = false;
-
     when(mhsQueueTestHelper.getRoutingInformation)
       .calledWith(odsCode)
       .mockResolvedValue({ asid: receivingAsid });

@@ -1,32 +1,28 @@
 import axios from 'axios';
-import config from '../../../config';
+import { initialiseConfig } from '../../../config';
 import { eventFinished, updateLogEvent } from '../../../middleware/logging';
 import { fetchStorageUrl } from '../fetch-ehr-repo-storage-url';
 
 jest.mock('axios');
+jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
   eventFinished: jest.fn()
 }));
 
-const originalEhrRepoUrl = config.ehrRepoUrl;
-
 describe('fetchStorageUrl', () => {
   const body = 'some-request-body';
+  const mockEhrRepoUrl = 'https://ehr-repo-url';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
-    config.ehrRepoUrl = 'https://ehr-repo-url';
     axios.post.mockResolvedValue({ data: 'some-url' });
-  });
-
-  afterEach(() => {
-    config.ehrRepoUrl = originalEhrRepoUrl;
   });
 
   it('should make a call fetch url with soap message as body', async done => {
     await fetchStorageUrl(body);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(`${config.ehrRepoUrl}/fragments`, body);
+    expect(axios.post).toHaveBeenCalledWith(`${mockEhrRepoUrl}/fragments`, body);
     done();
   });
 

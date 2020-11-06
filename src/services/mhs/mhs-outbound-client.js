@@ -1,5 +1,5 @@
 import axios from 'axios';
-import config from '../../config';
+import { initialiseConfig } from '../../config';
 import { updateLogEventWithError } from '../../middleware/logging';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
@@ -16,13 +16,15 @@ const validateInputs = ({ interactionId, conversationId, message }) => {
   throw error;
 };
 
-const stripXMLMessage = xml =>
+export const stripXMLMessage = xml =>
   xml
     .trim()
     .replace(/\r?\n|\r/g, '')
     .replace(/>\s+</g, '><');
 
-const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
+export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
+  const config = initialiseConfig();
+
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });
     const axiosBody = {
@@ -52,5 +54,3 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
       });
   });
 };
-
-export { sendMessage, stripXMLMessage };

@@ -1,29 +1,22 @@
-import config from '../../../config/index';
 import { mockChannel } from '../../../__mocks__/stompit';
 import { connectToQueue } from '../../queue/helper/connect-to-queue';
 import { checkMHSHealth } from '../check-mhs-health';
 
 const mockErrorResponse = 'Error: exhausted connection failover';
 
+jest.mock('../../../config/', () => ({
+  initialiseConfig: jest.fn().mockReturnValue({
+    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
+    queueUsername: 'guest',
+    queuePassword: 'guest',
+    queueVirtualHost: '/'
+  })
+}));
 jest.mock('../../queue/helper/connect-to-queue');
-
-const originalConfig = { ...config };
 
 describe('queue', () => {
   describe('checkMHSHealth', () => {
-    afterEach(() => {
-      config.queueUrls = originalConfig.queueUrls;
-      config.queueUsername = originalConfig.queueUsername;
-      config.queuePassword = originalConfig.queuePassword;
-      config.queueVirtualHost = originalConfig.queueVirtualHost;
-    });
-
     beforeEach(() => {
-      config.queueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-      config.queueUsername = 'guest';
-      config.queuePassword = 'guest';
-      config.queueVirtualHost = '/';
-
       connectToQueue.mockImplementation(callback =>
         callback(false, { ...mockChannel, disconnect: jest.fn() })
       );

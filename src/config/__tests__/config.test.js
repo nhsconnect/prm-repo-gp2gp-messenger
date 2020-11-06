@@ -31,7 +31,8 @@ describe('config', () => {
     });
 
     it('should return 200000001161 when GP2GP_ADAPTOR_REPOSITORY_ASID is not set', () => {
-      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ASID) delete process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
+      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ASID)
+        delete process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
       expect(initialiseConfig().deductionsAsid).toEqual('200000001161');
     });
   });
@@ -42,7 +43,8 @@ describe('config', () => {
     });
 
     it('should return B86041 when GP2GP_ADAPTOR_REPOSITORY_ODS_CODE is not set', () => {
-      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE) delete process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
+      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE)
+        delete process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
       expect(initialiseConfig().deductionsOdsCode).toEqual('B86041');
     });
   });

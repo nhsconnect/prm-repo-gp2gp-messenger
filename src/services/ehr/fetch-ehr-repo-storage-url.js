@@ -1,8 +1,9 @@
 import axios from 'axios';
-import config from '../../config';
+import { initialiseConfig } from '../../config';
 import { eventFinished, updateLogEvent } from '../../middleware/logging';
 
 export const fetchStorageUrl = async body => {
+  const config = initialiseConfig();
   try {
     return await axios.post(`${config.ehrRepoUrl}/fragments`, body);
   } catch (err) {
