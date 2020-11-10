@@ -4,7 +4,7 @@ import testData from './testData.json';
 
 describe('generateEhrRequestQuery', () => {
   const testObjectMissing = {
-    id: 'ab7cf7eb-78d9-4746-acb0-b06a42766e7b',
+    id: uuid().toUpperCase(),
     timestamp: '20200403092516',
     sendingService: {
       odsCode: testData.mhs.odsCode,
@@ -49,11 +49,6 @@ describe('generateEhrRequestQuery', () => {
     checkEntries(testObjectComplete);
   });
 
-  it('should generate an uuid for the EHR Request as an HL7 id', () => {
-    const ehrRequestQuery = generateEhrRequestQuery(testObjectComplete);
-    const generatedHL7IdForEHRRequest = uuid().toUpperCase();
-    expect(ehrRequestQuery).toContain(generatedHL7IdForEHRRequest);
-  });
   it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {
     expect(() =>
       generateEhrRequestQuery({
