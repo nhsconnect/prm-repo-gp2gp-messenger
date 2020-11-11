@@ -2,7 +2,10 @@ import express from 'express';
 import { authenticateRequest } from '../../middleware/auth';
 import { validate } from '../../middleware/validation';
 import { healthRecordRequests, healthRecordRequestValidation } from './health-record-requests';
-import { sendEhrAcknowledgement, acknowledgementValidation } from './acknowledgement';
+import {
+  sendEhrAcknowledgement,
+  acknowledgementValidation
+} from './send-ehr-acknowledgement-controller';
 
 const healthRecordRequestRouter = express.Router();
 
