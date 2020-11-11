@@ -117,7 +117,7 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
 
 Run the unit tests with
 
-`npm test` or `./tasks test`
+`npm test` or `./tasks test_unit`
 
 Run the integration tests.
 

@@ -20,7 +20,7 @@ pipelines:
                     command: /bin/bash
                     arguments:
                       - -c
-                      - ./tasks test
+                      - ./tasks test_unit
             integration:
               resources:
                 - docker

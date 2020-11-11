@@ -192,12 +192,12 @@ case "${command}" in
   build)
       dojo "./tasks _build"
       ;;
-  _test)
+  _test_unit)
       npm install
       npm run test
       ;;
-  test)
-      dojo "./tasks _test"
+  test_unit)
+      dojo "./tasks _test_unit"
       ;;
   _test_integration)
       npm install
