@@ -30,7 +30,7 @@ pipelines:
       - test:
           clean_workspace: true
           jobs:
-            test:
+            test_unit:
               resources:
                 - docker
               tasks:

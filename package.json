@@ -19,11 +19,6 @@
     "start:local": "babel-node -r dotenv/config src/server.js",
     "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint && npm run test:unit"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nhsconnect/prm-deductions-gp2gp-adaptor.git"

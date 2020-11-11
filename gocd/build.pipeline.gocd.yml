@@ -12,7 +12,16 @@ pipelines:
       - build:
           clean_workspace: true
           jobs:
-            test:
+            test_lint:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_lint
+            test_unit:
               resources:
                 - docker
               tasks:
@@ -21,7 +30,7 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_unit
-            integration:
+            test_integration:
               resources:
                 - docker
               tasks:
@@ -30,7 +39,7 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_integration
-            coverage:
+            test_coverage:
               artifacts:
                 - build:
                     source: coverage/lcov-report
