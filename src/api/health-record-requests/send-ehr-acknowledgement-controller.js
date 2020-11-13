@@ -12,7 +12,8 @@ export const acknowledgementValidation = [
   body('conversationId').notEmpty().withMessage("'conversationId' is not configured"),
   body('messageId').isUUID('4').withMessage("'messageId' provided is not of type UUIDv4"),
   body('messageId').notEmpty().withMessage("'messageId' is not configured"),
-  body('odsCode').notEmpty().withMessage("'odsCode' is not configured")
+  body('odsCode').notEmpty().withMessage("'odsCode' is not configured"),
+  body('repositoryAsid').notEmpty().withMessage("'repositoryAsid' is not configured")
 ];
 
 export const sendEhrAcknowledgement = async (req, res) => {

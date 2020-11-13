@@ -10,10 +10,17 @@ jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/generate-ehr-acknowledgement');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 
-function expectValidationErrors(nhsNumber, conversationId, messageId, odsCode, errors) {
+function expectValidationErrors(
+  nhsNumber,
+  conversationId,
+  messageId,
+  odsCode,
+  repositoryAsid,
+  errors
+) {
   return request(app)
     .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-    .send({ conversationId, messageId, odsCode })
+    .send({ conversationId, messageId, odsCode, repositoryAsid })
     .expect(422)
     .expect(res => {
       expect(res.body).toEqual({
@@ -29,12 +36,13 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const odsCode = 'B1234';
   const interactionId = 'MCCI_IN010000UK13';
   const acknowledgementMessage = 'fake-acknowledgement-message';
+  const repositoryAsid = '200000001162';
 
   describe('sendEhrAcknowledgement', () => {
     it('should return a 204 status code', done => {
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode })
+        .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(204)
         .expect(() => {
           expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
@@ -46,7 +54,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
       buildEhrAcknowledgement.mockReturnValue(acknowledgementMessage);
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode })
+        .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(() => {
           expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
           expect(sendMessage).toHaveBeenCalledWith(
@@ -65,7 +73,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
       await sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode })
+        .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(503)
         .expect(() => {
           expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
@@ -84,27 +92,27 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   describe('acknowledgementValidation', () => {
     it('should return a 422 status code when nhsNumber is not 10 digits', done => {
       const invalidNhsNumber = '123';
-      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, [
+      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, repositoryAsid, [
         { nhsNumber: "'nhsNumber' provided is not 10 digits" }
       ]).end(done);
     });
 
     it('should return a 422 status code when nhsNumber is not numeric', done => {
       const invalidNhsNumber = 'notNumeric';
-      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, [
+      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, repositoryAsid, [
         { nhsNumber: "'nhsNumber' provided is not numeric" }
       ]).end(done);
     });
 
     it('should return a 422 status code when conversationId is not type uuid', done => {
       const invalidConversationId = '123';
-      expectValidationErrors(nhsNumber, invalidConversationId, messageId, odsCode, [
+      expectValidationErrors(nhsNumber, invalidConversationId, messageId, odsCode, repositoryAsid, [
         { conversationId: "'conversationId' provided is not of type UUIDv4" }
       ]).end(done);
     });
 
     it('should return a 422 status code when conversationId is not provided', done => {
-      expectValidationErrors(nhsNumber, null, messageId, odsCode, [
+      expectValidationErrors(nhsNumber, null, messageId, odsCode, repositoryAsid, [
         { conversationId: "'conversationId' provided is not of type UUIDv4" },
         { conversationId: "'conversationId' is not configured" }
       ]).end(done);
@@ -112,21 +120,27 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
 
     it('should return a 422 status code when messageId is not type uuid', done => {
       const invalidMessageId = 'invalid';
-      expectValidationErrors(nhsNumber, conversationId, invalidMessageId, odsCode, [
+      expectValidationErrors(nhsNumber, conversationId, invalidMessageId, odsCode, repositoryAsid, [
         { messageId: "'messageId' provided is not of type UUIDv4" }
       ]).end(done);
     });
 
     it('should return a 422 status code when messageId is not provided', done => {
-      expectValidationErrors(nhsNumber, conversationId, null, odsCode, [
+      expectValidationErrors(nhsNumber, conversationId, null, odsCode, repositoryAsid, [
         { messageId: "'messageId' provided is not of type UUIDv4" },
         { messageId: "'messageId' is not configured" }
       ]).end(done);
     });
 
     it('should return a 422 status code when odsCode is not provided', done => {
-      expectValidationErrors(nhsNumber, conversationId, messageId, null, [
+      expectValidationErrors(nhsNumber, conversationId, messageId, null, repositoryAsid, [
         { odsCode: "'odsCode' is not configured" }
+      ]).end(done);
+    });
+
+    it('should return a 422 status code when repositoryAsid is not provided', done => {
+      expectValidationErrors(nhsNumber, conversationId, messageId, odsCode, null, [
+        { repositoryAsid: "'repositoryAsid' is not configured" }
       ]).end(done);
     });
   });
