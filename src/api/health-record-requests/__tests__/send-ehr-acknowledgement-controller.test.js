@@ -2,12 +2,14 @@ import request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import app from '../../../app';
 import { buildEhrAcknowledgement } from '../../../templates/generate-ehr-acknowledgement';
+import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/generate-ehr-acknowledgement');
+jest.mock('../../../services/mhs/mhs-route-client');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 
 function expectValidationErrors(
@@ -37,15 +39,20 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const interactionId = 'MCCI_IN010000UK13';
   const acknowledgementMessage = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
+  const practiceAsid = '200000001163';
+  const buildAckMessageInputValues = { conversationId, practiceAsid, repositoryAsid, messageId };
 
   describe('sendEhrAcknowledgement', () => {
+    getPracticeAsid.mockReturnValue(practiceAsid);
+
     it('should return a 204 status code', done => {
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(204)
         .expect(() => {
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
+          expect(getPracticeAsid).toHaveBeenCalledWith(odsCode);
+          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
         })
         .end(done);
     });
@@ -56,13 +63,13 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(() => {
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
-          expect(sendMessage).toHaveBeenCalledWith(
+          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
             odsCode,
             acknowledgementMessage
-          );
+          });
           expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Acknowledgement sent to MHS' });
         })
         .end(done);
@@ -76,13 +83,13 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(503)
         .expect(() => {
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(messageId);
-          expect(sendMessage).toHaveBeenCalledWith(
+          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
             odsCode,
             acknowledgementMessage
-          );
+          });
           expect(updateLogEventWithError).toHaveBeenCalled();
         })
         .end(done);

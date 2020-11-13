@@ -2,6 +2,7 @@ import { body, param } from 'express-validator';
 import { buildEhrAcknowledgement } from '../../templates/generate-ehr-acknowledgement';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 
 export const acknowledgementValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -19,13 +20,15 @@ export const acknowledgementValidation = [
 export const sendEhrAcknowledgement = async (req, res) => {
   try {
     const interactionId = 'MCCI_IN010000UK13';
-    const acknowledgementMessage = await buildEhrAcknowledgement(req.body.messageId);
-    await sendMessage(
-      interactionId,
-      req.body.conversationId,
-      req.body.odsCode,
-      acknowledgementMessage
-    );
+    const { messageId, conversationId, odsCode, repositoryAsid } = req.body;
+    const practiceAsid = await getPracticeAsid(odsCode);
+    const acknowledgementMessage = await buildEhrAcknowledgement({
+      conversationId,
+      practiceAsid,
+      repositoryAsid,
+      messageId
+    });
+    await sendMessage({ interactionId, conversationId, odsCode, acknowledgementMessage });
     updateLogEvent({ status: 'Acknowledgement sent to MHS' });
     res.sendStatus(204);
   } catch (err) {
