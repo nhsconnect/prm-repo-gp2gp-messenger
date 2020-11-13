@@ -358,9 +358,12 @@
         },
         "newOdsCode": {
           "type": "string"
+        },
+        "conversationId": {
+          "type": "string"
         }
       },
-      "required": ["pdsId", "serialChangeNumber"]
+      "required": ["pdsId", "serialChangeNumber", "conversationId"]
     },
     "EhrRequest": {
       "type": "object",
