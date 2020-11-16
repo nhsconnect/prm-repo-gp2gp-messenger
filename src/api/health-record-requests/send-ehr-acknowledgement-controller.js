@@ -20,8 +20,9 @@ export const acknowledgementValidation = [
 export const sendEhrAcknowledgement = async (req, res) => {
   try {
     const interactionId = 'MCCI_IN010000UK13';
+    const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
     const { messageId, conversationId, odsCode, repositoryAsid } = req.body;
-    const practiceAsid = await getPracticeAsid(odsCode);
+    const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     const message = await buildEhrAcknowledgement({
       conversationId,
       practiceAsid,

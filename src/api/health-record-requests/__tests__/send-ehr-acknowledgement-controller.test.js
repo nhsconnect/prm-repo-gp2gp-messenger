@@ -37,6 +37,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const nhsNumber = '1234567890';
   const odsCode = 'B1234';
   const interactionId = 'MCCI_IN010000UK13';
+  const serviceId = 'urn:nhs:names:services:gp2gp:MCCI_IN010000UK13';
   const message = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
@@ -51,7 +52,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(204)
         .expect(() => {
-          expect(getPracticeAsid).toHaveBeenCalledWith(odsCode);
+          expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
           expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
         })
         .end(done);

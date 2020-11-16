@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../config';
 
-export const getPracticeAsid = async odsCode => {
-  const INTERACTION_ID = 'urn:nhs:names:services:gp2gp:RCMR_IN010000UK05';
+export const getPracticeAsid = async (odsCode, serviceId) => {
   const baseUrl = initialiseConfig().mhsRouteUrl.replace(/\/$/, '');
   const url = `${baseUrl}/routing`;
 
   const res = await axios.get(url, {
     params: {
       'org-code': odsCode,
-      'service-id': INTERACTION_ID
+      'service-id': serviceId
     }
   });
 

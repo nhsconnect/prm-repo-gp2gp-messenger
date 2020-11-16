@@ -19,10 +19,10 @@ export const healthRecordRequestValidation = [
 
 export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
+  const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const conversationId = req.body.conversationId.toUpperCase();
-
   try {
-    const asid = await getPracticeAsid(req.body.practiceOdsCode);
+    const asid = await getPracticeAsid(req.body.practiceOdsCode, serviceId);
     const message = await buildEhrRequest(req, conversationId, asid);
 
     await sendMessage({

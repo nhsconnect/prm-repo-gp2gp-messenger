@@ -15,6 +15,7 @@ jest.mock('../../../services/mhs/mhs-route-client');
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN010000UK05';
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
@@ -94,7 +95,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .expect(204)
         .expect(() => {
           expect(getPracticeAsid).toHaveBeenCalledTimes(1);
-          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode);
+          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode, serviceId);
         })
         .end(done);
     });
@@ -108,7 +109,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .expect(503)
         .expect(() => {
           expect(getPracticeAsid).toHaveBeenCalledTimes(1);
-          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode);
+          expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode, serviceId);
         })
         .end(done);
     });
