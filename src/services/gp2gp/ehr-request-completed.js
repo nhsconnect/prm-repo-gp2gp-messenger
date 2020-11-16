@@ -14,25 +14,25 @@ class EHRRequestCompleted {
   }
 
   async handleMessage(message) {
+    updateLogEvent({
+      status: `Parsing ${this.interactionId} Message`,
+      parser: {
+        name: this.name,
+        interactionId: this.interactionId
+      }
+    });
+
+    const multipartMessage = await parseMultipartBody(message);
+    const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
+    const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
+    const messageDetails = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
+
+    updateLogEvent({
+      status: 'SOAP Information Extracted',
+      messageDetails
+    });
+
     try {
-      updateLogEvent({
-        status: `Parsing ${this.interactionId} Message`,
-        parser: {
-          name: this.name,
-          interactionId: this.interactionId
-        }
-      });
-
-      const multipartMessage = await parseMultipartBody(message);
-      const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
-      const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
-      const messageDetails = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
-
-      updateLogEvent({
-        status: 'SOAP Information Extracted',
-        messageDetails
-      });
-
       await storeMessageInEhrRepo(message, messageDetails);
       await sendEhrMessageReceived(soapInformation.conversationId, soapInformation.messageId);
 
