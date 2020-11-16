@@ -22,13 +22,13 @@ export const sendEhrAcknowledgement = async (req, res) => {
     const interactionId = 'MCCI_IN010000UK13';
     const { messageId, conversationId, odsCode, repositoryAsid } = req.body;
     const practiceAsid = await getPracticeAsid(odsCode);
-    const acknowledgementMessage = await buildEhrAcknowledgement({
+    const message = await buildEhrAcknowledgement({
       conversationId,
       practiceAsid,
       repositoryAsid,
       messageId
     });
-    await sendMessage({ interactionId, conversationId, odsCode, acknowledgementMessage });
+    await sendMessage({ interactionId, conversationId, odsCode, message });
     updateLogEvent({ status: 'Acknowledgement sent to MHS' });
     res.sendStatus(204);
   } catch (err) {

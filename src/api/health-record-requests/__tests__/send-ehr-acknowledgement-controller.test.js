@@ -37,7 +37,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const nhsNumber = '1234567890';
   const odsCode = 'B1234';
   const interactionId = 'MCCI_IN010000UK13';
-  const acknowledgementMessage = 'fake-acknowledgement-message';
+  const message = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
   const buildAckMessageInputValues = { conversationId, practiceAsid, repositoryAsid, messageId };
@@ -58,7 +58,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     });
 
     it('should send acknowledgement to mhs with correct values', done => {
-      buildEhrAcknowledgement.mockReturnValue(acknowledgementMessage);
+      buildEhrAcknowledgement.mockReturnValue(message);
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
@@ -68,7 +68,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             interactionId,
             conversationId,
             odsCode,
-            acknowledgementMessage
+            message
           });
           expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Acknowledgement sent to MHS' });
         })
@@ -76,7 +76,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     });
 
     it('should return a 503 when cannot send acknowledgement to mhs', async done => {
-      buildEhrAcknowledgement.mockReturnValue(acknowledgementMessage);
+      buildEhrAcknowledgement.mockReturnValue(message);
       await sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
@@ -88,7 +88,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             interactionId,
             conversationId,
             odsCode,
-            acknowledgementMessage
+            message
           });
           expect(updateLogEventWithError).toHaveBeenCalled();
         })
