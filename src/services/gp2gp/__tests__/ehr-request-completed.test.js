@@ -4,7 +4,7 @@ import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
 import { parseMultipartBody } from '../../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../../soap/soap-envelope-handler';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../ehr-request-completed';
-import { updateLogEvent } from '../../../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { sendEhrMessageReceived } from '../../gp-to-repo/send-ehr-message-received';
 
 jest.mock('../../parser/multipart-parser', () => ({
@@ -25,6 +25,9 @@ jest.mock('../../ehr/store-message-in-ehr-repo');
 jest.mock('../../../middleware/logging');
 jest.mock('../../gp-to-repo/send-ehr-message-received', () => ({
   sendEhrMessageReceived: jest.fn()
+}));
+jest.mock('../../ehr', () => ({
+  storeMessageInEhrRepo: jest.fn()
 }));
 
 const ehrRequestCompleted = new EHRRequestCompleted();
@@ -88,11 +91,26 @@ describe('EHRRequestCompleted', () => {
       soapEnvelopeHandler.mockResolvedValue(soapInformation);
 
       await ehrRequestCompleted.handleMessage(mockMessage);
-      // when(storeMessageInEhrRepo).calledWith(mockMessage, soapInformation).mockResolvedValue();
       expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
       expect(sendEhrMessageReceived).toHaveBeenCalledWith(conversationId, messageId);
       expect(updateLogEvent).toHaveBeenCalledWith({
         status: 'EHR Message Received Notification sent'
+      });
+    });
+
+    it('should not send ehr message received notification when storeMessageInEhrRepo unsuccessful', async () => {
+      const conversationId = uuid();
+      const messageId = uuid();
+      const soapInformation = { conversationId, messageId };
+      soapEnvelopeHandler.mockResolvedValue(soapInformation);
+
+      await ehrRequestCompleted.handleMessage(mockMessage);
+
+      await storeMessageInEhrRepo.mockRejectedValueOnce(new Error('error'));
+
+      expect(sendEhrMessageReceived).not.toHaveBeenCalled();
+      expect(updateLogEventWithError).toHaveBeenCalledWith({
+        status: 'Error storing message in EHR Repo'
       });
     });
 

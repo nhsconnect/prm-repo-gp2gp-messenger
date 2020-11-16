@@ -2,7 +2,7 @@ import { storeMessageInEhrRepo } from '../ehr';
 import { extractNhsNumber } from '../parser/message';
 import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
-import { updateLogEvent } from '../../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import { sendEhrMessageReceived } from '../gp-to-repo/send-ehr-message-received';
 
 const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK06';
@@ -31,7 +31,13 @@ class EHRRequestCompleted {
       status: 'SOAP Information Extracted',
       messageDetails
     });
-    await storeMessageInEhrRepo(message, messageDetails);
+
+    try {
+      await storeMessageInEhrRepo(message, messageDetails).catch(() => {});
+    } catch (err) {
+      updateLogEventWithError({ status: 'Error storing message in EHR Repo' });
+      return;
+    }
     await sendEhrMessageReceived(soapInformation.conversationId, soapInformation.messageId);
     updateLogEvent({
       status: 'EHR Message Received Notification sent'
