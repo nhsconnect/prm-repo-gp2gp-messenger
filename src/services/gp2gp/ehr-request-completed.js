@@ -14,34 +14,34 @@ class EHRRequestCompleted {
   }
 
   async handleMessage(message) {
-    updateLogEvent({
-      status: `Parsing ${this.interactionId} Message`,
-      parser: {
-        name: this.name,
-        interactionId: this.interactionId
-      }
-    });
-
-    const multipartMessage = await parseMultipartBody(message);
-    const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
-    const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
-    const messageDetails = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
-
-    updateLogEvent({
-      status: 'SOAP Information Extracted',
-      messageDetails
-    });
-
     try {
-      await storeMessageInEhrRepo(message, messageDetails).catch(() => {});
+      updateLogEvent({
+        status: `Parsing ${this.interactionId} Message`,
+        parser: {
+          name: this.name,
+          interactionId: this.interactionId
+        }
+      });
+
+      const multipartMessage = await parseMultipartBody(message);
+      const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
+      const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
+      const messageDetails = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
+
+      updateLogEvent({
+        status: 'SOAP Information Extracted',
+        messageDetails
+      });
+
+      await storeMessageInEhrRepo(message, messageDetails);
+      await sendEhrMessageReceived(soapInformation.conversationId, soapInformation.messageId);
+
+      updateLogEvent({
+        status: 'EHR Message Received Notification sent'
+      });
     } catch (err) {
-      updateLogEventWithError({ status: 'Error storing message in EHR Repo' });
-      return;
+      updateLogEventWithError(err);
     }
-    await sendEhrMessageReceived(soapInformation.conversationId, soapInformation.messageId);
-    updateLogEvent({
-      status: 'EHR Message Received Notification sent'
-    });
   }
 }
 

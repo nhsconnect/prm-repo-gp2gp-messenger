@@ -1,8 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import { storeMessageInEhrRepo } from '../../ehr';
-import { extractNhsNumber } from '../../parser/message/extract-nhs-number';
-import { parseMultipartBody } from '../../parser/multipart-parser';
-import { soapEnvelopeHandler } from '../../soap/soap-envelope-handler';
+import { extractNhsNumber } from '../../parser/message';
+import { parseMultipartBody } from '../../parser';
+import { soapEnvelopeHandler } from '../../soap';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../ehr-request-completed';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { sendEhrMessageReceived } from '../../gp-to-repo/send-ehr-message-received';
@@ -23,12 +23,7 @@ jest.mock('../../parser/message/extract-nhs-number', () => ({
 
 jest.mock('../../ehr/store-message-in-ehr-repo');
 jest.mock('../../../middleware/logging');
-jest.mock('../../gp-to-repo/send-ehr-message-received', () => ({
-  sendEhrMessageReceived: jest.fn()
-}));
-jest.mock('../../ehr', () => ({
-  storeMessageInEhrRepo: jest.fn()
-}));
+jest.mock('../../gp-to-repo/send-ehr-message-received');
 
 const ehrRequestCompleted = new EHRRequestCompleted();
 const mockMessage = '<RCMR_IN030000UK06 xmlns="urn:hl7-org:v3"/>';
@@ -89,8 +84,9 @@ describe('EHRRequestCompleted', () => {
       const messageId = uuid();
       const soapInformation = { conversationId, messageId };
       soapEnvelopeHandler.mockResolvedValue(soapInformation);
-
+      storeMessageInEhrRepo.mockResolvedValue();
       await ehrRequestCompleted.handleMessage(mockMessage);
+
       expect(storeMessageInEhrRepo).toHaveBeenCalledTimes(1);
       expect(sendEhrMessageReceived).toHaveBeenCalledWith(conversationId, messageId);
       expect(updateLogEvent).toHaveBeenCalledWith({
@@ -102,16 +98,27 @@ describe('EHRRequestCompleted', () => {
       const conversationId = uuid();
       const messageId = uuid();
       const soapInformation = { conversationId, messageId };
+      const error = new Error('error');
       soapEnvelopeHandler.mockResolvedValue(soapInformation);
-
+      storeMessageInEhrRepo.mockRejectedValue(error);
       await ehrRequestCompleted.handleMessage(mockMessage);
 
-      await storeMessageInEhrRepo.mockRejectedValueOnce(new Error('error'));
-
       expect(sendEhrMessageReceived).not.toHaveBeenCalled();
-      expect(updateLogEventWithError).toHaveBeenCalledWith({
-        status: 'Error storing message in EHR Repo'
-      });
+      expect(updateLogEventWithError).toHaveBeenCalledWith(error);
+    });
+
+    it('should log error when sendEhrMessageReceived unsuccessful', async () => {
+      const conversationId = uuid();
+      const messageId = uuid();
+      const soapInformation = { conversationId, messageId };
+      const error = new Error('error');
+      soapEnvelopeHandler.mockResolvedValue(soapInformation);
+      storeMessageInEhrRepo.mockResolvedValue();
+      sendEhrMessageReceived.mockRejectedValue(error);
+      await ehrRequestCompleted.handleMessage(mockMessage);
+
+      expect(sendEhrMessageReceived).toHaveBeenCalled();
+      expect(updateLogEventWithError).toHaveBeenCalledWith(error);
     });
 
     it('should call updateLogEvent with status as "Parsing RCMR_IN030000UK06 Message"', async () => {
