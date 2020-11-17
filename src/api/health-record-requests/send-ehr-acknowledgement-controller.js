@@ -11,7 +11,7 @@ export const acknowledgementValidation = [
     .withMessage("'nhsNumber' provided is not 10 digits"),
   body('conversationId').isUUID('4').withMessage("'conversationId' provided is not of type UUIDv4"),
   body('conversationId').notEmpty().withMessage("'conversationId' is not configured"),
-  body('messageId').isUUID('4').withMessage("'messageId' provided is not of type UUIDv4"),
+  body('messageId').isUUID().withMessage("'messageId' provided is not of type UUID"),
   body('messageId').notEmpty().withMessage("'messageId' is not configured"),
   body('odsCode').notEmpty().withMessage("'odsCode' is not configured"),
   body('repositoryAsid').notEmpty().withMessage("'repositoryAsid' is not configured")

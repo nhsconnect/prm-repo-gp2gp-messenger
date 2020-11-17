@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { v4 as uuid } from 'uuid';
+import { v1 as uuidv1, v4 as uuidv4 } from 'uuid';
 import app from '../../../app';
 import { buildEhrAcknowledgement } from '../../../templates/generate-ehr-acknowledgement';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
@@ -32,8 +32,8 @@ function expectValidationErrors(
 }
 
 describe('POST /health-record-requests/{conversation-id}/acknowledgement', () => {
-  const conversationId = uuid();
-  const messageId = uuid();
+  const conversationId = uuidv4();
+  const messageId = uuidv1();
   const nhsNumber = '1234567890';
   const odsCode = 'B1234';
   const interactionId = 'MCCI_IN010000UK13';
@@ -55,6 +55,14 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
           expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
           expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
         })
+        .end(done);
+    });
+
+    it('should accept a messageId with uuidv4', done => {
+      request(app)
+        .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
+        .send({ conversationId, messageId: uuidv4(), odsCode, repositoryAsid })
+        .expect(204)
         .end(done);
     });
 
@@ -129,13 +137,13 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     it('should return a 422 status code when messageId is not type uuid', done => {
       const invalidMessageId = 'invalid';
       expectValidationErrors(nhsNumber, conversationId, invalidMessageId, odsCode, repositoryAsid, [
-        { messageId: "'messageId' provided is not of type UUIDv4" }
+        { messageId: "'messageId' provided is not of type UUID" }
       ]).end(done);
     });
 
     it('should return a 422 status code when messageId is not provided', done => {
       expectValidationErrors(nhsNumber, conversationId, null, odsCode, repositoryAsid, [
-        { messageId: "'messageId' provided is not of type UUIDv4" },
+        { messageId: "'messageId' provided is not of type UUID" },
         { messageId: "'messageId' is not configured" }
       ]).end(done);
     });
