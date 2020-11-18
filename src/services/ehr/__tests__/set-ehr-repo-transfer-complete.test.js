@@ -1,19 +1,22 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
-import { updateLogEvent } from '../../../middleware/logging';
+import { updateLogEventWithError } from '../../../middleware/logging';
 import { setTransferComplete } from '../set-ehr-repo-transfer-complete';
 
 jest.mock('axios');
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
+  updateLogEventWithError: jest.fn(),
   eventFinished: jest.fn()
 }));
 
 describe('setTransferComplete', () => {
   const body = 'some-request-body';
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
+  const mockAuthKeys = 'auth';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
+  const axiosConfig = { headers: { Authorization: mockAuthKeys } };
 
   beforeEach(() => {
     axios.patch.mockResolvedValue({ data: 'some-url' });
@@ -27,7 +30,8 @@ describe('setTransferComplete', () => {
       expect.objectContaining({
         body,
         transferComplete: true
-      })
+      }),
+      axiosConfig
     );
     done();
   });
@@ -44,8 +48,8 @@ describe('setTransferComplete', () => {
       throw new Error('some-error');
     });
     await setTransferComplete(body).catch(() => {});
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith(
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'failed to update transfer complete to ehr repo api',
         error: expect.anything()

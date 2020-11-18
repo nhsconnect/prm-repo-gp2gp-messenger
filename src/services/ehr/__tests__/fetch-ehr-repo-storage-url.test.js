@@ -1,19 +1,21 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
-import { eventFinished, updateLogEvent } from '../../../middleware/logging';
+import { eventFinished, updateLogEventWithError } from '../../../middleware/logging';
 import { fetchStorageUrl } from '../fetch-ehr-repo-storage-url';
 
 jest.mock('axios');
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn(),
+  updateLogEventWithError: jest.fn(),
   eventFinished: jest.fn()
 }));
 
 describe('fetchStorageUrl', () => {
   const body = 'some-request-body';
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
+  const mockAuthKeys = 'auth';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
+  const axiosConfig = { headers: { Authorization: mockAuthKeys } };
 
   beforeEach(() => {
     axios.post.mockResolvedValue({ data: 'some-url' });
@@ -22,7 +24,7 @@ describe('fetchStorageUrl', () => {
   it('should make a call fetch url with soap message as body', async done => {
     await fetchStorageUrl(body);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(`${mockEhrRepoUrl}/fragments`, body);
+    expect(axios.post).toHaveBeenCalledWith(`${mockEhrRepoUrl}/fragments`, body, axiosConfig);
     done();
   });
 
@@ -44,8 +46,8 @@ describe('fetchStorageUrl', () => {
       throw new Error('some-error');
     });
     await fetchStorageUrl(body).catch(() => {});
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith(
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'failed to get pre-signed url',
         error: expect.anything()

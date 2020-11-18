@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
-import { updateLogEvent } from '../../../middleware/logging';
+import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
 
 jest.mock('axios');
@@ -30,7 +30,8 @@ describe('storeMessageInEhrRepo', () => {
           messageId,
           conversationId,
           manifest
-        })
+        }),
+        expect.anything()
       );
       done();
     });
@@ -44,7 +45,8 @@ describe('storeMessageInEhrRepo', () => {
       });
       expect(axios.post).toHaveBeenCalledWith(
         `${mockEhrRepoUrl}/fragments`,
-        expect.not.objectContaining({ nhsNumber: undefined })
+        expect.not.objectContaining({ nhsNumber: undefined }),
+        expect.anything()
       );
       done();
     });
@@ -53,7 +55,7 @@ describe('storeMessageInEhrRepo', () => {
   describe('upload artifact to S3 using pre-signed URL', () => {
     it('should make put request using the url from the response body', async done => {
       await storeMessageInEhrRepo(message, { conversationId, messageId });
-      expect(axios.put).toHaveBeenCalledWith('some-url', message);
+      expect(axios.put).toHaveBeenCalledWith('some-url', message, expect.anything());
       done();
     });
 
@@ -65,12 +67,12 @@ describe('storeMessageInEhrRepo', () => {
         ehrRepository: { url: 'some-url' }
       });
 
-      expect(updateLogEvent).toHaveBeenNthCalledWith(2, {
+      expect(updateLogEventWithError).toHaveBeenCalledWith({
         status: 'failed to store message to s3 via pre-signed url',
         error: 'some-error'
       });
 
-      expect(updateLogEvent).toHaveBeenNthCalledWith(3, {
+      expect(updateLogEventWithError).toHaveBeenCalledWith({
         status: 'failed to store message to ehr repository',
         error: 'some-error'
       });
@@ -94,13 +96,17 @@ describe('storeMessageInEhrRepo', () => {
   describe('Tell EHR Repository that transfer of fragment is complete', () => {
     it('should make patch request to ehr repo service with transfer complete flag', async done => {
       await storeMessageInEhrRepo(message, { conversationId, messageId });
-      expect(axios.patch).toHaveBeenCalledWith(`${mockEhrRepoUrl}/fragments`, {
-        body: {
-          conversationId,
-          messageId
+      expect(axios.patch).toHaveBeenCalledWith(
+        `${mockEhrRepoUrl}/fragments`,
+        {
+          body: {
+            conversationId,
+            messageId
+          },
+          transferComplete: true
         },
-        transferComplete: true
-      });
+        expect.anything()
+      );
       done();
     });
   });

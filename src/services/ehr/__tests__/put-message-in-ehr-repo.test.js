@@ -1,12 +1,17 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
-import { eventFinished, updateLogEvent } from '../../../middleware/logging';
+import {
+  eventFinished,
+  updateLogEvent,
+  updateLogEventWithError
+} from '../../../middleware/logging';
 import { putMessageInEhrRepo } from '../put-message-in-ehr-repo';
 
 jest.mock('axios');
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging', () => ({
   updateLogEvent: jest.fn(),
+  updateLogEventWithError: jest.fn(),
   eventFinished: jest.fn()
 }));
 
@@ -14,7 +19,9 @@ describe('putMessageInEhrRepo', () => {
   const message = 'some-message';
   const url = 'https://s3-upload-url';
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
+  const mockAuthKeys = 'auth';
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
+  const axiosConfig = { headers: { Authorization: mockAuthKeys } };
 
   beforeEach(() => {
     axios.put.mockResolvedValue({ status: 200, statusText: 'status-text' });
@@ -23,7 +30,7 @@ describe('putMessageInEhrRepo', () => {
   it('should make a call to specified url with conversation ID and message', async done => {
     await putMessageInEhrRepo(url, message);
     expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith(url, message);
+    expect(axios.put).toHaveBeenCalledWith(url, message, axiosConfig);
     done();
   });
 
@@ -54,8 +61,8 @@ describe('putMessageInEhrRepo', () => {
       throw new Error('some-error');
     });
     await putMessageInEhrRepo(url, message).catch(() => {});
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith(
+    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+    expect(updateLogEventWithError).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'failed to store message to s3 via pre-signed url',
         error: expect.anything()

@@ -18,6 +18,7 @@ locals {
     ]
     secret_environment_variables = [
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },
+      { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_EHR_REPO", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys_for_ehr_repo.arn },
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO", valueFrom = data.aws_ssm_parameter.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO.arn },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD", valueFrom = data.aws_ssm_parameter.amq-password.arn },

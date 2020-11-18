@@ -12,6 +12,10 @@ data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys" {
   name = "/repo/${var.environment}/user-input/gp2gp-adaptor-authorization-keys"
 }
 
+data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys_for_ehr_repo" {
+  name = "/repo/${var.environment}/user-input/ehr-repo-authorization-keys"
+}
+
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE" {
   name = "/repo/${var.environment}/user-input/gp2gp-adaptor-deductions-ods-code"
 }

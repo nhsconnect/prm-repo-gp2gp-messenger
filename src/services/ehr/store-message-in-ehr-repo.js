@@ -1,4 +1,4 @@
-import { eventFinished, updateLogEvent } from '../../middleware/logging';
+import { eventFinished, updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import { fetchStorageUrl } from './fetch-ehr-repo-storage-url';
 import { putMessageInEhrRepo } from './put-message-in-ehr-repo';
 import { setTransferComplete } from './set-ehr-repo-transfer-complete';
@@ -10,7 +10,7 @@ const storeMessageInEhrRepo = async (message, soapInformation) => {
     await putMessageInEhrRepo(url, message);
     await setTransferComplete(soapInformation);
   } catch (err) {
-    updateLogEvent({
+    updateLogEventWithError({
       status: 'failed to store message to ehr repository',
       error: err.stack
     });
