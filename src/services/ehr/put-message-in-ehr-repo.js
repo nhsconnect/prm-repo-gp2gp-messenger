@@ -1,13 +1,9 @@
 import axios from 'axios';
 import { eventFinished, updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
-import { initialiseConfig } from '../../config';
 
 export const putMessageInEhrRepo = async (url, message) => {
-  const config = initialiseConfig();
   try {
-    const response = await axios.put(url, message, {
-      headers: { Authorization: `${config.ehrRepoAuthKeys}` }
-    });
+    const response = await axios.put(url, message);
     updateLogEvent({
       ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
     });

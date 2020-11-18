@@ -55,7 +55,7 @@ describe('storeMessageInEhrRepo', () => {
   describe('upload artifact to S3 using pre-signed URL', () => {
     it('should make put request using the url from the response body', async done => {
       await storeMessageInEhrRepo(message, { conversationId, messageId });
-      expect(axios.put).toHaveBeenCalledWith('some-url', message, expect.anything());
+      expect(axios.put).toHaveBeenCalledWith('some-url', message);
       done();
     });
 

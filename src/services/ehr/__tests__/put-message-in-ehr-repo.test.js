@@ -19,9 +19,7 @@ describe('putMessageInEhrRepo', () => {
   const message = 'some-message';
   const url = 'https://s3-upload-url';
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  const mockAuthKeys = 'auth';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
-  const axiosConfig = { headers: { Authorization: mockAuthKeys } };
+  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
     axios.put.mockResolvedValue({ status: 200, statusText: 'status-text' });
@@ -30,7 +28,7 @@ describe('putMessageInEhrRepo', () => {
   it('should make a call to specified url with conversation ID and message', async done => {
     await putMessageInEhrRepo(url, message);
     expect(axios.put).toHaveBeenCalledTimes(1);
-    expect(axios.put).toHaveBeenCalledWith(url, message, axiosConfig);
+    expect(axios.put).toHaveBeenCalledWith(url, message);
     done();
   });
 
