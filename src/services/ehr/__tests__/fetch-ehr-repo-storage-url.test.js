@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { v4 } from 'uuid';
 import { initialiseConfig } from '../../../config';
 import { eventFinished, updateLogEventWithError } from '../../../middleware/logging';
 import { fetchStorageUrl } from '../fetch-ehr-repo-storage-url';
@@ -11,7 +12,8 @@ jest.mock('../../../middleware/logging', () => ({
 }));
 
 describe('fetchStorageUrl', () => {
-  const body = 'some-request-body';
+  const conversationId = v4();
+  const body = { conversationId };
   const mockEhrRepoUrl = 'https://ehr-repo-url';
   const mockAuthKeys = 'auth';
   initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
@@ -21,10 +23,16 @@ describe('fetchStorageUrl', () => {
     axios.post.mockResolvedValue({ data: 'some-url' });
   });
 
-  it('should make a call fetch url with soap message as body', async done => {
+  it('should make a call fetch url with soap message and isLargeMessage', async done => {
     await fetchStorageUrl(body);
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(`${mockEhrRepoUrl}/fragments`, body, axiosConfig);
+    expect(axios.post).toHaveBeenCalledWith(
+      `${mockEhrRepoUrl}/fragments`,
+      expect.objectContaining({
+        isLargeMessage: false
+      }),
+      axiosConfig
+    );
     done();
   });
 
