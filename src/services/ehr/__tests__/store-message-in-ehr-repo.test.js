@@ -99,10 +99,7 @@ describe('storeMessageInEhrRepo', () => {
       expect(axios.patch).toHaveBeenCalledWith(
         `${mockEhrRepoUrl}/fragments`,
         {
-          body: {
-            conversationId,
-            messageId
-          },
+          conversationId,
           transferComplete: true
         },
         expect.anything()

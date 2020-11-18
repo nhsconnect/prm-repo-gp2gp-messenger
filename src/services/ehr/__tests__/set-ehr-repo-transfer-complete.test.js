@@ -2,6 +2,7 @@ import axios from 'axios';
 import { initialiseConfig } from '../../../config';
 import { updateLogEventWithError } from '../../../middleware/logging';
 import { setTransferComplete } from '../set-ehr-repo-transfer-complete';
+import { v4 } from 'uuid';
 
 jest.mock('axios');
 jest.mock('../../../config');
@@ -12,7 +13,8 @@ jest.mock('../../../middleware/logging', () => ({
 }));
 
 describe('setTransferComplete', () => {
-  const body = 'some-request-body';
+  const conversationId = v4();
+  const body = { conversationId };
   const mockEhrRepoUrl = 'https://ehr-repo-url';
   const mockAuthKeys = 'auth';
   initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
@@ -28,7 +30,7 @@ describe('setTransferComplete', () => {
     expect(axios.patch).toHaveBeenCalledWith(
       `${mockEhrRepoUrl}/fragments`,
       expect.objectContaining({
-        body,
+        conversationId,
         transferComplete: true
       }),
       axiosConfig

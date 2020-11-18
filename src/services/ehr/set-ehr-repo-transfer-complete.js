@@ -8,7 +8,7 @@ export const setTransferComplete = async body => {
     const response = await axios.patch(
       `${config.ehrRepoUrl}/fragments`,
       {
-        body,
+        conversationId: body.conversationId,
         transferComplete: true
       },
       { headers: { Authorization: `${config.ehrRepoAuthKeys}` } }
