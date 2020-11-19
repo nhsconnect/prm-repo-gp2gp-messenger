@@ -25,8 +25,8 @@ export const sendEhrAcknowledgement = async (req, res) => {
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     const message = await buildEhrAcknowledgement({
       conversationId,
-      practiceAsid,
-      repositoryAsid,
+      receivingAsid: practiceAsid,
+      sendingAsid: repositoryAsid,
       messageId
     });
     await sendMessage({ interactionId, conversationId, odsCode, message });

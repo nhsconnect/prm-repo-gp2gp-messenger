@@ -41,7 +41,12 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const message = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
-  const buildAckMessageInputValues = { conversationId, practiceAsid, repositoryAsid, messageId };
+  const buildAckMessageInputValues = {
+    conversationId,
+    receivingAsid: practiceAsid,
+    sendingAsid: repositoryAsid,
+    messageId
+  };
 
   describe('sendEhrAcknowledgement', () => {
     getPracticeAsid.mockReturnValue(practiceAsid);
