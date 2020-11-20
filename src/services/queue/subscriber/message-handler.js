@@ -1,5 +1,6 @@
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
+import { EhrRequest, EHR_REQUEST } from '../../gp2gp/ehr-request';
 import { parseMultipartBody } from '../../parser';
 import { extractAction } from '../../parser/soap';
 import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../pds';
@@ -25,6 +26,10 @@ export const handleMessage = async message => {
   let handler;
 
   switch (interactionId) {
+    case EHR_REQUEST:
+      handler = new EhrRequest();
+      break;
+
     case EHR_REQUEST_COMPLETED:
       handler = new EHRRequestCompleted();
       break;

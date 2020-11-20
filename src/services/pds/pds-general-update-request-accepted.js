@@ -1,7 +1,7 @@
 import { updateLogEvent } from '../../middleware/logging';
-import { parseMultipartBody } from '../parser/multipart-parser';
+import { parseMultipartBody } from '../parser/';
 import { soapEnvelopeHandler } from '../soap';
-import { sendPdsUpdate } from '../gp-to-repo/send-pds-update';
+import { sendPdsUpdate } from '../gp-to-repo/';
 
 const PDS_GENERAL_UPDATE_REQUEST_ACCEPTED = 'PRPA_IN000202UK01';
 

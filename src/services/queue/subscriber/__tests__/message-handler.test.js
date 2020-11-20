@@ -1,13 +1,12 @@
 import { DefaultMessage, handleMessage } from '../';
 import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
-import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../../gp2gp/ehr-request-completed';
+import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../../gp2gp';
 import { parseMultipartBody } from '../../../parser';
-import {
-  PDSGeneralUpdateRequestAccepted,
-  PDS_GENERAL_UPDATE_REQUEST_ACCEPTED
-} from '../../../pds/pds-general-update-request-accepted';
+import { PDSGeneralUpdateRequestAccepted, PDS_GENERAL_UPDATE_REQUEST_ACCEPTED } from '../../../pds';
+import { EHR_REQUEST, EhrRequest } from '../../../gp2gp/ehr-request';
 import {
   ehrRequestCompletedMessage,
+  ehrRequestMessage,
   messageWithoutAction,
   pdsGeneralUpdateRequestAcceptedMessage,
   unhandledInteractionId
@@ -49,6 +48,29 @@ describe('handleMessage', () => {
           interactionId: EHR_REQUEST_COMPLETED
         })
       );
+      done();
+    });
+  });
+
+  describe('EHRRequest', () => {
+    beforeEach(() => {
+      EhrRequest.prototype.handleMessage = jest.fn();
+      parseMultipartBody.mockImplementation(() => [
+        {
+          body: `<Action>${EHR_REQUEST}</Action>`
+        }
+      ]);
+    });
+
+    it('should call EhrRequest message handler when message type is RCMR_IN010000UK05', async () => {
+      await handleMessage(ehrRequestMessage);
+      expect(EhrRequest.prototype.handleMessage).toHaveBeenCalledTimes(1);
+      expect(EhrRequest.prototype.handleMessage).toHaveBeenCalledWith(ehrRequestMessage);
+    });
+
+    it('should updateLogEvent with the correct interactionId', async done => {
+      await handleMessage(ehrRequestMessage);
+      expect(updateLogEvent).toHaveBeenCalledWith({ interactionId: EHR_REQUEST });
       done();
     });
   });
