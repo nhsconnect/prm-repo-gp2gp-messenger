@@ -7,60 +7,11 @@
   },
   "tags": [
     {
-      "name": "ehr-request",
-      "description": "Send EHR request"
-    },
-    {
       "name": "health",
       "description": "Health Check"
     }
   ],
   "paths": {
-    "/ehr-request": {
-      "post": {
-        "tags": ["ehr-request"],
-        "summary": "Puts a RCMR_IN030000UK06 message on the message queue for testing purposes",
-        "consumes": ["application/json"],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "patient details",
-            "description": "Data about the patient whose EHR is being requested",
-            "schema": {
-              "$ref": "#/definitions/EhrRequest"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Successfully requested"
-          },
-          "401": {
-            "description": "Authorization header missing"
-          },
-          "403": {
-            "description": "Authorization key invalid"
-          },
-          "422": {
-            "description": "Validation failed",
-            "schema": {
-              "$ref": "#/definitions/ValidationErrors"
-            }
-          },
-          "503": {
-            "description": "Downstream error when sending EHR request",
-            "schema": {
-              "$ref": "#/definitions/ServerError"
-            }
-          }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
-      }
-    },
     "/health-record-requests/{nhsNumber}": {
       "post": {
         "tags": ["health-record-requests"],
@@ -181,7 +132,7 @@
           "default": {
             "description": "200 and 503 response follow default schema",
             "schema": {
-              "$ref": "#/definitions/HealthReponseTemplate"
+              "$ref": "#/definitions/HealthResponseTemplate"
             }
           }
         }
@@ -365,18 +316,6 @@
       },
       "required": ["pdsId", "serialChangeNumber", "conversationId"]
     },
-    "EhrRequest": {
-      "type": "object",
-      "properties": {
-        "nhsNumber": {
-          "type": "string"
-        },
-        "odsCode": {
-          "type": "string"
-        }
-      },
-      "required": ["nhsNumber", "odsCode"]
-    },
     "ValidationErrors": {
       "type": "object",
       "properties": {
@@ -403,7 +342,7 @@
         }
       }
     },
-    "HealthReponseTemplate": {
+    "HealthResponseTemplate": {
       "type": "object",
       "properties": {
         "version": {

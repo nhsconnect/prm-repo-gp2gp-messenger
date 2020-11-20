@@ -1,7 +1,6 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import sendEhrRequest from '../api/ehr-request/send-ehr-request';
 import app from '../app';
 import { getHealthCheck } from '../services/health-check/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
@@ -9,7 +8,6 @@ import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-reque
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
 import { getPracticeAsid } from '../services/mhs/mhs-route-client';
 
-jest.mock('../api/ehr-request/send-ehr-request');
 jest.mock('../config/logging');
 jest.mock('../config/', () => ({
   initialiseConfig: jest.fn().mockReturnValue({
@@ -76,18 +74,6 @@ describe('app', () => {
 
     it('should return a 200 status code', done => {
       request(app).get('/health').expect(200).end(done);
-    });
-  });
-
-  describe('POST /ehr-request', () => {
-    const validRequestBody = { nhsNumber: 'some-nhs-number', odsCode: 'some-odsCode' };
-
-    beforeEach(() => {
-      sendEhrRequest.mockResolvedValue();
-    });
-
-    it('should return a 202 status code', done => {
-      request(app).post('/ehr-request').send(validRequestBody).expect(202).end(done);
     });
   });
 
