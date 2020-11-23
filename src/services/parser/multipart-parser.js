@@ -1,4 +1,4 @@
-const boundaryMatcher = /^.*--=_MIME-Boundary$/gm;
+const boundaryMatcher = /^.*(--=_MIME-Boundary)|(--[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/gm;
 
 // Extracts key value pair based on {Key} : OWS {Value} OWS
 // Where the key include alpha characters and hyphens only
