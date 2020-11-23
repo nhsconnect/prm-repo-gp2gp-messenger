@@ -2,6 +2,7 @@ import { parseMultipartBody } from '../';
 import {
   asyncGp2gpMessageExample,
   asyncSpineAcknowledgementExample,
+  ehrRequestMessageExample,
   syncSpineAcknowledgementExample
 } from './data/multipart-parser';
 
@@ -137,8 +138,48 @@ describe('multipart-parser', () => {
       expect(multipartMessage.length).toBe(3);
     });
 
-    it('should have an attachement', () => {
+    it('should have an attachment', () => {
       expect(multipartMessage[2].body).toBe('SGk=');
+    });
+  });
+
+  describe('EHR Request message example', () => {
+    let ehrRequestMessage;
+
+    beforeAll(() => {
+      ehrRequestMessage = parseMultipartBody(ehrRequestMessageExample);
+    });
+
+    it('should have two entries', () => {
+      expect(ehrRequestMessage.length).toBe(2);
+    });
+
+    it('should have correct Content-Type header in the first result headers', () => {
+      expect('Content-Type' in ehrRequestMessage[0].headers).toBe(true);
+      expect(ehrRequestMessage[0].headers['Content-Type']).toBe('text/xml; charset=UTF-8');
+    });
+
+    it('should contain the soap envelope in the first result body', () => {
+      expect(ehrRequestMessage[0].body).toMatch(/^(.*)<soap:Envelope(.*)<\/soap:Envelope>$/);
+    });
+
+    it('should find the correct action in first part of message body', () => {
+      expect(ehrRequestMessage[0].body).toContain('RCMR_IN010000UK05');
+    });
+
+    it('should have correct Content-Type header in the first result', () => {
+      expect('Content-Type' in ehrRequestMessage[1].headers).toBe(true);
+      expect(ehrRequestMessage[1].headers['Content-Type']).toBe('application/xml;charset=UTF-8');
+    });
+
+    it('should find the correct conversationId in second part of message body', () => {
+      expect(ehrRequestMessage[1].body).toContain('DFF5321C-C6EA-468E-BBC2-B0E48000E071');
+    });
+
+    it('should contain the message in the second result body', () => {
+      expect(ehrRequestMessage[1].body).toMatch(
+        /^(.*)<RCMR_IN010000UK05(.*)<\/RCMR_IN010000UK05>$/
+      );
     });
   });
 });

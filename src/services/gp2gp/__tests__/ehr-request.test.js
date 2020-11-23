@@ -5,11 +5,13 @@ import { parseMultipartBody } from '../../parser';
 import { soapEnvelopeHandler } from '../../soap';
 import { extractNhsNumber } from '../../parser/message';
 import { sendEhrRequest } from '../../repo-to-gp/send-ehr-request';
+import { extractOdsCode } from '../../parser/message/extract-ods-code';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../repo-to-gp/send-ehr-request');
 jest.mock('../../soap/soap-envelope-handler');
 jest.mock('../../parser/message/extract-nhs-number');
+jest.mock('../../parser/message/extract-ods-code');
 jest.mock('../../parser/multipart-parser', () => ({
   parseMultipartBody: jest
     .fn()
@@ -20,6 +22,7 @@ describe('EhrRequest', () => {
   const ehrRequest = new EhrRequest();
   const mockMessage = '<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3"/>';
   const expectedNhsNumber = '1234567890';
+  const expectedOdsCode = 'B12345';
   const expectedConversationId = uuid();
 
   it('should return "Received EHR Request" when calling name', () => {
@@ -57,12 +60,23 @@ describe('EhrRequest', () => {
       expect(extractNhsNumber).toHaveBeenCalledWith('another-message');
     });
 
+    it('should call extractOdsCode', async () => {
+      await ehrRequest.handleMessage(mockMessage);
+      expect(extractOdsCode).toHaveBeenCalledTimes(1);
+      expect(extractOdsCode).toHaveBeenCalledWith('another-message');
+    });
+
     it('should call sendEhrRequest when message has successfully been parsed', async () => {
       soapEnvelopeHandler.mockResolvedValue({ conversationId: expectedConversationId });
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
+      extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
       expect(sendEhrRequest).toHaveBeenCalledTimes(1);
-      expect(sendEhrRequest).toBeCalledWith(expectedNhsNumber, expectedConversationId);
+      expect(sendEhrRequest).toBeCalledWith(
+        expectedNhsNumber,
+        expectedConversationId,
+        expectedOdsCode
+      );
     });
 
     it('should catch and updateLogEventWithError when cannot sendEhrRequest', async () => {

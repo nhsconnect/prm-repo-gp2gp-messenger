@@ -3,6 +3,7 @@ import { parseMultipartBody } from '../parser';
 import { soapEnvelopeHandler } from '../soap';
 import { extractNhsNumber } from '../parser/message';
 import { sendEhrRequest } from '../repo-to-gp/send-ehr-request';
+import { extractOdsCode } from '../parser/message/extract-ods-code';
 
 export const EHR_REQUEST = 'RCMR_IN010000UK05';
 
@@ -25,9 +26,10 @@ export class EhrRequest {
       const multipartMessage = await parseMultipartBody(message);
       const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
       const nhsNumber = await extractNhsNumber(multipartMessage[1].body);
+      const odsCode = await extractOdsCode(multipartMessage[1].body);
       const conversationId = soapInformation.conversationId;
 
-      await sendEhrRequest(nhsNumber, conversationId);
+      await sendEhrRequest(nhsNumber, conversationId, odsCode);
     } catch (err) {
       updateLogEventWithError(err);
     }
