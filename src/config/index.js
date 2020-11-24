@@ -13,10 +13,12 @@ export const initialiseConfig = () => ({
   ehrRepoUrl: process.env.GP2GP_ADAPTOR_EHR_REPO_URL,
   ehrRepoAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_EHR_REPO,
   gpToRepoUrl: process.env.GP2GP_ADAPTOR_GP_TO_REPO_URL,
+  gpToRepoAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO,
+  repoToGpUrl: process.env.GP2GP_ADAPTOR_REPO_TO_GP_URL,
+  repoToGpAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP,
   pdsAsid: process.env.PDS_ASID || '928942012545',
   mhsOutboundUrl: process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL,
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
   nodeEnv: process.env.NODE_ENV || 'local',
-  url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`,
-  gpToRepoAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO
+  url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`
 });

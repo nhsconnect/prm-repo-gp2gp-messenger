@@ -83,3 +83,11 @@ data "aws_ssm_parameter" "GP2GP_ADAPTOR_GP_TO_REPO_URL" {
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO" {
   name = "/repo/${var.environment}/user-input/gp-to-repo-authorization-keys"
 }
+
+data "aws_ssm_parameter" "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP" {
+  name = "/repo/${var.environment}/user-input/repo-to-gp-authorization-keys"
+}
+
+data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPO_TO_GP_URL" {
+  name = "/repo/${var.environment}/output/prm-deductions-repo-to-gp/repo-to-gp-service-url"
+}
