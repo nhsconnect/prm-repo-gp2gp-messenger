@@ -52,7 +52,7 @@ describe('handleMessage', () => {
     });
   });
 
-  describe('EHRRequest', () => {
+  describe('EhrRequest', () => {
     beforeEach(() => {
       EhrRequest.prototype.handleMessage = jest.fn();
       parseMultipartBody.mockImplementation(() => [
