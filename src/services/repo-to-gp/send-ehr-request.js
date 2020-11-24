@@ -11,7 +11,7 @@ export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
   try {
     await axios.post(url, body, headers);
   } catch (err) {
-    updateLogEventWithError(`Cannot send EHR request to repo-to-gp: ${err.message}`);
+    updateLogEventWithError({ message: `Cannot send EHR request to repo-to-gp: ${err.message}` });
     throw err;
   }
 };

@@ -41,8 +41,8 @@ describe('sendEhrRequest', () => {
       error = err;
     }
     expect(error).not.toBeNull();
-    expect(updateLogEventWithError).toHaveBeenCalledWith(
-      'Cannot send EHR request to repo-to-gp: Request failed with status code 503'
-    );
+    expect(updateLogEventWithError).toHaveBeenCalledWith({
+      message: 'Cannot send EHR request to repo-to-gp: Request failed with status code 503'
+    });
   });
 });

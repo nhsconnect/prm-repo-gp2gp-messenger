@@ -11,9 +11,9 @@ export const extractManifestAsMessageIds = async message => {
     if (extractedId) {
       acc.push(extractedId[1]);
     } else {
-      updateLogEventWithError(
-        `Unable to extract manifest message Id from ${manifestInfo.map(item => item.href)}`
-      );
+      updateLogEventWithError({
+        message: `Unable to extract manifest message Id from ${manifestInfo.map(item => item.href)}`
+      });
     }
     return acc;
   }, []);

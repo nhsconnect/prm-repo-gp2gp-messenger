@@ -36,9 +36,10 @@ describe('extractManifestAsMessageIds', () => {
 
     it('should call updateLogEventWithError with "Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com"', async done => {
       await extractManifestAsMessageIds(manifestIdNotUuid);
-      expect(updateLogEventWithError).toHaveBeenCalledWith(
-        'Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com'
-      );
+      expect(updateLogEventWithError).toHaveBeenCalledWith({
+        message:
+          'Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com'
+      });
       done();
     });
   });
