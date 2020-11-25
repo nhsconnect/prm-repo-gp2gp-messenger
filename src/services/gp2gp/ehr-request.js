@@ -1,9 +1,9 @@
 import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
 import { parseMultipartBody } from '../parser';
-import { soapEnvelopeHandler } from '../soap';
 import { extractNhsNumber } from '../parser/message';
 import { sendEhrRequest } from '../repo-to-gp/send-ehr-request';
 import { extractOdsCode } from '../parser/message/extract-ods-code';
+import { extractConversationId } from '../parser/soap';
 
 export const EHR_REQUEST = 'RCMR_IN010000UK05';
 
@@ -24,10 +24,9 @@ export class EhrRequest {
       });
 
       const multipartMessage = await parseMultipartBody(message);
-      const soapInformation = await soapEnvelopeHandler(multipartMessage[0].body);
       const nhsNumber = await extractNhsNumber(multipartMessage[1].body);
       const odsCode = await extractOdsCode(multipartMessage[1].body);
-      const conversationId = soapInformation.conversationId;
+      const conversationId = await extractConversationId(multipartMessage[0].body);
 
       updateLogEvent({
         status: `Parsed EHR Request message: nhsNumber: ${nhsNumber}, conversationId: ${conversationId}, odsCode: ${odsCode}`

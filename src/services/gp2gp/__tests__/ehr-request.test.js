@@ -2,15 +2,15 @@ import { v4 as uuid } from 'uuid';
 import { EhrRequest } from '../ehr-request';
 import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
 import { parseMultipartBody } from '../../parser';
-import { soapEnvelopeHandler } from '../../soap';
 import { extractNhsNumber } from '../../parser/message';
 import { sendEhrRequest } from '../../repo-to-gp/send-ehr-request';
 import { extractOdsCode } from '../../parser/message/extract-ods-code';
+import { extractConversationId } from '../../parser/soap';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../repo-to-gp/send-ehr-request');
-jest.mock('../../soap/soap-envelope-handler');
 jest.mock('../../parser/message/extract-nhs-number');
+jest.mock('../../parser/soap/extract-conversation-id');
 jest.mock('../../parser/message/extract-ods-code');
 jest.mock('../../parser/multipart-parser', () => ({
   parseMultipartBody: jest
@@ -35,8 +35,11 @@ describe('EhrRequest', () => {
 
   describe('handleMessage', () => {
     it('should updateLogEvent when handleMessage is called', async () => {
+      extractConversationId.mockResolvedValue(expectedConversationId);
+      extractNhsNumber.mockResolvedValue(expectedNhsNumber);
+      extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
+      expect(updateLogEvent).toHaveBeenCalledTimes(2);
       expect(updateLogEvent).toBeCalledWith(
         expect.objectContaining({ status: 'Parsing RCMR_IN010000UK05 Message' })
       );
@@ -50,8 +53,8 @@ describe('EhrRequest', () => {
 
     it('should call soapEnvelopeHandler', async () => {
       await ehrRequest.handleMessage(mockMessage);
-      expect(soapEnvelopeHandler).toHaveBeenCalledTimes(1);
-      expect(soapEnvelopeHandler).toHaveBeenCalledWith('some-message');
+      expect(extractConversationId).toHaveBeenCalledTimes(1);
+      expect(extractConversationId).toHaveBeenCalledWith('some-message');
     });
 
     it('should call extractNhsNumber', async () => {
@@ -67,7 +70,7 @@ describe('EhrRequest', () => {
     });
 
     it('should call sendEhrRequest when message has successfully been parsed', async () => {
-      soapEnvelopeHandler.mockResolvedValue({ conversationId: expectedConversationId });
+      extractConversationId.mockResolvedValue(expectedConversationId);
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
       extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
