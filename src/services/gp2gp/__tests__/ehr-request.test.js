@@ -71,6 +71,7 @@ describe('EhrRequest', () => {
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
       extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
+      expect(updateLogEvent).toHaveBeenCalledTimes(2);
       expect(sendEhrRequest).toHaveBeenCalledTimes(1);
       expect(sendEhrRequest).toBeCalledWith(
         expectedNhsNumber,

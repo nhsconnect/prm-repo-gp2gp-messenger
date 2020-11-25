@@ -29,6 +29,10 @@ export class EhrRequest {
       const odsCode = await extractOdsCode(multipartMessage[1].body);
       const conversationId = soapInformation.conversationId;
 
+      updateLogEvent({
+        status: `Parsed nhsNumber: ${nhsNumber}, conversationId: ${conversationId}, odsCode: ${odsCode}`
+      });
+
       await sendEhrRequest(nhsNumber, conversationId, odsCode);
     } catch (err) {
       updateLogEventWithError(err);
