@@ -30,7 +30,7 @@ export class EhrRequest {
       const conversationId = soapInformation.conversationId;
 
       updateLogEvent({
-        status: `Parsed nhsNumber: ${nhsNumber}, conversationId: ${conversationId}, odsCode: ${odsCode}`
+        status: `Parsed EHR Request message: nhsNumber: ${nhsNumber}, conversationId: ${conversationId}, odsCode: ${odsCode}`
       });
 
       await sendEhrRequest(nhsNumber, conversationId, odsCode);
