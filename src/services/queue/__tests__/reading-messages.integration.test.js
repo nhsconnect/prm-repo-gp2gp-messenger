@@ -6,6 +6,8 @@ import { clearQueue, consumeOneMessage } from '../helper';
 import { sendToQueue } from '../publisher';
 import {
   conversationId,
+  nhsNumber,
+  odsCode,
   ehrRequestMessage,
   pdsGeneralUpdateRequestAcceptedMessage
 } from '../subscriber/__tests__/data/subscriber';
@@ -63,7 +65,8 @@ describe('Should read messages from the queue successfully', () => {
     const mockRepoToGpAuthKeys = 'more-fake-keys';
     it('should tell RepoToGP that an ehr request has been received', async () => {
       const headers = { reqheaders: { Authorization: `${mockRepoToGpAuthKeys}` } };
-      const scope = nock(mockRepoToGpUrl, headers).post(`/registration-requests/`).reply(201);
+      const body = { conversationId, nhsNumber, odsCode };
+      const scope = nock(mockRepoToGpUrl, headers).post(`/registration-requests/`, body).reply(201);
 
       await sendToQueue(ehrRequestMessage, {
         destination: uniqueQueueName

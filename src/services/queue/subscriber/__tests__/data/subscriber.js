@@ -2,6 +2,7 @@ import { initialiseConfig } from '../../../../../config';
 
 const config = initialiseConfig();
 export const nhsNumber = '9465731285';
+export const odsCode = 'N82668';
 export const conversationId = 'some-conversation-id-123';
 export const messageId = 'some-message-id-456';
 export const foundationSupplierAsid = 'foundation-supplier-asid';
@@ -115,7 +116,7 @@ Content-Type: application/xml; charset=UTF-8
                     <author type="Participation" typeCode="AUT">
                         <AgentOrgSDS type="RoleHeir" classCode="AGNT">
                             <agentOrganizationSDS type="Organization" classCode="ORG" determinerCode="INSTANCE">
-                                <id root="1.2.826.0.1285.0.1.10" extension="N82668"/>
+                                <id root="1.2.826.0.1285.0.1.10" extension="${odsCode}"/>
                             </agentOrganizationSDS>
                         </AgentOrgSDS>
                     </author>

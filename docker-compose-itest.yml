@@ -6,5 +6,9 @@ services:
       - mq-2:mq-2
   mq-1:
     image: rmohr/activemq:5.15.9-alpine
+    ports:
+      - 61620:61613
   mq-2:
     image: rmohr/activemq:5.15.9-alpine
+    ports:
+      - 61621:61613
