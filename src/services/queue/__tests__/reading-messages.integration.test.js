@@ -65,7 +65,16 @@ describe('Should read messages from the queue successfully', () => {
     const mockRepoToGpAuthKeys = 'more-fake-keys';
     it('should tell RepoToGP that an ehr request has been received', async () => {
       const headers = { reqheaders: { Authorization: `${mockRepoToGpAuthKeys}` } };
-      const body = { conversationId, nhsNumber, odsCode };
+      const body = {
+        data: {
+          type: 'registration-requests',
+          id: conversationId,
+          attributes: {
+            nhsNumber,
+            odsCode
+          }
+        }
+      };
       const scope = nock(mockRepoToGpUrl, headers).post(`/registration-requests/`, body).reply(201);
 
       await sendToQueue(ehrRequestMessage, {

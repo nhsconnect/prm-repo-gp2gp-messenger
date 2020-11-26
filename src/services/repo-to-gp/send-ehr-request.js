@@ -5,7 +5,16 @@ import { updateLogEvent, updateLogEventWithError } from '../../middleware/loggin
 export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
   const config = initialiseConfig();
   const url = `${config.repoToGpUrl}/registration-requests/`;
-  const body = { nhsNumber, conversationId, odsCode };
+  const body = {
+    data: {
+      type: 'registration-requests',
+      id: conversationId,
+      attributes: {
+        nhsNumber,
+        odsCode
+      }
+    }
+  };
   const headers = { headers: { Authorization: config.repoToGpAuthKeys } };
 
   try {

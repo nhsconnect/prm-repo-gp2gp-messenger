@@ -11,7 +11,16 @@ describe('sendEhrRequest', () => {
   const conversationId = uuid();
   const nhsNumber = '1234567890';
   const odsCode = 'B12345';
-  const body = { nhsNumber, conversationId, odsCode };
+  const body = {
+    data: {
+      type: 'registration-requests',
+      id: conversationId,
+      attributes: {
+        nhsNumber,
+        odsCode
+      }
+    }
+  };
   const mockRepoToGpUrl = 'http://localhost';
   const mockRepoToGpAuthKeys = 'fake-keys';
   initialiseConfig.mockReturnValue({
