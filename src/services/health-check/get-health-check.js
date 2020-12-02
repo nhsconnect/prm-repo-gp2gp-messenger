@@ -1,11 +1,11 @@
-import { updateLogEvent } from '../../middleware/logging';
+import { logEvent } from '../../middleware/logging';
 import { checkMHSHealth } from './check-mhs-health';
 
 export function getHealthCheck() {
-  updateLogEvent({ status: 'Starting health check' });
+  logEvent('Starting health check');
 
   return Promise.all([checkMHSHealth()]).then(([mhs]) => {
-    updateLogEvent({ mhs });
+    logEvent('MHS health check', { mhs });
     return {
       version: '1',
       description: 'Health of GP2GP Adapter service',

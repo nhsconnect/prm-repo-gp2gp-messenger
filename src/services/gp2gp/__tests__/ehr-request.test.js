@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { EhrRequest } from '../ehr-request';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { logEvent, logError } from '../../../middleware/logging';
 import { parseMultipartBody } from '../../parser';
 import { extractNhsNumber } from '../../parser/message';
 import { sendEhrRequest } from '../../repo-to-gp/send-ehr-request';
@@ -34,15 +34,13 @@ describe('EhrRequest', () => {
   });
 
   describe('handleMessage', () => {
-    it('should updateLogEvent when handleMessage is called', async () => {
+    it('should logEvent when handleMessage is called', async () => {
       extractConversationId.mockResolvedValue(expectedConversationId);
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
       extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
-      expect(updateLogEvent).toHaveBeenCalledTimes(2);
-      expect(updateLogEvent).toBeCalledWith(
-        expect.objectContaining({ status: 'Parsing RCMR_IN010000UK05 Message' })
-      );
+      expect(logEvent).toHaveBeenCalledTimes(2);
+      expect(logEvent).toBeCalledWith('Parsing RCMR_IN010000UK05 Message', expect.anything());
     });
 
     it('should call parseMultipartBody', async () => {
@@ -74,7 +72,7 @@ describe('EhrRequest', () => {
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
       extractOdsCode.mockResolvedValue(expectedOdsCode);
       await ehrRequest.handleMessage(mockMessage);
-      expect(updateLogEvent).toHaveBeenCalledTimes(2);
+      expect(logEvent).toHaveBeenCalledTimes(2);
       expect(sendEhrRequest).toHaveBeenCalledTimes(1);
       expect(sendEhrRequest).toBeCalledWith(
         expectedNhsNumber,
@@ -83,18 +81,18 @@ describe('EhrRequest', () => {
       );
     });
 
-    it('should catch and updateLogEventWithError when cannot sendEhrRequest', async () => {
+    it('should catch and logError when cannot sendEhrRequest', async () => {
       sendEhrRequest.mockRejectedValue('rejected');
       await ehrRequest.handleMessage(mockMessage);
       expect(sendEhrRequest).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith('rejected');
+      expect(logError).toHaveBeenCalledWith('handleMessage failed', 'rejected');
     });
 
-    it('should catch and updateLogEventWithError when cannot parseMultipartBody', async () => {
+    it('should catch and logError when cannot parseMultipartBody', async () => {
       parseMultipartBody.mockRejectedValue('rejected');
       await ehrRequest.handleMessage(mockMessage);
       expect(parseMultipartBody).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith('rejected');
+      expect(logError).toHaveBeenCalledWith('handleMessage failed', 'rejected');
     });
   });
 });

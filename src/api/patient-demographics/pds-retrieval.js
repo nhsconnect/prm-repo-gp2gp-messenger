@@ -2,7 +2,7 @@ import dateFormat from 'dateformat';
 import { param } from 'express-validator';
 import { v4 as uuid } from 'uuid';
 import { initialiseConfig } from '../../config';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { PDSRetrievalQueryResponse } from '../../services/pds';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
@@ -38,8 +38,7 @@ export const pdsRetrieval = async (req, res, next) => {
 
     switch (messageResponse.status) {
       case 200:
-        updateLogEvent({
-          status: '200 PDS response received',
+        logEvent('200 PDS response received', {
           conversationId,
           response: messageResponse
         });
@@ -58,7 +57,7 @@ export const pdsRetrieval = async (req, res, next) => {
     next();
   } catch (err) {
     responseBody.errors.push(err.message);
-    updateLogEventWithError(err);
+    logError('PDS retrieval error', err);
     res.status(503).json(responseBody);
   }
 };

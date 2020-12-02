@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../config';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logError, logEvent } from '../../middleware/logging';
 
 export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
   const config = initialiseConfig();
@@ -19,9 +19,9 @@ export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
 
   try {
     await axios.post(url, body, headers);
-    updateLogEvent({ status: `EHR Request successfully sent to repo-to-gp` });
+    logEvent(`EHR Request successfully sent to repo-to-gp`);
   } catch (err) {
-    updateLogEventWithError({ message: `Cannot send EHR request to repo-to-gp: ${err.message}` });
+    logError(`Cannot send EHR request to repo-to-gp: ${err.message}`);
     throw err;
   }
 };

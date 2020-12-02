@@ -1,24 +1,17 @@
-import {
-  eventFinished,
-  updateLogEvent,
-  updateLogEventWithError
-} from '../../../middleware/logging';
+import { logError, logEvent } from '../../../middleware/logging';
 import { handleMessage } from './';
 
 export const subscriberOnMessageCallback = (channel, message) => async (err, body) => {
-  updateLogEvent({ status: 'Handling Message', queue: { messageId: message.id } });
+  logEvent('Handling Message', { queue: { messageId: message.id } });
 
   if (err) {
-    updateLogEventWithError(err);
-    eventFinished();
+    logError('subscriberOnMessageCallback error', { err });
     return;
   }
 
   try {
     await handleMessage(body);
   } catch (err) {
-    updateLogEventWithError(err);
-  } finally {
-    eventFinished();
+    logError('Handling Message error', { err });
   }
 };

@@ -1,5 +1,5 @@
-import { updateLogEvent } from '../../../../middleware/logging';
-import { sendToQueue } from '../../publisher/send-to-queue';
+import { logEvent } from '../../../../middleware/logging';
+import { sendToQueue } from '../../publisher';
 import { DefaultMessage } from '../default-message';
 
 jest.mock('../../../../config', () => ({
@@ -9,9 +9,7 @@ jest.mock('../../../../config', () => ({
   })
 }));
 jest.mock('../../publisher/send-to-queue');
-jest.mock('../../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn()
-}));
+jest.mock('../../../../middleware/logging');
 
 describe('DefaultMessage', () => {
   const mockUnhandledMessagesQueueName = 'mockedUnhandledMessageQueueName';
@@ -26,8 +24,9 @@ describe('DefaultMessage', () => {
     expect(new DefaultMessage().name).toBe('Unhandled Message');
   });
 
-  it('should call updateLogEvent to update parser information', async done => {
-    expect(updateLogEvent).toHaveBeenCalledWith(
+  it('should call logEvent to update parser information', async done => {
+    expect(logEvent).toHaveBeenCalledWith(
+      'Redirecting Message to mockedUnhandledMessageQueueName',
       expect.objectContaining({
         parser: expect.objectContaining({
           name: defaultMessage.name,
@@ -55,12 +54,11 @@ describe('DefaultMessage', () => {
     done();
   });
 
-  it('should update status to "Redirecting Message to unhandled message queue" using updateLogEvent', async done => {
-    expect(updateLogEvent).toHaveBeenCalledTimes(1);
-    expect(updateLogEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        status: `Redirecting ${defaultMessage.interactionId} Message to ${mockUnhandledMessagesQueueName}`
-      })
+  it('should update status to "Redirecting Message to unhandled message queue" using logEvent', async done => {
+    expect(logEvent).toHaveBeenCalledTimes(1);
+    expect(logEvent).toHaveBeenCalledWith(
+      `Redirecting Message to ${mockUnhandledMessagesQueueName}`,
+      expect.anything()
     );
     done();
   });

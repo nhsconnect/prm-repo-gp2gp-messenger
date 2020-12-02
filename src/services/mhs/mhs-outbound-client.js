@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../config';
-import { updateLogEventWithError } from '../../middleware/logging';
+import { logError } from '../../middleware/logging';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
   if (interactionId && conversationId && message) return;
@@ -12,7 +12,7 @@ const validateInputs = ({ interactionId, conversationId, message }) => {
 
   const error = new Error(errorMessages);
 
-  updateLogEventWithError(error);
+  logError('validation failed', error);
   throw error;
 };
 
@@ -48,8 +48,9 @@ export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', me
       .post(url, axiosBody, axiosHeaders)
       .then(resolve)
       .catch(error => {
-        const axiosError = new Error(`POST ${url} - ${error.message || 'Request failed'}`);
-        updateLogEventWithError(axiosError);
+        const errorMessage = `POST ${url} - ${error.message || 'Request failed'}`;
+        const axiosError = new Error(errorMessage);
+        logError(errorMessage, axiosError);
         reject(axiosError);
       });
   });

@@ -1,4 +1,4 @@
-import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
+import { logEvent, logError } from '../../../../middleware/logging';
 import { mockChannel, mockTransaction } from '../../../../__mocks__/stompit';
 import { channelPool } from '../../helper';
 import { sendToQueue } from '../send-to-queue';
@@ -26,12 +26,8 @@ describe('sendToQueue', () => {
       await sendToQueue(message).catch(() => {});
     });
 
-    it('should call updateLogEvent with "Sending message to Queue"', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Sending Message to Queue'
-        })
-      );
+    it('should call logEvent with "Sending message to Queue"', () => {
+      expect(logEvent).toHaveBeenCalledWith('Sending Message to Queue');
     });
 
     it('should call channelPool.channel', () => {
@@ -84,21 +80,17 @@ describe('sendToQueue', () => {
       expect(mockChannel.close).toHaveBeenCalledTimes(1);
     });
 
-    it('should updateLogEvent when message has been sent successfully', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Sent Message Successfully'
-        })
-      );
+    it('should logEvent when message has been sent successfully', () => {
+      expect(logEvent).toHaveBeenCalledWith('Sent Message Successfully');
     });
   });
 
   describe('on error', () => {
-    it('should call updateLogEventWithError if an error is passed into callback', async done => {
+    it('should call logError if an error is passed into callback', async done => {
       channelPool.channel.mockImplementation(callback => callback(mockError));
       await sendToQueue().catch(() => {});
-      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
+      expect(logError).toHaveBeenCalledTimes(1);
+      expect(logError).toHaveBeenCalledWith('sendToQueue error', mockError);
       done();
     });
 
@@ -114,10 +106,10 @@ describe('sendToQueue', () => {
       return expect(sendToQueue(message)).rejects.toEqual(mockError);
     });
 
-    it('should call updateLogEventWithError if commit fails', async done => {
+    it('should call logError if commit fails', async done => {
       mockTransaction.commit.mockImplementation(callback => callback(mockError));
       await sendToQueue(message).catch(() => {});
-      expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
+      expect(logError).toHaveBeenCalledWith(mockError);
       done();
     });
   });

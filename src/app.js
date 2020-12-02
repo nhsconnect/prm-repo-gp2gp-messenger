@@ -7,7 +7,6 @@ import healthCheck from './api/health';
 import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographics } from './api/patient-demographics';
 import { options } from './config/logging';
-import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
 
@@ -16,7 +15,6 @@ httpContext.enable();
 const app = express();
 
 app.use(express.json());
-app.use(correlationInfo.middleware);
 app.use(requestLogger(options));
 
 app.use('/health', logging.middleware, healthCheck);

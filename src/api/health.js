@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateLogEvent, updateLogEventWithError } from '../middleware/logging';
+import { logEvent, logError } from '../middleware/logging';
 import { getHealthCheck } from '../services/health-check/get-health-check';
 
 const router = express.Router();
@@ -7,17 +7,16 @@ const router = express.Router();
 router.get('/', (req, res, next) => {
   getHealthCheck()
     .then(status => {
-      updateLogEvent({ status: 'Health check completed' });
-
       if (status.details.mhs.connected) {
+        logEvent('Health check successful');
         res.status(200).send(status);
       } else {
-        updateLogEvent(status);
+        logEvent('Health check failed', status);
         res.status(503).send(status);
       }
     })
     .catch(err => {
-      updateLogEventWithError(err);
+      logError('Health check error', err);
       next(err);
     });
 });

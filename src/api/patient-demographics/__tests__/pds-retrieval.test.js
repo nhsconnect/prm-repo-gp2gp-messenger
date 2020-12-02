@@ -2,9 +2,9 @@ import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import app from '../../../app';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { logEvent, logError } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { handlePdsResponse } from '../../../services/pds/pds-response-handler';
+import { handlePdsResponse } from '../../../services/pds';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 
 jest.mock('../../../config/logging');
@@ -119,9 +119,8 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledTimes(2);
-        expect(updateLogEvent).toHaveBeenCalledWith({
-          status: '200 PDS response received',
+        expect(logEvent).toHaveBeenCalledTimes(2);
+        expect(logEvent).toHaveBeenCalledWith('200 PDS response received', {
           conversationId: mockUUID.toUpperCase(),
           response: { data: message, status: 200 }
         });
@@ -158,8 +157,8 @@ describe('/patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -174,8 +173,8 @@ describe('/patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -216,14 +215,17 @@ describe('/patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 
-  it('should call updateLogEventWithError if mhs returns a 503 status code', done => {
+  it('should call logError if mhs returns a 503 status code', done => {
     uuid.mockImplementation(() => '893b17bc-5369-4ca1-a6aa-579f2f5cb318');
 
     request(app)
       .get('/patient-demographics/9999999999')
       .expect(() => {
-        expect(updateLogEventWithError).toBeCalledTimes(1);
-        expect(updateLogEventWithError).toBeCalledWith(Error('Unexpected Error: MHS error'));
+        expect(logError).toBeCalledTimes(1);
+        expect(logError).toBeCalledWith(
+          'PDS retrieval error',
+          Error('Unexpected Error: MHS error')
+        );
       })
       .end(done);
   });
@@ -242,7 +244,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 
-  it('should call updateLogEventWithError when generatePdsRetrievalQuery throws an error', done => {
+  it('should call logError when generatePdsRetrievalQuery throws an error', done => {
     generatePdsRetrievalQuery.mockRejectedValue(
       Error('Check template parameter error: asid is undefined')
     );
@@ -250,8 +252,9 @@ describe('/patient-demographics/:nhsNumber', () => {
     request(app)
       .get('/patient-demographics/9999999999')
       .expect(() => {
-        expect(updateLogEventWithError).toBeCalledTimes(1);
-        expect(updateLogEventWithError).toBeCalledWith(
+        expect(logError).toBeCalledTimes(1);
+        expect(logError).toBeCalledWith(
+          'PDS retrieval error',
           Error('Check template parameter error: asid is undefined')
         );
       })
@@ -270,27 +273,18 @@ describe('/patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 
-  it('should call updateLogEventWithError if message does not include the interactionId', done => {
+  it('should call logError if message does not include the interactionId', done => {
     generatePdsRetrievalQuery.mockResolvedValue('<Header></Header>');
 
     request(app)
       .get('/patient-demographics/9999999999')
       .expect(() => {
-        expect(updateLogEventWithError).toBeCalledTimes(1);
-        expect(updateLogEventWithError).toBeCalledWith(
+        expect(logError).toBeCalledTimes(1);
+        expect(logError).toBeCalledWith(
+          'PDS retrieval error',
           Error('interactionId is not included in the message')
         );
       })
       .end(done);
   });
 });
-
-const generateLogEvent = message => {
-  return {
-    status: 'validation-failed',
-    validation: {
-      errors: message,
-      status: 'failed'
-    }
-  };
-};

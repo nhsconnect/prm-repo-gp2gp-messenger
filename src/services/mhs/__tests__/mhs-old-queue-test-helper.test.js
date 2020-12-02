@@ -1,5 +1,5 @@
 import httpContext from 'async-local-storage';
-import { updateLogEvent } from '../../../middleware/logging';
+import { logEvent } from '../../../middleware/logging';
 import { mockChannel } from '../../../__mocks__/stompit';
 import { extractInteractionId } from '../../parser/message';
 import { channelPool, sendToQueue } from '../../queue';
@@ -40,9 +40,7 @@ describe('mhs-gateway-fake', () => {
       await sendMessage('message').catch(() => {});
 
       expect(channelPool.channel).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith({
-        mhs: { status: 'connection-failed' }
-      });
+      expect(logEvent).toHaveBeenCalledWith('mhs-connection-failed');
     });
 
     it('should put response on queue once when ehr request sent', async done => {
@@ -51,7 +49,7 @@ describe('mhs-gateway-fake', () => {
       extractInteractionId.mockReturnValue(requestEhrRequest);
 
       await sendMessage('message');
-      expect(updateLogEvent).toHaveBeenCalledWith({
+      expect(logEvent).toHaveBeenCalledWith('sendMessage call', {
         mhs: { interactionId: requestEhrRequest }
       });
       expect(sendToQueue).toHaveBeenCalledTimes(1);
@@ -63,7 +61,7 @@ describe('mhs-gateway-fake', () => {
       const interactionId = 'FAKE_IN010000UK05';
       extractInteractionId.mockReturnValue(interactionId);
       await sendMessage('<FAKE_IN010000UK05></FAKE_IN010000UK05>');
-      expect(updateLogEvent).toHaveBeenCalledWith({
+      expect(logEvent).toHaveBeenCalledWith('sendMessage call', {
         mhs: { interactionId }
       });
       expect(sendToQueue).toHaveBeenCalledTimes(0);

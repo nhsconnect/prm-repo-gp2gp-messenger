@@ -2,7 +2,7 @@ import axios from 'axios';
 import dateFormat from 'dateformat';
 import { v4 as uuid } from 'uuid';
 import { initialiseConfig } from '../../../config';
-import { updateLogEventWithError } from '../../../middleware/logging';
+import { logError } from '../../../middleware/logging';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 import testData from '../../../templates/__tests__/testData.json';
 import { sendMessage, stripXMLMessage } from '../mhs-outbound-client';
@@ -44,8 +44,11 @@ describe('mhs-outbound-client', () => {
 
   it('should log an Error if interactionId is not passed in', async done => {
     await sendMessage({ conversationId, message }).catch(() => {});
-    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-    expect(updateLogEventWithError).toHaveBeenCalledWith(Error('interactionId must be passed in'));
+    expect(logError).toHaveBeenCalledTimes(1);
+    expect(logError).toHaveBeenCalledWith(
+      'validation failed',
+      Error(['interactionId must be passed in'])
+    );
     done();
   });
 
@@ -72,8 +75,7 @@ describe('mhs-outbound-client', () => {
 
   it('should log an Error if conversationId, message and interactionId is not passed in', async done => {
     await sendMessage().catch(() => {});
-    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-    expect(updateLogEventWithError).toHaveBeenCalledWith(expect.any(Error));
+    expect(logError).toHaveBeenCalledTimes(1);
     done();
   });
 
@@ -137,8 +139,8 @@ describe('mhs-outbound-client', () => {
   it('should log an Error if there is an error with axios.post request', async done => {
     axios.post.mockRejectedValue(new Error());
     await sendMessage({ interactionId, conversationId, message: 'message' }).catch(() => {});
-    expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-    expect(updateLogEventWithError).toHaveBeenCalledWith(Error(`POST ${url} - Request failed`));
+    expect(logError).toHaveBeenCalledTimes(1);
+    expect(logError).toHaveBeenCalledWith(`POST ${url} - Request failed`, expect.anything());
     done();
   });
 });

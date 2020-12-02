@@ -1,6 +1,6 @@
 import { initialiseConfig } from '../../../config';
-import { updateLogEvent } from '../../../middleware/logging';
-import { sendToQueue } from '../publisher/send-to-queue';
+import { logEvent } from '../../../middleware/logging';
+import { sendToQueue } from '../publisher';
 
 class DefaultMessage {
   constructor() {
@@ -10,8 +10,7 @@ class DefaultMessage {
   }
 
   handleMessage(message) {
-    updateLogEvent({
-      status: `Redirecting ${this.interactionId} Message to ${this.config.unhandledMessagesQueueName}`,
+    logEvent(`Redirecting Message to ${this.config.unhandledMessagesQueueName}`, {
       parser: { name: this.name, interactionId: this.interactionId }
     });
     return sendToQueue(message, { destination: this.config.unhandledMessagesQueueName });

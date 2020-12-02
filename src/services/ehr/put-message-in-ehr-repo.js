@@ -1,20 +1,17 @@
 import axios from 'axios';
-import { eventFinished, updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 
 export const putMessageInEhrRepo = async (url, message) => {
   try {
     const response = await axios.put(url, message);
-    updateLogEvent({
+    logEvent('putMessageInEhrRepo success', {
       ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
     });
     return response;
   } catch (err) {
-    updateLogEventWithError({
-      status: 'failed to store message to s3 via pre-signed url',
+    logError('failed to store message to s3 via pre-signed url', {
       error: err.stack
     });
     throw err;
-  } finally {
-    eventFinished();
   }
 };

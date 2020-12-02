@@ -2,7 +2,7 @@ import { storeMessageInEhrRepo } from '../ehr';
 import { extractNhsNumber } from '../parser/message';
 import { parseMultipartBody } from '../parser/multipart-parser';
 import { soapEnvelopeHandler } from '../soap';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 import { sendEhrMessageReceived } from '../gp-to-repo/send-ehr-message-received';
 
 const EHR_REQUEST_COMPLETED = 'RCMR_IN030000UK06';
@@ -14,8 +14,7 @@ class EHRRequestCompleted {
   }
 
   async handleMessage(message) {
-    updateLogEvent({
-      status: `Parsing ${this.interactionId} Message`,
+    logEvent(`Parsing ${this.interactionId} Message`, {
       parser: {
         name: this.name,
         interactionId: this.interactionId
@@ -27,8 +26,7 @@ class EHRRequestCompleted {
     const nhsNumber = await extractNhsNumber(multipartMessage[1].body).catch(() => {});
     const messageDetails = nhsNumber ? { ...soapInformation, nhsNumber } : soapInformation;
 
-    updateLogEvent({
-      status: 'SOAP Information Extracted',
+    logEvent('SOAP Information Extracted', {
       messageDetails
     });
 
@@ -36,11 +34,9 @@ class EHRRequestCompleted {
       await storeMessageInEhrRepo(message, messageDetails);
       await sendEhrMessageReceived(soapInformation.conversationId, soapInformation.messageId);
 
-      updateLogEvent({
-        status: 'EHR Message Received Notification sent'
-      });
+      logEvent('EHR Message Received Notification sent');
     } catch (err) {
-      updateLogEventWithError(err);
+      logError(err);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { updateLogEvent, updateLogEventWithError } from '../../../../middleware/logging';
+import { logEvent, logError } from '../../../../middleware/logging';
 import { mockChannel } from '../../../../__mocks__/stompit';
 import { channelPool } from '../../helper';
 import { initialiseSubscriber } from '../initialise-subscriber';
@@ -31,9 +31,10 @@ describe('initialiseSubscriber', () => {
       done();
     });
 
-    it('should call updateLogEvent with new queueName when passed in', async done => {
+    it('should call logEvent with new queueName when passed in', async done => {
       await initialiseSubscriber({ destination: 'new-queue-name' });
-      expect(updateLogEvent).toHaveBeenCalledWith(
+      expect(logEvent).toHaveBeenCalledWith(
+        'Initialising Subscriber',
         expect.objectContaining({
           queue: expect.objectContaining({
             destination: 'new-queue-name'
@@ -43,9 +44,10 @@ describe('initialiseSubscriber', () => {
       done();
     });
 
-    it('should call updateLogEvent with new ack type when passed in', async done => {
+    it('should call logEvent with new ack type when passed in', async done => {
       await initialiseSubscriber({ ack: 'client' });
-      expect(updateLogEvent).toHaveBeenCalledWith(
+      expect(logEvent).toHaveBeenCalledWith(
+        'Initialising Subscriber',
         expect.objectContaining({
           queue: expect.objectContaining({
             ack: 'client'
@@ -61,27 +63,25 @@ describe('initialiseSubscriber', () => {
       await initialiseSubscriber();
     });
 
-    it('should call updateLogEvent with "Subscribing to MQ"', () => {
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Initialising Subscriber'
-        })
-      );
+    it('should call logEvent with "Subscribing to MQ"', () => {
+      expect(logEvent).toHaveBeenCalledTimes(1);
+      expect(logEvent).toHaveBeenCalledWith('Initialising Subscriber', expect.anything());
     });
 
-    it('should call updateLogEvent with the queue name', () => {
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith(
+    it('should call logEvent with the queue name', () => {
+      expect(logEvent).toHaveBeenCalledTimes(1);
+      expect(logEvent).toHaveBeenCalledWith(
+        'Initialising Subscriber',
         expect.objectContaining({
           queue: expect.objectContaining({ destination: mockQueueName })
         })
       );
     });
 
-    it('should call updateLogEvent with queue ack', () => {
-      expect(updateLogEvent).toHaveBeenCalledTimes(1);
-      expect(updateLogEvent).toHaveBeenCalledWith(
+    it('should call logEvent with queue ack', () => {
+      expect(logEvent).toHaveBeenCalledTimes(1);
+      expect(logEvent).toHaveBeenCalledWith(
+        'Initialising Subscriber',
         expect.objectContaining({
           queue: expect.objectContaining({ ack: 'auto' })
         })
@@ -127,11 +127,11 @@ describe('initialiseSubscriber', () => {
       channelPool.channel.mockImplementation(callback => callback(null, mockChannel));
     });
 
-    it('should call updateLogEventWithError with error', async done => {
+    it('should call logError with error', async done => {
       await initialiseSubscriber().catch(() => {});
 
-      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
+      expect(logError).toHaveBeenCalledTimes(1);
+      expect(logError).toHaveBeenCalledWith('initialiseSubscriber error', mockError);
 
       done();
     });

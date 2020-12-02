@@ -1,7 +1,7 @@
 import dateFormat from 'dateformat';
 import { body, param } from 'express-validator';
 import { initialiseConfig } from '../../config';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 
@@ -51,8 +51,7 @@ export const pdsUpdate = async (req, res, next) => {
 
     switch (messageResponse.status) {
       case 202:
-        updateLogEvent({
-          status: '200 PDS Update response received',
+        logEvent('200 PDS Update response received', {
           conversationId,
           response: messageResponse
         });
@@ -65,7 +64,7 @@ export const pdsUpdate = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    updateLogEventWithError(err);
+    logError('pdsUpdate failed', err);
     res.status(503).json({
       errors: err.message
     });

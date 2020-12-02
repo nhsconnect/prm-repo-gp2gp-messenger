@@ -1,7 +1,7 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import app from '../../../app';
-import { updateLogEvent } from '../../../middleware/logging';
+import { logError } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../../templates/generate-update-ods-request';
 import { fakeDateNow } from '../../../__mocks__/dateformat';
@@ -112,8 +112,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -134,8 +134,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -155,8 +155,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -177,8 +177,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -198,8 +198,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         expect(res.body).toEqual({
           errors: errorMessage
         });
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith(generateLogEvent(errorMessage));
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('validation-failed', { errors: errorMessage });
       })
       .end(done);
   });
@@ -236,13 +236,3 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .end(done);
   });
 });
-
-const generateLogEvent = message => {
-  return {
-    status: 'validation-failed',
-    validation: {
-      errors: message,
-      status: 'failed'
-    }
-  };
-};

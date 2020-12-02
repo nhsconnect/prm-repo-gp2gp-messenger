@@ -1,8 +1,4 @@
-import {
-  eventFinished,
-  updateLogEvent,
-  updateLogEventWithError
-} from '../../../../middleware/logging';
+import { logEvent, logError } from '../../../../middleware/logging';
 import { mockChannel } from '../../../../__mocks__/stompit';
 import { handleMessage } from '../message-handler';
 import { subscriberOnMessageCallback } from '../subscriber-on-message-callback';
@@ -22,21 +18,13 @@ describe('subscriberOnMessageCallback', () => {
       await callback(false, mockBody);
     });
 
-    it('should call updateLogEvent status on success with "Handling Message"', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Handling Message'
-        })
-      );
+    it('should call logEvent status on success with "Handling Message"', () => {
+      expect(logEvent).toHaveBeenCalledWith('Handling Message', expect.anything());
     });
 
     xit('should call client.ack with message on success', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
       expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
-    });
-
-    it('should call eventFinished on success', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -46,21 +34,15 @@ describe('subscriberOnMessageCallback', () => {
       await callback(mockError);
     });
 
-    it('should call updateLogEvent status on error with "Handling Message"', () => {
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Handling Message'
-        })
-      );
+    it('should call logEvent status on error with "Handling Message"', () => {
+      expect(logEvent).toHaveBeenCalledWith('Handling Message', expect.anything());
     });
 
-    it('should call updateLogEventWithError with the error', () => {
-      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
-    });
-
-    it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
+    it('should call logError with the error', () => {
+      expect(logError).toHaveBeenCalledTimes(1);
+      expect(logError).toHaveBeenCalledWith('subscriberOnMessageCallback error', {
+        err: 'mock-error'
+      });
     });
 
     it('should return from callback', async () => {
@@ -74,18 +56,14 @@ describe('subscriberOnMessageCallback', () => {
       await callback(false, mockBody);
     });
 
-    it('should call updateLogEventWithError with the error', () => {
-      expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-      expect(updateLogEventWithError).toHaveBeenCalledWith(mockError);
+    it('should call logError with the error', () => {
+      expect(logError).toHaveBeenCalledTimes(1);
+      expect(logError).toHaveBeenCalledWith('Handling Message error', { err: 'mock-error' });
     });
 
     xit('should call client.ack with message on failure', () => {
       expect(mockChannel.ack).toHaveBeenCalledTimes(1);
-      expect(mockChannel.ack).toHaveBeenCalledWith(mockMessage);
-    });
-
-    it('should call eventFinished after the updateLogEventWithError error', () => {
-      expect(eventFinished).toHaveBeenCalledTimes(1);
+      expect(mockChannel.ack).toHaveBeenCalledWith('Handling Message error', { err: 'mock-error' });
     });
   });
 });

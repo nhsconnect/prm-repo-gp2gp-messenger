@@ -1,4 +1,4 @@
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { logEvent, logError } from '../../../middleware/logging';
 import { EHRRequestCompleted, EHR_REQUEST_COMPLETED } from '../../gp2gp';
 import { EhrRequest, EHR_REQUEST } from '../../gp2gp/ehr-request';
 import { parseMultipartBody } from '../../parser';
@@ -11,17 +11,16 @@ export const handleMessage = async message => {
 
   try {
     const multipartMessage = parseMultipartBody(message);
-    updateLogEvent({
-      status: 'Extracting Action from Message',
+    logEvent('Extracting Action from Message', {
       messageHeaders: multipartMessage.map(message => message.headers || 'unknown')
     });
     interactionId = await extractAction(multipartMessage[0].body);
   } catch (err) {
-    updateLogEventWithError(err);
+    logError('parseMultipartBody error', err);
     interactionId = 'undefined';
   }
 
-  updateLogEvent({ interactionId });
+  logEvent(`interactionId: ${interactionId}`);
 
   let handler;
 

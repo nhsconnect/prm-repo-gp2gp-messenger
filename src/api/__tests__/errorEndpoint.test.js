@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../../app';
-import { updateLogEventWithError } from '../../middleware/logging';
+import { logError } from '../../middleware/logging';
 
 jest.mock('../../config/logging');
 jest.mock('../../middleware/logging');
@@ -21,10 +21,8 @@ describe('GET /error', () => {
       .get('/error')
       .expect(201)
       .expect(() => {
-        expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
-        expect(updateLogEventWithError).toHaveBeenCalledWith(
-          Error('TEST: GP2GP Adaptor Error logging test entry')
-        );
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('TEST: GP2GP Adaptor Error logging test entry');
       })
       .end(done);
   });

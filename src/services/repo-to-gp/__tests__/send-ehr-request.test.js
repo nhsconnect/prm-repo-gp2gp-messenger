@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { initialiseConfig } from '../../../config';
 import { sendEhrRequest } from '../send-ehr-request';
 import nock from 'nock';
-import { updateLogEventWithError } from '../../../middleware/logging';
+import { logError } from '../../../middleware/logging';
 
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging');
@@ -50,8 +50,8 @@ describe('sendEhrRequest', () => {
       error = err;
     }
     expect(error).not.toBeNull();
-    expect(updateLogEventWithError).toHaveBeenCalledWith({
-      message: 'Cannot send EHR request to repo-to-gp: Request failed with status code 503'
-    });
+    expect(logError).toHaveBeenCalledWith(
+      'Cannot send EHR request to repo-to-gp: Request failed with status code 503'
+    );
   });
 });

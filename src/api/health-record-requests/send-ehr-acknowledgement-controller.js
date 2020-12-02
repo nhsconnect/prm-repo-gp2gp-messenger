@@ -1,7 +1,7 @@
 import { body, param } from 'express-validator';
 import { buildEhrAcknowledgement } from '../../templates/generate-ehr-acknowledgement';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 
 export const acknowledgementValidation = [
@@ -30,10 +30,10 @@ export const sendEhrAcknowledgement = async (req, res) => {
       messageId
     });
     await sendMessage({ interactionId, conversationId, odsCode, message });
-    updateLogEvent({ status: 'Acknowledgement sent to MHS' });
+    logEvent('Acknowledgement sent to MHS');
     res.sendStatus(204);
   } catch (err) {
-    updateLogEventWithError(err);
+    logError('sendEhrAcknowledgement failed', err);
     res.status(503).json({
       errors: err.message
     });

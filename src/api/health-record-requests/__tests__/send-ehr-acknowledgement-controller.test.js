@@ -4,7 +4,7 @@ import app from '../../../app';
 import { buildEhrAcknowledgement } from '../../../templates/generate-ehr-acknowledgement';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { logEvent, logError } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
@@ -84,7 +84,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             odsCode,
             message
           });
-          expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Acknowledgement sent to MHS' });
+          expect(logEvent).toHaveBeenCalledWith('Acknowledgement sent to MHS');
         })
         .end(done);
     });
@@ -104,7 +104,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             odsCode,
             message
           });
-          expect(updateLogEventWithError).toHaveBeenCalled();
+          expect(logError).toHaveBeenCalled();
         })
         .end(done);
     });

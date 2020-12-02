@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../../app';
-import { updateLogEvent, updateLogEventWithError } from '../../middleware/logging';
+import { logEvent, logError } from '../../middleware/logging';
 import { getHealthCheck } from '../../services/health-check/get-health-check';
 
 jest.mock('../../config/logging');
@@ -40,7 +40,10 @@ describe('GET /health', () => {
       .get('/health')
       .expect(503)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledWith(expectedHealthCheckBase(false));
+        expect(logEvent).toHaveBeenCalledWith(
+          'Health check failed',
+          expectedHealthCheckBase(false)
+        );
       })
       .end(done);
   });
@@ -52,20 +55,19 @@ describe('GET /health', () => {
       .get('/health')
       .expect(500)
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEventWithError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledTimes(1);
       })
       .end(done);
   });
 
-  it('should update the log event for any unexpected error', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true)));
+  it('should update the logError for any unexpected error', done => {
+    getHealthCheck.mockRejectedValue(expectedHealthCheckBase(true));
 
     request(app)
       .get('/health')
       .expect(() => {
-        expect(updateLogEvent).toHaveBeenCalledTimes(1);
-        expect(updateLogEvent).toHaveBeenCalledWith({ status: 'Health check completed' });
+        expect(logError).toHaveBeenCalledTimes(1);
+        expect(logError).toHaveBeenCalledWith('Health check error', expectedHealthCheckBase(true));
       })
       .end(done);
   });

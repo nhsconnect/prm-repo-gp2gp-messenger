@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../config';
-import { updateLogEventWithError } from '../../middleware/logging';
+import { logError } from '../../middleware/logging';
 
 export const sendEhrMessageReceived = async (conversationId, messageId) => {
   const config = initialiseConfig();
@@ -12,8 +12,9 @@ export const sendEhrMessageReceived = async (conversationId, messageId) => {
       { headers: { Authorization: `${config.gpToRepoAuthKeys}` } }
     );
   } catch (err) {
-    const axiosError = new Error(`PATCH ${url} - ${err.message || 'Request failed'}`);
-    updateLogEventWithError(axiosError);
+    const errorMessage = `PATCH ${url} - ${err.message || 'Request failed'}`;
+    const axiosError = new Error(errorMessage);
+    logError(errorMessage, err);
     throw axiosError;
   }
 };

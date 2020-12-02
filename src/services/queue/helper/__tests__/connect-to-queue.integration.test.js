@@ -1,5 +1,5 @@
 import { connectToQueue } from '../';
-import { updateLogEventWithError } from '../../../../middleware/logging';
+import { logError } from '../../../../middleware/logging';
 
 jest.unmock('stompit');
 jest.mock('../../../../middleware/logging');
@@ -12,7 +12,7 @@ jest.mock('../../../../config', () => ({
 describe('connectToQueue', () => {
   it('should log out error message if failed to connect the test url', done => {
     const testCallback = () => {
-      expect(updateLogEventWithError).toHaveBeenCalled();
+      expect(logError).toHaveBeenCalled();
       done();
     };
     return connectToQueue(testCallback);
@@ -20,7 +20,7 @@ describe('connectToQueue', () => {
 
   it('should connect to the correct queue successfully ', async done => {
     const testCallback = () => {
-      expect(updateLogEventWithError).not.toHaveBeenCalled();
+      expect(logError).not.toHaveBeenCalled();
       done();
     };
 

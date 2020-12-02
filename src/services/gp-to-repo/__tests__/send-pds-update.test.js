@@ -1,13 +1,9 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
 import { sendPdsUpdate } from '../';
-import { eventFinished } from '../../../middleware/logging';
 
 jest.mock('axios');
-jest.mock('../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn(),
-  eventFinished: jest.fn()
-}));
+jest.mock('../../../middleware/logging');
 jest.mock('../../../config');
 
 describe('sendPdsUpdate', () => {
@@ -29,12 +25,6 @@ describe('sendPdsUpdate', () => {
       {},
       axiosHeaders
     );
-    done();
-  });
-
-  it('should call eventFinished', async done => {
-    await sendPdsUpdate(conversationId);
-    expect(eventFinished).toHaveBeenCalledTimes(1);
     done();
   });
 

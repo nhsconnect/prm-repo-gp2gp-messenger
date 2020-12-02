@@ -1,4 +1,4 @@
-import { updateLogEvent } from '../../../middleware/logging';
+import { logEvent } from '../../../middleware/logging';
 import {
   PDSGeneralUpdateRequestAccepted,
   PDS_GENERAL_UPDATE_REQUEST_ACCEPTED
@@ -9,9 +9,7 @@ import {
 } from './data/pds-generate-update-request-accepted';
 import { sendPdsUpdate } from '../../gp-to-repo';
 
-jest.mock('../../../middleware/logging', () => ({
-  updateLogEvent: jest.fn()
-}));
+jest.mock('../../../middleware/logging');
 
 jest.mock('../../gp-to-repo/send-pds-update', () => ({
   sendPdsUpdate: jest.fn()
@@ -29,21 +27,19 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
   });
 
   describe('handleMessage', () => {
-    it('should call updateLogEvent to update status to "Parsing PRPA_IN000202UK01 Message', async done => {
+    it('should call logEvent to update status to "Parsing PRPA_IN000202UK01 Message', async done => {
       const pdsRequestAccepted = new PDSGeneralUpdateRequestAccepted();
       await pdsRequestAccepted.handleMessage(pdsGenerateUpdateRequest);
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'Parsing PRPA_IN000202UK01 Message'
-        })
-      );
+      expect(logEvent).toHaveBeenCalledWith('Parsing PRPA_IN000202UK01 Message', expect.anything());
+      expect(logEvent).toHaveBeenCalledWith('SOAP Information Extracted', expect.anything());
       done();
     });
 
-    it('should call updateLogEvent to update parser information', async done => {
+    it('should call logEvent to update parser information', async done => {
       const pdsRequestAccepted = new PDSGeneralUpdateRequestAccepted();
       await pdsRequestAccepted.handleMessage(pdsGenerateUpdateRequest);
-      expect(updateLogEvent).toHaveBeenCalledWith(
+      expect(logEvent).toHaveBeenCalledWith(
+        'Parsing PRPA_IN000202UK01 Message',
         expect.objectContaining({
           parser: expect.objectContaining({
             name: pdsRequestAccepted.name,
@@ -51,22 +47,14 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
           })
         })
       );
+      expect(logEvent).toHaveBeenCalledWith('SOAP Information Extracted', expect.anything());
       done();
     });
 
-    it('should call updateLogEvent to update status to "SOAP Information Extracted"', async done => {
+    it('should call logEvent to update messageDetails with soap information and conversation ID', async done => {
       await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
-      expect(updateLogEvent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'SOAP Information Extracted'
-        })
-      );
-      done();
-    });
-
-    it('should call updateLogEvent to update messageDetails with soap information and conversation ID', async done => {
-      await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
-      expect(updateLogEvent).toHaveBeenCalledWith(
+      expect(logEvent).toHaveBeenCalledWith(
+        'SOAP Information Extracted',
         expect.objectContaining({
           messageDetails: expect.any(Object),
           conversationId: conversationId
@@ -75,7 +63,7 @@ describe('PDSGeneralUpdateRequestAccepted', () => {
       done();
     });
 
-    it('should call updateLogEvent to update messageDetails with soap information and conversation ID', async done => {
+    it('should call logEvent to update messageDetails with soap information and conversation ID', async done => {
       await new PDSGeneralUpdateRequestAccepted().handleMessage(pdsGenerateUpdateRequest);
       expect(sendPdsUpdate).toHaveBeenCalledWith(conversationId);
       done();

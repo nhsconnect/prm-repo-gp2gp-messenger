@@ -1,4 +1,4 @@
-import { updateLogEventWithError } from '../../../../middleware/logging';
+import { logError } from '../../../../middleware/logging';
 import { extractManifestAsMessageIds } from '../extract-manifest-message-id';
 import {
   manifestIdNotUuid,
@@ -34,12 +34,11 @@ describe('extractManifestAsMessageIds', () => {
       return expect(extractManifestAsMessageIds(manifestIdNotUuid)).resolves.toEqual([]);
     });
 
-    it('should call updateLogEventWithError with "Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com"', async done => {
+    it('should call logError with "Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com"', async done => {
       await extractManifestAsMessageIds(manifestIdNotUuid);
-      expect(updateLogEventWithError).toHaveBeenCalledWith({
-        message:
-          'Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com'
-      });
+      expect(logError).toHaveBeenCalledWith(
+        'Unable to extract manifest message Id from cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A,cid:attachment1.0@test.com'
+      );
       done();
     });
   });

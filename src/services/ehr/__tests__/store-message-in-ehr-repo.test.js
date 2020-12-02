@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initialiseConfig } from '../../../config';
-import { updateLogEvent, updateLogEventWithError } from '../../../middleware/logging';
+import { logEvent, logError } from '../../../middleware/logging';
 import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
 
 jest.mock('axios');
@@ -62,18 +62,15 @@ describe('storeMessageInEhrRepo', () => {
     it('should update the log event when the transfer has not completed successfully', async done => {
       axios.put.mockRejectedValue({ stack: 'some-error' });
       await storeMessageInEhrRepo(message, { conversationId, messageId });
-      expect(updateLogEvent).toHaveBeenNthCalledWith(1, {
-        status: 'Storing EHR in s3 bucket',
+      expect(logEvent).toHaveBeenCalledWith('Storing EHR in s3 bucket', {
         ehrRepository: { url: 'some-url' }
       });
 
-      expect(updateLogEventWithError).toHaveBeenCalledWith({
-        status: 'failed to store message to s3 via pre-signed url',
+      expect(logError).toHaveBeenCalledWith('failed to store message to s3 via pre-signed url', {
         error: 'some-error'
       });
 
-      expect(updateLogEventWithError).toHaveBeenCalledWith({
-        status: 'failed to store message to ehr repository',
+      expect(logError).toHaveBeenCalledWith('failed to store message to ehr repository', {
         error: 'some-error'
       });
 
@@ -85,10 +82,10 @@ describe('storeMessageInEhrRepo', () => {
       await storeMessageInEhrRepo(message, { conversationId, messageId });
       expect(axios.put).toHaveBeenCalledTimes(1);
       expect(axios.patch).toHaveBeenCalledTimes(0);
-      expect(updateLogEvent).not.toHaveBeenCalledWith({
-        status: 'failed to store message to s3 via pre-signed url',
-        error: expect.anything()
-      });
+      expect(logError).toHaveBeenCalledWith(
+        'failed to store message to s3 via pre-signed url',
+        expect.anything()
+      );
       done();
     });
   });
@@ -110,7 +107,7 @@ describe('storeMessageInEhrRepo', () => {
 
   it('should update the log event when the transfer has completed successfully', async done => {
     await storeMessageInEhrRepo(message, { conversationId, messageId });
-    expect(updateLogEvent).toHaveBeenCalledWith({
+    expect(logEvent).toHaveBeenCalledWith('setTransferComplete success', {
       ehrRepository: { transferSuccessful: true }
     });
     done();
