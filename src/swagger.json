@@ -274,6 +274,9 @@
             },
             "patientPdsId": {
               "type": "string"
+            },
+            "odsCode": {
+              "type": "string"
             }
           }
         },

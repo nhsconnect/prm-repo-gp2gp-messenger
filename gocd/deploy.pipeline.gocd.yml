@@ -81,10 +81,10 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
-      - functional:
+      - test:
           clean_workspace: true
           jobs:
-            test:
+            functional:
               resources:
                 - deductions-private
                 - test
@@ -94,3 +94,13 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_functional
+            e2e:
+              resources:
+                - deductions-private
+                - test
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_e2e

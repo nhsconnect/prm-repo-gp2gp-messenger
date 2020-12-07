@@ -229,6 +229,16 @@ case "${command}" in
       configure_service_url
       dojo "./tasks _test_functional"
       ;;
+  _test_e2e)
+      npm install
+      npm run test:e2e
+      ;;
+  test_e2e)
+      check_env
+      configure_aws_service_auth_keys
+      configure_service_url
+      dojo "./tasks _test_e2e"
+      ;;
   _test_coverage)
       npm install
       npm run test:coverage
