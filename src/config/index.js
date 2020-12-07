@@ -19,6 +19,5 @@ export const initialiseConfig = () => ({
   pdsAsid: process.env.PDS_ASID || '928942012545',
   mhsOutboundUrl: process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL,
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
-  nodeEnv: process.env.NODE_ENV || 'local',
-  url: process.env.SERVICE_URL || `http://127.0.0.1:${portNumber}`
+  nodeEnv: process.env.NODE_ENV || 'local'
 });

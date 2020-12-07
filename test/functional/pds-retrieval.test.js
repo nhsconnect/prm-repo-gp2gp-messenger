@@ -1,12 +1,10 @@
 import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
-import { initialiseConfig } from '../../src/config';
 import testData from '../../src/templates/__tests__/testData.json';
+import { config } from '../config';
 
 const TIMEOUT_30_S = 30000;
 describe('End to end test of /patient-demographics/:nhsNumber', () => {
-  const config = initialiseConfig();
-
   it(
     'should return a 200 from PDS (successful retrieval) with a valid NHS number',
     () => {
@@ -16,9 +14,9 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
           : testData.tppPatient.nhsNumber;
 
       return expect(
-        axios.get(`${config.url}/patient-demographics/${nhsNumber}`, {
+        axios.get(`${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`, {
           headers: {
-            Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS.split(',')[0]
+            Authorization: config.gp2gpAdaptorAuthorizationKeys
           },
           adapter
         })
@@ -37,9 +35,9 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       const fakeNhsNumber = '0000000000';
 
       return expect(
-        axios.get(`${config.url}/patient-demographics/${fakeNhsNumber}`, {
+        axios.get(`${config.gp2gpAdaptorUrl}/patient-demographics/${fakeNhsNumber}`, {
           headers: {
-            Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS
+            Authorization: config.gp2gpAdaptorAuthorizationKeys
           },
           adapter
         })

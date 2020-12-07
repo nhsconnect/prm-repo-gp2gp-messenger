@@ -1,5 +1,6 @@
 import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
+import { config } from '../config';
 
 const TIMEOUT_30_S = 30000;
 
@@ -17,9 +18,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       };
 
       return expect(
-        axios.post(`${process.env.SERVICE_URL}/health-record-requests/${nhsNumber}`, body, {
+        axios.post(`${config.gp2gpAdaptorUrl}/health-record-requests/${nhsNumber}`, body, {
           headers: {
-            Authorization: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS
+            Authorization: config.gp2gpAdaptorAuthorizationKeys
           },
           adapter
         })

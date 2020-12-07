@@ -1,4 +1,4 @@
-import { initialiseConfig, portNumber } from '../';
+import { initialiseConfig } from '../';
 
 const originalEnv = process.env;
 
@@ -11,17 +11,6 @@ describe('config', () => {
     it('should get NODE_ENV = local when environment variable not defined', () => {
       if (process.env.NODE_ENV) delete process.env.NODE_ENV;
       expect(initialiseConfig().nodeEnv).toEqual('local');
-    });
-  });
-
-  describe('url', () => {
-    afterEach(() => {
-      process.env.SERVICE_URL = originalEnv.SERVICE_URL;
-    });
-
-    it('should return 127.0.0.1:3000 when SERVICE_URL is not set', () => {
-      if (process.env.SERVICE_URL) delete process.env.SERVICE_URL;
-      expect(initialiseConfig().url).toEqual(`http://127.0.0.1:${portNumber}`);
     });
   });
 
@@ -101,8 +90,7 @@ describe('config', () => {
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
             mhsRouteUrl: 'mhsRouteUrl',
-            nodeEnv: 'nodeEnv',
-            url: 'url'
+            nodeEnv: 'nodeEnv'
           })
         );
       });

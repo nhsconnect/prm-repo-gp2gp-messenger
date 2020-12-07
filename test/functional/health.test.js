@@ -1,12 +1,11 @@
 import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
-import { initialiseConfig } from '../../src/config';
+import { config } from '../config';
 
 describe('/health', () => {
-  const config = initialiseConfig();
   it('should return 200', () => {
     return expect(
-      axios.get(`${config.url}/health`, {
+      axios.get(`${config.gp2gpAdaptorUrl}/health`, {
         adapter
       })
     ).resolves.toEqual(expect.objectContaining({ status: 200 }));
@@ -14,7 +13,7 @@ describe('/health', () => {
 
   it('should return matching data', () => {
     return expect(
-      axios.get(`${config.url}/health`, {
+      axios.get(`${config.gp2gpAdaptorUrl}/health`, {
         adapter
       })
     ).resolves.toEqual(
