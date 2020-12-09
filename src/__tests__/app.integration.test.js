@@ -74,8 +74,8 @@ describe('app', () => {
         .expect(res => {
           expect(res.body).toEqual(
             expect.objectContaining({
-              conversationId: expect.anything(),
               data: {
+                odsCode: 'B86041',
                 patientPdsId: 'cppz',
                 serialChangeNumber: '138'
               }

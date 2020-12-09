@@ -22,10 +22,9 @@ const mockError = new Error('onError');
 describe('getQueueConnections', () => {
   beforeEach(() => {
     when(mockOn)
-      .mockReturnValue()
-      .calledWith('connecting')
+      .calledWith('connecting', expect.anything())
       .mockImplementation((_, callback) => callback(mockConnector))
-      .calledWith('error')
+      .calledWith('error', expect.anything())
       .mockImplementation((_, callback) => callback(mockError));
   });
 
