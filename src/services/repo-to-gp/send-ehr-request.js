@@ -2,7 +2,7 @@ import axios from 'axios';
 import { initialiseConfig } from '../../config';
 import { logError, logEvent } from '../../middleware/logging';
 
-export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
+export const sendEhrRequest = async (nhsNumber, conversationId, odsCode, ehrRequestId) => {
   const config = initialiseConfig();
   const url = `${config.repoToGpUrl}/registration-requests/`;
   const body = {
@@ -11,7 +11,8 @@ export const sendEhrRequest = async (nhsNumber, conversationId, odsCode) => {
       id: conversationId,
       attributes: {
         nhsNumber,
-        odsCode
+        odsCode,
+        ehrRequestId
       }
     }
   };

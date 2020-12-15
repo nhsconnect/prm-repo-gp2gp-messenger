@@ -47,10 +47,8 @@ const extractBody = messagePart => {
     .join('');
 };
 
-const parseMultipartBody = multipartMessage =>
+export const parseMultipartBody = multipartMessage =>
   extractBoundaryContent(multipartMessage).map(messagePart => ({
     headers: extractHeaders(messagePart),
     body: extractBody(messagePart)
   }));
-
-export { parseMultipartBody };

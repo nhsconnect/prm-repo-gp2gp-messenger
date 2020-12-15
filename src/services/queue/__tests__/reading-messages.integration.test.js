@@ -9,7 +9,8 @@ import {
   nhsNumber,
   odsCode,
   ehrRequestMessage,
-  pdsGeneralUpdateRequestAcceptedMessage
+  pdsGeneralUpdateRequestAcceptedMessage,
+  ehrRequestId
 } from '../subscriber/__tests__/data/subscriber';
 
 httpContext.enable();
@@ -71,7 +72,8 @@ describe('Should read messages from the queue successfully', () => {
           id: conversationId,
           attributes: {
             nhsNumber,
-            odsCode
+            odsCode,
+            ehrRequestId
           }
         }
       };

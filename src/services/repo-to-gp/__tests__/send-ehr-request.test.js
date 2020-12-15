@@ -9,6 +9,7 @@ jest.mock('../../../middleware/logging');
 
 describe('sendEhrRequest', () => {
   const conversationId = uuid();
+  const ehrRequestId = uuid();
   const nhsNumber = '1234567890';
   const odsCode = 'B12345';
   const body = {
@@ -17,7 +18,8 @@ describe('sendEhrRequest', () => {
       id: conversationId,
       attributes: {
         nhsNumber,
-        odsCode
+        odsCode,
+        ehrRequestId
       }
     }
   };
@@ -33,7 +35,7 @@ describe('sendEhrRequest', () => {
     nock(mockRepoToGpUrl, headers).post(`/registration-requests/`, body).reply(201);
     let error = null;
     try {
-      await sendEhrRequest(nhsNumber, conversationId, odsCode);
+      await sendEhrRequest(nhsNumber, conversationId, odsCode, ehrRequestId);
     } catch (err) {
       error = err;
     }
@@ -45,7 +47,7 @@ describe('sendEhrRequest', () => {
     nock(mockRepoToGpUrl, headers).post(`/registration-requests/`, body).reply(503);
     let error = null;
     try {
-      await sendEhrRequest(nhsNumber, conversationId, odsCode);
+      await sendEhrRequest(nhsNumber, conversationId, odsCode, ehrRequestId);
     } catch (err) {
       error = err;
     }

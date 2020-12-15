@@ -6,12 +6,14 @@ import { extractNhsNumber } from '../../parser/message';
 import { sendEhrRequest } from '../../repo-to-gp/send-ehr-request';
 import { extractOdsCode } from '../../parser/message/extract-ods-code';
 import { extractConversationId } from '../../parser/soap';
+import { extractEhrRequestId } from '../../parser/message/extract-ehr-request-id';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../repo-to-gp/send-ehr-request');
 jest.mock('../../parser/message/extract-nhs-number');
 jest.mock('../../parser/soap/extract-conversation-id');
 jest.mock('../../parser/message/extract-ods-code');
+jest.mock('../../parser/message/extract-ehr-request-id');
 jest.mock('../../parser/multipart-parser', () => ({
   parseMultipartBody: jest
     .fn()
@@ -24,6 +26,7 @@ describe('EhrRequest', () => {
   const expectedNhsNumber = '1234567890';
   const expectedOdsCode = 'B12345';
   const expectedConversationId = uuid();
+  const expectedEhrRequestId = uuid();
 
   it('should return "Received EHR Request" when calling name', () => {
     expect(ehrRequest.name).toBe('Received EHR Request');
@@ -49,7 +52,7 @@ describe('EhrRequest', () => {
       expect(parseMultipartBody).toHaveBeenCalledWith(mockMessage);
     });
 
-    it('should call soapEnvelopeHandler', async () => {
+    it('should call extractConversationId', async () => {
       await ehrRequest.handleMessage(mockMessage);
       expect(extractConversationId).toHaveBeenCalledTimes(1);
       expect(extractConversationId).toHaveBeenCalledWith('some-message');
@@ -67,17 +70,25 @@ describe('EhrRequest', () => {
       expect(extractOdsCode).toHaveBeenCalledWith('another-message');
     });
 
+    it('should call extractEhrRequestId', async () => {
+      await ehrRequest.handleMessage(mockMessage);
+      expect(extractEhrRequestId).toHaveBeenCalledTimes(1);
+      expect(extractEhrRequestId).toHaveBeenCalledWith('another-message');
+    });
+
     it('should call sendEhrRequest when message has successfully been parsed', async () => {
       extractConversationId.mockResolvedValue(expectedConversationId);
       extractNhsNumber.mockResolvedValue(expectedNhsNumber);
       extractOdsCode.mockResolvedValue(expectedOdsCode);
+      extractEhrRequestId.mockResolvedValue(expectedEhrRequestId);
       await ehrRequest.handleMessage(mockMessage);
       expect(logEvent).toHaveBeenCalledTimes(2);
       expect(sendEhrRequest).toHaveBeenCalledTimes(1);
       expect(sendEhrRequest).toBeCalledWith(
         expectedNhsNumber,
         expectedConversationId,
-        expectedOdsCode
+        expectedOdsCode,
+        expectedEhrRequestId
       );
     });
 

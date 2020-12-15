@@ -6,6 +6,7 @@ export const odsCode = 'N82668';
 export const conversationId = 'some-conversation-id-123';
 export const messageId = 'some-message-id-456';
 export const foundationSupplierAsid = 'foundation-supplier-asid';
+export const ehrRequestId = '041CA2AE-3EC6-4AC9-942F-0F6621CC0BFC';
 
 export const ehrRequestCompletedMessage = `------=_MIME-Boundary
 Content-Type: application/xml
@@ -107,7 +108,7 @@ Content-Type: application/xml; charset=UTF-8
         <ControlActEvent type="ControlAct" classCode="CACT" moodCode="EVN">
             <subject type="ActRelationship" typeCode="SUBJ" contextConductionInd="false">
                 <EhrRequest type="ActHeir" classCode="EXTRACT" moodCode="RQO">
-                    <id root="041CA2AE-3EC6-4AC9-942F-0F6621CC0BFC"/>
+                    <id root="${ehrRequestId}"/>
                     <recordTarget type="Participation" typeCode="RCT">
                         <patient type="Patient" classCode="PAT">
                             <id root="2.16.840.1.113883.2.1.4.1" extension="${nhsNumber}"/>

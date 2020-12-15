@@ -4,6 +4,7 @@ import { extractNhsNumber } from '../parser/message';
 import { sendEhrRequest } from '../repo-to-gp/send-ehr-request';
 import { extractOdsCode } from '../parser/message/extract-ods-code';
 import { extractConversationId } from '../parser/soap';
+import { extractEhrRequestId } from '../parser/message/extract-ehr-request-id';
 
 export const EHR_REQUEST = 'RCMR_IN010000UK05';
 
@@ -21,17 +22,16 @@ export class EhrRequest {
           interactionId: this.interactionId
         }
       });
-
       const multipartMessage = await parseMultipartBody(message);
-      const nhsNumber = await extractNhsNumber(multipartMessage[1].body);
-      const odsCode = await extractOdsCode(multipartMessage[1].body);
-      const conversationId = await extractConversationId(multipartMessage[0].body);
+      const [envelope, content] = multipartMessage;
+      const nhsNumber = await extractNhsNumber(content.body);
+      const odsCode = await extractOdsCode(content.body);
+      const ehrRequestId = await extractEhrRequestId(content.body);
+      const conversationId = await extractConversationId(envelope.body);
 
-      logEvent(
-        `Parsed EHR Request message: nhsNumber: ${nhsNumber}, conversationId: ${conversationId}, odsCode: ${odsCode}`
-      );
+      logEvent(`Parsed EHR Request message`);
 
-      await sendEhrRequest(nhsNumber, conversationId, odsCode);
+      await sendEhrRequest(nhsNumber, conversationId, odsCode, ehrRequestId);
     } catch (err) {
       logError('handleMessage failed', err);
     }
