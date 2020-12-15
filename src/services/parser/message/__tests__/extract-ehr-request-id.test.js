@@ -1,4 +1,4 @@
-import { extractEhrId } from '../extract-ehr-id';
+import { extractEhrRequestId } from '../extract-ehr-request-id';
 
 const exampleMessage = `<RCMR_IN010000UK05 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" type="Message" xmlns="urn:hl7-org:v3">
    <id root="DFF5321C-C6EA-468E-BBC2-B0E48000E071"/>
@@ -22,12 +22,16 @@ const errorExampleMessage = `<RCMR_IN010000UK05></RCMR_IN010000UK05>`;
 
 describe('extract ehr id', () => {
   it('should extract ehr id', () => {
-    expect(extractEhrId(exampleMessage)).resolves.toBe('041CA2AE-3EC6-4AC9-942F-0F6621CC0BFC');
+    expect(extractEhrRequestId(exampleMessage)).resolves.toBe(
+      '041CA2AE-3EC6-4AC9-942F-0F6621CC0BFC'
+    );
   });
 
   it('should get error message when cannot extract ehr id', () => {
-    expect(extractEhrId(errorExampleMessage)).rejects.toEqual(
-      Error(`Message does not contain EHR ID: The key 'EhrRequest' was not found in the message`)
+    expect(extractEhrRequestId(errorExampleMessage)).rejects.toEqual(
+      Error(
+        `Message does not contain EHR Request ID: The key 'EhrRequest' was not found in the message`
+      )
     );
   });
 });
