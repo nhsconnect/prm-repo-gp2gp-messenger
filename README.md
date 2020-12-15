@@ -85,7 +85,6 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
 
 1. Run `npm install` to install all node dependencies.
 2. Create a .env file at the root of the directory
-3. Copy the contents of the [.env.sample](./.env.sample) file at the root of the directory, and paste into the .env file. The .env.sample file contains template environment variables.
 4. If you would like to run locally, following the steps below, otherwise fill in the required fields.
    - Note: The `GP2GP_ADAPTOR_AUTHORIZATION_KEYS` should be a string.
 5. The app will use a fake MHS when `NODE_ENV` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
