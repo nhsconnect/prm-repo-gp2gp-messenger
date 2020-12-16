@@ -1,6 +1,6 @@
 import dateFormat from 'dateformat';
 import { body, param } from 'express-validator';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logEvent, logError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
@@ -24,7 +24,7 @@ export const pdsUpdateValidation = [
 ];
 
 export const pdsUpdate = async (req, res, next) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   try {
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const interactionId = 'PRPA_IN000203UK03';

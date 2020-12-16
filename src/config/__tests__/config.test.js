@@ -1,4 +1,4 @@
-import { initialiseConfig } from '../';
+import { initializeConfig } from '../';
 
 const originalEnv = process.env;
 
@@ -10,7 +10,7 @@ describe('config', () => {
 
     it('should get NODE_ENV = local when environment variable not defined', () => {
       if (process.env.NODE_ENV) delete process.env.NODE_ENV;
-      expect(initialiseConfig().nodeEnv).toEqual('local');
+      expect(initializeConfig().nodeEnv).toEqual('local');
     });
   });
 
@@ -22,7 +22,7 @@ describe('config', () => {
     it('should return 200000001161 when GP2GP_ADAPTOR_REPOSITORY_ASID is not set', () => {
       if (process.env.GP2GP_ADAPTOR_REPOSITORY_ASID)
         delete process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
-      expect(initialiseConfig().deductionsAsid).toEqual('200000001161');
+      expect(initializeConfig().deductionsAsid).toEqual('200000001161');
     });
   });
 
@@ -34,7 +34,7 @@ describe('config', () => {
     it('should return B86041 when GP2GP_ADAPTOR_REPOSITORY_ODS_CODE is not set', () => {
       if (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE)
         delete process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
-      expect(initialiseConfig().deductionsOdsCode).toEqual('B86041');
+      expect(initializeConfig().deductionsOdsCode).toEqual('B86041');
     });
   });
 
@@ -45,7 +45,7 @@ describe('config', () => {
 
     it('should return B86041 when PDS_ASID is not set', () => {
       if (process.env.PDS_ASID) delete process.env.PDS_ASID;
-      expect(initialiseConfig().pdsAsid).toEqual('928942012545');
+      expect(initializeConfig().pdsAsid).toEqual('928942012545');
     });
   });
 
@@ -75,7 +75,7 @@ describe('config', () => {
         process.env.NODE_ENV = 'nodeEnv';
         process.env.SERVICE_URL = 'url';
 
-        expect(initialiseConfig()).toEqual(
+        expect(initializeConfig()).toEqual(
           expect.objectContaining({
             deductionsAsid: 'deductionsAsid',
             deductionsOdsCode: 'deductionsOdsCode',

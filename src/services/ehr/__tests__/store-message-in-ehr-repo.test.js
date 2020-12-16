@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { logEvent, logError } from '../../../middleware/logging';
 import { storeMessageInEhrRepo } from '../store-message-in-ehr-repo';
 
@@ -13,7 +13,7 @@ describe('storeMessageInEhrRepo', () => {
   const messageId = 'some-message-id';
   const manifest = [];
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
+  initializeConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
     axios.patch.mockResolvedValue({ status: 200 });

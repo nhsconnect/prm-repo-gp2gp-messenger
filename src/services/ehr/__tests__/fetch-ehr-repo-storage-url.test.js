@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { v4 } from 'uuid';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { logError } from '../../../middleware/logging';
 import { fetchStorageUrl } from '../fetch-ehr-repo-storage-url';
 
@@ -13,7 +13,7 @@ describe('fetchStorageUrl', () => {
   const body = { conversationId };
   const mockEhrRepoUrl = 'https://ehr-repo-url';
   const mockAuthKeys = 'auth';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
+  initializeConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
   const axiosConfig = { headers: { Authorization: mockAuthKeys } };
 
   beforeEach(() => {

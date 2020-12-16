@@ -7,7 +7,7 @@ import channelPool from '../../helper/configure-channel-pool';
 import { consumeOneMessage } from '../consume-one-message';
 
 jest.mock('../../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
     queueName: 'gp2gp-test'
   })

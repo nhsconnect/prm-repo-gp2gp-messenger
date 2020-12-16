@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { sendPdsUpdate } from '../';
 
 jest.mock('axios');
@@ -10,7 +10,7 @@ describe('sendPdsUpdate', () => {
   const conversationId = '31079679-ef31-4d97-af0d-d1fda73cd8a5';
   const mockGpToRepoUrl = 'fake-url';
   const mockGpToRepoAuthKeys = 'fake-keys';
-  initialiseConfig.mockReturnValue({ gpToRepoAuthKeys: 'fake-keys', gpToRepoUrl: 'fake-url' });
+  initializeConfig.mockReturnValue({ gpToRepoAuthKeys: 'fake-keys', gpToRepoUrl: 'fake-url' });
 
   beforeEach(() => {
     axios.patch.mockResolvedValue({ status: 204 });

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logEvent } from '../../middleware/logging';
 
 export const sendPdsUpdate = async conversationId => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   try {
     const url = `${config.gpToRepoUrl}/deduction-requests/${conversationId}/pds-update`;
     return await axios.patch(url, {}, { headers: { Authorization: `${config.gpToRepoAuthKeys}` } });

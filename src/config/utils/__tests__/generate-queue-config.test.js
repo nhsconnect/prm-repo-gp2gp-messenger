@@ -1,4 +1,4 @@
-import { initialiseConfig } from '../../';
+import { initializeConfig } from '../../';
 import { generateQueueConfig } from '../generate-queue-config';
 
 jest.mock('../../');
@@ -23,7 +23,7 @@ describe('generateQueueConfig', () => {
     }
   ];
   const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-  initialiseConfig.mockReturnValue({
+  initializeConfig.mockReturnValue({
     queueUrls: mockQueueUrls,
     queueUsername: 'guest',
     queuePassword: 'guest',

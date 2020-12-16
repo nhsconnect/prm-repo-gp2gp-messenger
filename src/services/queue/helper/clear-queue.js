@@ -1,9 +1,9 @@
 import { v4 as uuid } from 'uuid';
 import { channelPool, sendToQueue } from '../';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 
 export const clearQueue = async (options = {}) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   const endOfQueueMessage = `EOQ-${uuid()}`;
 
   await sendToQueue(endOfQueueMessage, options);

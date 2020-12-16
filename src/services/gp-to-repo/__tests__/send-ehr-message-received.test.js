@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { sendEhrMessageReceived } from '../send-ehr-message-received';
 
 jest.mock('axios');
@@ -12,7 +12,7 @@ describe('sendEhrMessageReceived', () => {
   const messageId = uuid();
   const mockGpToRepoUrl = 'fake-url';
   const mockGpToRepoAuthKeys = 'fake-keys';
-  initialiseConfig.mockReturnValue({ gpToRepoAuthKeys: 'fake-keys', gpToRepoUrl: 'fake-url' });
+  initializeConfig.mockReturnValue({ gpToRepoAuthKeys: 'fake-keys', gpToRepoUrl: 'fake-url' });
 
   it('should make a PATCH request to GPToRepo with conversation id and message id', async () => {
     const axiosHeaders = { headers: { Authorization: `${mockGpToRepoAuthKeys}` } };

@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { sendEhrRequest } from '../send-ehr-request';
 import nock from 'nock';
 import { logError } from '../../../middleware/logging';
@@ -25,7 +25,7 @@ describe('sendEhrRequest', () => {
   };
   const mockRepoToGpUrl = 'http://localhost';
   const mockRepoToGpAuthKeys = 'fake-keys';
-  initialiseConfig.mockReturnValue({
+  initializeConfig.mockReturnValue({
     repoToGpAuthKeys: mockRepoToGpAuthKeys,
     repoToGpUrl: mockRepoToGpUrl
   });

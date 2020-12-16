@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dateFormat from 'dateformat';
 import { v4 as uuid } from 'uuid';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { logError } from '../../../middleware/logging';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 import testData from '../../../templates/__tests__/testData.json';
@@ -30,7 +30,7 @@ describe('mhs-outbound-client', () => {
     }
   };
   const axiosBody = { payload: message };
-  initialiseConfig.mockReturnValue({ deductionsAsid: testData.mhs.asid, mhsOutboundUrl: url });
+  initializeConfig.mockReturnValue({ deductionsAsid: testData.mhs.asid, mhsOutboundUrl: url });
 
   beforeEach(() => {
     axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));

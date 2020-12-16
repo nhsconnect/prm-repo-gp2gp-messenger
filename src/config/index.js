@@ -1,6 +1,6 @@
 export const portNumber = 3000;
 
-export const initialiseConfig = () => ({
+export const initializeConfig = () => ({
   deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID || '200000001161',
   deductionsOdsCode: process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || 'B86041',
   enableWorker: process.env.GP2GP_ADAPTOR_ENABLE_WORKER || 'true',

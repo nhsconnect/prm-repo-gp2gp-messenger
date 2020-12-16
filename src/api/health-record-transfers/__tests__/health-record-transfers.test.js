@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../../app';
 
 jest.mock('../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     gp2gpAdaptorAuthorizationKeys: 'correct-key',
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
   })
@@ -17,7 +17,7 @@ describe('healthRecordTransfers', () => {
       attributes: {
         odsCode: 'B1234',
         ehrRequestId: '26A541CE-A5AB-4713-99A4-150EC3DA25C6',
-        preSignedUrl: 'fake-url'
+        presignedUrl: 'fake-url'
       }
     }
   };
@@ -84,15 +84,15 @@ describe('healthRecordTransfers', () => {
       expect(res.body).toEqual({ errors: errorMessage });
     });
 
-    it('should return correct error message if preSignedUrl is not provided', async () => {
-      const errorMessage = [{ 'data.attributes.preSignedUrl': 'Value has not been provided' }];
+    it('should return correct error message if presignedUrl is not provided', async () => {
+      const errorMessage = [{ 'data.attributes.presignedUrl': 'Value has not been provided' }];
       const res = await request(app)
         .post('/health-record-transfers')
         .set('Authorization', authKey)
         .send({
           data: {
             ...mockBody.data,
-            attributes: { ...mockBody.data.attributes, preSignedUrl: '' }
+            attributes: { ...mockBody.data.attributes, presignedUrl: '' }
           }
         });
 

@@ -5,7 +5,7 @@ import { checkMHSHealth } from '../check-mhs-health';
 const mockErrorResponse = 'Error: exhausted connection failover';
 
 jest.mock('../../../config/', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
     queueUsername: 'guest',
     queuePassword: 'guest',

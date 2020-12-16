@@ -5,7 +5,7 @@ import { sendToQueue } from '../send-to-queue';
 
 jest.mock('../../../../middleware/logging');
 jest.mock('../../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueName: 'mocked-queue-name',
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
   })

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { getPracticeAsid } from '../mhs-route-client';
 
 jest.mock('../../../config');
@@ -9,7 +9,7 @@ describe('mhs-route-client', () => {
   const odsCode = 'A123456';
   const expectedAsid = '12345678900';
   const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN010000UK05';
-  initialiseConfig.mockReturnValue({ mhsRouteUrl: 'local-mhs-route-url' });
+  initializeConfig.mockReturnValue({ mhsRouteUrl: 'local-mhs-route-url' });
 
   it('should return an ASID given practice ODS code', async () => {
     axios.get.mockResolvedValue({ status: 200, data: { uniqueIdentifier: [expectedAsid] } });

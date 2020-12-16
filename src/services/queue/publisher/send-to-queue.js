@@ -1,9 +1,9 @@
 import { logEvent, logError } from '../../../middleware/logging';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { channelPool } from '../helper';
 
 export const sendToQueue = (message, options = {}) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
 
   return new Promise((resolve, reject) => {
     logEvent('Sending Message to Queue');

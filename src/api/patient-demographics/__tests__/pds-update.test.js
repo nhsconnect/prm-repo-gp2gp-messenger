@@ -8,7 +8,7 @@ import { fakeDateNow } from '../../../__mocks__/dateformat';
 
 jest.mock('../../../config/logging');
 jest.mock('../../../config/', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
     deductionsAsid: 'deductionsAsid',
     deductionsOdsCode: 'deductionsOds',

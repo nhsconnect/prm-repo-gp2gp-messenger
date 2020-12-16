@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { logError } from '../../../middleware/logging';
 import { setTransferComplete } from '../set-ehr-repo-transfer-complete';
 import { v4 } from 'uuid';
@@ -13,7 +13,7 @@ describe('setTransferComplete', () => {
   const body = { conversationId };
   const mockEhrRepoUrl = 'https://ehr-repo-url';
   const mockAuthKeys = 'auth';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
+  initializeConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl, ehrRepoAuthKeys: mockAuthKeys });
   const axiosConfig = { headers: { Authorization: mockAuthKeys } };
 
   beforeEach(() => {

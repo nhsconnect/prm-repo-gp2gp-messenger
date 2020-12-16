@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logEvent, logError } from '../../middleware/logging';
 
 export const setTransferComplete = async body => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   try {
     const response = await axios.patch(
       `${config.ehrRepoUrl}/fragments`,

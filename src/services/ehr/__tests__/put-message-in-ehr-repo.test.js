@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { logEvent, logError } from '../../../middleware/logging';
 import { putMessageInEhrRepo } from '../put-message-in-ehr-repo';
 
@@ -11,7 +11,7 @@ describe('putMessageInEhrRepo', () => {
   const message = 'some-message';
   const url = 'https://s3-upload-url';
   const mockEhrRepoUrl = 'https://ehr-repo-url';
-  initialiseConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
+  initializeConfig.mockReturnValue({ ehrRepoUrl: mockEhrRepoUrl });
 
   beforeEach(() => {
     axios.put.mockResolvedValue({ status: 200, statusText: 'status-text' });

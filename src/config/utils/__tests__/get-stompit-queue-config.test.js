@@ -1,4 +1,4 @@
-import { initialiseConfig } from '../../';
+import { initializeConfig } from '../../';
 import { getStompitQueueConfig } from '../get-stompit-queue-config';
 
 jest.mock('../../');
@@ -21,7 +21,7 @@ describe('getStompitQueueConfig', () => {
 
   it('should output an array that is the same length as config queueUrls', () => {
     const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-    initialiseConfig.mockReturnValue({
+    initializeConfig.mockReturnValue({
       queueUrls: mockQueueUrls,
       queueUsername: 'guest',
       queuePassword: 'guest',
@@ -34,7 +34,7 @@ describe('getStompitQueueConfig', () => {
 
   it('should correctly format the config to match stompit config requirements', () => {
     const mockQueueUrls = ['tcp://mq-1:61613', 'tcp://mq-2:61613'];
-    initialiseConfig.mockReturnValue({
+    initializeConfig.mockReturnValue({
       queueUrls: mockQueueUrls,
       queueUsername: 'guest',
       queuePassword: 'guest',
@@ -46,7 +46,7 @@ describe('getStompitQueueConfig', () => {
 
   it('should remove any empty urls from config.queueUrls before parsing', () => {
     const mockQueueUrls = ['tcp://mq-1:61613', ''];
-    initialiseConfig.mockReturnValue({
+    initializeConfig.mockReturnValue({
       queueUrls: mockQueueUrls,
       queueUsername: 'guest',
       queuePassword: 'guest',
@@ -58,7 +58,7 @@ describe('getStompitQueueConfig', () => {
 
   it('should return an empty array if there are no queueUrls defined in config', () => {
     const mockQueueUrls = ['', ''];
-    initialiseConfig.mockReturnValue({
+    initializeConfig.mockReturnValue({
       queueUrls: mockQueueUrls,
       queueUsername: 'guest',
       queuePassword: 'guest',

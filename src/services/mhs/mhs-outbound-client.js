@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logError } from '../../middleware/logging';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
@@ -23,7 +23,7 @@ export const stripXMLMessage = xml =>
     .replace(/>\s+</g, '><');
 
 export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
 
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });

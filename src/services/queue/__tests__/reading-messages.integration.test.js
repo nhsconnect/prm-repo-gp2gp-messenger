@@ -18,7 +18,7 @@ httpContext.enable();
 jest.mock('../../../middleware/logging');
 jest.unmock('stompit');
 jest.mock('../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     gpToRepoAuthKeys: 'fake-keys',
     gpToRepoUrl: 'http://localhost',
     repoToGpAuthKeys: 'more-fake-keys',

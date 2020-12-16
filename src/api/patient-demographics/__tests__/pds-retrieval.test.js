@@ -9,7 +9,7 @@ import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval
 
 jest.mock('../../../config/logging');
 jest.mock('../../../config/', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
     deductionsAsid: 'deductionsAsid',
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']

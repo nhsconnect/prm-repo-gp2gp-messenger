@@ -1,7 +1,7 @@
-import { initialiseConfig } from '../';
+import { initializeConfig } from '../';
 
 export const generateQueueConfig = url => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   const urlParts = url.match(/(.*):\/\/(.*):(.*)/);
   if (!urlParts) throw new Error(`Queue url ${url} should have the format protocol://host:port`);
 

@@ -3,7 +3,7 @@ import { sendToQueue } from '../../publisher';
 import { DefaultMessage } from '../default-message';
 
 jest.mock('../../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     unhandledMessagesQueueName: 'mockedUnhandledMessageQueueName',
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
   })

@@ -6,7 +6,7 @@ jest.mock('aws-sdk');
 jest.mock('aws-sdk');
 jest.mock('../../../config/logging');
 jest.mock('../../../config/', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
     queueUsername: 'guest',
     queuePassword: 'guest',

@@ -1,9 +1,9 @@
 import { channelPool } from '../';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 
 // Consumes one message off the queue then disconnects from queue
 export const consumeOneMessage = (options = {}) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   return new Promise((resolve, reject) => {
     const subscribeCallback = channel => (err, messageStream, subscription) => {
       messageStream.readString('utf-8', async (error, message) => {

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 
 export const getPracticeAsid = async (odsCode, serviceId) => {
-  const baseUrl = initialiseConfig().mhsRouteUrl.replace(/\/$/, '');
+  const baseUrl = initializeConfig().mhsRouteUrl.replace(/\/$/, '');
   const url = `${baseUrl}/routing`;
 
   const res = await axios.get(url, {

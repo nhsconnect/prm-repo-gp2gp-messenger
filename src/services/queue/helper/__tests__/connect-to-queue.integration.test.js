@@ -4,7 +4,7 @@ import { logError } from '../../../../middleware/logging';
 jest.unmock('stompit');
 jest.mock('../../../../middleware/logging');
 jest.mock('../../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueUrls: ['tcp://mq-1:1234']
   })
 }));

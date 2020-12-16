@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logError, logEvent } from '../../middleware/logging';
 
 export const sendEhrRequest = async (nhsNumber, conversationId, odsCode, ehrRequestId) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   const url = `${config.repoToGpUrl}/registration-requests/`;
   const body = {
     data: {

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { initialiseConfig } from '../../config';
+import { initializeConfig } from '../../config';
 import { logError } from '../../middleware/logging';
 
 export const sendEhrMessageReceived = async (conversationId, messageId) => {
-  const config = initialiseConfig();
+  const config = initializeConfig();
   const url = `${config.gpToRepoUrl}/deduction-requests/${conversationId}/ehr-message-received`;
   try {
     return await axios.patch(

@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { initialiseConfig } from '../../../config';
+import { initializeConfig } from '../../../config';
 import { getPracticeAsid } from '../mhs-route-client';
 
 jest.mock('../../../config');
@@ -11,7 +11,7 @@ describe('mhs-route-client', () => {
   const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN010000UK05';
 
   it('should make request to MHS route URL with the query string', async () => {
-    initialiseConfig.mockReturnValue({ mhsRouteUrl: host });
+    initializeConfig.mockReturnValue({ mhsRouteUrl: host });
     nock(host)
       .get(`/routing?org-code=A123456&service-id=${serviceId}`)
       .reply(200, { uniqueIdentifier: [expectedAsid] });
@@ -20,7 +20,7 @@ describe('mhs-route-client', () => {
   });
 
   it('should trim / from base url of MHS', async () => {
-    initialiseConfig.mockReturnValue({ mhsRouteUrl: `${host}/` });
+    initializeConfig.mockReturnValue({ mhsRouteUrl: `${host}/` });
     nock(host)
       .get(`/routing?org-code=A123456&service-id=${serviceId}`)
       .reply(200, { uniqueIdentifier: [expectedAsid] });

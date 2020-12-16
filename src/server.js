@@ -1,9 +1,9 @@
 import app from './app';
 import { initialiseSubscriber } from './services/queue/subscriber';
-import { initialiseConfig } from './config';
+import { initializeConfig } from './config';
 import { logEvent } from './middleware/logging';
 
-const config = initialiseConfig();
+const config = initializeConfig();
 const gp2gpWorker = config.enableWorker;
 const gp2gpServer = config.enableServer;
 

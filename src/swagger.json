@@ -310,7 +310,7 @@
                   "type": "string",
                   "format": "uuid"
                 },
-                "preSignedUrl": {
+                "presignedUrl": {
                   "type": "string"
                 }
               }

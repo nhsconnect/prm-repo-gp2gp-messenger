@@ -8,7 +8,7 @@ jest.mock('../../../../middleware/logging');
 jest.mock('../subscriber-read-message-callback');
 jest.mock('../../helper/connect-to-queue');
 jest.mock('../../../../config', () => ({
-  initialiseConfig: jest.fn().mockReturnValue({
+  initializeConfig: jest.fn().mockReturnValue({
     queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
     queueName: 'mock-queue'
   })
