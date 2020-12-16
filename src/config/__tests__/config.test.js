@@ -84,7 +84,6 @@ describe('config', () => {
             queueVirtualHost: 'queueVirtualHost',
             queueUsername: 'queueUsername',
             queuePassword: 'queuePassword',
-            awsS3BucketName: 'awsS3BucketName',
             ehrRepoUrl: 'ehrRepoUrl',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
