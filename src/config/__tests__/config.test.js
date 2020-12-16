@@ -68,7 +68,6 @@ describe('config', () => {
         process.env.GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST = 'queueVirtualHost';
         process.env.GP2GP_ADAPTOR_MHS_QUEUE_USERNAME = 'queueUsername';
         process.env.GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD = 'queuePassword';
-        process.env.GP2GP_ADAPTOR_S3_BUCKET_NAME = 'awsS3BucketName';
         process.env.GP2GP_ADAPTOR_EHR_REPO_URL = 'ehrRepoUrl';
         process.env.PDS_ASID = 'pdsAsid';
         process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'mhsOutboundUrl';

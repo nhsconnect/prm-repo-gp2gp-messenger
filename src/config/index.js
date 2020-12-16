@@ -11,7 +11,6 @@ export const initialiseConfig = () => ({
   queueVirtualHost: process.env.GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST,
   queueUsername: process.env.GP2GP_ADAPTOR_MHS_QUEUE_USERNAME,
   queuePassword: process.env.GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD,
-  awsS3BucketName: process.env.GP2GP_ADAPTOR_S3_BUCKET_NAME,
   ehrRepoUrl: process.env.GP2GP_ADAPTOR_EHR_REPO_URL,
   ehrRepoAuthKeys: process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_EHR_REPO,
   gpToRepoUrl: process.env.GP2GP_ADAPTOR_GP_TO_REPO_URL,

@@ -10,7 +10,6 @@ locals {
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_NAME", value = "raw-inbound" },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
-      { name = "GP2GP_ADAPTOR_S3_BUCKET_NAME", value = var.s3_bucket_name },
       { name = "GP2GP_ADAPTOR_EHR_REPO_URL", value = "https://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
       { name = "GP2GP_ADAPTOR_GP_TO_REPO_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_GP_TO_REPO_URL.value },
       { name = "GP2GP_ADAPTOR_REPO_TO_GP_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPO_TO_GP_URL.value },

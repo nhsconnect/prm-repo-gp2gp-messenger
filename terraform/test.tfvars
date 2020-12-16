@@ -3,8 +3,6 @@ component_name = "gp2gp-adaptor"
 dns_name       = "gp2gp-adaptor"
 repo_name      = "prm-deductions-gp2gp-adaptor"
 
-s3_bucket_name       = "test-gp2gp-bucket"
-
 task_cpu    = 256
 task_memory = 512
 port        = 3000
