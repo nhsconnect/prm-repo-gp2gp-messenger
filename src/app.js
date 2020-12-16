@@ -6,7 +6,7 @@ import error from './api/error';
 import healthCheck from './api/health';
 import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographics } from './api/patient-demographics';
-import { healthRecordTransfers } from './api/health-record-transfers';
+import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
@@ -23,7 +23,7 @@ app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographics);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
-app.use('/health-record-transfers', logging.middleware, healthRecordTransfers);
+app.use('/health-record-transfers', logging.middleware, healthRecordTransferRouter);
 
 app.use(errorLogger(options));
 
