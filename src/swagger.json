@@ -309,8 +309,13 @@
                 "ehrRequestId": {
                   "type": "string",
                   "format": "uuid"
-                },
-                "presignedUrl": {
+                }
+              }
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "currentEhrUrl": {
                   "type": "string"
                 }
               }

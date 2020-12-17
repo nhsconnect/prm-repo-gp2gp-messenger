@@ -7,7 +7,7 @@ export const healthRecordTransferValidation = [
   body('data.id').isUUID().withMessage("'conversationId' provided is not of type UUID"),
   body('data.attributes.odsCode').notEmpty().withMessage('Value has not been provided'),
   body('data.attributes.ehrRequestId').isUUID().withMessage('Provided value is not of type UUID'),
-  body('data.attributes.presignedUrl').notEmpty().withMessage('Value has not been provided')
+  body('data.links.currentEhrUrl').notEmpty().withMessage('Value has not been provided')
 ];
 
 export const healthRecordTransfers = (req, res) => {

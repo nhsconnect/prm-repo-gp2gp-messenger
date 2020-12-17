@@ -16,8 +16,10 @@ describe('healthRecordTransfers', () => {
       id: '41291044-8259-4D83-AE2B-93B7BFCABE73',
       attributes: {
         odsCode: 'B1234',
-        ehrRequestId: '26A541CE-A5AB-4713-99A4-150EC3DA25C6',
-        presignedUrl: 'fake-url'
+        ehrRequestId: '26A541CE-A5AB-4713-99A4-150EC3DA25C6'
+      },
+      links: {
+        currentEhrUrl: 'fake-url'
       }
     }
   };
@@ -84,15 +86,15 @@ describe('healthRecordTransfers', () => {
       expect(res.body).toEqual({ errors: errorMessage });
     });
 
-    it('should return correct error message if presignedUrl is not provided', async () => {
-      const errorMessage = [{ 'data.attributes.presignedUrl': 'Value has not been provided' }];
+    it('should return correct error message if currentEhrUrl is not provided', async () => {
+      const errorMessage = [{ 'data.links.currentEhrUrl': 'Value has not been provided' }];
       const res = await request(app)
         .post('/health-record-transfers')
         .set('Authorization', authKey)
         .send({
           data: {
             ...mockBody.data,
-            attributes: { ...mockBody.data.attributes, presignedUrl: '' }
+            links: { ...mockBody.data.links, currentEhrUrl: '' }
           }
         });
 
