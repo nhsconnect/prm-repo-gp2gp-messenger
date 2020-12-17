@@ -26,6 +26,6 @@ echo "MQ is available. Waiting 5 seconds before connecting"
 sleep 5
 # After tcp port is open, it takes a moment for server to be ready
 
-echo "MQ is available. Starting node.js server"
+echo "MQ is available. Starting the application"
 set -e
 exec node server.js
