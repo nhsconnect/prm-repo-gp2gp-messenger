@@ -4,6 +4,8 @@ locals {
     task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
     task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
     environment_variables        = [
+      { name = "GP2GP_ADAPTOR_ENABLE_WORKER", value = "false" },
+      { name = "GP2GP_ADAPTOR_ENABLE_SERVER", value = "true" },
       { name = "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE.value },
       { name = "GP2GP_ADAPTOR_REPOSITORY_ASID", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ASID.value },
       { name = "NODE_ENV", value = var.environment },
