@@ -1,6 +1,12 @@
 import request from 'supertest';
 import app from '../../../app';
+import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-repo';
+import { parseMultipartBody } from '../../../services/parser';
+import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 
+jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../services/parser');
+jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     gp2gpAdaptorAuthorizationKeys: 'correct-key',
@@ -10,26 +16,41 @@ jest.mock('../../../config', () => ({
 
 describe('healthRecordTransfers', () => {
   const authKey = 'correct-key';
+  const currentEhrUrl = 'fake-url';
+  const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
+  const odsCode = 'B1234';
   const mockBody = {
     data: {
       type: 'health-record-transfers',
-      id: '41291044-8259-4D83-AE2B-93B7BFCABE73',
+      id: conversationId,
       attributes: {
-        odsCode: 'B1234',
+        odsCode: odsCode,
         ehrRequestId: '26A541CE-A5AB-4713-99A4-150EC3DA25C6'
       },
       links: {
-        currentEhrUrl: 'fake-url'
+        currentEhrUrl: currentEhrUrl
       }
     }
   };
 
   it('should return a 204', async () => {
+    const ehrExtract = 'ehr-extract';
+    const interactionId = 'RCMR_IN030000UK06';
+    const message = 'ehr-message';
+    const expectedSendMessageParameters = { interactionId, conversationId, odsCode, message };
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    parseMultipartBody.mockReturnValue([
+      { headers: {}, body: 'soap-header' },
+      { headers: {}, body: message }
+    ]);
     const res = await request(app)
       .post('/health-record-transfers')
       .set('Authorization', authKey)
       .send(mockBody);
     expect(res.status).toBe(204);
+    expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
+    expect(parseMultipartBody).toHaveBeenCalledWith(ehrExtract);
+    expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
   describe('validation', () => {
