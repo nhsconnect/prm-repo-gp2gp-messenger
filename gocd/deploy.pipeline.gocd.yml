@@ -94,6 +94,27 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_functional
+
+  'prm-deductions-gp2gp.e2e':
+    group: deductions
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      adaptor:
+        pipeline: prm-deductions-gp2gp-adaptor.test
+        stage: test
+      worker:
+        pipeline: prm-deductions-gp2gp-worker.test
+        stage: deploy
+    environment_variables:
+      NHS_ENVIRONMENT: test
+    stages:
+      - test:
+          clean_workspace: true
+          jobs:
             e2e:
               resources:
                 - deductions-private
