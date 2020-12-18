@@ -3,8 +3,6 @@ export const portNumber = 3000;
 export const initializeConfig = () => ({
   deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID || '200000001161',
   deductionsOdsCode: process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || 'B86041',
-  enableWorker: process.env.GP2GP_ADAPTOR_ENABLE_WORKER || 'true',
-  enableServer: process.env.GP2GP_ADAPTOR_ENABLE_SERVER || 'true',
   queueName: process.env.GP2GP_ADAPTOR_MHS_QUEUE_NAME,
   unhandledMessagesQueueName: 'unhandled-raw-inbound',
   queueUrls: [process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_1, process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_2],
