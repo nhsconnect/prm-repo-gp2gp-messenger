@@ -2,6 +2,7 @@ import { body } from 'express-validator';
 import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
 import { parseMultipartBody } from '../../services/parser';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { replaceInFulfillmentOf } from '../../services/parser/message/replace-in-fulfillment-of';
 
 export const healthRecordTransferValidation = [
   body('data.type')
@@ -17,14 +18,20 @@ export const healthRecordTransfers = async (req, res) => {
   const { data } = req.body;
   const {
     id: conversationId,
-    attributes: { odsCode },
+    attributes: { odsCode, ehrRequestId },
     links: { currentEhrUrl }
   } = data;
   const interactionId = 'RCMR_IN030000UK06';
   const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
   const multipartMessage = parseMultipartBody(ehrExtract);
   const ehrMessage = multipartMessage[1].body;
-  await sendMessage({ interactionId, conversationId, odsCode, message: ehrMessage });
+  const ehrMessageWithEhrRequestId = await replaceInFulfillmentOf(ehrMessage, ehrRequestId);
+  await sendMessage({
+    interactionId,
+    conversationId,
+    odsCode,
+    message: ehrMessageWithEhrRequestId
+  });
 
   res.sendStatus(204);
 };

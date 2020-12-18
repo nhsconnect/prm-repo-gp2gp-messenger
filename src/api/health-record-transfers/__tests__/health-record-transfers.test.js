@@ -3,7 +3,9 @@ import app from '../../../app';
 import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-repo';
 import { parseMultipartBody } from '../../../services/parser';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
+import { replaceInFulfillmentOf } from '../../../services/parser/message/replace-in-fulfillment-of';
 
+jest.mock('../../../services/parser/message/replace-in-fulfillment-of');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/parser');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
@@ -19,13 +21,14 @@ describe('healthRecordTransfers', () => {
   const currentEhrUrl = 'fake-url';
   const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
   const odsCode = 'B1234';
+  const ehrRequestId = '26A541CE-A5AB-4713-99A4-150EC3DA25C6';
   const mockBody = {
     data: {
       type: 'health-record-transfers',
       id: conversationId,
       attributes: {
         odsCode: odsCode,
-        ehrRequestId: '26A541CE-A5AB-4713-99A4-150EC3DA25C6'
+        ehrRequestId: ehrRequestId
       },
       links: {
         currentEhrUrl: currentEhrUrl
@@ -37,12 +40,19 @@ describe('healthRecordTransfers', () => {
     const ehrExtract = 'ehr-extract';
     const interactionId = 'RCMR_IN030000UK06';
     const message = 'ehr-message';
-    const expectedSendMessageParameters = { interactionId, conversationId, odsCode, message };
+    const messageWithEhrRequestId = 'message-ehr-req-id';
+    const expectedSendMessageParameters = {
+      interactionId,
+      conversationId,
+      odsCode,
+      message: messageWithEhrRequestId
+    };
     retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
     parseMultipartBody.mockReturnValue([
       { headers: {}, body: 'soap-header' },
       { headers: {}, body: message }
     ]);
+    replaceInFulfillmentOf.mockResolvedValue(messageWithEhrRequestId);
     const res = await request(app)
       .post('/health-record-transfers')
       .set('Authorization', authKey)
@@ -50,6 +60,7 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(parseMultipartBody).toHaveBeenCalledWith(ehrExtract);
+    expect(replaceInFulfillmentOf).toHaveBeenCalledWith(message, ehrRequestId);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
