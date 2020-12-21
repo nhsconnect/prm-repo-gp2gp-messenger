@@ -44,10 +44,10 @@ pipelines:
           clean_workspace: true
           jobs:
             deploy: *deploy_job
-      - functional:
+      - test:
           clean_workspace: true
           jobs:
-            test:
+            functional:
               resources:
                 - deductions-private
                 - dev
@@ -57,6 +57,17 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_functional
+            e2e:
+              resources:
+                - deductions-private
+                - dev
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_e2e
+
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
     label_template: '${git[:8]}'
@@ -66,8 +77,10 @@ pipelines:
         blacklist:
           - docs/**/*.*
       dev_env:
+        # This dependency ensures gp2gp-adaptor is not deployed to test env if
+        # the E2E tests did not pass in the dev environment
         pipeline: prm-deductions-gp2gp-adaptor.dev
-        stage: functional
+        stage: test
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_test
@@ -94,27 +107,6 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks test_functional
-
-  'prm-deductions-gp2gp.e2e':
-    group: deductions
-    label_template: '${git[:8]}'
-    materials:
-      git:
-        type: configrepo
-        blacklist:
-          - docs/**/*.*
-      adaptor:
-        pipeline: prm-deductions-gp2gp-adaptor.test
-        stage: test
-      worker:
-        pipeline: prm-deductions-gp2gp-worker.test
-        stage: deploy
-    environment_variables:
-      NHS_ENVIRONMENT: test
-    stages:
-      - test:
-          clean_workspace: true
-          jobs:
             e2e:
               resources:
                 - deductions-private
