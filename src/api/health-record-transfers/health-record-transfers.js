@@ -3,6 +3,7 @@ import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
 import { parseMultipartBody } from '../../services/parser';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
+import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 
 export const healthRecordTransferValidation = [
   body('data.type')
@@ -22,10 +23,16 @@ export const healthRecordTransfers = async (req, res) => {
     links: { currentEhrUrl }
   } = data;
   const interactionId = 'RCMR_IN030000UK06';
+  const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
+  const practiceAsid = await getPracticeAsid(odsCode, serviceId);
   const multipartMessage = parseMultipartBody(ehrExtract);
   const ehrMessage = multipartMessage[1].body;
-  const ehrMessageWithEhrRequestId = await updateExtractForSending(ehrMessage, ehrRequestId);
+  const ehrMessageWithEhrRequestId = await updateExtractForSending(
+    ehrMessage,
+    ehrRequestId,
+    practiceAsid
+  );
   await sendMessage({
     interactionId,
     conversationId,

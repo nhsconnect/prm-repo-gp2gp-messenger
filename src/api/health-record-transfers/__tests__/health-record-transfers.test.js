@@ -4,7 +4,9 @@ import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-rep
 import { parseMultipartBody } from '../../../services/parser';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
+import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 
+jest.mock('../../../services/mhs/mhs-route-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/parser');
@@ -39,8 +41,10 @@ describe('healthRecordTransfers', () => {
   it('should return a 204', async () => {
     const ehrExtract = 'ehr-extract';
     const interactionId = 'RCMR_IN030000UK06';
+    const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
     const message = 'ehr-message';
     const messageWithEhrRequestId = 'message-ehr-req-id';
+    const receivingAsid = '2000000000678';
     const expectedSendMessageParameters = {
       interactionId,
       conversationId,
@@ -53,6 +57,7 @@ describe('healthRecordTransfers', () => {
       { headers: {}, body: message }
     ]);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
+    getPracticeAsid.mockResolvedValue(receivingAsid);
     const res = await request(app)
       .post('/health-record-transfers')
       .set('Authorization', authKey)
@@ -60,7 +65,8 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(parseMultipartBody).toHaveBeenCalledWith(ehrExtract);
-    expect(updateExtractForSending).toHaveBeenCalledWith(message, ehrRequestId);
+    expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
+    expect(updateExtractForSending).toHaveBeenCalledWith(message, ehrRequestId, receivingAsid);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 

@@ -13,6 +13,7 @@ describe('POST /health-record-transfers', () => {
   const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
   const odsCode = 'B1234';
   const priorEhrRequestId = uuid();
+  const expectedReceivingAsid = '200000000678';
   const ehrRequestId = '26A541CE-A5AB-4713-99A4-150EC3DA25C6';
   const mockBody = {
     data: {
@@ -30,6 +31,7 @@ describe('POST /health-record-transfers', () => {
   beforeEach(() => {
     process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = authKey;
     process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
+    process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'http://localhost/mhs-route';
   });
 
   const ehrExtractStoredInS3 = ehrExtract => `----=_MIME-Boundary
@@ -41,7 +43,11 @@ ${ehrExtract}
   `;
   const matchPayload = ehrRequestId => {
     return body => {
-      return body.payload.includes('<RCMR_IN030000UK06') && body.payload.includes(ehrRequestId);
+      return (
+        body.payload.includes('<RCMR_IN030000UK06') &&
+        body.payload.includes(ehrRequestId) &&
+        body.payload.includes(expectedReceivingAsid)
+      );
     };
   };
   it('should send correctly updated ehr to mhs outbound', done => {
@@ -55,6 +61,9 @@ ${ehrExtract}
       'from-asid': '200000001161'
     };
 
+    const mhsRouteScope = nock(`${host}/mhs-route`)
+      .get(`/routing?org-code=${odsCode}&service-id=urn:nhs:names:services:gp2gp:RCMR_IN030000UK06`)
+      .reply(200, { uniqueIdentifier: [expectedReceivingAsid] });
     const ehrRepoScope = nock(host).get(ehrPath).reply(200, ehrExtractStoredInS3(ehrExtract));
     const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
       .post('/mhs-outbound', matchPayload(ehrRequestId))
@@ -68,6 +77,7 @@ ${ehrExtract}
       .expect(() => {
         expect(ehrRepoScope.isDone()).toBe(true);
         expect(mhsOutboundScope.isDone()).toBe(true);
+        expect(mhsRouteScope.isDone()).toBe(true);
       })
       .end(done);
   });
