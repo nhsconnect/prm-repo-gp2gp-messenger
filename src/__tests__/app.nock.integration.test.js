@@ -3,7 +3,7 @@ import nock from 'nock';
 import request from 'supertest';
 import app from '../app';
 //TODO - extract it somewhere else
-import { templateEhrExtract } from '../services/parser/message/__tests__/replace-in-fulfillment-of.test';
+import { templateEhrExtract } from '../services/parser/message/__tests__/update-extract-for-sending.test';
 
 const authKey = 'correct-key';
 describe('POST /health-record-transfers', () => {

@@ -3,9 +3,9 @@ import app from '../../../app';
 import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-repo';
 import { parseMultipartBody } from '../../../services/parser';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { replaceInFulfillmentOf } from '../../../services/parser/message/replace-in-fulfillment-of';
+import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 
-jest.mock('../../../services/parser/message/replace-in-fulfillment-of');
+jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/parser');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
@@ -52,7 +52,7 @@ describe('healthRecordTransfers', () => {
       { headers: {}, body: 'soap-header' },
       { headers: {}, body: message }
     ]);
-    replaceInFulfillmentOf.mockResolvedValue(messageWithEhrRequestId);
+    updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     const res = await request(app)
       .post('/health-record-transfers')
       .set('Authorization', authKey)
@@ -60,7 +60,7 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(parseMultipartBody).toHaveBeenCalledWith(ehrExtract);
-    expect(replaceInFulfillmentOf).toHaveBeenCalledWith(message, ehrRequestId);
+    expect(updateExtractForSending).toHaveBeenCalledWith(message, ehrRequestId);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 

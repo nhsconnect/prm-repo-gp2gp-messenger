@@ -2,7 +2,7 @@ import { body } from 'express-validator';
 import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
 import { parseMultipartBody } from '../../services/parser';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { replaceInFulfillmentOf } from '../../services/parser/message/replace-in-fulfillment-of';
+import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 
 export const healthRecordTransferValidation = [
   body('data.type')
@@ -25,7 +25,7 @@ export const healthRecordTransfers = async (req, res) => {
   const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
   const multipartMessage = parseMultipartBody(ehrExtract);
   const ehrMessage = multipartMessage[1].body;
-  const ehrMessageWithEhrRequestId = await replaceInFulfillmentOf(ehrMessage, ehrRequestId);
+  const ehrMessageWithEhrRequestId = await updateExtractForSending(ehrMessage, ehrRequestId);
   await sendMessage({
     interactionId,
     conversationId,
