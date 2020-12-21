@@ -70,6 +70,24 @@ describe('healthRecordTransfers', () => {
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
+  it('should return a 503 when it cannot retrieve the extract from the message stored in EHR Repo', async () => {
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    parseMultipartBody.mockReturnValue([]);
+    updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
+    getPracticeAsid.mockResolvedValue(receivingAsid);
+    const res = await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({
+      errors: [
+        'Sending EHR Extract failed',
+        'Could not extract HLv7 message from the GP2GP message stored in EHR Repo'
+      ]
+    });
+  });
+
   it('should return a 503 when cannot retrieve ehr from presigned url', async () => {
     retrieveEhrFromRepo.mockRejectedValue(new Error('error'));
     const res = await request(app)

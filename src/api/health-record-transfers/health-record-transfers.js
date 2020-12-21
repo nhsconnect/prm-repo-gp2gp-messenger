@@ -29,6 +29,9 @@ export const healthRecordTransfers = async (req, res) => {
     const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     const multipartMessage = parseMultipartBody(ehrExtract);
+    if (multipartMessage.length < 2 || multipartMessage[1].body === undefined) {
+      throw new Error('Could not extract HLv7 message from the GP2GP message stored in EHR Repo');
+    }
     const ehrMessage = multipartMessage[1].body;
     const ehrMessageWithEhrRequestId = await updateExtractForSending(
       ehrMessage,
