@@ -8,7 +8,11 @@ describe('Patient ODS code update in PDS', () => {
   const TEST_TIMEOUT = 3 * RETRY_COUNT * POLLING_INTERVAL_MS;
 
   const testData = {
-    dev: {},
+    dev: {
+      odsCode1: 'G83055',
+      odsCode2: 'A91368',
+      nhsNumber: 9692842290
+    },
     test: {
       odsCode1: 'A20047',
       odsCode2: 'B86041',
