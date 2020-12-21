@@ -21,9 +21,12 @@ jest.mock('../../../config', () => ({
 describe('healthRecordTransfers', () => {
   const authKey = 'correct-key';
   const currentEhrUrl = 'fake-url';
+  const ehrExtract = 'ehr-extract';
   const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
   const odsCode = 'B1234';
   const ehrRequestId = '26A541CE-A5AB-4713-99A4-150EC3DA25C6';
+  const messageWithEhrRequestId = 'message-ehr-req-id';
+  const receivingAsid = '2000000000678';
   const mockBody = {
     data: {
       type: 'health-record-transfers',
@@ -39,12 +42,9 @@ describe('healthRecordTransfers', () => {
   };
 
   it('should return a 204', async () => {
-    const ehrExtract = 'ehr-extract';
     const interactionId = 'RCMR_IN030000UK06';
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
     const message = 'ehr-message';
-    const messageWithEhrRequestId = 'message-ehr-req-id';
-    const receivingAsid = '2000000000678';
     const expectedSendMessageParameters = {
       interactionId,
       conversationId,
@@ -68,6 +68,44 @@ describe('healthRecordTransfers', () => {
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
     expect(updateExtractForSending).toHaveBeenCalledWith(message, ehrRequestId, receivingAsid);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
+  });
+
+  it('should return a 503 when cannot retrieve ehr from presigned url', async () => {
+    retrieveEhrFromRepo.mockRejectedValue(new Error('error'));
+    const res = await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({ errors: ['Sending EHR Extract failed', 'error'] });
+  });
+
+  it('should return a 503 when cannot retrieve practice asid', async () => {
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    getPracticeAsid.mockRejectedValue(new Error('error'));
+    const res = await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({ errors: ['Sending EHR Extract failed', 'error'] });
+  });
+
+  it('should return a 503 when cannot send ehr to mhs', async () => {
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    parseMultipartBody.mockReturnValue([
+      { headers: {}, body: 'soap-header' },
+      { headers: {}, body: 'ehr-message' }
+    ]);
+    updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
+    getPracticeAsid.mockResolvedValue(receivingAsid);
+    sendMessage.mockRejectedValue(new Error('error'));
+    const res = await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({ errors: ['Sending EHR Extract failed', 'error'] });
   });
 
   describe('validation', () => {

@@ -24,21 +24,26 @@ export const healthRecordTransfers = async (req, res) => {
   } = data;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-  const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
-  const practiceAsid = await getPracticeAsid(odsCode, serviceId);
-  const multipartMessage = parseMultipartBody(ehrExtract);
-  const ehrMessage = multipartMessage[1].body;
-  const ehrMessageWithEhrRequestId = await updateExtractForSending(
-    ehrMessage,
-    ehrRequestId,
-    practiceAsid
-  );
-  await sendMessage({
-    interactionId,
-    conversationId,
-    odsCode,
-    message: ehrMessageWithEhrRequestId
-  });
 
-  res.sendStatus(204);
+  try {
+    const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
+    const practiceAsid = await getPracticeAsid(odsCode, serviceId);
+    const multipartMessage = parseMultipartBody(ehrExtract);
+    const ehrMessage = multipartMessage[1].body;
+    const ehrMessageWithEhrRequestId = await updateExtractForSending(
+      ehrMessage,
+      ehrRequestId,
+      practiceAsid
+    );
+    await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message: ehrMessageWithEhrRequestId
+    });
+
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(503).send({ errors: ['Sending EHR Extract failed', err.message] });
+  }
 };
