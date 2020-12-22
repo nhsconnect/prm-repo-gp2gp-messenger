@@ -4,6 +4,7 @@ import { parseMultipartBody } from '../../services/parser';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
+import { logError, logEvent } from '../../middleware/logging';
 
 export const healthRecordTransferValidation = [
   body('data.type')
@@ -45,8 +46,10 @@ export const healthRecordTransfers = async (req, res) => {
       message: ehrMessageWithEhrRequestId
     });
 
+    logEvent('Successfully sent EHR', { conversationId });
     res.sendStatus(204);
   } catch (err) {
+    logError('Sending EHR Extract failed', err);
     res.status(503).send({ errors: ['Sending EHR Extract failed', err.message] });
   }
 };
