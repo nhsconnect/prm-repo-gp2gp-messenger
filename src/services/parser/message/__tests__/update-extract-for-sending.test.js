@@ -1,6 +1,5 @@
 import { updateExtractForSending } from '../update-extract-for-sending';
 import { v4 } from 'uuid';
-import 'jest-xml-matcher';
 import { XmlParser } from '../../xml-parser';
 
 export const templateEhrExtract = (
