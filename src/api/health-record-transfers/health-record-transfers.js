@@ -49,7 +49,7 @@ export const healthRecordTransfers = async (req, res) => {
     logEvent('Successfully sent EHR', { conversationId });
     res.sendStatus(204);
   } catch (err) {
-    logError('Sending EHR Extract failed', err);
+    logError('Sending EHR Extract failed', { error: err.message });
     res.status(503).send({ errors: ['Sending EHR Extract failed', err.message] });
   }
 };
