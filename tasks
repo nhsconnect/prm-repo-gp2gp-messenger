@@ -255,7 +255,8 @@ case "${command}" in
       configure_docker_repository_uri
       build_docker_image
       echo "Pushing the Docker image... $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG"
-      docker push $REPOSITORY_URI
+      docker push $REPOSITORY_URI:$IMAGE_TAG
+      docker push $REPOSITORY_URI:latest
       ;;
   _test_docker)
       npm install
