@@ -36,7 +36,7 @@ pipelines:
         stage: deploy_dev
       mhs:
         pipeline: prm-mhs-infra-opentest
-        stage: test
+        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: dev
     stages:
