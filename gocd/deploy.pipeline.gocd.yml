@@ -86,7 +86,7 @@ pipelines:
         stage: deploy_test
       mhs:
         pipeline: prm-mhs-infra-ptl-integration
-        stage: test
+        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
     stages:
