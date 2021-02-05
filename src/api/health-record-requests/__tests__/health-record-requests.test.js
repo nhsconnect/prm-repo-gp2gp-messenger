@@ -56,7 +56,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .expect(() => {
           expect(sendMessage).toHaveBeenCalledTimes(1);
           expect(sendMessage).toHaveBeenCalledWith(
-            expect.objectContaining({ conversationId: mockUUID.toUpperCase() })
+            expect.objectContaining({ conversationId: mockUUID })
           );
         })
         .end(done);

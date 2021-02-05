@@ -17,7 +17,7 @@ export const pdsRetrievalValidation = [
 export const pdsRetrieval = async (req, res, next) => {
   const interactionId = 'QUPA_IN000008UK02';
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-  const conversationId = uuid().toUpperCase();
+  const conversationId = uuid();
   const responseBody = { conversationId, data: {}, errors: [] };
   const config = initializeConfig();
 

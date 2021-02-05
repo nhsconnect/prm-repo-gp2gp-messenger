@@ -6,10 +6,10 @@ import { buildEhrAcknowledgement } from '../generate-ehr-acknowledgement';
 describe('generateEhrAcknowledgement', () => {
   it('should return the acknowledgement message template with correct values', () => {
     const ackMessageTestValues = {
-      conversationId: uuid().toUpperCase(),
+      conversationId: uuid(),
       receivingAsid: testData.emisPractise.asid,
       sendingAsid: testData.mhs.asid,
-      messageId: uuid().toUpperCase()
+      messageId: uuid()
     };
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const returnValue = buildEhrAcknowledgement(ackMessageTestValues);

@@ -1,7 +1,7 @@
 const generatePdsRetrievalQuery = require('../generate-pds-retrieval-request');
 const testData = require('./testData.json');
 
-const mockUUID = 'dce9a411-ad97-426b-86b6-55baf2d0d6e4'.toUpperCase();
+const mockUUID = 'dce9a411-ad97-426b-86b6-55baf2d0d6e4';
 
 describe('generatePdsRetrievalQuery', () => {
   const testObjectMissing = {

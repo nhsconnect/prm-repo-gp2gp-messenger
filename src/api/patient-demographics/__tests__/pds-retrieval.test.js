@@ -68,35 +68,35 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS error' })
-      .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
+      .calledWith({ interactionId, conversationId: mockUUID, message: fakerequest })
       .mockResolvedValue({ status: 200, data: message })
       .calledWith({
         interactionId,
-        conversationId: mockNoDataUUID.toUpperCase(),
+        conversationId: mockNoDataUUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 200 })
       .calledWith({
         interactionId,
-        conversationId: mockUUID.toUpperCase(),
+        conversationId: mockUUID,
         message: sendMessageErrorMessage
       })
       .mockRejectedValue(Error('rejected'))
       .calledWith({
         interactionId,
-        conversationId: mockNoPdsUUID.toUpperCase(),
+        conversationId: mockNoPdsUUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 200, data: messageNoPdsId })
       .calledWith({
         interactionId,
-        conversationId: mockErrorUUID.toUpperCase(),
+        conversationId: mockErrorUUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' })
       .calledWith({
         interactionId,
-        conversationId: mockNoPatientUID.toUpperCase(),
+        conversationId: mockNoPatientUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 200, data: 'no patient details' });
@@ -121,7 +121,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .expect(() => {
         expect(logEvent).toHaveBeenCalledTimes(2);
         expect(logEvent).toHaveBeenCalledWith('200 PDS response received', {
-          conversationId: mockUUID.toUpperCase(),
+          conversationId: mockUUID,
           response: { data: message, status: 200 }
         });
       })

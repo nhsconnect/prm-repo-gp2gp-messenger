@@ -34,19 +34,19 @@ describe('POST /patient-demographics/:nhsNumber', () => {
     when(sendMessage)
       .calledWith({
         interactionId,
-        conversationId: error503MockUuid.toUpperCase(),
+        conversationId: error503MockUuid,
         message: fakerequest
       })
       .mockResolvedValue({ status: 503, data: 'MHS Error' })
       .calledWith({
         interactionId,
-        conversationId: mockUUID.toUpperCase(),
+        conversationId: mockUUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 202, data: {} })
       .calledWith({
         interactionId,
-        conversationId: mockErrorUUID.toUpperCase(),
+        conversationId: mockErrorUUID,
         message: fakerequest
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' });
@@ -81,7 +81,7 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       })
       .expect(() => {
         expect(generateUpdateOdsRequest).toHaveBeenCalledWith({
-          id: mockUUID.toUpperCase(),
+          id: mockUUID,
           timestamp: fakeDateNow,
           receivingService: { asid: 'pdsAsid' },
           sendingService: { asid: 'deductionsAsid' },

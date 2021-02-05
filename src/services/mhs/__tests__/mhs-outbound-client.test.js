@@ -12,7 +12,7 @@ jest.mock('../../../config/logging');
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging');
 
-const conversationId = uuid().toUpperCase();
+const conversationId = uuid();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const interactionId = 'QUPA_IN040000UK32';
 const url = 'http://url.com';

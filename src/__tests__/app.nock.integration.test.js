@@ -19,10 +19,10 @@ beforeAll(() => {
 describe('POST /health-record-transfers', () => {
   const ehrPath = '/conversationId/messageId';
   const currentEhrUrl = `${host}${ehrPath}`;
-  const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
+  const conversationId = '41291044-8259-4d83-ae2b-93b7bfcabe73';
   const priorEhrRequestId = uuid();
   const expectedReceivingAsid = '200000000678';
-  const ehrRequestId = '26A541CE-A5AB-4713-99A4-150EC3DA25C6';
+  const ehrRequestId = '26a541ce-a5ab-4713-99a4-150ec3da25c6';
   const mockBody = {
     data: {
       type: 'health-record-transfers',

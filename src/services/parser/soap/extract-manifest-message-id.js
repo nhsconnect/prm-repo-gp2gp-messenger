@@ -9,7 +9,8 @@ export const extractManifestAsMessageIds = async message => {
   return manifestInfo.reduce((acc, curr) => {
     const extractedId = curr.href.match(uuidPattern);
     if (extractedId) {
-      acc.push(extractedId[1]);
+      const extractedIdLowerCase = extractedId[1].toLowerCase();
+      acc.push(extractedIdLowerCase);
     } else {
       logError(`Unable to extract manifest message Id from ${manifestInfo.map(item => item.href)}`);
     }

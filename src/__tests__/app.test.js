@@ -82,7 +82,7 @@ describe('app', () => {
       uuid.mockImplementation(() => mockUUID);
       process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
       when(sendMessage)
-        .calledWith({ interactionId, conversationId: mockUUID.toUpperCase(), message: fakerequest })
+        .calledWith({ interactionId, conversationId: mockUUID, message: fakerequest })
         .mockResolvedValue({ status: 200, data: message });
 
       generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
@@ -114,7 +114,7 @@ describe('app', () => {
       when(sendMessage)
         .calledWith({
           interactionId: interactionIdUpdate,
-          conversationId: mockUUID.toUpperCase(),
+          conversationId: mockUUID,
           message: fakerequestUpdate
         })
         .mockResolvedValue({ status: 202, data: {} });
@@ -129,7 +129,7 @@ describe('app', () => {
           serialChangeNumber: '123',
           pdsId: 'cppz',
           newOdsCode: '12345',
-          conversationId: mockUUID.toUpperCase()
+          conversationId: mockUUID
         })
         .expect(204)
         .expect(res => {
@@ -149,7 +149,7 @@ describe('app', () => {
           repositoryOdsCode: 'repo_ods_code',
           repositoryAsid: 'repo_asid',
           practiceOdsCode: 'practice_ods_code',
-          conversationId: mockUUID.toUpperCase()
+          conversationId: mockUUID
         })
         .expect(204)
         .end(done);

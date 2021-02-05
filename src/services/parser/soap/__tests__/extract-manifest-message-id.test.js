@@ -14,18 +14,29 @@ describe('extractManifestAsMessageIds', () => {
     return expect(extractManifestAsMessageIds(noManifest)).resolves.toEqual([]);
   });
 
+  // FIXME: Test description doesn't match the expectation
   it('should return an empty array if passing in message with a manifest with a single reference', () => {
     return expect(extractManifestAsMessageIds(singleManifestReference)).resolves.toEqual([
-      'FE6A40B9-F4C6-4041-A306-EA2A149411CD'
+      'fe6a40b9-f4c6-4041-a306-ea2a149411cd'
     ]);
   });
 
+  it('should transform ids to lower case', () => {
+    return expect(extractManifestAsMessageIds(multipleManifestReferences)).resolves.toEqual([
+      'fe6a40b9-f4c6-4041-a306-ea2a149411cd',
+      '09d8e406-b106-4ccb-a3e3-c4ebc2f17bf8',
+      '1fee18c6-8184-4961-a848-7f13903a2acf',
+      '482cdd0c-c361-4961-99d6-acf80b2fe17d'
+    ]);
+  });
+
+  // FIXME: Test description doesn't match the expectation
   it('should return an empty array if passing in message with a manifest with a single reference', () => {
     return expect(extractManifestAsMessageIds(multipleManifestReferences)).resolves.toEqual([
-      'FE6A40B9-F4C6-4041-A306-EA2A149411CD',
-      '09D8E406-B106-4CCB-A3E3-C4EBC2F17BF8',
-      '1FEE18C6-8184-4961-A848-7F13903A2ACF',
-      '482CDD0C-C361-4961-99D6-ACF80B2FE17D'
+      'fe6a40b9-f4c6-4041-a306-ea2a149411cd',
+      '09d8e406-b106-4ccb-a3e3-c4ebc2f17bf8',
+      '1fee18c6-8184-4961-a848-7f13903a2acf',
+      '482cdd0c-c361-4961-99d6-acf80b2fe17d'
     ]);
   });
 

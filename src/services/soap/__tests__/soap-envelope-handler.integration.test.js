@@ -35,8 +35,8 @@ describe('soapEnvelopeHandler', () => {
   });
 });
 
-const conversationId = '74799658-43DF-11E3-805D-BBA66E7A9031';
-const messageId = '047C22B4-613F-47D3-9A72-44A1758464FB';
+const conversationId = '74799658-43df-11e3-805d-bba66e7a9031';
+const messageId = '047c22b4-613f-47d3-9a72-44a1758464fb';
 const action = 'COPC_IN000001UK01';
 
 const message = `<SOAP:Envelope xmlns:xsi="http://www.w3c.org/2001/XML-Schema-Instance" xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:hl7ebxml="urn:hl7-org:transport/ebxml/DSTUv1.0" xmlns:xlink="http://www.w3.org/1999/xlink">

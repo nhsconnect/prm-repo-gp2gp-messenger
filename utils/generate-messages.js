@@ -59,7 +59,7 @@ const pds = {
 console.log(dateFormat(Date.now(), 'yyyymmddHHMMss'));
 
 const advancePdsRequest = generateAdvancePdsRequest(
-  uuid().toUpperCase(),
+  uuid(),
   dateFormat(Date.now(), 'yyyymmddHHMMss'),
   patient.mhsASID,
   patient.pdsASID,
@@ -71,7 +71,7 @@ const advancePdsRequest = generateAdvancePdsRequest(
 );
 
 const gp2gpRequest = generateEhrRequestQuery({
-  id: uuid().toUpperCase(),
+  id: uuid(),
   timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
   patient: {
     nhsNumber: emisPatient.nhsNumber
@@ -87,7 +87,7 @@ const gp2gpRequest = generateEhrRequestQuery({
 });
 
 const pdsUpdateRequestToUs = generateUpdatePdsRequest({
-  id: uuid().toUpperCase(),
+  id: uuid(),
   timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
   receivingService: { asid: pds.asid },
   sendingService: { asid: mhs.asid, odsCode: mhs.odsCode },
@@ -99,7 +99,7 @@ const pdsUpdateRequestToUs = generateUpdatePdsRequest({
 });
 
 const pdsRetrevalQuery = generatePdsRetrievalQuery({
-  id: uuid().toUpperCase(),
+  id: uuid(),
   timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
   receivingService: { asid: pds.asid },
   sendingService: { asid: mhs.asid },
@@ -107,7 +107,7 @@ const pdsRetrevalQuery = generatePdsRetrievalQuery({
 });
 
 const gp2gpContinueMessage = generateContinueRequest(
-  uuid().toUpperCase(),
+  uuid(),
   dateFormat(Date.now(), 'yyyymmddHHMMss'),
   patient.receiving_asid_2,
   patient.mhsASID,

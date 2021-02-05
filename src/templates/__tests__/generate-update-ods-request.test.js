@@ -5,7 +5,7 @@ const testData = require('./testData.json');
 
 describe('generateUpdateOdsRequest', () => {
   const testObjectMissing = {
-    id: uuid().toUpperCase(),
+    id: uuid(),
     timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
     receivingService: {
       asid: testData.pds.asid
@@ -34,7 +34,7 @@ describe('generateUpdateOdsRequest', () => {
   it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {
     expect(() =>
       generateUpdateOdsRequest({
-        id: uuid().toUpperCase(),
+        id: uuid(),
         timestamp: '20200101101010',
         patient: {
           nhsNumber: testData.tppPatient.nhsNumber,

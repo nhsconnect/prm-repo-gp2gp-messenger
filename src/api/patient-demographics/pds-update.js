@@ -28,7 +28,7 @@ export const pdsUpdate = async (req, res, next) => {
   try {
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const interactionId = 'PRPA_IN000203UK03';
-    const conversationId = req.body.conversationId.toUpperCase();
+    const conversationId = req.body.conversationId;
 
     const message = await generateUpdateOdsRequest({
       id: conversationId,
