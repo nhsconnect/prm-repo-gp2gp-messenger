@@ -10,7 +10,6 @@ locals {
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_NAME", value = "raw-inbound" },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
-      { name = "GP2GP_ADAPTOR_EHR_REPO_URL", value = "https://${var.environment}.ehr-repo.patient-deductions.nhs.uk" },
       { name = "GP2GP_ADAPTOR_GP_TO_REPO_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_GP_TO_REPO_URL.value },
       { name = "GP2GP_ADAPTOR_REPO_TO_GP_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPO_TO_GP_URL.value },
       { name = "GP2GP_ADAPTOR_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_OUTBOUND_URL.value },
@@ -18,7 +17,6 @@ locals {
     ]
     secret_environment_variables = [
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },
-      { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_EHR_REPO", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys_for_ehr_repo.arn },
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO", valueFrom = data.aws_ssm_parameter.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO.arn },
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP", valueFrom = data.aws_ssm_parameter.GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP.arn },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },

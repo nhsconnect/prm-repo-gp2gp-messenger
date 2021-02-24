@@ -101,7 +101,6 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
    GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST=/
    GP2GP_ADAPTOR_MHS_QUEUE_USERNAME=
    GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD=
-   GP2GP_ADAPTOR_EHR_REPO_URL=http://ehr-repo.com
    PDS_ASID=
    GP2GP_ADAPTOR_MHS_OUTBOUND_URL=
    GP2GP_ADAPTOR_MHS_ROUTE_URL=
