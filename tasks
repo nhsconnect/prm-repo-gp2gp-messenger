@@ -37,7 +37,6 @@ function configure_local_envs {
   export GP2GP_ADAPTOR_MHS_QUEUE_NAME=gp2gp-test
   export GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST="/"
   export REPOSITORY_URI=$IMAGE_REPO_NAME
-  export NHS_ENVIRONMENT=local
   export GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO=auth-key-2
   export GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP=auth-key-4
   configure_service_url
