@@ -1,7 +1,7 @@
-import { logEvent } from '../../middleware/logging';
+import { logInfo } from '../../middleware/logging';
 
 export function getHealthCheck() {
-  logEvent('Starting health check');
+  logInfo('Starting health check');
 
   return Promise.resolve().then(() => {
     return {

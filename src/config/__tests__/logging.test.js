@@ -121,6 +121,7 @@ describe('logging', () => {
     it('should replace secret values with obfuscated value', () => {
       const formatter = options.format;
       const result = formatter.transform({
+        level: 'INFO',
         message: `some-message`,
         data: 'secret-payload',
         error: {

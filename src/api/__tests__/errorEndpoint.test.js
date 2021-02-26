@@ -16,7 +16,7 @@ describe('GET /error', () => {
       .end(done);
   });
 
-  it('should log event with error', done => {
+  it('should log error', done => {
     request(app)
       .get('/error')
       .expect(201)

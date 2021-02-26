@@ -2,7 +2,7 @@ import { when } from 'jest-when';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import app from '../../../app';
-import { logEvent, logError } from '../../../middleware/logging';
+import { logInfo, logError } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { handlePdsResponse } from '../../../services/pds';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
@@ -119,8 +119,8 @@ describe('/patient-demographics/:nhsNumber', () => {
       .get('/patient-demographics/9999999999')
       .expect(200)
       .expect(() => {
-        expect(logEvent).toHaveBeenCalledTimes(2);
-        expect(logEvent).toHaveBeenCalledWith('200 PDS response received', {
+        expect(logInfo).toHaveBeenCalledTimes(3);
+        expect(logInfo).toHaveBeenCalledWith('200 PDS response received', {
           conversationId: mockUUID,
           response: { data: message, status: 200 }
         });

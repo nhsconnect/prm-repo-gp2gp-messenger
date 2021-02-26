@@ -1,5 +1,5 @@
 import express from 'express';
-import { logEvent } from '../middleware/logging';
+import { logInfo } from '../middleware/logging';
 import { getHealthCheck } from '../services/health-check/get-health-check';
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // eslint-disable-next-line no-unused-vars
 router.get('/', (req, res, next) => {
   getHealthCheck().then(status => {
-    logEvent('Health check successful');
+    logInfo('Health check successful');
     res.status(200).send(status);
   });
 });

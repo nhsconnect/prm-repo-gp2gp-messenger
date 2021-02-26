@@ -2,7 +2,7 @@ import { param, body } from 'express-validator';
 import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { logEvent } from '../../middleware/logging';
+import { logInfo } from '../../middleware/logging';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 
 export const healthRecordRequestValidation = [
@@ -32,7 +32,7 @@ export const healthRecordRequests = async (req, res) => {
       message
     });
     res.sendStatus(204);
-    logEvent('EHR Request sent', { conversationId });
+    logInfo('EHR Request sent', { conversationId });
   } catch (err) {
     res.status(503).send({ errors: ['Sending EHR Request has failed', err.message] });
   }

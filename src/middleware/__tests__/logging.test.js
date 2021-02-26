@@ -1,12 +1,12 @@
-import { eventFinished, logError, logEvent } from '../logging';
+import { eventFinished, logError, logInfo } from '../logging';
 import { logger } from '../../config/logging';
 
 jest.mock('../../config/logging');
 
 describe('logging', () => {
-  describe('logEvent', () => {
+  describe('logInfo', () => {
     it('should log with level info', () => {
-      logEvent('info');
+      logInfo('info');
 
       expect(logger.info).toBeCalledTimes(1);
     });
@@ -34,7 +34,7 @@ describe('logging', () => {
       };
 
       eventFinished(mockReq, mockRes);
-      expect(logger.info).toHaveBeenCalledWith(mockReq.originalUrl, expect.anything());
+      expect(logger.info).toHaveBeenCalledWith(mockReq.originalUrl);
     });
 
     it('should log with level info if status code is successful', () => {

@@ -1,6 +1,6 @@
 import nock from 'nock';
 import { retrieveEhrFromRepo } from '../retrieve-ehr-from-repo';
-import { logError, logEvent } from '../../../middleware/logging';
+import { logError, logInfo } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 
@@ -15,7 +15,7 @@ describe('retrieveEhrFromRepo', () => {
     const ehrExtract = await retrieveEhrFromRepo(ehrUrl);
 
     expect(ehrExtract).toEqual(expectedEhrExtract);
-    expect(logEvent).toHaveBeenCalledWith('Successfully retrieved EHR from repo');
+    expect(logInfo).toHaveBeenCalledWith('Successfully retrieved EHR from repo');
   });
 
   it('should log and throw error when axios returns 503', async () => {
