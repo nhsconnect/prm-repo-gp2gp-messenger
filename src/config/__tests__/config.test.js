@@ -3,14 +3,14 @@ import { initializeConfig } from '../';
 const originalEnv = process.env;
 
 describe('config', () => {
-  describe('NODE_ENV', () => {
+  describe('NHS_ENVIRONMENT', () => {
     afterEach(() => {
-      process.env.NODE_ENV = originalEnv.NODE_ENV;
+      process.env.NHS_ENVIRONMENT = originalEnv.NHS_ENVIRONMENT;
     });
 
-    it('should get NODE_ENV = local when environment variable not defined', () => {
-      if (process.env.NODE_ENV) delete process.env.NODE_ENV;
-      expect(initializeConfig().nodeEnv).toEqual('local');
+    it('should get NHS_ENVIRONMENT = local when environment variable not defined', () => {
+      if (process.env.NHS_ENVIRONMENT) delete process.env.NHS_ENVIRONMENT;
+      expect(initializeConfig().nhsEnvironment).toEqual('local');
     });
   });
 
@@ -71,7 +71,7 @@ describe('config', () => {
         process.env.PDS_ASID = 'pdsAsid';
         process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
         process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'mhsRouteUrl';
-        process.env.NODE_ENV = 'nodeEnv';
+        process.env.NHS_ENVIRONMENT = 'nhsEnvironment';
         process.env.SERVICE_URL = 'url';
 
         expect(initializeConfig()).toEqual(
@@ -86,7 +86,7 @@ describe('config', () => {
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
             mhsRouteUrl: 'mhsRouteUrl',
-            nodeEnv: 'nodeEnv'
+            nhsEnvironment: 'nhsEnvironment'
           })
         );
       });

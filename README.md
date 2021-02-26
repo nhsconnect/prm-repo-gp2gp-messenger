@@ -87,14 +87,14 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
 2. Create a .env file at the root of the directory
 4. If you would like to run locally, following the steps below, otherwise fill in the required fields.
    - Note: The `GP2GP_ADAPTOR_AUTHORIZATION_KEYS` should be a string.
-5. The app will use a fake MHS when `NODE_ENV` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
+5. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
 
    ```
    GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
    GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST="/"
    GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
    GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
-   NODE_ENV=local
+   NHS_ENVIRONMENT=local
    GP2GP_ADAPTOR_MHS_QUEUE_NAME=gp2gp-test
    GP2GP_ADAPTOR_MHS_QUEUE_URL_1=tcp://localhost:61610
    GP2GP_ADAPTOR_MHS_QUEUE_URL_2=tcp://localhost:61613

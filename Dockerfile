@@ -16,7 +16,7 @@ COPY run-server.sh /usr/bin/run-gp2gp-server
 
 ENV GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid \
   GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods \
-  NODE_ENV=local \
+  NHS_ENVIRONMENT=local \
   GP2GP_ADAPTOR_MHS_OUTBOUND_URL="" \
   GP2GP_ADAPTOR_MHS_ROUTE_URL="" \
   GP2GP_ADAPTOR_AUTHORIZATION_KEYS="auth-key-1"
