@@ -174,7 +174,7 @@ describe('POST /health-record-requests/send-continue-message', () => {
   it('should successfully send continue message and return 204', async () => {
     const mhsOutboundHeaders = {
       'Content-Type': 'application/json',
-      'Interaction-ID': 'MCCI_IN010000UK13',
+      'Interaction-ID': interactionId,
       'Correlation-ID': conversationId,
       'Sync-Async': false,
       'Ods-Code': odsCode,
