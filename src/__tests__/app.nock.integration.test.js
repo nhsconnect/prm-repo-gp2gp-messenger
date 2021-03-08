@@ -159,7 +159,7 @@ describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
   });
 });
 
-describe('POST /health-record-requests/send-continue-message', () => {
+describe('POST /health-record-requests/continue-message', () => {
   const practiceAsid = '200007389';
   const interactionId = 'COPC_IN000001UK01';
   const conversationId = uuid();
@@ -188,7 +188,7 @@ describe('POST /health-record-requests/send-continue-message', () => {
     const mhsOutboundScope = nock(host, mhsOutboundHeaders).post('/mhs-outbound').reply(204);
 
     const res = await request(app)
-      .post('/health-record-requests/send-continue-message')
+      .post('/health-record-requests/continue-message')
       .set('Authorization', authKey)
       .send(body);
 

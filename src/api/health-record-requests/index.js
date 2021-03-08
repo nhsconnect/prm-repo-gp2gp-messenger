@@ -11,7 +11,7 @@ import { continueMessageValidation, sendContinueMessage } from './send-continue-
 const healthRecordRequestRouter = express.Router();
 
 healthRecordRequestRouter.post(
-  '/send-continue-message',
+  '/continue-message',
   authenticateRequest,
   continueMessageValidation,
   validate,

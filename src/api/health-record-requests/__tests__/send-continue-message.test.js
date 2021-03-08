@@ -46,7 +46,7 @@ describe('sendContinueMessage', () => {
       getPracticeAsid.mockResolvedValue(gpReceivingAsid);
       generateContinueRequest.mockReturnValueOnce(message);
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send(body)
         .set('Authorization', authorizationKeys);
 
@@ -67,7 +67,7 @@ describe('sendContinueMessage', () => {
     it('should return a 503 if cannot get practice asid', async () => {
       getPracticeAsid.mockRejectedValueOnce({});
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send(body)
         .set('Authorization', authorizationKeys);
 
@@ -81,7 +81,7 @@ describe('sendContinueMessage', () => {
       sendMessage.mockRejectedValueOnce({});
 
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send(body)
         .set('Authorization', authorizationKeys);
 
@@ -96,7 +96,7 @@ describe('sendContinueMessage', () => {
       const errorMessage = [{ conversationId: "'conversationId' provided is not of type UUID" }];
 
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send({ conversationId: invalidConversationId, odsCode, ehrExtractMessageId })
         .set('Authorization', authorizationKeys);
 
@@ -110,7 +110,7 @@ describe('sendContinueMessage', () => {
       const errorMessage = [{ odsCode: "'odsCode' has not been provided" }];
 
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send({ conversationId, ehrExtractMessageId })
         .set('Authorization', authorizationKeys);
 
@@ -127,7 +127,7 @@ describe('sendContinueMessage', () => {
       ];
 
       const res = await request(app)
-        .post('/health-record-requests/send-continue-message')
+        .post('/health-record-requests/continue-message')
         .send({ conversationId, odsCode, ehrExtractMessageId: invalidEhrExtractMessageId })
         .set('Authorization', authorizationKeys);
 
