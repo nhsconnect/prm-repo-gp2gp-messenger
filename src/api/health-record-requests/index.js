@@ -6,8 +6,17 @@ import {
   sendEhrAcknowledgement,
   acknowledgementValidation
 } from './send-ehr-acknowledgement-controller';
+import { continueMessageValidation, sendContinueMessage } from './send-continue-message';
 
 const healthRecordRequestRouter = express.Router();
+
+healthRecordRequestRouter.post(
+  '/send-continue-message',
+  authenticateRequest,
+  continueMessageValidation,
+  validate,
+  sendContinueMessage
+);
 
 healthRecordRequestRouter.post(
   '/:nhsNumber',

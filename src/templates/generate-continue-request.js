@@ -1,10 +1,17 @@
-export const generateContinueRequest = (
-  id,
-  timestamp,
+import dateFormat from 'dateformat';
+
+export const generateContinueRequest = ({
+  messageId,
   receivingAsid,
   sendingAsid,
-  ehrId
-) => `<COPC_IN000001UK01 xmlns="urn:hl7-org:v3">
+  ehrExtractMessageId
+}) => {
+  const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+  return continueRequest({ messageId, timestamp, receivingAsid, sendingAsid, ehrExtractMessageId });
+};
+
+const continueRequest = ({ id, timestamp, receivingAsid, sendingAsid, ehrExtractMessageId }) =>
+  `<COPC_IN000001UK01 xmlns="urn:hl7-org:v3">
     <id root="${id}"/>
     <creationTime value="${timestamp}"/>
     <versionCode code="V3NPfIT3.0"/>
@@ -67,7 +74,7 @@ export const generateContinueRequest = (
                                             <code code="0" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101" displayName="Continue"/>
                                         </acknowledgementDetail>
                                         <messageRef>
-                                            <id root="${ehrId}"/>
+                                            <id root="${ehrExtractMessageId}"/>
                                         </messageRef>
                                     </acknowledgement>
                                     <communicationFunctionRcv typeCode="RCV">
@@ -82,7 +89,7 @@ export const generateContinueRequest = (
                                     </communicationFunctionSnd>
                                 </Message>
                                 <acknowledgedMessage>
-                                    <id root="${ehrId}"/>
+                                    <id root="${ehrExtractMessageId}"/>
                                 </acknowledgedMessage>
                             </Gp2gpfragment>
                         </value>

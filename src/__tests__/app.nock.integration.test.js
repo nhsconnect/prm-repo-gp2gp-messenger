@@ -158,3 +158,42 @@ describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
       .end(done);
   });
 });
+
+describe('POST /health-record-requests/send-continue-message', () => {
+  const practiceAsid = '200007389';
+  const interactionId = 'COPC_IN000001UK01';
+  const conversationId = uuid();
+  const odsCode = 'B12345';
+  const ehrExtractMessageId = uuid();
+  const body = {
+    conversationId,
+    odsCode,
+    ehrExtractMessageId
+  };
+
+  it('should successfully send continue message and return 204', async () => {
+    const mhsOutboundHeaders = {
+      'Content-Type': 'application/json',
+      'Interaction-ID': 'MCCI_IN010000UK13',
+      'Correlation-ID': conversationId,
+      'Sync-Async': false,
+      'Ods-Code': odsCode,
+      'from-asid': '200000001161'
+    };
+
+    const mhsRouteScope = nock(`${host}/mhs-route`)
+      .get(`/routing?org-code=${odsCode}&service-id=urn:nhs:names:services:gp2gp:${interactionId}`)
+      .reply(200, { uniqueIdentifier: [practiceAsid] });
+
+    const mhsOutboundScope = nock(host, mhsOutboundHeaders).post('/mhs-outbound').reply(204);
+
+    const res = await request(app)
+      .post('/health-record-requests/send-continue-message')
+      .set('Authorization', authKey)
+      .send(body);
+
+    expect(res.status).toEqual(204);
+    expect(mhsRouteScope.isDone()).toBe(true);
+    expect(mhsOutboundScope.isDone()).toBe(true);
+  });
+});

@@ -3,7 +3,7 @@ const dateFormat = require('dateformat');
 const generateEhrRequestQuery = require('../src/templates/ehr-request-template');
 const generateUpdatePdsRequest = require('../src/templates/generate-update-ods-request');
 const generatePdsRetrievalQuery = require('../src/templates/pds-retrieval-template');
-const generateContinueRequest = require('../src/templates/continue-template');
+const generateContinueRequest = require('../src/templates/generate-continue-request');
 
 // receiving_asid_2: '200000000631',
 const emisPatient = {

@@ -109,6 +109,44 @@
         ]
       }
     },
+    "/health-record-requests/send-continue-message": {
+      "post": {
+        "tags": ["health-record-requests"],
+        "summary": "Sends continue messages for large health records",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Request Body",
+            "schema": {
+              "$ref": "#/definitions/Continue"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully acknowledged"
+          },
+          "401": {
+            "description": "Authorization header missing"
+          },
+          "403": {
+            "description": "Authorization key invalid"
+          },
+          "422": {
+            "description": "Validation failed",
+            "schema": {
+              "$ref": "#/definitions/ValidationErrors"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/health-record-transfers": {
       "post": {
         "tags": ["health-record-transfers"],
@@ -376,6 +414,30 @@
       "description": "Sends EHR acknowledgement",
       "properties": {
         "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "odsCode": {
+          "type": "string"
+        },
+        "repositoryAsid": {
+          "type": "string"
+        }
+      }
+    },
+    "Continue": {
+      "type": "string",
+      "description": "Sends Continue Message",
+      "properties": {
+        "conversationId": {
+          "type": "string"
+        },
+        "odsCode": {
+          "type": "string"
+        },
+        "ehrExtractMessageId": {
           "type": "string"
         }
       }
