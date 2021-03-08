@@ -62,12 +62,6 @@ describe('config', () => {
       it('should map config with process.env values if set', () => {
         process.env.GP2GP_ADAPTOR_REPOSITORY_ASID = 'deductionsAsid';
         process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE = 'deductionsOdsCode';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_NAME = 'queueName';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_1 = 'queueUrl1';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_URL_2 = 'queueUrl2';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_VIRTUAL_HOST = 'queueVirtualHost';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_USERNAME = 'queueUsername';
-        process.env.GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD = 'queuePassword';
         process.env.PDS_ASID = 'pdsAsid';
         process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
         process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'mhsRouteUrl';
@@ -78,11 +72,6 @@ describe('config', () => {
           expect.objectContaining({
             deductionsAsid: 'deductionsAsid',
             deductionsOdsCode: 'deductionsOdsCode',
-            queueName: 'queueName',
-            queueUrls: ['queueUrl1', 'queueUrl2'],
-            queueVirtualHost: 'queueVirtualHost',
-            queueUsername: 'queueUsername',
-            queuePassword: 'queuePassword',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
             mhsRouteUrl: 'mhsRouteUrl',

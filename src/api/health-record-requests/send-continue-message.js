@@ -33,7 +33,7 @@ export const sendContinueMessage = async (req, res) => {
     logInfo('Continue message sent to MHS');
     res.sendStatus(204);
   } catch (err) {
-    logError('Could not send continue message');
+    logError('Could not send continue message', err);
     res.sendStatus(503);
   }
 };

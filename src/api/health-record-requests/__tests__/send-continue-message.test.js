@@ -72,7 +72,7 @@ describe('sendContinueMessage', () => {
         .set('Authorization', authorizationKeys);
 
       expect(res.status).toEqual(503);
-      expect(logError).toHaveBeenCalledWith('Could not send continue message');
+      expect(logError).toHaveBeenCalledWith('Could not send continue message', {});
     });
 
     it('should return a 503 when continue message cannot be sent', async () => {
@@ -86,7 +86,7 @@ describe('sendContinueMessage', () => {
         .set('Authorization', authorizationKeys);
 
       expect(res.status).toEqual(503);
-      expect(logError).toHaveBeenCalledWith('Could not send continue message');
+      expect(logError).toHaveBeenCalledWith('Could not send continue message', {});
     });
   });
 
