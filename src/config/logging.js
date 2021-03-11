@@ -1,3 +1,4 @@
+import { getSpan, context } from '@opentelemetry/api';
 import { createLogger, format, transports } from 'winston';
 import traverse from 'traverse';
 import cloneDeep from 'lodash.clonedeep';
@@ -17,6 +18,10 @@ export const addCommonFields = format(info => {
   const { nhsEnvironment } = initializeConfig();
   const updated = cloneDeep(info);
   updated.level = updated.level.toUpperCase();
+  const currentSpan = getSpan(context.active());
+  if (currentSpan) {
+    updated['traceId'] = currentSpan.context().traceId;
+  }
   updated['service'] = 'gp2gp-adaptor';
   updated['environment'] = nhsEnvironment;
   return updated;
