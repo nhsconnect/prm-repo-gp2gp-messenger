@@ -1,4 +1,3 @@
-import httpContext from 'async-local-storage';
 import express from 'express';
 import { errorLogger, logger as requestLogger } from 'express-winston';
 import swaggerUi from 'swagger-ui-express';
@@ -10,8 +9,6 @@ import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
-
-httpContext.enable();
 
 const app = express();
 
