@@ -25,9 +25,10 @@ describe('sendContinueMessage', () => {
   const interactionId = 'COPC_IN000001UK01';
   const gpReceivingAsid = '20000000678';
   const message = 'fake-continue-message';
-  const conversationId = uuid();
+  const conversationId = uuid().toUpperCase();
   const odsCode = 'B12345';
-  const ehrExtractMessageId = uuid();
+  const ehrExtractMessageId = uuid().toUpperCase();
+  const messageId = uuid().toUpperCase();
   const body = {
     conversationId,
     odsCode,
@@ -36,10 +37,11 @@ describe('sendContinueMessage', () => {
 
   describe('success', () => {
     const generateContinueRequestInputValues = {
-      messageId: uuid(),
+      messageId,
       receivingAsid: gpReceivingAsid,
       sendingAsid: deductionsAsid,
-      ehrExtractMessageId
+      ehrExtractMessageId,
+      gpOdsCode: odsCode
     };
 
     it('should return a 204 when continue message has been created and sent', async () => {
@@ -57,7 +59,8 @@ describe('sendContinueMessage', () => {
         interactionId,
         conversationId,
         odsCode,
-        message
+        message,
+        messageId
       });
       expect(logInfo).toHaveBeenCalledWith('Continue message sent to MHS');
     });

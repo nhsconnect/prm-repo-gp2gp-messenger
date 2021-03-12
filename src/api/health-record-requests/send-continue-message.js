@@ -16,7 +16,7 @@ export const continueMessageValidation = [
 
 export const sendContinueMessage = async (req, res) => {
   const config = initializeConfig();
-  const messageId = uuid();
+  const messageId = uuid().toUpperCase();
   const interactionId = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const { conversationId, odsCode, ehrExtractMessageId } = req.body;
@@ -27,9 +27,17 @@ export const sendContinueMessage = async (req, res) => {
       messageId,
       receivingAsid: practiceAsid,
       sendingAsid: config.deductionsAsid,
-      ehrExtractMessageId
+      ehrExtractMessageId: ehrExtractMessageId.toUpperCase(),
+      gpOdsCode: odsCode
     });
-    await sendMessage({ interactionId, conversationId, odsCode, message });
+
+    await sendMessage({
+      interactionId,
+      conversationId: conversationId.toUpperCase(),
+      odsCode,
+      message,
+      messageId
+    });
     logInfo('Continue message sent to MHS');
     res.sendStatus(204);
   } catch (err) {

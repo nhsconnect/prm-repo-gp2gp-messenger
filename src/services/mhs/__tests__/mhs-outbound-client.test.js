@@ -105,6 +105,26 @@ describe('mhs-outbound-client', () => {
     done();
   });
 
+  it('should use null for messageId by default, not pass it in headers, and return 200', async done => {
+    const response = await sendMessage({ interactionId, conversationId, message });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(url, axiosBody, axiosHeaders);
+    done();
+  });
+
+  it('should call axios with specified messageId if passed in and return 200', async done => {
+    const messageId = uuid().toUpperCase();
+    const response = await sendMessage({ interactionId, conversationId, message, messageId });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(url, axiosBody, {
+      headers: {
+        ...axiosHeaders.headers,
+        'Message-Id': messageId
+      }
+    });
+    done();
+  });
+
   it('should stringify and escape the payload (xml message)', async done => {
     const pdsRetrievalQuery = await generatePdsRetrievalQuery({
       id: conversationId,

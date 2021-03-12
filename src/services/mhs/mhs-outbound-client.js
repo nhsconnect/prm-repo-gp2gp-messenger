@@ -22,7 +22,13 @@ export const stripXMLMessage = xml =>
     .replace(/\r?\n|\r/g, '')
     .replace(/>\s+</g, '><');
 
-export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message } = {}) => {
+export const sendMessage = ({
+  interactionId,
+  conversationId,
+  odsCode = 'YES',
+  message,
+  messageId = null
+} = {}) => {
   const config = initializeConfig();
 
   return new Promise((resolve, reject) => {
@@ -31,7 +37,7 @@ export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', me
       payload: stripXMLMessage(message)
     };
 
-    const axiosHeaders = {
+    const headers = {
       headers: {
         'Content-Type': 'application/json',
         'Interaction-ID': interactionId,
@@ -41,6 +47,10 @@ export const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', me
         'from-asid': config.deductionsAsid
       }
     };
+
+    const axiosHeaders = !messageId
+      ? headers
+      : { headers: { ...headers.headers, 'Message-Id': messageId } };
 
     const url = config.mhsOutboundUrl;
 
