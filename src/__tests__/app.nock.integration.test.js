@@ -163,11 +163,11 @@ describe('POST /health-record-requests/continue-message', () => {
   const practiceAsid = '200007389';
   const interactionId = 'COPC_IN000001UK01';
   const conversationId = uuid();
-  const odsCode = 'B12345';
+  const gpOdsCode = 'B12345';
   const ehrExtractMessageId = uuid();
   const body = {
     conversationId,
-    odsCode,
+    gpOdsCode,
     ehrExtractMessageId
   };
 
@@ -177,12 +177,14 @@ describe('POST /health-record-requests/continue-message', () => {
       'Interaction-ID': interactionId,
       'Correlation-ID': conversationId,
       'Sync-Async': false,
-      'Ods-Code': odsCode,
+      'Ods-Code': gpOdsCode,
       'from-asid': '200000001161'
     };
 
     const mhsRouteScope = nock(`${host}/mhs-route`)
-      .get(`/routing?org-code=${odsCode}&service-id=urn:nhs:names:services:gp2gp:${interactionId}`)
+      .get(
+        `/routing?org-code=${gpOdsCode}&service-id=urn:nhs:names:services:gp2gp:${interactionId}`
+      )
       .reply(200, { uniqueIdentifier: [practiceAsid] });
 
     const mhsOutboundScope = nock(host, mhsOutboundHeaders).post('/mhs-outbound').reply(204);

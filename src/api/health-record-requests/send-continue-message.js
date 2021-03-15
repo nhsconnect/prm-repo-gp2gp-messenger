@@ -8,7 +8,7 @@ import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 
 export const continueMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),
-  body('odsCode').notEmpty().withMessage("'odsCode' has not been provided"),
+  body('gpOdsCode').notEmpty().withMessage("'gpOdsCode' has not been provided"),
   body('ehrExtractMessageId')
     .isUUID()
     .withMessage("'ehrExtractMessageId' provided is not of type UUID")
@@ -19,22 +19,22 @@ export const sendContinueMessage = async (req, res) => {
   const messageId = uuid().toUpperCase();
   const interactionId = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-  const { conversationId, odsCode, ehrExtractMessageId } = req.body;
+  const { conversationId, gpOdsCode, ehrExtractMessageId } = req.body;
 
   try {
-    const practiceAsid = await getPracticeAsid(odsCode, serviceId);
+    const practiceAsid = await getPracticeAsid(gpOdsCode, serviceId);
     const message = await generateContinueRequest({
       messageId,
       receivingAsid: practiceAsid,
       sendingAsid: config.deductionsAsid,
       ehrExtractMessageId: ehrExtractMessageId.toUpperCase(),
-      gpOdsCode: odsCode
+      gpOdsCode
     });
 
     await sendMessage({
       interactionId,
       conversationId: conversationId.toUpperCase(),
-      odsCode,
+      odsCode: gpOdsCode,
       message,
       messageId
     });

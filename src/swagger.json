@@ -434,7 +434,7 @@
         "conversationId": {
           "type": "string"
         },
-        "odsCode": {
+        "gpOdsCode": {
           "type": "string"
         },
         "ehrExtractMessageId": {

@@ -26,12 +26,12 @@ describe('sendContinueMessage', () => {
   const gpReceivingAsid = '20000000678';
   const message = 'fake-continue-message';
   const conversationId = uuid().toUpperCase();
-  const odsCode = 'B12345';
+  const gpOdsCode = 'B12345';
   const ehrExtractMessageId = uuid().toUpperCase();
   const messageId = uuid().toUpperCase();
   const body = {
     conversationId,
-    odsCode,
+    gpOdsCode,
     ehrExtractMessageId
   };
 
@@ -41,7 +41,7 @@ describe('sendContinueMessage', () => {
       receivingAsid: gpReceivingAsid,
       sendingAsid: deductionsAsid,
       ehrExtractMessageId,
-      gpOdsCode: odsCode
+      gpOdsCode
     };
 
     it('should return a 204 when continue message has been created and sent', async () => {
@@ -53,12 +53,12 @@ describe('sendContinueMessage', () => {
         .set('Authorization', authorizationKeys);
 
       expect(res.status).toEqual(204);
-      expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
+      expect(getPracticeAsid).toHaveBeenCalledWith(gpOdsCode, serviceId);
       expect(generateContinueRequest).toHaveBeenCalledWith(generateContinueRequestInputValues);
       expect(sendMessage).toHaveBeenCalledWith({
         interactionId,
         conversationId,
-        odsCode,
+        odsCode: gpOdsCode,
         message,
         messageId
       });
@@ -100,7 +100,7 @@ describe('sendContinueMessage', () => {
 
       const res = await request(app)
         .post('/health-record-requests/continue-message')
-        .send({ conversationId: invalidConversationId, odsCode, ehrExtractMessageId })
+        .send({ conversationId: invalidConversationId, gpOdsCode, ehrExtractMessageId })
         .set('Authorization', authorizationKeys);
 
       expect(res.status).toEqual(422);
@@ -109,8 +109,8 @@ describe('sendContinueMessage', () => {
       });
     });
 
-    it('should return an error if odsCode is not valid', async () => {
-      const errorMessage = [{ odsCode: "'odsCode' has not been provided" }];
+    it('should return an error if gpOdsCode is not valid', async () => {
+      const errorMessage = [{ gpOdsCode: "'gpOdsCode' has not been provided" }];
 
       const res = await request(app)
         .post('/health-record-requests/continue-message')
@@ -131,7 +131,7 @@ describe('sendContinueMessage', () => {
 
       const res = await request(app)
         .post('/health-record-requests/continue-message')
-        .send({ conversationId, odsCode, ehrExtractMessageId: invalidEhrExtractMessageId })
+        .send({ conversationId, gpOdsCode, ehrExtractMessageId: invalidEhrExtractMessageId })
         .set('Authorization', authorizationKeys);
 
       expect(res.status).toEqual(422);
