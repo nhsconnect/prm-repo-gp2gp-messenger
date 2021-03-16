@@ -3,11 +3,9 @@ import { HttpTraceContext } from '@opentelemetry/core';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { NodeTracerProvider } from '@opentelemetry/node';
-import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/tracing';
 
 const tracerProvider = new NodeTracerProvider({});
 
-tracerProvider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
 propagation.setGlobalPropagator(new HttpTraceContext());
 
 tracerProvider.register();
