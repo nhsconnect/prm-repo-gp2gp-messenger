@@ -4,6 +4,7 @@ import { initializeConfig } from '../../config';
 import { logInfo, logError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const pdsUpdateValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -29,6 +30,7 @@ export const pdsUpdate = async (req, res, next) => {
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const interactionId = 'PRPA_IN000203UK03';
     const conversationId = req.body.conversationId;
+    setCurrentSpanAttributes({ conversationId });
 
     const message = await generateUpdateOdsRequest({
       id: conversationId,

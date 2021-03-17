@@ -5,6 +5,7 @@ import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 import { logError, logInfo } from '../../middleware/logging';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const healthRecordTransferValidation = [
   body('data.type')
@@ -25,6 +26,7 @@ export const healthRecordTransfers = async (req, res) => {
   } = data;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
+  setCurrentSpanAttributes({ conversationId });
 
   try {
     const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);

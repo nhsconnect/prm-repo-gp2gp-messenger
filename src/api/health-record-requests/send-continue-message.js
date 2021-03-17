@@ -5,6 +5,7 @@ import { logError, logInfo } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/generate-continue-request';
 import { initializeConfig } from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const continueMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),
@@ -20,6 +21,7 @@ export const sendContinueMessage = async (req, res) => {
   const interactionId = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const { conversationId, gpOdsCode, ehrExtractMessageId } = req.body;
+  setCurrentSpanAttributes({ messageId, conversationId });
 
   try {
     const practiceAsid = await getPracticeAsid(gpOdsCode, serviceId);

@@ -29,11 +29,14 @@ export const logDebug = status => {
 let span;
 export const middleware = (req, res, next) => {
   span = tracer.startSpan('inboundRequestSpan', context.active());
-  res.on('finish', () => eventFinished(req, res));
   context.with(setSpan(context.active(), span), () => {
     next();
   });
-  span.end();
+
+  res.on('finish', () => {
+    eventFinished(req, res);
+    span.end();
+  });
 };
 
 export const eventFinished = (req, res) => {

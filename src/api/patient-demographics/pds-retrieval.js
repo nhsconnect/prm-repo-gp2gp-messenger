@@ -6,6 +6,7 @@ import { logInfo, logError } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { PDSRetrievalQueryResponse } from '../../services/pds';
 import generatePdsRetrievalQuery from '../../templates/generate-pds-retrieval-request';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const pdsRetrievalValidation = [
   param('nhsNumber').isNumeric().withMessage("'nhsNumber' provided is not numeric"),
@@ -20,6 +21,7 @@ export const pdsRetrieval = async (req, res, next) => {
   const conversationId = uuid();
   const responseBody = { conversationId, data: {}, errors: [] };
   const config = initializeConfig();
+  setCurrentSpanAttributes({ conversationId });
 
   try {
     const message = await generatePdsRetrievalQuery({

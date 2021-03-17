@@ -3,6 +3,7 @@ import { buildEhrAcknowledgement } from '../../templates/generate-ehr-acknowledg
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logError } from '../../middleware/logging';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const acknowledgementValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -23,6 +24,8 @@ export const sendEhrAcknowledgement = async (req, res) => {
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
     const { messageId, conversationId, odsCode, repositoryAsid } = req.body;
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
+    setCurrentSpanAttributes({ conversationId, messageId });
+
     const message = await buildEhrAcknowledgement({
       conversationId,
       receivingAsid: practiceAsid,

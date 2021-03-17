@@ -17,11 +17,14 @@ export const obfuscateSecrets = format(info => {
 export const addCommonFields = format(info => {
   const { nhsEnvironment } = initializeConfig();
   const updated = cloneDeep(info);
-  updated.level = updated.level.toUpperCase();
   const currentSpan = getSpan(context.active());
   if (currentSpan) {
     updated['traceId'] = currentSpan.context().traceId;
+    updated['conversationId'] = currentSpan.attributes.conversationId;
+    updated['messageId'] = currentSpan.attributes.messageId;
   }
+
+  updated.level = updated.level.toUpperCase();
   updated['service'] = 'gp2gp-adaptor';
   updated['environment'] = nhsEnvironment;
   return updated;

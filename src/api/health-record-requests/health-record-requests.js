@@ -4,6 +4,7 @@ import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo } from '../../middleware/logging';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
+import { setCurrentSpanAttributes } from '../../config/tracing';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -21,6 +22,8 @@ export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const conversationId = req.body.conversationId;
+  setCurrentSpanAttributes({ conversationId });
+
   try {
     const asid = await getPracticeAsid(req.body.practiceOdsCode, serviceId);
     const message = await buildEhrRequest(req, conversationId, asid);
