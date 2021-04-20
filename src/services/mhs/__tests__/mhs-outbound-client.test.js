@@ -113,7 +113,7 @@ describe('mhs-outbound-client', () => {
       headers: {
         ...axiosHeaders.headers,
         'Interaction-ID': interactionId,
-        'wait-for-response': true
+        'wait-for-response': false
       }
     });
     done();

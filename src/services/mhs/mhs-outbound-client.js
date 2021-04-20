@@ -33,8 +33,6 @@ export const sendMessage = ({
 
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, message });
-    const pdsUpdateInteractionId = 'PRPA_IN000203UK03';
-    const waitForResponse = interactionId === pdsUpdateInteractionId;
     const axiosBody = {
       payload: stripXMLMessage(message)
     };
@@ -46,7 +44,7 @@ export const sendMessage = ({
         'Correlation-Id': conversationId,
         'Ods-Code': odsCode,
         'from-asid': config.deductionsAsid,
-        'wait-for-response': waitForResponse
+        'wait-for-response': false
       }
     };
 
