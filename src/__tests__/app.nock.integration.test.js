@@ -58,10 +58,10 @@ ${ehrExtract}
     const mhsOutboundHeaders = {
       'Content-Type': 'application/json',
       'Interaction-ID': 'RCMR_IN030000UK06',
-      'Sync-Async': false,
       'Correlation-Id': conversationId,
       'Ods-Code': odsCode,
-      'from-asid': '200000001161'
+      'from-asid': '200000001161',
+      'wait-for-response': false
     };
 
     const mhsRouteScope = nock(`${host}/mhs-route`)
@@ -91,9 +91,9 @@ describe('GET /patient-demographics', () => {
     const mhsOutboundHeaders = {
       'Content-Type': 'application/json',
       'Interaction-ID': 'QUPA_IN000008UK02',
-      'Sync-Async': false,
       'Ods-Code': 'YES',
-      'from-asid': '200000001161'
+      'from-asid': '200000001161',
+      'wait-for-response': false
     };
 
     const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
@@ -135,9 +135,9 @@ describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
       'Content-Type': 'application/json',
       'Interaction-ID': 'MCCI_IN010000UK13',
       'Correlation-ID': conversationId,
-      'Sync-Async': false,
       'Ods-Code': odsCode,
-      'from-asid': '200000001161'
+      'from-asid': '200000001161',
+      'wait-for-response': false
     };
 
     const mhsRouteScope = nock(`${host}/mhs-route`)
@@ -176,9 +176,9 @@ describe('POST /health-record-requests/continue-message', () => {
       'Content-Type': 'application/json',
       'Interaction-ID': interactionId,
       'Correlation-ID': conversationId,
-      'Sync-Async': false,
       'Ods-Code': gpOdsCode,
-      'from-asid': '200000001161'
+      'from-asid': '200000001161',
+      'wait-for-response': false
     };
 
     const mhsRouteScope = nock(`${host}/mhs-route`)

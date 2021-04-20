@@ -14,7 +14,7 @@ jest.mock('../../../middleware/logging');
 
 const conversationId = uuid();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-const interactionId = 'QUPA_IN040000UK32';
+const interactionId = 'RCMR_IN030000UK06';
 const url = 'http://url.com';
 
 describe('mhs-outbound-client', () => {
@@ -23,10 +23,10 @@ describe('mhs-outbound-client', () => {
     headers: {
       'Content-Type': 'application/json',
       'Interaction-ID': interactionId,
-      'Sync-Async': false,
       'Correlation-Id': conversationId,
       'Ods-Code': 'YES',
-      'from-asid': testData.mhs.asid
+      'from-asid': testData.mhs.asid,
+      'wait-for-response': false
     }
   };
   const axiosBody = { payload: message };
@@ -100,6 +100,32 @@ describe('mhs-outbound-client', () => {
       headers: {
         ...axiosHeaders.headers,
         'Ods-Code': odsCode
+      }
+    });
+    done();
+  });
+
+  it('should call axios with wait-for-response header set to true for pds update', async done => {
+    const interactionId = 'PRPA_IN000203UK03';
+    const response = await sendMessage({ interactionId, conversationId, message });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(url, axiosBody, {
+      headers: {
+        ...axiosHeaders.headers,
+        'Interaction-ID': interactionId,
+        'wait-for-response': true
+      }
+    });
+    done();
+  });
+
+  it('should call axios with wait-for-response header set to false for messages that do not support sync-async in mhs', async done => {
+    const response = await sendMessage({ interactionId, conversationId, message });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(url, axiosBody, {
+      headers: {
+        ...axiosHeaders.headers,
+        'wait-for-response': false
       }
     });
     done();
