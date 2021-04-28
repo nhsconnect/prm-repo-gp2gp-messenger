@@ -11,7 +11,6 @@ import { getPracticeAsid } from '../services/mhs/mhs-route-client';
 jest.mock('../config/logging');
 jest.mock('../config/', () => ({
   initializeConfig: jest.fn().mockReturnValue({
-    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613'],
     pdsAsid: 'pdsAsid',
     deductionsAsid: 'deductionsAsid'
   })

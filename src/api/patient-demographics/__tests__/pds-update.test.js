@@ -11,8 +11,7 @@ jest.mock('../../../config/', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
     deductionsAsid: 'deductionsAsid',
-    deductionsOdsCode: 'deductionsOds',
-    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+    deductionsOdsCode: 'deductionsOds'
   })
 }));
 jest.mock('../../../middleware/logging');

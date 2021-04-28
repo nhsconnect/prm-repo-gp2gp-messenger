@@ -13,8 +13,7 @@ jest.mock('../../../services/parser');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
-    gp2gpAdaptorAuthorizationKeys: 'correct-key',
-    queueUrls: ['tcp://mq-1:61613', 'tcp://mq-2:61613']
+    gp2gpAdaptorAuthorizationKeys: 'correct-key'
   })
 }));
 
