@@ -72,10 +72,6 @@ data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-alb-internal-dns"
 }
 
-data "aws_ssm_parameter" "GP2GP_ADAPTOR_GP_TO_REPO_URL" {
-  name = "/repo/${var.environment}/output/prm-deductions-gp-to-repo/service-url"
-}
-
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO" {
   name = "/repo/${var.environment}/user-input/gp-to-repo-authorization-keys"
 }
