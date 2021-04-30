@@ -13,7 +13,7 @@ locals {
       { name = "GP2GP_ADAPTOR_GP_TO_REPO_URL", value = "https://gp-to-repo.${var.environment}.non-prod.patient-deductions.nhs.uk" },
       { name = "GP2GP_ADAPTOR_REPO_TO_GP_URL", value = "https://repo-to-gp.${var.environment}.non-prod.patient-deductions.nhs.uk" },
       { name = "GP2GP_ADAPTOR_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_OUTBOUND_URL.value },
-      { name = "GP2GP_ADAPTOR_MHS_ROUTE_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_ROUTE_URL.value },
+      { name = "GP2GP_ADAPTOR_MHS_ROUTE_URL", value = "https://route.mhs.${var.environment}.non-prod.patient-deductions.nhs.uk" },
     ]
     secret_environment_variables = [
       { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },

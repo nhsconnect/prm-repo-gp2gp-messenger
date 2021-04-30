@@ -64,10 +64,6 @@ data "aws_ssm_parameter" "GP2GP_ADAPTOR_MHS_OUTBOUND_URL" {
   name = "/repo/${var.environment}/output/prm-mhs-infra/repo-mhs-outbound-url"
 }
 
-data "aws_ssm_parameter" "GP2GP_ADAPTOR_MHS_ROUTE_URL" {
-  name = "/repo/${var.environment}/output/prm-mhs-infra/repo-mhs-route-url"
-}
-
 data "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-alb-internal-dns"
 }
