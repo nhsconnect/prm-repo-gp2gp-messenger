@@ -17,6 +17,7 @@ resource "aws_alb_target_group" "internal-alb-tg" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
   target_type = "ip"
   deregistration_delay = var.alb_deregistration_delay
+
   health_check {
     healthy_threshold   = 3
     unhealthy_threshold = 5
@@ -67,4 +68,47 @@ resource "aws_alb_listener_rule" "int-alb-https-listener-rule" {
       values = [local.domain]
     }
   }
+}
+
+resource "aws_acm_certificate" "gp2gp-adaptor-cert" {
+  domain_name       = "${var.dns_name}.${data.aws_route53_zone.environment_public_zone.name}"
+
+  validation_method = "DNS"
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_route53_record" "gp2gp-adaptor-cert-validation-record" {
+  for_each = {
+  for dvo in aws_acm_certificate.gp2gp-adaptor-cert.domain_validation_options : dvo.domain_name => {
+    name   = dvo.resource_record_name
+    record = dvo.resource_record_value
+    type   = dvo.resource_record_type
+  }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.environment_public_zone.zone_id
+}
+
+resource "aws_acm_certificate_validation" "gp2gp-adaptor-cert-validation" {
+  certificate_arn = aws_acm_certificate.gp2gp-adaptor-cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.gp2gp-adaptor-cert-validation-record : record.fqdn]
+}
+
+
+data "aws_ssm_parameter" "int-alb-listener-https-arn" {
+  name = "/repo/${var.environment}/output/prm-deductions-infra/int-alb-listener-https-arn"
+}
+
+resource "aws_lb_listener_certificate" "repo-to-gp-int-listener-cert" {
+  listener_arn    = data.aws_ssm_parameter.int-alb-listener-https-arn.value
+  certificate_arn = aws_acm_certificate_validation.gp2gp-adaptor-cert-validation.certificate_arn
 }
