@@ -132,6 +132,26 @@ function configure_hangout_webhook {
   fi
 }
 
+function generate_authorization_keys {
+  check_env
+  secret_id="/repo/${NHS_ENVIRONMENT}/user-input/gp2gp-adaptor-authorization-keys"
+  value=$(openssl rand -base64 24  | tr -d "/@\'+")
+  set +e
+  aws ssm get-parameter --region $AWS_DEFAULT_REGION --name "$secret_id" | jq -r ".Parameter.Value" > /dev/null
+  if [[ $? == 0 ]]; then
+    echo "Authorization keys already exist"
+  else
+    set -e
+    echo "Authorization keys do not exist. Creating..."
+    aws ssm put-parameter \
+     --region $AWS_DEFAULT_REGION \
+     --name "$secret_id" \
+     --type SecureString \
+     --overwrite \
+     --value "$value"
+  fi
+}
+
 ############################
 # Docker Related Functions #
 ############################
@@ -272,6 +292,12 @@ case "${command}" in
       configure_local_envs
       get_latest_commit_hash
       dojo -c Dojofile-dtest "./tasks _test_docker"
+      ;;
+  _generate_authorization_keys)
+      generate_authorization_keys
+      ;;
+  generate_authorization_keys)
+      dojo -c Dojofile-infra "./tasks _generate_authorization_keys"
       ;;
   tf)
       check_env
