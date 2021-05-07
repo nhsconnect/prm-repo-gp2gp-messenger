@@ -13,11 +13,11 @@ data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys" {
 }
 
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE" {
-  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-deductions-ods-code"
+  name = "/repo/${var.environment}/user-input/external/gp2gp-adaptor-deductions-ods-code"
 }
 
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ASID" {
-  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-deductions-asid"
+  name = "/repo/${var.environment}/user-input/external/gp2gp-adaptor-deductions-asid"
 }
 
 data "aws_ssm_parameter" "stomp-endpoint_0" {
