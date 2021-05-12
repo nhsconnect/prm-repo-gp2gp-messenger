@@ -1,7 +1,6 @@
 import request from 'supertest';
 import app from '../../../app';
 import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-repo';
-import { parseMultipartBody } from '../../../services/parser';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
@@ -9,7 +8,6 @@ import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 jest.mock('../../../services/mhs/mhs-route-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
-jest.mock('../../../services/parser');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
@@ -20,7 +18,10 @@ jest.mock('../../../config', () => ({
 describe('healthRecordTransfers', () => {
   const authKey = 'correct-key';
   const currentEhrUrl = 'fake-url';
-  const ehrExtract = 'ehr-extract';
+  const ehrMessage = 'ehr-message';
+  const ehrExtract = { payload: ehrMessage };
+  const ehrExtractWithoutPayload = { ebXML: 'no-payload-here' };
+  const ehrExtractNotJSON = 'not-expected-format';
   const conversationId = '41291044-8259-4d83-ae2b-93b7bfcabe73';
   const odsCode = 'B1234';
   const ehrRequestId = '26a541ce-a5ab-4713-99a4-150ec3da25c6';
@@ -43,7 +44,6 @@ describe('healthRecordTransfers', () => {
   it('should return a 204', async () => {
     const interactionId = 'RCMR_IN030000UK06';
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-    const message = 'ehr-message';
     const expectedSendMessageParameters = {
       interactionId,
       conversationId,
@@ -51,10 +51,6 @@ describe('healthRecordTransfers', () => {
       message: messageWithEhrRequestId
     };
     retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
-    parseMultipartBody.mockReturnValue([
-      { headers: {}, body: 'soap-header' },
-      { headers: {}, body: message }
-    ]);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     const res = await request(app)
@@ -63,15 +59,13 @@ describe('healthRecordTransfers', () => {
       .send(mockBody);
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
-    expect(parseMultipartBody).toHaveBeenCalledWith(ehrExtract);
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-    expect(updateExtractForSending).toHaveBeenCalledWith(message, ehrRequestId, receivingAsid);
+    expect(updateExtractForSending).toHaveBeenCalledWith(ehrMessage, ehrRequestId, receivingAsid);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
   it('should return a 503 when it cannot retrieve the extract from the message stored in EHR Repo', async () => {
-    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
-    parseMultipartBody.mockReturnValue([]);
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtractWithoutPayload);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     const res = await request(app)
@@ -82,7 +76,24 @@ describe('healthRecordTransfers', () => {
     expect(res.body).toEqual({
       errors: [
         'Sending EHR Extract failed',
-        'Could not extract HLv7 message from the GP2GP message stored in EHR Repo'
+        'Could not extract payload from the JSON message stored in EHR Repo'
+      ]
+    });
+  });
+
+  it('should return a 503 when the message stored in EHR Repo is not a json', async () => {
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtractNotJSON);
+    updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
+    getPracticeAsid.mockResolvedValue(receivingAsid);
+    const res = await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({
+      errors: [
+        'Sending EHR Extract failed',
+        'Could not extract payload from the JSON message stored in EHR Repo'
       ]
     });
   });
@@ -110,10 +121,6 @@ describe('healthRecordTransfers', () => {
 
   it('should return a 503 when cannot send ehr to mhs', async () => {
     retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
-    parseMultipartBody.mockReturnValue([
-      { headers: {}, body: 'soap-header' },
-      { headers: {}, body: 'ehr-message' }
-    ]);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     sendMessage.mockRejectedValue(new Error('error'));

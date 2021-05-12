@@ -1,4 +1,4 @@
-import { XmlParser } from '../xml-parser';
+import { XmlParser } from '../xml-parser/xml-parser';
 
 export const extractSerialChangeNumber = message =>
   new XmlParser()

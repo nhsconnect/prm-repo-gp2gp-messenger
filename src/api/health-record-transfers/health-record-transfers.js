@@ -1,6 +1,5 @@
 import { body } from 'express-validator';
 import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
-import { parseMultipartBody } from '../../services/parser';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
@@ -31,11 +30,10 @@ export const healthRecordTransfers = async (req, res) => {
   try {
     const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
-    const multipartMessage = parseMultipartBody(ehrExtract);
-    if (multipartMessage.length < 2 || multipartMessage[1].body === undefined) {
-      throw new Error('Could not extract HLv7 message from the GP2GP message stored in EHR Repo');
+    const ehrMessage = ehrExtract.payload;
+    if (!ehrMessage) {
+      throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
-    const ehrMessage = multipartMessage[1].body;
     const ehrMessageWithEhrRequestId = await updateExtractForSending(
       ehrMessage,
       ehrRequestId,
