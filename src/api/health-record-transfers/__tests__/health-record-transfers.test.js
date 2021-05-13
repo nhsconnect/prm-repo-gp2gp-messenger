@@ -4,6 +4,7 @@ import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-rep
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
+import { jsonEhrExtract, payload } from './data/json-formatted-ehr-example';
 
 jest.mock('../../../services/mhs/mhs-route-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
@@ -18,10 +19,8 @@ jest.mock('../../../config', () => ({
 describe('healthRecordTransfers', () => {
   const authKey = 'correct-key';
   const currentEhrUrl = 'fake-url';
-  const ehrMessage = 'ehr-message';
-  const ehrExtract = { payload: ehrMessage };
   const ehrExtractWithoutPayload = { ebXML: 'no-payload-here' };
-  const ehrExtractNotJSON = 'not-expected-format';
+  const ehrExtractNotJson = 'not-expected-format';
   const conversationId = '41291044-8259-4d83-ae2b-93b7bfcabe73';
   const odsCode = 'B1234';
   const ehrRequestId = '26a541ce-a5ab-4713-99a4-150ec3da25c6';
@@ -50,7 +49,7 @@ describe('healthRecordTransfers', () => {
       odsCode,
       message: messageWithEhrRequestId
     };
-    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     const res = await request(app)
@@ -60,7 +59,7 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-    expect(updateExtractForSending).toHaveBeenCalledWith(ehrMessage, ehrRequestId, receivingAsid);
+    expect(updateExtractForSending).toHaveBeenCalledWith(payload, ehrRequestId, receivingAsid);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
@@ -82,7 +81,7 @@ describe('healthRecordTransfers', () => {
   });
 
   it('should return a 503 when the message stored in EHR Repo is not a json', async () => {
-    retrieveEhrFromRepo.mockResolvedValue(ehrExtractNotJSON);
+    retrieveEhrFromRepo.mockResolvedValue(ehrExtractNotJson);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     const res = await request(app)
@@ -109,7 +108,6 @@ describe('healthRecordTransfers', () => {
   });
 
   it('should return a 503 when cannot retrieve practice asid', async () => {
-    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
     getPracticeAsid.mockRejectedValue(new Error('error'));
     const res = await request(app)
       .post('/health-record-transfers')
@@ -120,7 +118,7 @@ describe('healthRecordTransfers', () => {
   });
 
   it('should return a 503 when cannot send ehr to mhs', async () => {
-    retrieveEhrFromRepo.mockResolvedValue(ehrExtract);
+    retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
     sendMessage.mockRejectedValue(new Error('error'));
