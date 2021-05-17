@@ -144,7 +144,7 @@ describe('app', () => {
 
     it('should return a 204 status code', done => {
       request(app)
-        .post('/health-record-requests/1234567890')
+        .post('/health-record-requests/9444567890')
         .send({
           repositoryOdsCode: 'repo_ods_code',
           repositoryAsid: 'repo_asid',

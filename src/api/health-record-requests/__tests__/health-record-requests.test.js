@@ -5,9 +5,12 @@ import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 import { buildEhrRequest } from '../health-record-requests';
+import { initializeConfig } from '../../../config';
+import { logWarning } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
+jest.mock('../../../config');
 jest.mock('../../../templates/ehr-request-template');
 jest.mock('dateformat');
 jest.mock('../../../services/mhs/mhs-outbound-client');
@@ -16,20 +19,23 @@ jest.mock('../../../services/mhs/mhs-route-client');
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN010000UK05';
+const body = {
+  conversationId: mockUUID,
+  repositoryOdsCode: 'repo_ods_code',
+  repositoryAsid: 'repo_asid',
+  practiceOdsCode: 'practice_ods_code'
+};
 
 describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
     generateEhrRequestQuery.mockResolvedValue('message');
+    initializeConfig.mockReturnValue({
+      gp2gpAdaptorAuthorizationKeys: 'correct-key',
+      nhsNumberPrefix: '123'
+    });
   });
 
   describe('healthRecordRequests', () => {
-    const body = {
-      conversationId: mockUUID,
-      repositoryOdsCode: 'repo_ods_code',
-      repositoryAsid: 'repo_asid',
-      practiceOdsCode: 'practice_ods_code'
-    };
-
     it('should return a 204', done => {
       request(app).post('/health-record-requests/1234567890').expect(204).send(body).end(done);
     });
@@ -101,7 +107,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     });
 
     it('should return 503 when MHS route lookup fails', done => {
-      getPracticeAsid.mockRejectedValue(new Error('lookup failed'));
+      getPracticeAsid.mockRejectedValueOnce(new Error('lookup failed'));
 
       request(app)
         .post('/health-record-requests/1234567890')
@@ -112,6 +118,33 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           expect(getPracticeAsid).toHaveBeenCalledWith(body.practiceOdsCode, serviceId);
         })
         .end(done);
+    });
+  });
+
+  describe('NHS Number prefix checks', () => {
+    it('should not allow a health record request and return 404 when nhs number prefix is empty', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '' });
+      const res = await request(app).post('/health-record-requests/1234567890').send(body);
+      expect(res.status).toBe(404);
+      expect(logWarning).toHaveBeenCalledWith(
+        'Health record request failed as no nhs number prefix has been set'
+      );
+    });
+
+    it('should not allow a health record request when the nhs number does not start with the expected prefix', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '999' });
+      const res = await request(app).post('/health-record-requests/1234567890').send(body);
+      expect(res.status).toBe(404);
+      expect(logWarning).toHaveBeenCalledWith(
+        'Health record request failed as nhs number does not start with expected prefix: 999'
+      );
+    });
+
+    it('should allow a health record request when the nhs number starts with the expected prefix', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '123' });
+      generateEhrRequestQuery.mockResolvedValue('message');
+      const res = await request(app).post('/health-record-requests/1234567890').send(body);
+      expect(res.status).toBe(204);
     });
   });
 

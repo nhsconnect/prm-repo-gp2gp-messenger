@@ -2,9 +2,10 @@ import { param, body } from 'express-validator';
 import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { logInfo } from '../../middleware/logging';
+import { logInfo, logWarning } from '../../middleware/logging';
 import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 import { setCurrentSpanAttributes } from '../../config/tracing';
+import { initializeConfig } from '../../config';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
@@ -21,17 +22,31 @@ export const healthRecordRequestValidation = [
 export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-  const conversationId = req.body.conversationId;
+  const { nhsNumberPrefix } = initializeConfig();
+  const { conversationId, practiceOdsCode } = req.body;
+  const { nhsNumber } = req.params;
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    const asid = await getPracticeAsid(req.body.practiceOdsCode, serviceId);
+    if (!nhsNumberPrefix) {
+      logWarning('Health record request failed as no nhs number prefix has been set');
+      res.sendStatus(404);
+      return;
+    }
+    if (!nhsNumber.startsWith(nhsNumberPrefix)) {
+      logWarning(
+        `Health record request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
+      );
+      res.sendStatus(404);
+      return;
+    }
+    const asid = await getPracticeAsid(practiceOdsCode, serviceId);
     const message = await buildEhrRequest(req, conversationId, asid);
 
     await sendMessage({
       interactionId,
       conversationId,
-      odsCode: req.body.practiceOdsCode,
+      odsCode: practiceOdsCode,
       message
     });
     res.sendStatus(204);

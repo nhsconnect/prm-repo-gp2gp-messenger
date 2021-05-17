@@ -3,10 +3,12 @@ import axios from 'axios';
 import app from '../../../app';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
+import { initializeConfig } from '../../../config';
 
 jest.mock('../../../middleware/logging');
 jest.mock('axios');
 jest.mock('../../../middleware/auth');
+jest.mock('../../../config');
 jest.mock('../../../templates/ehr-request-template');
 jest.mock('../../../services/mhs/mhs-route-client');
 
@@ -28,6 +30,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
     generateEhrRequestQuery.mockResolvedValue('message');
     getPracticeAsid.mockResolvedValue(practiceAsid);
+    initializeConfig.mockReturnValue({ nhsNumberPrefix: '111' });
   });
 
   it('should generate ehr request query', done => {
