@@ -11,5 +11,6 @@ export const initializeConfig = () => ({
   pdsAsid: process.env.PDS_ASID || '928942012545',
   mhsOutboundUrl: process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL,
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
-  nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local'
+  nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',
+  nhsNumberPrefix: process.env.NHS_NUMBER_PREFIX
 });

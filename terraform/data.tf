@@ -75,3 +75,7 @@ data "aws_ssm_parameter" "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO" {
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_REPO_TO_GP" {
   name = "/repo/${var.environment}/user-input/repo-to-gp-authorization-keys"
 }
+
+data "aws_ssm_parameter" "nhs_number_prefix" {
+  name = "/repo/${var.environment}/user-input/nhs-number-prefix"
+}

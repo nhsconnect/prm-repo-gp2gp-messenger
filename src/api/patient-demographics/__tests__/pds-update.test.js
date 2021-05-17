@@ -1,19 +1,14 @@
 import { when } from 'jest-when';
 import request from 'supertest';
 import app from '../../../app';
-import { logError } from '../../../middleware/logging';
+import { logError, logWarning } from '../../../middleware/logging';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../../templates/generate-update-ods-request';
 import { fakeDateNow } from '../../../__mocks__/dateformat';
+import { initializeConfig } from '../../../config';
 
 jest.mock('../../../config/logging');
-jest.mock('../../../config/', () => ({
-  initializeConfig: jest.fn().mockReturnValue({
-    pdsAsid: 'pdsAsid',
-    deductionsAsid: 'deductionsAsid',
-    deductionsOdsCode: 'deductionsOds'
-  })
-}));
+jest.mock('../../../config/');
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../services/mhs/mhs-outbound-client');
@@ -28,7 +23,13 @@ describe('POST /patient-demographics/:nhsNumber', () => {
   const error503MockUuid = '893b17bc-5369-4ca1-a6aa-579f2f5cb318';
 
   beforeEach(() => {
-    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
+    initializeConfig.mockReturnValue({
+      pdsAsid: 'pdsAsid',
+      deductionsAsid: 'deductionsAsid',
+      deductionsOdsCode: 'deductionsOds',
+      gp2gpAdaptorAuthorizationKeys: 'correct-key',
+      nhsNumberPrefix: '944'
+    });
 
     when(sendMessage)
       .calledWith({
@@ -51,6 +52,47 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       .mockResolvedValue({ status: 500, data: '500 MHS Error' });
 
     generateUpdateOdsRequest.mockResolvedValue(fakerequest);
+  });
+
+  describe('NHS Number prefix checks', () => {
+    it('should not allow a pds update request and return 404 when nhs number prefix is empty', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '' });
+      const res = await request(app).patch('/patient-demographics/9442964410').send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
+        newOdsCode: '12345',
+        conversationId: mockUUID
+      });
+      expect(res.status).toBe(404);
+      expect(logWarning).toHaveBeenCalledWith(
+        'PDS Update request failed as no nhs number prefix has been set'
+      );
+    });
+
+    it('should not allow a pds update request when the nhs number does not start with the expected prefix', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '999' });
+      const res = await request(app).patch('/patient-demographics/9442964410').send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
+        newOdsCode: '12345',
+        conversationId: mockUUID
+      });
+      expect(res.status).toBe(404);
+      expect(logWarning).toHaveBeenCalledWith(
+        'PDS Update request failed as nhs number does not start with expected prefix: 999'
+      );
+    });
+
+    it('should allow a pds update request when the nhs number starts with the expected prefix', async () => {
+      initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '999' });
+      const res = await request(app).patch('/patient-demographics/9992964410').send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
+        newOdsCode: '12345',
+        conversationId: mockUUID
+      });
+      expect(res.status).toBe(204);
+    });
   });
 
   it('should return a 204 (no content) if :nhsNumber is numeric and 10 digits and Authorization Header provided', done => {

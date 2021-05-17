@@ -1,7 +1,7 @@
 import dateFormat from 'dateformat';
 import { body, param } from 'express-validator';
 import { initializeConfig } from '../../config';
-import { logInfo, logError } from '../../middleware/logging';
+import { logInfo, logError, logWarning } from '../../middleware/logging';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import generateUpdateOdsRequest from '../../templates/generate-update-ods-request';
 import { setCurrentSpanAttributes } from '../../config/tracing';
@@ -25,23 +25,36 @@ export const pdsUpdateValidation = [
 ];
 
 export const pdsUpdate = async (req, res, next) => {
-  const config = initializeConfig();
-  try {
-    const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-    const interactionId = 'PRPA_IN000203UK03';
-    const conversationId = req.body.conversationId;
-    setCurrentSpanAttributes({ conversationId });
+  const { deductionsAsid, pdsAsid, nhsNumberPrefix } = initializeConfig();
+  const { conversationId, newOdsCode, pdsId, serialChangeNumber } = req.body;
+  const { nhsNumber } = req.params;
+  const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
+  const interactionId = 'PRPA_IN000203UK03';
+  setCurrentSpanAttributes({ conversationId });
 
+  try {
+    if (!nhsNumberPrefix) {
+      logWarning('PDS Update request failed as no nhs number prefix has been set');
+      res.sendStatus(404);
+      return;
+    }
+    if (!nhsNumber.startsWith(nhsNumberPrefix)) {
+      logWarning(
+        `PDS Update request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
+      );
+      res.sendStatus(404);
+      return;
+    }
     const message = await generateUpdateOdsRequest({
       id: conversationId,
       timestamp,
-      receivingService: { asid: config.pdsAsid },
-      sendingService: { asid: config.deductionsAsid },
-      newOdsCode: req.body.newOdsCode,
+      receivingService: { asid: pdsAsid },
+      sendingService: { asid: deductionsAsid },
+      newOdsCode: newOdsCode,
       patient: {
-        nhsNumber: req.params.nhsNumber,
-        pdsId: req.body.pdsId,
-        pdsUpdateChangeNumber: req.body.serialChangeNumber
+        nhsNumber: nhsNumber,
+        pdsId: pdsId,
+        pdsUpdateChangeNumber: serialChangeNumber
       }
     });
 

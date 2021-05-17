@@ -12,7 +12,8 @@ jest.mock('../config/logging');
 jest.mock('../config/', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
-    deductionsAsid: 'deductionsAsid'
+    deductionsAsid: 'deductionsAsid',
+    nhsNumberPrefix: '944'
   })
 }));
 jest.mock('../services/health-check/get-health-check');
