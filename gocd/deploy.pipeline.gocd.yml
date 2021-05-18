@@ -64,8 +64,7 @@ pipelines:
           jobs:
             functional:
               resources:
-                - deductions-private
-                - dev
+                - docker
               tasks:
                 - exec:
                     command: /bin/bash
@@ -74,8 +73,7 @@ pipelines:
                       - ./tasks test_functional
             e2e:
               resources:
-                - deductions-private
-                - dev
+                - docker
               tasks:
                 - exec:
                     command: /bin/bash
@@ -114,8 +112,7 @@ pipelines:
           jobs:
             functional:
               resources:
-                - deductions-private
-                - test
+                - docker
               tasks:
                 - exec:
                     command: /bin/bash
@@ -124,8 +121,7 @@ pipelines:
                       - ./tasks test_functional
             e2e:
               resources:
-                - deductions-private
-                - test
+                - docker
               tasks:
                 - exec:
                     command: /bin/bash
