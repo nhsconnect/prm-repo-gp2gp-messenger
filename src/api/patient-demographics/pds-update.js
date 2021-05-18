@@ -33,16 +33,8 @@ export const pdsUpdate = async (req, res, next) => {
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    if (!nhsNumberPrefix) {
-      logWarning('PDS Update request failed as no nhs number prefix has been set');
-      res.sendStatus(404);
-      return;
-    }
-    if (!nhsNumber.startsWith(nhsNumberPrefix)) {
-      logWarning(
-        `PDS Update request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
-      );
-      res.sendStatus(404);
+    if (!checkNhsNumberPrefix(nhsNumberPrefix, nhsNumber)) {
+      res.sendStatus(422);
       return;
     }
     const message = await generateUpdateOdsRequest({
@@ -84,4 +76,18 @@ export const pdsUpdate = async (req, res, next) => {
       errors: err.message
     });
   }
+};
+
+const checkNhsNumberPrefix = (nhsNumberPrefix, nhsNumber) => {
+  if (!nhsNumberPrefix) {
+    logWarning('PDS Update request failed as no nhs number prefix env variable has been set');
+    return false;
+  }
+  if (!nhsNumber.startsWith(nhsNumberPrefix)) {
+    logWarning(
+      `PDS Update request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
+    );
+    return false;
+  }
+  return true;
 };

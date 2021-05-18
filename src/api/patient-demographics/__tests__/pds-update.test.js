@@ -63,9 +63,23 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         newOdsCode: '12345',
         conversationId: mockUUID
       });
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(422);
       expect(logWarning).toHaveBeenCalledWith(
-        'PDS Update request failed as no nhs number prefix has been set'
+        'PDS Update request failed as no nhs number prefix env variable has been set'
+      );
+    });
+
+    it('should not allow a pds update request and return 404 when nhs number prefix is undefined', async () => {
+      initializeConfig.mockReturnValueOnce({});
+      const res = await request(app).patch('/patient-demographics/9442964410').send({
+        serialChangeNumber: '123',
+        pdsId: 'cppz',
+        newOdsCode: '12345',
+        conversationId: mockUUID
+      });
+      expect(res.status).toBe(422);
+      expect(logWarning).toHaveBeenCalledWith(
+        'PDS Update request failed as no nhs number prefix env variable has been set'
       );
     });
 
@@ -77,7 +91,7 @@ describe('POST /patient-demographics/:nhsNumber', () => {
         newOdsCode: '12345',
         conversationId: mockUUID
       });
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(422);
       expect(logWarning).toHaveBeenCalledWith(
         'PDS Update request failed as nhs number does not start with expected prefix: 999'
       );

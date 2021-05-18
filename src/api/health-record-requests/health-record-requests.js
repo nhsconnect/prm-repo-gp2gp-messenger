@@ -28,16 +28,8 @@ export const healthRecordRequests = async (req, res) => {
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    if (!nhsNumberPrefix) {
-      logWarning('Health record request failed as no nhs number prefix has been set');
-      res.sendStatus(404);
-      return;
-    }
-    if (!nhsNumber.startsWith(nhsNumberPrefix)) {
-      logWarning(
-        `Health record request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
-      );
-      res.sendStatus(404);
+    if (!checkNhsNumberPrefix(nhsNumberPrefix, nhsNumber)) {
+      res.sendStatus(422);
       return;
     }
     const asid = await getPracticeAsid(practiceOdsCode, serviceId);
@@ -74,4 +66,18 @@ export const buildEhrRequest = async (req, conversationId, practiceAsid) => {
       nhsNumber: req.params.nhsNumber
     }
   });
+};
+
+const checkNhsNumberPrefix = (nhsNumberPrefix, nhsNumber) => {
+  if (!nhsNumberPrefix) {
+    logWarning('Health record request failed as no nhs number prefix env variable has been set');
+    return false;
+  }
+  if (!nhsNumber.startsWith(nhsNumberPrefix)) {
+    logWarning(
+      `Health record request failed as nhs number does not start with expected prefix: ${nhsNumberPrefix}`
+    );
+    return false;
+  }
+  return true;
 };
