@@ -30,7 +30,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
   );
 
   it(
-    'should return 200 from PDS if the nhs number is not exist',
+    'should return 503 from PDS if the nhs number is not exist',
     () => {
       const fakeNhsNumber = '0000000000';
 
