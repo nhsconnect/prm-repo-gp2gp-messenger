@@ -59,13 +59,6 @@ function configure_aws_service_auth_keys {
     export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
 }
 
-function configure_aws_service_gp_to_repo_auth_keys {
-    check_env
-    get_aws_account_id
-    parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/gp-to-repo-authorization-keys"
-    export GP2GP_ADAPTOR_AUTHORIZATION_KEYS_FOR_GP_TO_REPO=$(get_aws_ssm_secret ${parameter_name})
-}
-
 function get_aws_ssm_secret {
   secret_id=$1
   json=$(dojo -c Dojofile-infra "aws ssm get-parameter --with-decryption --region $AWS_DEFAULT_REGION --name $secret_id")
