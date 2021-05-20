@@ -9,7 +9,7 @@ data "aws_ssm_parameter" "private_zone_id" {
 }
 
 data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys" {
-  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-authorization-keys"
+  name = "/repo/${var.environment}/user-input/api-keys/gp2gp-adaptor/e2e-test"
 }
 
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE" {
