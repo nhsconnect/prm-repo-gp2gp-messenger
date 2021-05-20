@@ -16,7 +16,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       return expect(
         axios.get(`${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`, {
           headers: {
-            Authorization: config.gp2gpAdaptorAuthorizationKeys
+            Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
           },
           adapter
         })
