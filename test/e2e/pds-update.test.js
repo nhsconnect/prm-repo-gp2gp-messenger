@@ -77,7 +77,7 @@ const getAndValidatePatientPdsDetails = async nhsNumber => {
     `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
     {
       headers: {
-        Authorization: config.gp2gpAdaptorAuthorizationKeys
+        Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
       },
       adapter
     }
@@ -104,7 +104,7 @@ const updateAndValidatePatientOdsCode = async (
     },
     {
       headers: {
-        Authorization: config.gp2gpAdaptorAuthorizationKeys
+        Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
       },
       adapter
     }
