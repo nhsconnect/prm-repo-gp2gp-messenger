@@ -11,8 +11,9 @@ The initial version will send health records that are encoded in the HL7 format.
 ## Prerequisites
 
 - Node 12.x
+- Docker
 
-## Access to AWS
+## Access to AWS from CLI
 
 In order to get sufficient access to work with terraform or AWS CLI:
 
@@ -29,13 +30,21 @@ Set up a profile for each role you would like to assume in `~/.aws/config`, for 
 
 ```
 [profile default]
-region = eu-west-2
 output = json
 
-[profile admin]
-region = eu-west-2
-role_arn = <role-arn>
-mfa_serial = <mfa-arn>
+[profile ci]
+role_arn = arn:aws:iam::327778747031:role/NHSDAdminRole
+mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
+source_profile = default
+
+[profile dev]
+role_arn = arn:aws:iam::416874859154:role/NHSDAdminRole
+mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
+source_profile = default
+
+[profile test]
+role_arn = arn:aws:iam::005235525306:role/NHSDAdminRole
+mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
 source_profile = default
 ```
 
@@ -58,7 +67,9 @@ Run the following command with the profile configured in your `~/.aws/config`:
 ### Run `assume-role` with dojo:
 Run the following command with the profile configured in your `~/.aws/config`:
 
-`eval $(dojo "echo <mfa-code> | assume-role admin"`
+`eval $(dojo "echo <mfa-code> | assume-role dev"`
+or
+`assume-role dev [here choose one of the options from your config: ci/dev/test]`
 
 Run the following command to confirm the role was assumed correctly:
 
@@ -84,34 +95,35 @@ Please follow this design to ensure the ssm keys are easy to maintain and naviga
 # Set up
 
 1. Run `npm install` to install all node dependencies.
-2. Create a .env file at the root of the directory
-4. If you would like to run locally, following the steps below, otherwise fill in the required fields.
-   - Note: The `GP2GP_ADAPTOR_AUTHORIZATION_KEYS` should be a string.
-5. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. Here is an example for a local environment .env file, that can replace the contents of the .env.
-
-   ```
-   GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
-   GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
-   GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
-   NHS_ENVIRONMENT=local
-   PDS_ASID=
-   GP2GP_ADAPTOR_MHS_ROUTE_URL=
-   ```
-
+2. If you would like to run the app locally, set up the env variables first:
+```
+export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
+export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
+export REPOSITORY_URI=$IMAGE_REPO_NAME   
+export NHS_SERVICE=gp2gp-adaptor
+export SERVICE_URL=http://${NHS_SERVICE}:3000
+export NHS_ENVIRONMENT=local
+export GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
+export GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
+```
 - Locally, the variables `GP2GP_ADAPTOR_AUTHORIZATION_KEYS`, `GP2GP_ADAPTOR_REPOSITORY_ASID`, `GP2GP_ADAPTOR_REPOSITORY_ODS_CODE` can be set
   to any value
   
+3. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. 
+ 
 ## Running the tests
 
 Run the unit tests with
 
-`npm test` or `./tasks test_unit`
+`npm run test:unit` or by entering `dojo` and running `./tasks _test_unit`
 
-Run the integration tests.
+Run the integration tests within a Dojo container
 
-Run `npm run test:integration`.
+1. Enter `dojo`
+2. Run `./tasks _test_integration`
 
-Alternatively, run `./tasks test_integration` (runs the tests within a Dojo container)
+You can also run them with `npm run test:integration` but that will require some additional manual set-up
+
 
 Run the coverage tests (unit test and integration test)
 
