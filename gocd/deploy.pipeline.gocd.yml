@@ -34,6 +34,42 @@ common:
           arguments:
             - -c
             - ./tasks wait_ecs
+  common_stages: &common_stages
+    - promote_docker_image:
+        resources:
+          - docker
+        clean_workspace: true
+        tasks:
+          - exec:
+              command: /bin/bash
+              arguments:
+                - -c
+                - ./tasks promote_docker_image
+    - deploy:
+        clean_workspace: true
+        jobs:
+          deploy: *deploy_job
+    - test:
+        clean_workspace: true
+        jobs:
+          functional:
+            resources:
+              - docker
+            tasks:
+              - exec:
+                  command: /bin/bash
+                  arguments:
+                    - -c
+                    - ./tasks test_functional
+          e2e:
+            resources:
+              - docker
+            tasks:
+              - exec:
+                  command: /bin/bash
+                  arguments:
+                    - -c
+                    - ./tasks test_e2e
 pipelines:
   'prm-deductions-gp2gp-adaptor.dev':
     group: deductions
@@ -54,32 +90,7 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: dev
-    stages:
-      - deploy:
-          clean_workspace: true
-          jobs:
-            deploy: *deploy_job
-      - test:
-          clean_workspace: true
-          jobs:
-            functional:
-              resources:
-                - docker
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks test_functional
-            e2e:
-              resources:
-                - docker
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks test_e2e
+    stages: *common_stages
 
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
@@ -102,29 +113,5 @@ pipelines:
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
-    stages:
-      - deploy:
-          clean_workspace: true
-          jobs:
-            deploy: *deploy_job
-      - test:
-          clean_workspace: true
-          jobs:
-            functional:
-              resources:
-                - docker
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks test_functional
-            e2e:
-              resources:
-                - docker
-              tasks:
-                - exec:
-                    command: /bin/bash
-                    arguments:
-                      - -c
-                      - ./tasks test_e2e
+    stages: *common_stages
+
