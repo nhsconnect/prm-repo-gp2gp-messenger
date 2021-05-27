@@ -4,7 +4,7 @@ services:
     links:
       - gp2gp-adaptor:gp2gp-adaptor
   gp2gp-adaptor:
-    image: ${REPOSITORY_URI}:${COMMIT_HASH}
+    image: ${REPOSITORY_URI}:${IMAGE_TAG}
     environment:
       - GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
       - GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
