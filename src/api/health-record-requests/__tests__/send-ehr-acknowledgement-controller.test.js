@@ -91,8 +91,8 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
 
     it('should return a 503 when cannot send acknowledgement to mhs', async () => {
       buildEhrAcknowledgement.mockReturnValue(message);
-      await sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
-      request(app)
+      sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
+      await request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(503)
