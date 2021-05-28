@@ -1,8 +1,7 @@
 # Deductions GP2GP adaptor
 
 This is an implementation of a component to handle the sending of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
-
-The goal is to confirm the GP2GP message format can be used to transfer orphaned and stranded records into a secure NHS repository.
+The goal is to confirm the GP2GP message format can be used to transfer orphaned and stranded records out of a secure NHS repository.
 
 This component will communicate with the Message Handler Service (MHS) [GitHub nhsconnect/integration-adaptors](https://github.com/nhsconnect/integration-adaptors) and other components being developed by the Orphaned and Stranded Record programme.
 
@@ -12,6 +11,82 @@ The initial version will send health records that are encoded in the HL7 format.
 
 - Node 12.x
 - Docker
+
+# Set up
+To replicate the ci environment, we use `dojo` that allows us to work with the codebase without installing any dependencies locally.
+Please see the `./tasks` file that includes all the tasks you can use to configure and run the app and the tests.
+
+If you would like to run the app locally outside `dojo`, you need to:
+1. Run `npm install` to install all node dependencies as per `package.json`.
+2. Set up the env variables and/or copy them into your IDE configurations (`Run -> Edit Configurations ->Environment Variables` in IntelliJ):
+```
+export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
+export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
+export REPOSITORY_URI=$IMAGE_REPO_NAME   
+export NHS_SERVICE=gp2gp-adaptor
+export SERVICE_URL=http://${NHS_SERVICE}:3000
+export NHS_ENVIRONMENT=local
+export GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
+export GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
+```
+- Locally, the variables `GP2GP_ADAPTOR_AUTHORIZATION_KEYS`, `GP2GP_ADAPTOR_REPOSITORY_ASID`, `GP2GP_ADAPTOR_REPOSITORY_ODS_CODE` can be set
+  to any value
+  
+3. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. 
+ 
+## Running the tests
+
+Run the unit tests with
+
+by entering the `dojo` container and running `./tasks _test_unit`
+or on your machine with `npm run test:unit`
+
+Run the integration tests within a Dojo container
+
+1. Run `dojo -c Dojofile-itest` which will spin up the testing container
+2. Run `./tasks _test_integration`
+
+You can also run them with `npm run test:integration` but that will require some additional manual set-up
+
+
+Run the coverage tests (unit test and integration test)
+
+By entering the `dojo` container and running `./tasks _test_coverage`
+
+or run `npm run test:coverage` on your machine
+
+You don't have to enter the dojo container every time, you can also just run any task in your terminal:
+For example:
+
+`./tasks test_coverage`
+
+`./tasks test_unit`
+
+`./tasks dep` - to run audit
+
+## Start the app locally
+
+1. Run a development server with `npm run start:local`
+
+### Swagger
+
+The swagger documentation for the app can be found at `http://localhost:3000/swagger`. To update it, change the
+`src/swagger.json` file. You can use the editor `https://editor.swagger.io/` which will validate your changes.
+
+### Example request
+
+```
+curl -X POST "http://localhost:3000/ehr-request" -H "accept: application/json" -H "Authorization: auth-key-1" -H "Content-Type: application/json" -d "{ \"nhsNumber\": \"some-nhs-number\", \"odsCode\": \"some-ods-code\"}"
+```
+
+## Start the app in production mode
+
+Compile the code with `npm run build`, and then start the server with `npm start`.
+
+## Config
+
+Ensure you have VPN connection set up to both `dev` and `test` environments:
+[CLICK HERE](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1832779966/VPN+for+Deductions+Services)
 
 ## Access to AWS from CLI
 
@@ -48,7 +123,7 @@ mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
 source_profile = default
 ```
 
-The `source_profile` needs to match your profile in `~/.aws/credentials`.
+The `source_profile` needs to match your profile in `~/.aws/credentials`
 ```
 [default]
 aws_access_key_id = <your-aws-access-key-id>
@@ -82,75 +157,3 @@ When creating the new ssm keys, please follow the agreed convention as per the d
 * all parts of the keys are lower case
 * the words are separated by dashes (`kebab case`)
 * `env` is optional
-
-### Design:
-Please follow this design to ensure the ssm keys are easy to maintain and navigate through:
-
-| Type               | Design                                  | Example                                               |
-| -------------------| ----------------------------------------| ------------------------------------------------------|
-| **User-specified** |`/repo/<env>?/user-input/`               | `/repo/${var.environment}/user-input/db-username`     |
-| **Auto-generated** |`/repo/<env>?/output/<name-of-git-repo>/`| `/repo/output/prm-deductions-base-infra/root-zone-id` |
-
-
-# Set up
-
-1. Run `npm install` to install all node dependencies.
-2. If you would like to run the app locally, set up the env variables first:
-```
-export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
-export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
-export REPOSITORY_URI=$IMAGE_REPO_NAME   
-export NHS_SERVICE=gp2gp-adaptor
-export SERVICE_URL=http://${NHS_SERVICE}:3000
-export NHS_ENVIRONMENT=local
-export GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
-export GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
-```
-- Locally, the variables `GP2GP_ADAPTOR_AUTHORIZATION_KEYS`, `GP2GP_ADAPTOR_REPOSITORY_ASID`, `GP2GP_ADAPTOR_REPOSITORY_ODS_CODE` can be set
-  to any value
-  
-3. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. 
- 
-## Running the tests
-
-Run the unit tests with
-
-`npm run test:unit` or by entering `dojo` and running `./tasks _test_unit`
-
-Run the integration tests within a Dojo container
-
-1. Enter `dojo`
-2. Run `./tasks _test_integration`
-
-You can also run them with `npm run test:integration` but that will require some additional manual set-up
-
-
-Run the coverage tests (unit test and integration test)
-
-Run `npm run test:coverage`.
-
-Alternatively, run `./tasks test_coverage` (runs the tests within a Dojo container)
-
-## Start the app locally
-
-1. Run a development server with `npm run start:local`
-
-### Swagger
-
-The swagger documentation for the app can be found at http://localhost:3000/swagger. To update it, change the
-`src/swagger.json` file. You can use the editor https://editor.swagger.io/ which will validate your changes.
-
-### Example request
-
-```
-curl -X POST "http://localhost:3000/ehr-request" -H "accept: application/json" -H "Authorization: auth-key-1" -H "Content-Type: application/json" -d "{ \"nhsNumber\": \"some-nhs-number\", \"odsCode\": \"some-ods-code\"}"
-```
-
-## Start the app in production mode
-
-Compile the code with `npm run build`, and then start the server with `npm start`.
-
-## Config
-
-Ensure you have VPN connection set up to both `dev` and `test` environments:
-[CLICK HERE](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/1832779966/VPN+for+Deductions+Services)
