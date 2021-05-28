@@ -42,14 +42,13 @@ describe('mhs-outbound-client', () => {
     );
   });
 
-  it('should log an Error if interactionId is not passed in', async done => {
+  it('should log an Error if interactionId is not passed in', async () => {
     await sendMessage({ conversationId, message }).catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(
       'validation failed',
       Error(['interactionId must be passed in'])
     );
-    done();
   });
 
   it('should logs an Error if message is not passed in', () => {
@@ -64,19 +63,17 @@ describe('mhs-outbound-client', () => {
     );
   });
 
-  it('should reject with an Error if conversationId, message and interactionId are not passed in', async done => {
+  it('should reject with an Error if conversationId, message and interactionId are not passed in', async () => {
     const error = await sendMessage().catch(err => err);
     expect(error).toEqual(expect.anything(Error));
     expect(error.message).toEqual(expect.stringMatching('conversationId must be passed in'));
     expect(error.message).toEqual(expect.stringMatching('message must be passed in'));
     expect(error.message).toEqual(expect.stringMatching('interactionId must be passed in'));
-    done();
   });
 
-  it('should log an Error if conversationId, message and interactionId is not passed in', async done => {
+  it('should log an Error if conversationId, message and interactionId is not passed in', async () => {
     await sendMessage().catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
-    done();
   });
 
   it('throws an Error if interactionId is not passed in', () => {
@@ -85,14 +82,13 @@ describe('mhs-outbound-client', () => {
     );
   });
 
-  it("should call axios with odsCode 'YES' by default and return 200", async done => {
+  it("should call axios with odsCode 'YES' by default and return 200", async () => {
     const response = await sendMessage({ interactionId, conversationId, message });
     expect(response.status).toBe(200);
     expect(axios.post).toBeCalledWith(url, axiosBody, axiosHeaders);
-    done();
   });
 
-  it('should call axios with specified odsCode if passed in', async done => {
+  it('should call axios with specified odsCode if passed in', async () => {
     const odsCode = 'A123';
     const response = await sendMessage({ interactionId, conversationId, message, odsCode });
     expect(response.status).toBe(200);
@@ -102,10 +98,9 @@ describe('mhs-outbound-client', () => {
         'Ods-Code': odsCode
       }
     });
-    done();
   });
 
-  it('should call axios with wait-for-response header set to true for pds update', async done => {
+  it('should call axios with wait-for-response header set to true for pds update', async () => {
     const interactionId = 'PRPA_IN000203UK03';
     const response = await sendMessage({ interactionId, conversationId, message });
     expect(response.status).toBe(200);
@@ -116,10 +111,9 @@ describe('mhs-outbound-client', () => {
         'wait-for-response': false
       }
     });
-    done();
   });
 
-  it('should call axios with wait-for-response header set to false for messages that do not support sync-async in mhs', async done => {
+  it('should call axios with wait-for-response header set to false for messages that do not support sync-async in mhs', async () => {
     const response = await sendMessage({ interactionId, conversationId, message });
     expect(response.status).toBe(200);
     expect(axios.post).toBeCalledWith(url, axiosBody, {
@@ -128,17 +122,15 @@ describe('mhs-outbound-client', () => {
         'wait-for-response': false
       }
     });
-    done();
   });
 
-  it('should use null for messageId by default, not pass it in headers, and return 200', async done => {
+  it('should use null for messageId by default, not pass it in headers, and return 200', async () => {
     const response = await sendMessage({ interactionId, conversationId, message });
     expect(response.status).toBe(200);
     expect(axios.post).toBeCalledWith(url, axiosBody, axiosHeaders);
-    done();
   });
 
-  it('should call axios with specified messageId if passed in and return 200', async done => {
+  it('should call axios with specified messageId if passed in and return 200', async () => {
     const messageId = uuid().toUpperCase();
     const response = await sendMessage({ interactionId, conversationId, message, messageId });
     expect(response.status).toBe(200);
@@ -148,10 +140,9 @@ describe('mhs-outbound-client', () => {
         'Message-Id': messageId
       }
     });
-    done();
   });
 
-  it('should stringify and escape the payload (xml message)', async done => {
+  it('should stringify and escape the payload (xml message)', async () => {
     const pdsRetrievalQuery = await generatePdsRetrievalQuery({
       id: conversationId,
       timestamp,
@@ -172,7 +163,6 @@ describe('mhs-outbound-client', () => {
       { payload: stripXMLMessage(pdsRetrievalQuery) },
       axiosHeaders
     );
-    done();
   });
 
   it('should throw an Error if there is an error with axios.post request', () => {
@@ -182,12 +172,11 @@ describe('mhs-outbound-client', () => {
     ).rejects.toEqual(Error(`POST ${url} - Request failed`));
   });
 
-  it('should log an Error if there is an error with axios.post request', async done => {
+  it('should log an Error if there is an error with axios.post request', async () => {
     axios.post.mockRejectedValue(new Error());
     await sendMessage({ interactionId, conversationId, message: 'message' }).catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(`POST ${url} - Request failed`, expect.anything());
-    done();
   });
 });
 

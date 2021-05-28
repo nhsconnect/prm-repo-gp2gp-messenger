@@ -34,7 +34,7 @@ describe('generatePdsRetrievalQuery', () => {
     );
   });
 
-  it('should have populate the xml template with all the required fields', async done => {
+  it('should have populate the xml template with all the required fields', async () => {
     const pdsRequestQuery = await generatePdsRetrievalQuery(testObjectComplete);
 
     const checkEntries = object => {
@@ -48,7 +48,6 @@ describe('generatePdsRetrievalQuery', () => {
     };
 
     checkEntries(testObjectComplete);
-    done();
   });
 
   it('should return a Promise (can use .then())', () => {

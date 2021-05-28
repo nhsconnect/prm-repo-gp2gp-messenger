@@ -15,11 +15,10 @@ describe('PDSRetrievalQueryResponse', () => {
     expect(new PDSRetrievalQueryResponse().interactionId).toBe(PDS_RETRIEVAL_QUERY_RESPONSE);
   });
 
-  it('should call handlePdsResponse with message', async done => {
+  it('should call handlePdsResponse with message', async () => {
     const message = 'message';
     await new PDSRetrievalQueryResponse().handleMessage(message);
     expect(handlePdsResponse).toHaveBeenCalledTimes(1);
     expect(handlePdsResponse).toHaveBeenCalledWith(message);
-    done();
   });
 });

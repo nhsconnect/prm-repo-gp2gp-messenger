@@ -89,7 +89,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         .end(done);
     });
 
-    it('should return a 503 when cannot send acknowledgement to mhs', async done => {
+    it('should return a 503 when cannot send acknowledgement to mhs', async () => {
       buildEhrAcknowledgement.mockReturnValue(message);
       await sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
       request(app)
@@ -105,8 +105,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             message
           });
           expect(logError).toHaveBeenCalled();
-        })
-        .end(done);
+        });
     });
   });
 

@@ -250,8 +250,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .end(done);
     });
 
-    it('should return correct error message if conversationId is not an uuid', done => {
-      request(app)
+    it('should return correct error message if conversationId is not an uuid', async () => {
+      await request(app)
         .post('/health-record-requests/1234567890')
         .send({ conversationId: 'not-an-uuid' })
         .expect(res => {
@@ -262,8 +262,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
               ])
             })
           );
-        })
-        .end(done);
+        });
     });
   });
 
@@ -283,24 +282,22 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         repositoryOdsCode
       }
     };
-    it('should call buildEhrRequest with valid id to generate request', async done => {
+    it('should call buildEhrRequest with valid id to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({ id: mockUUID })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with valid timestamp to generate request', async done => {
+    it('should call buildEhrRequest with valid timestamp to generate request', async () => {
       dateFormat.mockImplementation(() => mockTimestamp);
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({ timestamp: mockTimestamp })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with practice asid to generate request', async done => {
+    it('should call buildEhrRequest with practice asid to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -309,10 +306,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           })
         })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with practice ods code to generate request', async done => {
+    it('should call buildEhrRequest with practice ods code to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -321,10 +317,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           })
         })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with repository asid to generate request', async done => {
+    it('should call buildEhrRequest with repository asid to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -333,10 +328,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           })
         })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with repository ods code to generate request', async done => {
+    it('should call buildEhrRequest with repository ods code to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -345,10 +339,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           })
         })
       );
-      done();
     });
 
-    it('should call buildEhrRequest with patient nhsNumber to generate request', async done => {
+    it('should call buildEhrRequest with patient nhsNumber to generate request', async () => {
       await buildEhrRequest(exampleRequest, mockUUID, practiceAsid);
       expect(generateEhrRequestQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -357,7 +350,6 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           })
         })
       );
-      done();
     });
   });
 });
