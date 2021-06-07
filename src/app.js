@@ -9,6 +9,10 @@ import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
+import { initializeConfig } from './config';
+
+const config = initializeConfig();
+console.log('API KEY for e2e loaded: ', config.apiKeyForE2eTest !== 'auth-key');
 
 const app = express();
 
