@@ -17,7 +17,7 @@ describe('sendContinueMessage', () => {
   const authorizationKeys = 'correct-key';
   const deductionsAsid = '20000000890';
   initializeConfig.mockReturnValue({
-    gp2gpAdaptorAuthorizationKeys: authorizationKeys,
+    consumerApiKeys: { TEST_USER: authorizationKeys },
     deductionsAsid: deductionsAsid
   });
 

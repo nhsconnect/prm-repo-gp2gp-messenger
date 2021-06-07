@@ -13,12 +13,12 @@ jest.mock('../services/mhs/mhs-route-client');
 
 describe('app', () => {
   beforeEach(() => {
-    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
+    process.env.API_KEY_FOR_TEST_USER = 'correct-key';
   });
 
   afterEach(() => {
-    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
-      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
+    if (process.env.API_KEY_FOR_TEST_USER) {
+      delete process.env.API_KEY_FOR_TEST_USER;
     }
   });
 

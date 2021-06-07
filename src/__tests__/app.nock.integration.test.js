@@ -9,7 +9,7 @@ const host = 'http://localhost';
 const odsCode = 'B1234';
 
 beforeAll(() => {
-  process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = authKey;
+  process.env.API_KEY_FOR_TEST_USER = authKey;
   process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
   process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'http://localhost/mhs-route';
 });

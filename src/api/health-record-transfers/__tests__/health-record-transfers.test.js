@@ -12,7 +12,7 @@ jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
-    gp2gpAdaptorAuthorizationKeys: 'correct-key'
+    consumerApiKeys: { TEST_USER: 'correct-key' }
   })
 }));
 
