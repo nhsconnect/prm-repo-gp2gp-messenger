@@ -59,7 +59,6 @@ describe('/patient-demographics/:nhsNumber', () => {
 
   beforeEach(() => {
     uuid.mockImplementation(() => mockUUID);
-    process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
     handlePdsResponse.mockResolvedValue({
       serialChangeNumber: testSerialChangeNumber,
       patientPdsId: testPatientPdsId
@@ -101,12 +100,6 @@ describe('/patient-demographics/:nhsNumber', () => {
       .mockResolvedValue({ status: 200, data: 'no patient details' });
 
     generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
-  });
-
-  afterEach(() => {
-    if (process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS) {
-      delete process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS;
-    }
   });
 
   it('should return a 200 with MHS message passed back', done => {

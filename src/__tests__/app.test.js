@@ -80,7 +80,6 @@ describe('app', () => {
   describe('GET /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
       uuid.mockImplementation(() => mockUUID);
-      process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
       when(sendMessage)
         .calledWith({ interactionId, conversationId: mockUUID, message: fakerequest })
         .mockResolvedValue({ status: 200, data: message });
@@ -109,8 +108,6 @@ describe('app', () => {
 
   describe('PATCH /patient-demographics/:nhsNumber', () => {
     beforeEach(() => {
-      process.env.GP2GP_ADAPTOR_AUTHORIZATION_KEYS = 'correct-key';
-
       when(sendMessage)
         .calledWith({
           interactionId: interactionIdUpdate,

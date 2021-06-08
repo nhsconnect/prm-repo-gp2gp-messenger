@@ -27,7 +27,6 @@ describe('POST /patient-demographics/:nhsNumber', () => {
       pdsAsid: 'pdsAsid',
       deductionsAsid: 'deductionsAsid',
       deductionsOdsCode: 'deductionsOds',
-      gp2gpAdaptorAuthorizationKeys: 'correct-key',
       nhsNumberPrefix: '944'
     });
 

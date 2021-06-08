@@ -15,7 +15,6 @@ locals {
       { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value }
     ]
     secret_environment_variables = [
-      { name = "GP2GP_ADAPTOR_AUTHORIZATION_KEYS", valueFrom = data.aws_ssm_parameter.gp2gp_adaptor_authorization_keys.arn },
       { name = "E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR", valueFrom = data.aws_ssm_parameter.e2e_test_authorization_keys_for_gp2gp_adaptor.arn },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_USERNAME", valueFrom = data.aws_ssm_parameter.amq-username.arn },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_PASSWORD", valueFrom = data.aws_ssm_parameter.amq-password.arn },

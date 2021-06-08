@@ -27,8 +27,8 @@ describe('auth', () => {
     });
   });
 
-  describe('GP2GP_ADAPTOR_AUTHORIZATION_KEYS environment variables not provided', () => {
-    it('should return 412 if GP2GP_ADAPTOR_AUTHORIZATION_KEYS have not been set', done => {
+  describe('consumerApiKeys environment variables not provided', () => {
+    it('should return 412 if consumerApiKeys have not been set', done => {
       initializeConfig.mockReturnValueOnce({ consumerApiKeys: {} });
       request(app)
         .get('/patient-demographics/0000000000')
@@ -37,7 +37,7 @@ describe('auth', () => {
         .end(done);
     });
 
-    it('should return an explicit error message in the body if GP2GP_ADAPTOR_AUTHORIZATION_KEYS have not been set', done => {
+    it('should return an explicit error message in the body if consumerApiKeys have not been set', done => {
       initializeConfig.mockReturnValueOnce({ consumerApiKeys: {} });
       request(app)
         .get('/patient-demographics/0000000000')

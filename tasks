@@ -38,7 +38,6 @@ function check_nhs_service {
 }
 
 function configure_local_envs {
-  export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
   export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
   export REPOSITORY_URI=$IMAGE_REPO_NAME
   configure_service_url
@@ -58,13 +57,6 @@ function set_image_tag() {
 
 function get_aws_account_id {
     AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
- }
-
-function configure_aws_service_auth_keys {
-    check_env
-    get_aws_account_id
-    parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/${NHS_SERVICE}-authorization-keys"
-    export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=$(get_aws_ssm_secret ${parameter_name})
 }
 
 function configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor {
@@ -250,7 +242,6 @@ case "${command}" in
       fi
       ;;
   test_functional)
-      configure_aws_service_auth_keys
       configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_functional"
@@ -261,7 +252,6 @@ case "${command}" in
       ;;
   test_e2e)
       check_env
-      configure_aws_service_auth_keys
       configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_e2e"
@@ -293,7 +283,6 @@ case "${command}" in
       configure_docker_repository_uri
       set_image_tag
       configure_service_url
-      export GP2GP_ADAPTOR_AUTHORIZATION_KEYS=auth-key-1
       dojo -c Dojofile-dtest "./tasks _test_docker"
       ;;
   test_docker_local)

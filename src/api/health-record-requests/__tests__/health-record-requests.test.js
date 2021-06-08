@@ -30,7 +30,6 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   beforeEach(() => {
     generateEhrRequestQuery.mockResolvedValue('message');
     initializeConfig.mockReturnValue({
-      gp2gpAdaptorAuthorizationKeys: 'correct-key',
       nhsNumberPrefix: '123'
     });
   });

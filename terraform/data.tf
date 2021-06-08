@@ -8,10 +8,6 @@ data "aws_ssm_parameter" "private_zone_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-root-zone-id"
 }
 
-data "aws_ssm_parameter" "gp2gp_adaptor_authorization_keys" {
-  name = "/repo/${var.environment}/user-input/gp2gp-adaptor-authorization-keys"
-}
-
 data "aws_ssm_parameter" "e2e_test_authorization_keys_for_gp2gp_adaptor" {
   name = "/repo/${var.environment}/user-input/api-keys/gp2gp-adaptor/e2e-test"
 }
