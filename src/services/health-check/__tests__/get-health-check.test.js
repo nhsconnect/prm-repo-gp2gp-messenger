@@ -28,6 +28,6 @@ describe('get-health-check', () => {
 const expectedHealthCheckBase = () => ({
   version: '1',
   description: 'Health of GP2GP Adapter service',
-  node_env: process.env.NODE_ENV,
+  node_env: process.env.NHS_ENVIRONMENT,
   details: {}
 });

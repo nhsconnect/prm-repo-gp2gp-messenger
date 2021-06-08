@@ -11,7 +11,6 @@ export const initializeConfig = () => ({
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
   nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',
   nhsNumberPrefix: process.env.NHS_NUMBER_PREFIX,
-  apiKeyForE2eTest: process.env.API_KEY_FOR_E2E_TEST || 'auth-key',
   consumerApiKeys: loadConsumerKeys()
 });
 

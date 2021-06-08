@@ -6,7 +6,7 @@ locals {
     environment_variables        = [
       { name = "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE.value },
       { name = "GP2GP_ADAPTOR_REPOSITORY_ASID", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ASID.value },
-      { name = "NODE_ENV", value = var.environment },
+      { name = "NHS_ENVIRONMENT", value = var.environment },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_NAME", value = "raw-inbound" },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.stomp-endpoint_0.value },
       { name = "GP2GP_ADAPTOR_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.stomp-endpoint_1.value },
