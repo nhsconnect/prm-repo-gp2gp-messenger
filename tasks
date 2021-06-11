@@ -10,7 +10,7 @@ AWS_DEFAULT_REGION=eu-west-2
 IMAGE_REPO_NAME=deductions/gp2gp-adaptor
 export NHS_SERVICE=gp2gp-adaptor
 AWS_HELPERS_FILE="utils/aws-helpers"
-AWS_HELPERS_VERSION=0.1.2
+AWS_HELPERS_VERSION=0.2.1
 
 mkdir -p utils
 if [[ ! -f $AWS_HELPERS_FILE ]];then
@@ -80,20 +80,32 @@ function get_aws_ssm_secret {
 # Terraform Functions #
 #######################
 
+function tf_init {
+  check_env
+  #  Condition [ $NHS_ENVIRONMENT == "test" ] is required as test environment infrastructure is deployed in CI AWS account
+  [ $NHS_ENVIRONMENT == "ci" ] || [ $NHS_ENVIRONMENT == "test" ] &&  bucket_env_infix=""  || bucket_env_infix="$NHS_ENVIRONMENT-"
+
+  cd terraform
+
+  terraform init -reconfigure \
+    -backend-config key="${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate" \
+    -backend-config bucket="prm-deductions-${bucket_env_infix}terraform-state" \
+    -backend-config dynamodb_table="prm-deductions-${bucket_env_infix}terraform-table" \
+    -backend-config region=${AWS_DEFAULT_REGION}
+}
+
 function tf_plan {
   operation=$1
   certs=$2
-  cd terraform
   set_image_tag
 
   TARGET=""
-
 
   if [[ "${certs}" == "true" ]]; then
     TARGET="-target=aws_acm_certificate.gp2gp-adaptor-cert"
   fi
 
-  terraform init -reconfigure -backend-config key=${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  tf_init
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
     terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars $TARGET -out="nhs_deployment.tfplan"
@@ -106,8 +118,7 @@ function tf_plan {
 }
 
 function tf_apply {
-  cd terraform
-  terraform init -backend-config key=${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  tf_init
   terraform get # modules
   terraform apply nhs_deployment.tfplan
   terraform output -json > tf-out.json
@@ -301,6 +312,7 @@ case "${command}" in
       dojo -c Dojofile-infra "bash"
       ;;
   _tf_plan_certs)
+      _assume_environment_role $NHS_ENVIRONMENT
       tf_plan "$2" true
       ;;
   tf_plan_certs)
@@ -308,6 +320,7 @@ case "${command}" in
       dojo -c Dojofile-infra "./tasks _tf_plan_certs $2"
       ;;
   _tf_plan)
+      _assume_environment_role $NHS_ENVIRONMENT
       tf_plan "$2"
       ;;
   tf_plan)
@@ -315,6 +328,7 @@ case "${command}" in
       dojo -c Dojofile-infra "./tasks _tf_plan $2"
       ;;
   _tf_apply)
+      _assume_environment_role $NHS_ENVIRONMENT
       tf_apply
       ;;
   tf_apply)
@@ -327,6 +341,7 @@ case "${command}" in
       promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
       ;;
   _wait_ecs)
+      _assume_environment_role $NHS_ENVIRONMENT
       aws ecs wait services-stable \
         --region $AWS_DEFAULT_REGION \
         --cluster $NHS_ENVIRONMENT-deductions-private-ecs-cluster \
