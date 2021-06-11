@@ -34,7 +34,13 @@ export const pdsUpdate = async (req, res, next) => {
 
   try {
     if (!checkNhsNumberPrefix(nhsNumberPrefix, nhsNumber)) {
-      res.sendStatus(422);
+      const notASyntheticPatientMessage =
+        'The NHS number provided is not one for a synthetic patient';
+
+      logWarning(notASyntheticPatientMessage);
+      res.status(422).json({
+        errors: notASyntheticPatientMessage
+      });
       return;
     }
     const message = await generateUpdateOdsRequest({
