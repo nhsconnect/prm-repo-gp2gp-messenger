@@ -42,5 +42,5 @@ const getConsumer = (consumerApiKeys, authorizationKey) => {
   const consumer = Object.keys(consumerApiKeys).filter(
     consumer => consumerApiKeys[consumer] === authorizationKey
   );
-  return consumer.toString().replace(',', '/');
+  return consumer.toString().replace(/,/g, '/');
 };
