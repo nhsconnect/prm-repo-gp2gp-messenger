@@ -253,6 +253,7 @@ case "${command}" in
       fi
       ;;
   test_functional)
+      _assume_environment_role $NHS_ENVIRONMENT
       configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_functional"
@@ -263,6 +264,7 @@ case "${command}" in
       ;;
   test_e2e)
       check_env
+      _assume_environment_role $NHS_ENVIRONMENT
       configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_e2e"
