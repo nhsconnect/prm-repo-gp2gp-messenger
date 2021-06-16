@@ -10,6 +10,63 @@ data "aws_route53_zone" "environment_public_zone" {
   zone_id = data.aws_ssm_parameter.environment_public_zone_id.value
 }
 
+data "aws_ssm_parameter" "private_subnets" {
+  name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-private-subnets"
+}
+
+resource "aws_alb" "alb-internal" {
+  name            = "${var.environment}-${var.component_name}-alb-int"
+  subnets         = split(",", data.aws_ssm_parameter.private_subnets.value)
+  security_groups = [
+    aws_security_group.gp2gp_adaptor_alb.id,
+    aws_security_group.alb_to_gp2gp_adaptor_ecs.id,
+    aws_security_group.service_to_gp2gp_adaptor.id,
+    aws_security_group.vpn_to_gp2gp_adaptor.id,
+    aws_security_group.gocd_to_gp2gp_adaptor.id
+  ]
+  internal        = true
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_alb_listener" "int-alb-listener-http" {
+  load_balancer_arn = aws_alb.alb-internal.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Error"
+      status_code  = "501"
+    }
+  }
+}
+
+resource "aws_alb_listener" "int-alb-listener-https" {
+  load_balancer_arn = aws_alb.alb-internal.arn
+  port              = "443"
+  protocol          = "HTTPS"
+
+  ssl_policy      = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn = aws_acm_certificate_validation.gp2gp-adaptor-cert-validation.certificate_arn
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Error"
+      status_code  = "501"
+    }
+  }
+}
+
 resource "aws_alb_target_group" "internal-alb-tg" {
   name        = "${var.environment}-${var.component_name}-int-tg"
   port        = 3000
@@ -34,7 +91,7 @@ resource "aws_alb_target_group" "internal-alb-tg" {
 }
 
 resource "aws_alb_listener_rule" "int-alb-http-listener-rule" {
-  listener_arn = data.aws_ssm_parameter.deductions_private_int_alb_httpl_arn.value
+  listener_arn = aws_alb_listener.int-alb-listener-http.arn
   priority     = 100
 
   action {
@@ -55,7 +112,7 @@ resource "aws_alb_listener_rule" "int-alb-http-listener-rule" {
 }
 
 resource "aws_alb_listener_rule" "int-alb-https-listener-rule" {
-  listener_arn = data.aws_ssm_parameter.deductions_private_int_alb_httpsl_arn.value
+  listener_arn = aws_alb_listener.int-alb-listener-https.arn
   priority     = 101
 
   action {
@@ -70,58 +127,105 @@ resource "aws_alb_listener_rule" "int-alb-https-listener-rule" {
   }
 }
 
-resource "aws_acm_certificate" "gp2gp-adaptor-cert" {
-  domain_name       = "${var.dns_name}.${data.aws_route53_zone.environment_public_zone.name}"
+# Exists to be referred by the ECS task of gp2gp adaptor
+resource "aws_security_group" "gp2gp_adaptor_alb" {
+  name        = "${var.environment}-alb-${var.component_name}"
+  description = "GP2GP Adaptor ALB security group"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
-  validation_method = "DNS"
+  tags = {
+    Name = "${var.environment}-alb-${var.component_name}"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
 
+resource "aws_security_group" "alb_to_gp2gp_adaptor_ecs" {
+  name        = "${var.environment}-alb-to-${var.component_name}-ecr"
+  description = "Allows GP2GP Adaptor ALB connections to GP2GP Adaptor component task"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+
+  egress {
+    description = "Allow outbound connections to GP2GP Adaptor ECS Task"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    security_groups = [local.ecs_task_sg_id]
+  }
+
+  tags = {
+    Name = "${var.environment}-alb-to-${var.component_name}-ecr"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_security_group" "service_to_gp2gp_adaptor" {
+  name        = "${var.environment}-service-to-${var.component_name}"
+  description = "controls access from repo services to ehr-repo"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+
+  tags = {
+    Name = "${var.environment}-service-to-${var.component_name}-sg"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_ssm_parameter" "service_to_gp2gp_adaptor" {
+  name = "/repo/${var.environment}/output/${var.repo_name}/service-to-gp2gp-adaptor-sg-id"
+  type = "String"
+  value = aws_security_group.service_to_gp2gp_adaptor.id
   tags = {
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
-resource "aws_route53_record" "gp2gp-adaptor-cert-validation-record" {
-  for_each = {
-  for dvo in aws_acm_certificate.gp2gp-adaptor-cert.domain_validation_options : dvo.domain_name => {
-    name   = dvo.resource_record_name
-    record = dvo.resource_record_value
-    type   = dvo.resource_record_type
+resource "aws_security_group" "vpn_to_gp2gp_adaptor" {
+  name        = "${var.environment}-vpn-to-${var.component_name}"
+  description = "controls access from vpn to ehr-repo"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+
+  ingress {
+    description = "Allow vpn to access GP2GP Adaptor ALB"
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    security_groups = [data.aws_ssm_parameter.vpn_sg_id.value]
   }
+
+  tags = {
+    Name = "${var.environment}-vpn-to-${var.component_name}-sg"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_security_group" "gocd_to_gp2gp_adaptor" {
+  name        = "${var.environment}-gocd-to-${var.component_name}"
+  description = "controls access from gocd to ehr-repo"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+
+  ingress {
+    description = "Allow gocd to access GP2GP Adaptor ALB"
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
   }
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.environment_public_zone.zone_id
+  tags = {
+    Name = "${var.environment}-gocd-to-${var.component_name}-sg"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
-resource "aws_acm_certificate_validation" "gp2gp-adaptor-cert-validation" {
-  certificate_arn = aws_acm_certificate.gp2gp-adaptor-cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.gp2gp-adaptor-cert-validation-record : record.fqdn]
+data "aws_ssm_parameter" "vpn_sg_id" {
+  name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
 }
 
-
-data "aws_ssm_parameter" "int-alb-listener-https-arn" {
-  name = "/repo/${var.environment}/output/prm-deductions-infra/int-alb-listener-https-arn"
-}
-
-resource "aws_lb_listener_certificate" "repo-to-gp-int-listener-cert" {
-  listener_arn    = data.aws_ssm_parameter.int-alb-listener-https-arn.value
-  certificate_arn = aws_acm_certificate_validation.gp2gp-adaptor-cert-validation.certificate_arn
-}
-
-data "aws_ssm_parameter" "service-to-ehr-repo-sg-id" {
-  name = "/repo/${var.environment}/output/prm-deductions-ehr-repository/service-to-ehr-repo-sg-id"
-}
-
-resource "aws_security_group_rule" "gp2gp-adaptor-to-ehr-repo" {
-  type = "ingress"
-  protocol = "TCP"
-  from_port = 443
-  to_port = 443
-  security_group_id = data.aws_ssm_parameter.service-to-ehr-repo-sg-id.value
-  source_security_group_id = data.aws_ssm_parameter.deductions_private_gp2gp_adaptor_sg_id.value
+data "aws_ssm_parameter" "gocd_sg_id" {
+  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }

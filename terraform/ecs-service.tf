@@ -1,6 +1,6 @@
 locals {
-  ecs_cluster_id    = data.aws_ssm_parameter.deductions_private_ecs_cluster_id.value
-  ecs_task_sg_id    = data.aws_ssm_parameter.deductions_private_gp2gp_adaptor_sg_id.value
+  ecs_cluster_id    = aws_ecs_cluster.ecs-cluster.id
+  ecs_task_sg_id    = aws_security_group.ecs-tasks-sg.id
   private_subnets   = split(",", data.aws_ssm_parameter.deductions_private_private_subnets.value)
   # alb_tg_arn        = aws_alb_target_group.alb-tg.arn
   int_alb_tg_arn    = aws_alb_target_group.internal-alb-tg.arn
@@ -45,4 +45,13 @@ resource "aws_ecs_service" "ecs-service" {
   #   Deductions-Component = var.component_name
   #   TurnOffAtNight = "True"
   # }
+}
+
+resource "aws_ecs_cluster" "ecs-cluster" {
+  name = "${var.environment}-${var.component_name}-ecs-cluster"
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
