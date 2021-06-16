@@ -346,7 +346,7 @@ case "${command}" in
       _assume_environment_role $NHS_ENVIRONMENT
       aws ecs wait services-stable \
         --region $AWS_DEFAULT_REGION \
-        --cluster $NHS_ENVIRONMENT-deductions-private-ecs-cluster \
+        --cluster $NHS_ENVIRONMENT-${NHS_SERVICE}-ecs-cluster \
         --service $NHS_ENVIRONMENT-${NHS_SERVICE}-service
       ;;
   wait_ecs)
