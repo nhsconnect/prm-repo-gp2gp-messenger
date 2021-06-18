@@ -9,8 +9,10 @@ The initial version will send health records that are encoded in the HL7 format.
 
 ## Prerequisites
 
-- Node 12.x
-- Docker
+- [Node](https://nodejs.org/en/download/package-manager/#nvm) - version 14.x
+- [Docker](https://docs.docker.com/install/)
+- [kudulab/dojo](https://github.com/kudulab/dojo#installation)
+
 
 # Set up
 To replicate the ci environment, we use `dojo` that allows us to work with the codebase without installing any dependencies locally.
