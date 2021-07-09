@@ -31,3 +31,11 @@ data "aws_ssm_parameter" "GP2GP_ADAPTOR_MHS_OUTBOUND_URL" {
 data "aws_ssm_parameter" "nhs_number_prefix" {
   name = "/repo/${var.environment}/user-input/nhs-number-prefix"
 }
+
+data "aws_ssm_parameter" "sds_fhir_api_key" {
+  name = "/repo/${var.environment}/user-input/external/sds-fhir-api-key"
+}
+
+data "aws_ssm_parameter" "sds_fhir_url" {
+  name = "/repo/${var.environment}/user-input/external/sds-fhir-url"
+}
