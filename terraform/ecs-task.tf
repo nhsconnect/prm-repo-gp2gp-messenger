@@ -9,7 +9,8 @@ locals {
       { name = "NHS_ENVIRONMENT", value = var.environment },
       { name = "GP2GP_ADAPTOR_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_OUTBOUND_URL.value },
       { name = "GP2GP_ADAPTOR_MHS_ROUTE_URL", value = "https://route.mhs.${var.environment}.non-prod.patient-deductions.nhs.uk" },
-      { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value }
+      { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value },
+      { name = "TOGGLE_USE_SDS_FHIR", value = var.toggle_use_sds_fhir }
     ]
     secret_environment_variables = [
       { name = "E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR", valueFrom = data.aws_ssm_parameter.e2e_test_authorization_keys_for_gp2gp_adaptor.arn }
