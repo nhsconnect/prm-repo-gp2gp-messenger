@@ -10,6 +10,9 @@ export const initializeConfig = () => ({
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
   nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',
   nhsNumberPrefix: process.env.NHS_NUMBER_PREFIX,
+  toggleUseSdsFhir: process.env.TOGGLE_USE_SDS_FHIR,
+  sdsFhirApiKey: process.env.SDS_FHIR_API_KEY,
+  sdsFhirUrl: process.env.SDS_FHIR_URL,
   consumerApiKeys: loadConsumerKeys()
 });
 
