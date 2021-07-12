@@ -3,10 +3,10 @@ import app from '../../../app';
 import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-repo';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
-import { getPracticeAsid } from '../../../services/mhs/mhs-route-client';
 import { jsonEhrExtract, payload } from './data/json-formatted-ehr-example';
+import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
 
-jest.mock('../../../services/mhs/mhs-route-client');
+jest.mock('../../../services/utils/get-practice-asid');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');

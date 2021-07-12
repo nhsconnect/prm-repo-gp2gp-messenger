@@ -1,11 +1,11 @@
 import { body } from 'express-validator';
 import { v4 as uuid } from 'uuid';
-import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 import { logError, logInfo } from '../../middleware/logging';
 import { generateContinueRequest } from '../../templates/generate-continue-request';
 import { initializeConfig } from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { setCurrentSpanAttributes } from '../../config/tracing';
+import { getPracticeAsid } from '../../services/utils/get-practice-asid';
 
 export const continueMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),

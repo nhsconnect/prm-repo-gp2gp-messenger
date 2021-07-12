@@ -2,7 +2,7 @@ import axios from 'axios';
 import { initializeConfig } from '../../config';
 import { logError } from '../../middleware/logging';
 
-export const getPracticeAsid = async (odsCode, serviceId) => {
+export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
   try {
     const response = await axios.get(`${sdsFhirUrl}/Device`, {

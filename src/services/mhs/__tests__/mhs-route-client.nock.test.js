@@ -1,6 +1,6 @@
 import nock from 'nock';
 import { initializeConfig } from '../../../config';
-import { getPracticeAsid } from '../mhs-route-client';
+import { getPracticeAsidViaMhs } from '../mhs-route-client';
 
 jest.mock('../../../config');
 
@@ -16,7 +16,7 @@ describe('mhs-route-client', () => {
       .get(`/routing?org-code=A123456&service-id=${serviceId}`)
       .reply(200, { uniqueIdentifier: [expectedAsid] });
 
-    expect(await getPracticeAsid(odsCode, serviceId)).toBe(expectedAsid);
+    expect(await getPracticeAsidViaMhs(odsCode, serviceId)).toBe(expectedAsid);
   });
 
   it('should trim / from base url of MHS', async () => {
@@ -25,6 +25,6 @@ describe('mhs-route-client', () => {
       .get(`/routing?org-code=A123456&service-id=${serviceId}`)
       .reply(200, { uniqueIdentifier: [expectedAsid] });
 
-    expect(await getPracticeAsid(odsCode, serviceId)).toBe(expectedAsid);
+    expect(await getPracticeAsidViaMhs(odsCode, serviceId)).toBe(expectedAsid);
   });
 });

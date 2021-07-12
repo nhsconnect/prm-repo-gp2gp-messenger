@@ -4,12 +4,12 @@ import { v4 as uuid } from 'uuid';
 import app from '../app';
 import { pdsQueryActFailed } from '../services/pds/__tests__/data/pds-query-act-failed';
 import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
-import { getPracticeAsid } from '../services/mhs/mhs-route-client';
 import { expectStructuredLogToContain, transportSpy } from '../__builders__/logging-helper';
 import { logger } from '../config/logging';
+import { getPracticeAsid } from '../services/utils/get-practice-asid';
 
 jest.mock('axios');
-jest.mock('../services/mhs/mhs-route-client');
+jest.mock('../services/utils/get-practice-asid');
 
 describe('app', () => {
   beforeEach(() => {

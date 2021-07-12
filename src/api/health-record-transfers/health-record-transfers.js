@@ -2,9 +2,9 @@ import { body } from 'express-validator';
 import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
-import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 import { logError, logInfo } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
+import { getPracticeAsid } from '../../services/utils/get-practice-asid';
 
 export const healthRecordTransferValidation = [
   body('data.type')

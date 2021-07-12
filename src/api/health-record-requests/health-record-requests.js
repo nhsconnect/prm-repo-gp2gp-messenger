@@ -3,9 +3,9 @@ import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logWarning } from '../../middleware/logging';
-import { getPracticeAsid } from '../../services/mhs/mhs-route-client';
 import { setCurrentSpanAttributes } from '../../config/tracing';
 import { initializeConfig } from '../../config';
+import { getPracticeAsid } from '../../services/utils/get-practice-asid';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),
