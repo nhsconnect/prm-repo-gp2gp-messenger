@@ -21,6 +21,4 @@ variable "service_desired_count" {}
 
 variable "alb_deregistration_delay" {}
 
-variable "toggle_use_sds_fhir" {
-  type = bool
-}
+variable "toggle_use_sds_fhir" {}
