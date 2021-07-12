@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { initializeConfig } from '../../config';
-import { logError } from '../../middleware/logging';
+import { logError, logInfo } from '../../middleware/logging';
 
 export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
+  logInfo('Getting ASID via FHIR');
   try {
     const response = await axios.get(`${sdsFhirUrl}/Device`, {
       params: {
@@ -28,6 +29,7 @@ export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
       throw new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
     }
 
+    logInfo('Successfully retrieved ASID via FHIR');
     return asidIdentifier[0].value;
   } catch (err) {
     logError(`Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`, err);

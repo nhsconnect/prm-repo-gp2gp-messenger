@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { initializeConfig } from '../../config';
+import { logInfo } from '../../middleware/logging';
 
 export const getPracticeAsidViaMhs = async (odsCode, serviceId) => {
+  logInfo('Getting ASID via MHS');
   const baseUrl = initializeConfig().mhsRouteUrl.replace(/\/$/, '');
   const url = `${baseUrl}/routing`;
 
@@ -26,5 +28,6 @@ export const getPracticeAsidViaMhs = async (odsCode, serviceId) => {
     throw new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
   }
 
+  logInfo(`Successfully retrieved ASID via MHS`);
   return asids[0];
 };
