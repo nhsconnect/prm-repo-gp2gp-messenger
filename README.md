@@ -1,7 +1,7 @@
 # Deductions GP2GP adaptor
 
 This is an implementation of a component to handle the sending of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
-The goal is to confirm the GP2GP message format can be used to transfer orphaned and stranded records out of a secure NHS repository.
+It uses the GP2GP message format to transfer orphaned and stranded records out of a secure NHS repository.
 
 This component will communicate with the Message Handler Service (MHS) [GitHub nhsconnect/integration-adaptors](https://github.com/nhsconnect/integration-adaptors) and other components being developed by the Orphaned and Stranded Record programme.
 
@@ -91,45 +91,10 @@ Ensure you have VPN connection set up to both `dev` and `test` environments:
 
 ## Access to AWS from CLI
 
-In order to get sufficient access to work with terraform or AWS CLI:
+In order to get sufficient access to work with terraform or AWS CLI, follow this [page](
+https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11286020174/How+to+set+up+access+to+AWS+from+CLI)
 
-Make sure to unset the AWS variables:
-```
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset AWS_SESSION_TOKEN
-```
-
-As a note, the following set-up is based on the README of assume-role [tool](https://github.com/remind101/assume-role)
-
-Set up a profile for each role you would like to assume in `~/.aws/config`, for example:
-
-```
-[profile default]
-output = json
-
-[profile ci]
-role_arn = arn:aws:iam::327778747031:role/NHSDAdminRole
-mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
-source_profile = default
-
-[profile dev]
-role_arn = arn:aws:iam::416874859154:role/NHSDAdminRole
-mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
-source_profile = default
-
-[profile test]
-role_arn = arn:aws:iam::005235525306:role/NHSDAdminRole
-mfa_serial = arn:aws:iam::347250048819:mfa/<your-user-name>
-source_profile = default
-```
-
-The `source_profile` needs to match your profile in `~/.aws/credentials`
-```
-[default]
-aws_access_key_id = <your-aws-access-key-id>
-aws_secret_access_key = <your-aws-secret-access-key>
-```
+As a note, this set-up is based on the README of assume-role [tool](https://github.com/remind101/assume-role)
 
 ## Assume role with elevated permissions
 
@@ -151,10 +116,3 @@ Run the following command to confirm the role was assumed correctly:
 
 `aws sts get-caller-identity`
 
-## AWS SSM Parameters Design Principles
-
-When creating the new ssm keys, please follow the agreed convention as per the design specified below:
-
-* all parts of the keys are lower case
-* the words are separated by dashes (`kebab case`)
-* `env` is optional

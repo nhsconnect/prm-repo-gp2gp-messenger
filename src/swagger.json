@@ -150,7 +150,7 @@
     "/health-record-transfers": {
       "post": {
         "tags": ["health-record-transfers"],
-        "summary": "Sends EHR acknowledgement",
+        "summary": "Transfers EHR outside of the repository",
         "consumes": ["application/json"],
         "parameters": [
           {
@@ -223,7 +223,7 @@
     "/patient-demographics/{nhsNumber}": {
       "get": {
         "tags": ["patient-demographics"],
-        "summary": "Uses an NHS number to make a PDS request to confirm communication with MHS",
+        "summary": "Uses an NHS number to make a PDS patient look-up request through MHS",
         "parameters": [
           {
             "in": "path",
