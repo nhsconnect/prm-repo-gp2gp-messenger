@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { initializeConfig } from '../../config';
+import { logError } from '../../middleware/logging';
 
 export const getPracticeAsid = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
@@ -18,10 +19,18 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
     const asidIdentifier = identifiers.filter(
       identifier => identifier.system === 'https://fhir.nhs.uk/Id/nhsSpineASID'
     );
+
+    if (asidIdentifier.length === 0) {
+      throw new Error(`No ASID found for ODS code ${odsCode}`);
+    }
+
+    if (asidIdentifier.length > 1) {
+      throw new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
+    }
+
     return asidIdentifier[0].value;
   } catch (err) {
-    throw new Error(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} with Status: ${err.response.status}`
-    );
+    logError(`Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`, err);
+    throw err;
   }
 };
