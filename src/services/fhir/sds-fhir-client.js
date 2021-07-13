@@ -16,17 +16,27 @@ export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
       }
     });
 
-    const identifiers = response.data.entry[0].resource.identifier;
+    const entries = response.data.entry;
+
+    if (entries.length === 0) {
+      throw new Error(`No ASID entries found for ODS code ${odsCode}`);
+    }
+
+    if (entries.length > 1) {
+      throw new Error(`Multiple ASID entries found for ODS code ${odsCode}`);
+    }
+
+    const identifiers = entries[0].resource.identifier;
     const asidIdentifier = identifiers.filter(
       identifier => identifier.system === 'https://fhir.nhs.uk/Id/nhsSpineASID'
     );
 
     if (asidIdentifier.length === 0) {
-      throw new Error(`No ASID found for ODS code ${odsCode}`);
+      throw new Error(`No ASID identifier found for ODS code ${odsCode}`);
     }
 
     if (asidIdentifier.length > 1) {
-      throw new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
+      throw new Error(`Multiple ASID identifiers found for ODS code ${odsCode}`);
     }
 
     logInfo('Successfully retrieved ASID via FHIR');

@@ -31,7 +31,7 @@ describe('sds-fhir-client', () => {
       }
     ]
   };
-  const mockResponseNoAsid = {
+  const mockResponseNoAsidIdentifier = {
     entry: [
       {
         resource: {
@@ -45,8 +45,7 @@ describe('sds-fhir-client', () => {
       }
     ]
   };
-
-  const mockResponseMultipleAsid = {
+  const mockResponseMultipleAsidIdentifier = {
     entry: [
       {
         resource: {
@@ -68,17 +67,12 @@ describe('sds-fhir-client', () => {
       }
     ]
   };
-
-  beforeEach(() => {
-    // not having this can cause ECONNREFUSED errors
-    if (!nock.isActive()) {
-      nock.activate();
-    }
-  });
-
-  afterEach(() => {
-    nock.restore();
-  });
+  const mockResponseNoAsidEntries = {
+    entry: []
+  };
+  const mockResponseMultipleAsidEntries = {
+    entry: [{ resource: {} }, { resource: {} }, { resource: {} }]
+  };
 
   it('should make request to SDS FHIR URL and return ASID', async () => {
     const scope = nock(sdsFhirUrl, {
@@ -121,8 +115,8 @@ describe('sds-fhir-client', () => {
     );
   });
 
-  it('should throw an error when no ASIDS are found in FHIR response', async () => {
-    const errorMessage = new Error(`No ASID found for ODS code ${odsCode}`);
+  it('should throw an error when no ASID identifiers are found in FHIR response', async () => {
+    const errorMessage = new Error(`No ASID identifier found for ODS code ${odsCode}`);
     const scope = nock(sdsFhirUrl, {
       reqheaders: {
         apiKey: sdsFhirApiKey
@@ -133,11 +127,9 @@ describe('sds-fhir-client', () => {
         organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
         identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
       })
-      .reply(200, mockResponseNoAsid);
+      .reply(200, mockResponseNoAsidIdentifier);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(
-      `No ASID found for ODS code ${odsCode}`
-    );
+    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
@@ -145,8 +137,8 @@ describe('sds-fhir-client', () => {
     );
   });
 
-  it('should throw an error when multiple ASIDS are found in FHIR response', async () => {
-    const errorMessage = new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
+  it('should throw an error when multiple ASID identifiers are found in FHIR response', async () => {
+    const errorMessage = new Error(`Multiple ASID identifiers found for ODS code ${odsCode}`);
     const scope = nock(sdsFhirUrl, {
       reqheaders: {
         apiKey: sdsFhirApiKey
@@ -157,7 +149,51 @@ describe('sds-fhir-client', () => {
         organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
         identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
       })
-      .reply(200, mockResponseMultipleAsid);
+      .reply(200, mockResponseMultipleAsidIdentifier);
+
+    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    expect(scope.isDone()).toBe(true);
+    expect(logError).toHaveBeenCalledWith(
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
+      errorMessage
+    );
+  });
+
+  it('should throw an error when no ASID entries are found in FHIR response', async () => {
+    const errorMessage = new Error(`No ASID entries found for ODS code ${odsCode}`);
+    const scope = nock(sdsFhirUrl, {
+      reqheaders: {
+        apiKey: sdsFhirApiKey
+      }
+    })
+      .get(`/Device`)
+      .query({
+        organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
+        identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
+      })
+      .reply(200, mockResponseNoAsidEntries);
+
+    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    expect(scope.isDone()).toBe(true);
+    expect(logError).toHaveBeenCalledWith(
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
+      errorMessage
+    );
+  });
+
+  it('should throw an error when multiple ASID entries are found in FHIR response', async () => {
+    const errorMessage = new Error(`Multiple ASID entries found for ODS code ${odsCode}`);
+    const scope = nock(sdsFhirUrl, {
+      reqheaders: {
+        apiKey: sdsFhirApiKey
+      }
+    })
+      .get(`/Device`)
+      .query({
+        organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
+        identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
+      })
+      .reply(200, mockResponseMultipleAsidEntries);
 
     await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
