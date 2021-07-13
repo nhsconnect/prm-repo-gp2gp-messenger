@@ -4,7 +4,7 @@ import { logError, logInfo } from '../../middleware/logging';
 
 export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
-  logInfo('Getting ASID via FHIR');
+  logInfo(`Getting ASID via FHIR for ODS code ${odsCode}`);
   try {
     const response = await axios.get(`${sdsFhirUrl}/Device`, {
       params: {
@@ -39,7 +39,7 @@ export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
       throw new Error(`Multiple ASID identifiers found for ODS code ${odsCode}`);
     }
 
-    logInfo('Successfully retrieved ASID via FHIR');
+    logInfo(`Successfully retrieved ASID via FHIR for ODS code ${odsCode}`);
     return asidIdentifier[0].value;
   } catch (err) {
     logError(`Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`, err);
