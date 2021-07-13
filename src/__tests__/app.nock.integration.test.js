@@ -8,10 +8,13 @@ const authKey = 'correct-key';
 const host = 'http://localhost';
 const odsCode = 'B1234';
 
-beforeAll(() => {
+beforeEach(() => {
   process.env.API_KEY_FOR_TEST_USER = authKey;
   process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
   process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'http://localhost/mhs-route';
+  process.env.TOGGLE_USE_SDS_FHIR = 'false';
+  process.env.SDS_FHIR_URL = 'http://localhost/sds-fhir';
+  process.env.SDS_FHIR_API_KEY = 'key';
 });
 
 describe('POST /health-record-transfers', () => {
@@ -38,6 +41,25 @@ describe('POST /health-record-transfers', () => {
     }
   };
 
+  const mockFhirResponse = {
+    entry: [
+      {
+        resource: {
+          identifier: [
+            {
+              system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
+              value: expectedReceivingAsid
+            },
+            {
+              system: 'https://fake-fhir',
+              value: 'B12345-836483'
+            }
+          ]
+        }
+      }
+    ]
+  };
+
   const ehrExtractStoredInS3 = ehrExtract => `{"payload": "${ehrExtract}" }`;
   const matchPayload = ehrRequestId => {
     return body => {
@@ -55,7 +77,7 @@ describe('POST /health-record-transfers', () => {
       'Interaction-ID': 'RCMR_IN030000UK06',
       'Correlation-Id': conversationId,
       'Ods-Code': odsCode,
-      'from-asid': '200000001161',
+      'from-asid': '200000001333',
       'wait-for-response': false
     };
 
@@ -80,6 +102,49 @@ describe('POST /health-record-transfers', () => {
       })
       .end(done);
   });
+
+  it('should send correctly updated ehr to mhs outbound when asid retrieved via fhir', done => {
+    process.env.TOGGLE_USE_SDS_FHIR = 'true';
+    const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN030000UK06';
+    const ehrExtract = templateEhrExtract(priorEhrRequestId);
+    const mhsOutboundHeaders = {
+      'Content-Type': 'application/json',
+      'Interaction-ID': 'RCMR_IN030000UK06',
+      'Correlation-Id': conversationId,
+      'Ods-Code': odsCode,
+      'from-asid': '200000001333',
+      'wait-for-response': false
+    };
+
+    const fhirScope = nock(`${host}/sds-fhir`, {
+      reqheaders: {
+        apiKey: 'key'
+      }
+    })
+      .get(`/Device`)
+      .query({
+        organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
+        identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
+      })
+      .reply(200, mockFhirResponse);
+
+    const ehrRepoScope = nock(host).get(ehrPath).reply(200, ehrExtractStoredInS3(ehrExtract));
+    const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
+      .post('/mhs-outbound', matchPayload(ehrRequestId))
+      .reply(202);
+
+    request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody)
+      .expect(204)
+      .expect(() => {
+        expect(ehrRepoScope.isDone()).toBe(true);
+        expect(mhsOutboundScope.isDone()).toBe(true);
+        expect(fhirScope.isDone()).toBe(true);
+      })
+      .end(done);
+  });
 });
 
 describe('GET /patient-demographics', () => {
@@ -88,7 +153,7 @@ describe('GET /patient-demographics', () => {
       'Content-Type': 'application/json',
       'Interaction-ID': 'QUPA_IN000008UK02',
       'Ods-Code': 'YES',
-      'from-asid': '200000001161',
+      'from-asid': '200000001333',
       'wait-for-response': false
     };
 
@@ -132,7 +197,7 @@ describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
       'Interaction-ID': 'MCCI_IN010000UK13',
       'Correlation-ID': conversationId,
       'Ods-Code': odsCode,
-      'from-asid': '200000001161',
+      'from-asid': '200000001333',
       'wait-for-response': false
     };
 
@@ -173,7 +238,7 @@ describe('POST /health-record-requests/continue-message', () => {
       'Interaction-ID': interactionId,
       'Correlation-ID': conversationId,
       'Ods-Code': gpOdsCode,
-      'from-asid': '200000001161',
+      'from-asid': '200000001333',
       'wait-for-response': false
     };
 
