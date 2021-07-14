@@ -81,7 +81,7 @@ pipelines:
         pipeline: prm-deductions-infra
         stage: deploy_dev
       mhs:
-        pipeline: prm-mhs-infra-opentest
+        pipeline: prm-mhs-infra.dev
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: dev
@@ -104,7 +104,7 @@ pipelines:
         pipeline: prm-deductions-infra
         stage: deploy_test
       mhs:
-        pipeline: prm-mhs-infra-ptl-integration
+        pipeline: prm-mhs-infra.test
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
