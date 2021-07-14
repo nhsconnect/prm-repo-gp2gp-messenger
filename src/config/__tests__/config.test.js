@@ -71,7 +71,7 @@ describe('config', () => {
         expect(initializeConfig()).toEqual(
           expect.objectContaining({
             deductionsAsid: 'deductionsAsid',
-            deductionsOdsCode: 'deductionsOdsCode',
+            deductionsOdsCode: 'DEDUCTIONSODSCODE',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
             mhsRouteUrl: 'mhsRouteUrl',
