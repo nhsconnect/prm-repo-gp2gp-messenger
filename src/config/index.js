@@ -1,8 +1,8 @@
 export const portNumber = 3000;
 
 export const initializeConfig = () => ({
-  deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID,
-  deductionsOdsCode: (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || '').toUpperCase(),
+  deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID || '200000001161',
+  deductionsOdsCode: (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || 'B86041').toUpperCase(),
   e2eTestAuthorizationKeysForGp2gpAdaptor:
     process.env.E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR,
   pdsAsid: process.env.PDS_ASID || '928942012545',
