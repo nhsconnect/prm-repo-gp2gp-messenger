@@ -39,8 +39,9 @@ export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
       throw new Error(`Multiple ASID identifiers found for ODS code ${odsCode}`);
     }
 
-    logInfo(`Successfully retrieved ASID via FHIR for ODS code ${odsCode}`);
-    return asidIdentifier[0].value;
+    const asidCode = asidIdentifier[0].value;
+    logInfo(`Successfully retrieved ASID: ${asidCode} via FHIR for ODS code ${odsCode}`);
+    return asidCode;
   } catch (err) {
     logError(`Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`, err);
     throw err;

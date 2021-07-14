@@ -28,6 +28,7 @@ export const getPracticeAsidViaMhs = async (odsCode, serviceId) => {
     throw new Error(`Multiple ASIDs found for ODS code ${odsCode}`);
   }
 
-  logInfo(`Successfully retrieved ASID via MHS for ODS code ${odsCode}`);
-  return asids[0];
+  const asidCode = asids[0];
+  logInfo(`Successfully retrieved ASID: ${asidCode} via MHS for ODS code ${odsCode}`);
+  return asidCode;
 };
