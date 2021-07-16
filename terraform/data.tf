@@ -4,10 +4,6 @@ data "aws_ssm_parameter" "private_zone_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-root-zone-id"
 }
 
-data "aws_ssm_parameter" "e2e_test_authorization_keys_for_gp2gp_adaptor" {
-  name = "/repo/${var.environment}/user-input/api-keys/gp2gp-adaptor/e2e-test"
-}
-
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE" {
   name = "/repo/${var.environment}/user-input/external/gp2gp-adaptor-deductions-ods-code"
 }
