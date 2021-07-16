@@ -14,9 +14,6 @@ locals {
       { name = "SDS_FHIR_API_KEY", value = data.aws_ssm_parameter.sds_fhir_api_key.value },
       { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value }
     ]
-    secret_environment_variables = [
-      { name = "E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR", valueFrom = data.aws_ssm_parameter.e2e_test_authorization_keys_for_gp2gp_adaptor.arn }
-    ]
 }
 
 resource "aws_ecs_task_definition" "task" {
@@ -40,8 +37,7 @@ resource "aws_ecs_task_definition" "task" {
         host_port             = var.port,
         log_region            = var.region,
         log_group             = local.task_log_group,
-        environment_variables = jsonencode(local.environment_variables),
-        secrets               = jsonencode(local.secret_environment_variables)
+        environment_variables = jsonencode(local.environment_variables)
     })
 
   tags = {
