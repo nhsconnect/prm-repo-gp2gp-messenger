@@ -79,7 +79,7 @@ pipelines:
         stage: test_docker
       base_infra:
         pipeline: prm-deductions-infra
-        stage: deploy_dev
+        stage: wait_dns_dev
       mhs:
         pipeline: prm-mhs-infra.dev
         stage: deploy
@@ -102,11 +102,34 @@ pipelines:
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
-        stage: deploy_test
+        stage: wait_dns_test
       mhs:
         pipeline: prm-mhs-infra.test
         stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
+    stages: *common_stages
+
+  'prm-deductions-gp2gp-adaptor.pre-prod':
+    group: deductions
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      test_env:
+        # This dependency ensures gp2gp-adaptor is not deployed to pre-prod env if
+        # the E2E tests did not pass in the test environment
+        pipeline: prm-deductions-gp2gp-adaptor.test
+        stage: test
+      base_infra:
+        pipeline: prm-deductions-infra
+        stage: wait_dns_pre_prod
+      mhs:
+        pipeline: prm-mhs-infra.pre-prod
+        stage: deploy
+    environment_variables:
+      NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
 
