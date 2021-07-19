@@ -12,10 +12,39 @@
     }
   ],
   "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Checks system and dependency health",
+        "responses": {
+          "200": {
+            "description": "Health Check Ok",
+            "schema": {
+              "$ref": "#/definitions/PDSResponse"
+            }
+          },
+          "500": {
+            "description": "Unknown server-side error has occured",
+            "schema": {
+              "$ref": "#/definitions/ServerError"
+            }
+          },
+          "503": {
+            "description": "One or more dependencies are not OK"
+          },
+          "default": {
+            "description": "200 and 503 response follow default schema",
+            "schema": {
+              "$ref": "#/definitions/HealthResponseTemplate"
+            }
+          }
+        }
+      }
+    },
     "/health-record-requests/{nhsNumber}": {
       "post": {
         "tags": ["health-record-requests"],
-        "summary": "Sends EHR request",
+        "summary": "Sends request for EHR",
         "consumes": ["application/json"],
         "parameters": [
           {
@@ -112,7 +141,7 @@
     "/health-record-requests/continue-message": {
       "post": {
         "tags": ["health-record-requests"],
-        "summary": "Sends continue messages for large health records",
+        "summary": "Sends continue messages for large health record's parts",
         "consumes": ["application/json"],
         "parameters": [
           {
@@ -150,7 +179,7 @@
     "/health-record-transfers": {
       "post": {
         "tags": ["health-record-transfers"],
-        "summary": "Transfers EHR outside of the repository",
+        "summary": "Retrieves EHR ans transfers it outside of the repository",
         "consumes": ["application/json"],
         "parameters": [
           {
@@ -191,39 +220,10 @@
         ]
       }
     },
-    "/health": {
-      "get": {
-        "tags": ["health"],
-        "summary": "Checks system and dependency health",
-        "responses": {
-          "200": {
-            "description": "Health Check Ok",
-            "schema": {
-              "$ref": "#/definitions/PDSResponse"
-            }
-          },
-          "500": {
-            "description": "Unknown server-side error has occured",
-            "schema": {
-              "$ref": "#/definitions/ServerError"
-            }
-          },
-          "503": {
-            "description": "One or more dependencies are not OK"
-          },
-          "default": {
-            "description": "200 and 503 response follow default schema",
-            "schema": {
-              "$ref": "#/definitions/HealthResponseTemplate"
-            }
-          }
-        }
-      }
-    },
     "/patient-demographics/{nhsNumber}": {
       "get": {
         "tags": ["patient-demographics"],
-        "summary": "Uses an NHS number to make a PDS patient look-up request through MHS",
+        "summary": "Uses NHS number to make a PDS patient look-up request through MHS",
         "parameters": [
           {
             "in": "path",

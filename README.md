@@ -91,8 +91,10 @@ Ensure you have VPN connection set up to both `dev` and `test` environments:
 
 ## Access to AWS from CLI
 
-In order to get sufficient access to work with terraform or AWS CLI, follow this [page](
-https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11286020174/How+to+set+up+access+to+AWS+from+CLI)
+## Access to AWS
+
+In order to get sufficient access to work with terraform or AWS CLI, please follow the instructions on this [confluence pages](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11384160276/AWS+Accounts+and+Roles)
+and [this how to?](https://gpitbjss.atlassian.net/wiki/spaces/TW/pages/11286020174/How+to+set+up+access+to+AWS+from+CLI)
 
 As a note, this set-up is based on the README of assume-role [tool](https://github.com/remind101/assume-role)
 
