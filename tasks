@@ -233,9 +233,6 @@ case "${command}" in
       dojo -c Dojofile-itest "./tasks _test_integration"
       ;;
   _test_functional)
-      check_env
-      _assume_environment_role $NHS_ENVIRONMENT
-      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       npm install
       if [[ "${NHS_ENVIRONMENT}" == "dev" ]]; then
         npm run test:functional:opentest
@@ -244,17 +241,20 @@ case "${command}" in
       fi
       ;;
   test_functional)
+      check_env
+      _assume_environment_role $NHS_ENVIRONMENT
+      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_functional"
       ;;
   _test_e2e)
-      check_env
-      _assume_environment_role $NHS_ENVIRONMENT
-      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       npm install
       npm run test:e2e
       ;;
   test_e2e)
+      check_env
+      _assume_environment_role $NHS_ENVIRONMENT
+      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
       configure_service_url
       dojo "./tasks _test_e2e"
       ;;
