@@ -12,7 +12,8 @@ locals {
       { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value },
       { name = "TOGGLE_USE_SDS_FHIR", value = var.toggle_use_sds_fhir },
       { name = "SDS_FHIR_API_KEY", value = data.aws_ssm_parameter.sds_fhir_api_key.value },
-      { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value }
+      { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value },
+      { name = "LOG_LEVEL", value = var.log_level}
     ]
 }
 
@@ -113,4 +114,3 @@ resource "aws_security_group_rule" "gp2gp-adaptor-to-mhs-route" {
   security_group_id = data.aws_ssm_parameter.service-to-mhs-route-sg-id.value
   source_security_group_id = local.ecs_task_sg_id
 }
-
