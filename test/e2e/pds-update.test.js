@@ -21,7 +21,7 @@ describe('Patient ODS code update in PDS', () => {
     'pre-prod': {
       odsCode1: 'A20047',
       odsCode2: 'N85027',
-      nhsNumber: 9692295990
+      nhsNumber: 9693642104
     }
   };
 

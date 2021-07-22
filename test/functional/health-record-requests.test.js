@@ -8,7 +8,18 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   it(
     'should test successful POST request for /health-record-requests/:nhsNumber with Authorization',
     () => {
-      const nhsNumber = process.env.NHS_ENVIRONMENT === 'dev' ? '9692842339' : '9692295621';
+      const testData = {
+        dev: {
+          nhsNumber: 9692842339
+        },
+        test: {
+          nhsNumber: 9692295621
+        },
+        'pre-prod': {
+          nhsNumber: 9693642112
+        }
+      };
+      const { nhsNumber } = testData[config.nhsEnvironment];
 
       const body = {
         repositoryOdsCode: 'B86041',
