@@ -232,3 +232,20 @@ data "aws_ssm_parameter" "vpn_sg_id" {
 data "aws_ssm_parameter" "gocd_sg_id" {
   name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }
+
+
+resource "aws_cloudwatch_metric_alarm" "alb_http_errors" {
+  alarm_name                = "${var.repo_name} 5xx errors"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "1"
+  metric_name               = "HTTPCode_Target_5XX_Count"
+  namespace                 = "AWS/ApplicationELB"
+  period                    = "60"
+  statistic                 = "Average"
+  threshold                 = "1"
+  alarm_description         = "This metric monitors number of 5xx http status codes associated with ${var.repo_name}"
+  treat_missing_data        = "notBreaching"
+  dimensions                = {
+    LoadBalancer = aws_alb.alb-internal.arn_suffix
+  }
+}
