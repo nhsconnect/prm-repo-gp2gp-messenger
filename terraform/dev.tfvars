@@ -12,3 +12,5 @@ service_desired_count = "1"
 alb_deregistration_delay = 15
 
 toggle_use_sds_fhir = "false"
+
+grant_access_through_vpn = true

@@ -27,3 +27,5 @@ variable "log_level" {
 type = string
 default = "debug"
 }
+
+variable "grant_access_through_vpn" {}

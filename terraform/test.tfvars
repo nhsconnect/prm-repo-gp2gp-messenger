@@ -13,3 +13,4 @@ alb_deregistration_delay = 15
 
 toggle_use_sds_fhir = "true"
 
+grant_access_through_vpn = true

@@ -187,19 +187,22 @@ resource "aws_security_group" "vpn_to_gp2gp_adaptor" {
   description = "controls access from vpn to ehr-repo"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
-  ingress {
-    description = "Allow vpn to access GP2GP Adaptor ALB"
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    security_groups = [data.aws_ssm_parameter.vpn_sg_id.value]
-  }
-
   tags = {
     Name = "${var.environment}-vpn-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
+}
+
+resource "aws_security_group_rule" "vpn_to_gp2gp_adaptor" {
+  count       = var.grant_access_through_vpn ? 1 : 0
+  type        = "ingress"
+  description = "Allow vpn to access GP2GP Adaptor ALB"
+  protocol    = "tcp"
+  from_port   = 443
+  to_port     = 443
+  source_security_group_id = data.aws_ssm_parameter.vpn_sg_id.value
+  security_group_id = aws_security_group.vpn_to_gp2gp_adaptor.id
 }
 
 resource "aws_security_group" "gocd_to_gp2gp_adaptor" {
