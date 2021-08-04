@@ -82,7 +82,9 @@ describe('logging', () => {
             ssl: true,
             connectHeaders: {
               login: 'abcdefg',
-              authorization: '1234567'
+              authorization: '1234567',
+              Authorization: '1234567',
+              apiKey: '1234567'
             }
           }
         },
@@ -98,7 +100,9 @@ describe('logging', () => {
             ssl: true,
             connectHeaders: {
               login: 'abcdefg',
-              authorization: '********'
+              authorization: '********',
+              Authorization: '********',
+              apiKey: '********'
             }
           }
         },
@@ -130,7 +134,9 @@ describe('logging', () => {
             ssl: true,
             connectHeaders: {
               login: 'abcdefg',
-              authorization: '1234567'
+              authorization: '1234567',
+              Authorization: '1234567',
+              apiKey: '1234567'
             }
           }
         }
