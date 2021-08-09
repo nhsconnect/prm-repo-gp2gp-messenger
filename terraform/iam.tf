@@ -30,7 +30,23 @@ resource "aws_iam_role" "gp2gp" {
 data "aws_iam_policy_document" "ecr_policy_doc" {
   statement {
     actions = [
-      "ecr:*"
+      "ecr:DescribeImages",
+      "ecr:GetRepositoryPolicy",
+      "ecr:GetAuthorizationToken",
+      "ecr:GetRegistryPolicy",
+      "ecr:DescribeImageScanFindings",
+      "ecr:GetLifecyclePolicyPreview",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:DescribeRegistry",
+      "ecr:GetAuthorizationToken",
+      "ecr:ListTagsForResource",
+      "ecr:ListImages",
+      "ecr:BatchGetImage",
+      "ecr:DescribeImages",
+      "ecr:DescribeRepositories",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetRepositoryPolicy",
+      "ecr:GetLifecyclePolicy"
     ]
 
     resources = [
@@ -51,11 +67,17 @@ data "aws_iam_policy_document" "ecr_policy_doc" {
 data "aws_iam_policy_document" "logs_policy_doc" {
   statement {
     actions = [
-      "logs:*"
+      "logs:ListTagsLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents",
+      "logs:GetLogGroupFields",
+      "logs:PutLogEvents"
     ]
 
     resources = [
-      "*"
+      "arn:aws:logs:${var.region}:${local.account_id}:log-group:/nhs/deductions/${var.environment}-${local.account_id}/${var.component_name}:*"
     ]
   }
 }
@@ -63,7 +85,7 @@ data "aws_iam_policy_document" "logs_policy_doc" {
 data "aws_iam_policy_document" "ssm_policy_doc" {
   statement {
     actions = [
-      "ssm:*"
+      "ssm:Get*"
     ]
 
     resources = [
