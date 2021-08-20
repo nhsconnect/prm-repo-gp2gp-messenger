@@ -13,8 +13,12 @@ The initial version will send health records that are encoded in the HL7 format.
 - [Docker](https://docs.docker.com/install/)
 - [kudulab/dojo](https://github.com/kudulab/dojo#installation)
 
+### AWS helpers
 
-# Set up
+This repository imports shared AWS helpers from [prm-deductions-support-infra](https://github.com/nhsconnect/prm-deductions-support-infra/).
+They can be found `utils` directory after running any task from `tasks` file.
+
+## Set up
 To replicate the ci environment, we use `dojo` that allows us to work with the codebase without installing any dependencies locally.
 Please see the `./tasks` file that includes all the tasks you can use to configure and run the app and the tests.
 
