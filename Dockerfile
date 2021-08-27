@@ -33,3 +33,5 @@ RUN npm install
 
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["/usr/bin/run-gp2gp-server"]
+
+USER node
