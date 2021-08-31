@@ -3,7 +3,7 @@ import { buildEhrAcknowledgement } from '../../templates/generate-ehr-acknowledg
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logError } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
-import { getPracticeAsid } from '../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
 export const acknowledgementValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),

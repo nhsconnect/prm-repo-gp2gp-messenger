@@ -2,14 +2,14 @@ import request from 'supertest';
 import app from '../../../app';
 import { v4 as uuid } from 'uuid';
 import { initializeConfig } from '../../../config';
-import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { logError, logInfo } from '../../../middleware/logging';
 import { generateContinueRequest } from '../../../templates/generate-continue-request';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging');
-jest.mock('../../../services/utils/get-practice-asid');
+jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../templates/generate-continue-request');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 

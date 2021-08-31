@@ -5,7 +5,7 @@ import { generateContinueRequest } from '../../templates/generate-continue-reque
 import { initializeConfig } from '../../config';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { setCurrentSpanAttributes } from '../../config/tracing';
-import { getPracticeAsid } from '../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
 export const continueMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),

@@ -4,9 +4,9 @@ import { retrieveEhrFromRepo } from '../../../services/ehr/retrieve-ehr-from-rep
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 import { jsonEhrExtract, payload } from './data/json-formatted-ehr-example';
-import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 
-jest.mock('../../../services/utils/get-practice-asid');
+jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');

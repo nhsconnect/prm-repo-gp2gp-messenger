@@ -2,7 +2,7 @@ import axios from 'axios';
 import { initializeConfig } from '../../config';
 import { logError, logInfo } from '../../middleware/logging';
 
-export const getPracticeAsidViaFhir = async (odsCode, serviceId) => {
+export const getPracticeAsid = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
   logInfo(`Getting ASID via FHIR for ODS code ${odsCode}`);
   try {

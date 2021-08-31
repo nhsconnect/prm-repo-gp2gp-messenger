@@ -13,7 +13,6 @@ describe('app integration', () => {
     process.env.API_KEY_FOR_TEST_USER = authKey;
     process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
     process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'http://localhost/mhs-route';
-    process.env.TOGGLE_USE_SDS_FHIR = 'false';
     process.env.SDS_FHIR_URL = 'http://localhost/sds-fhir';
     process.env.SDS_FHIR_API_KEY = 'key';
   });
@@ -107,7 +106,6 @@ describe('app integration', () => {
     });
 
     it('should send correctly updated ehr to mhs outbound when asid retrieved via fhir', done => {
-      process.env.TOGGLE_USE_SDS_FHIR = 'true';
       const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN030000UK06';
       const ehrExtract = templateEhrExtract(priorEhrRequestId);
       const mhsOutboundHeaders = {

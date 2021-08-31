@@ -5,7 +5,7 @@ import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logWarning } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
 import { initializeConfig } from '../../config';
-import { getPracticeAsid } from '../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
 export const healthRecordRequestValidation = [
   param('nhsNumber').isNumeric().withMessage(`'nhsNumber' provided is not numeric`),

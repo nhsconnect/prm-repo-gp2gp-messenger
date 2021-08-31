@@ -2,14 +2,14 @@ import request from 'supertest';
 import { v1 as uuidv1, v4 as uuidv4 } from 'uuid';
 import app from '../../../app';
 import { buildEhrAcknowledgement } from '../../../templates/generate-ehr-acknowledgement';
-import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { logInfo, logError } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../templates/generate-ehr-acknowledgement');
-jest.mock('../../../services/utils/get-practice-asid');
+jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 
 function expectValidationErrors(

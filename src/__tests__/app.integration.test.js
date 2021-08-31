@@ -6,10 +6,10 @@ import { pdsQueryActFailed } from '../services/pds/__tests__/data/pds-query-act-
 import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
 import { expectStructuredLogToContain, transportSpy } from '../__builders__/logging-helper';
 import { logger } from '../config/logging';
-import { getPracticeAsid } from '../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../services/fhir/sds-fhir-client';
 
 jest.mock('axios');
-jest.mock('../services/utils/get-practice-asid');
+jest.mock('../services/fhir/sds-fhir-client');
 
 describe('app', () => {
   beforeEach(() => {

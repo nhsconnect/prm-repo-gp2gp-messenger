@@ -4,7 +4,7 @@ import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { logError, logInfo } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
-import { getPracticeAsid } from '../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
 export const healthRecordTransferValidation = [
   body('data.type')

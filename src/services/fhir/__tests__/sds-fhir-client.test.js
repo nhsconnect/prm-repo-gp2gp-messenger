@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { getPracticeAsidViaFhir } from '../sds-fhir-client';
+import { getPracticeAsid } from '../sds-fhir-client';
 import { initializeConfig } from '../../../config';
 import { logError } from '../../../middleware/logging';
 
@@ -87,7 +87,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(200, mockResponse);
 
-    const response = await getPracticeAsidViaFhir(odsCode, serviceId);
+    const response = await getPracticeAsid(odsCode, serviceId);
 
     expect(scope.isDone()).toBe(true);
     expect(response).toBe(expectedAsid);
@@ -107,7 +107,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(500);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
@@ -129,7 +129,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(200, mockResponseNoAsidIdentifier);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
@@ -151,7 +151,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(200, mockResponseMultipleAsidIdentifier);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
@@ -173,7 +173,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(200, mockResponseNoAsidEntries);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
@@ -195,7 +195,7 @@ describe('sds-fhir-client', () => {
       })
       .reply(200, mockResponseMultipleAsidEntries);
 
-    await expect(getPracticeAsidViaFhir(odsCode, serviceId)).rejects.toThrow(errorMessage);
+    await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
       `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,

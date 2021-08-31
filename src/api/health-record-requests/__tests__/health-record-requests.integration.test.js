@@ -2,7 +2,7 @@ import request from 'supertest';
 import axios from 'axios';
 import app from '../../../app';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
-import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { initializeConfig } from '../../../config';
 
 jest.mock('../../../middleware/logging');
@@ -10,7 +10,7 @@ jest.mock('axios');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../config');
 jest.mock('../../../templates/ehr-request-template');
-jest.mock('../../../services/utils/get-practice-asid');
+jest.mock('../../../services/fhir/sds-fhir-client');
 
 const nhsNumber = '1111111111';
 const repositoryOdsCode = '12';

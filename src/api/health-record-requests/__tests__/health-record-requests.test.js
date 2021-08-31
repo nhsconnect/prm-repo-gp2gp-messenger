@@ -3,7 +3,7 @@ import dateFormat from 'dateformat';
 import app from '../../../app';
 import generateEhrRequestQuery from '../../../templates/ehr-request-template';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { getPracticeAsid } from '../../../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { buildEhrRequest } from '../health-record-requests';
 import { initializeConfig } from '../../../config';
 import { logWarning } from '../../../middleware/logging';
@@ -14,7 +14,7 @@ jest.mock('../../../config');
 jest.mock('../../../templates/ehr-request-template');
 jest.mock('dateformat');
 jest.mock('../../../services/mhs/mhs-outbound-client');
-jest.mock('../../../services/utils/get-practice-asid');
+jest.mock('../../../services/fhir/sds-fhir-client');
 
 const mockUUID = 'ebf6ee70-b9b7-44a6-8780-a386fccd759c';
 const mockTimestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');

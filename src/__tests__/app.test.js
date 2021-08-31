@@ -6,7 +6,7 @@ import { getHealthCheck } from '../services/health-check/get-health-check';
 import { sendMessage } from '../services/mhs/mhs-outbound-client';
 import generatePdsRetrievalQuery from '../templates/generate-pds-retrieval-request';
 import generateUpdateOdsRequest from '../templates/generate-update-ods-request';
-import { getPracticeAsid } from '../services/utils/get-practice-asid';
+import { getPracticeAsid } from '../services/fhir/sds-fhir-client';
 
 jest.mock('../config/logging');
 jest.mock('../config/', () => ({
@@ -19,7 +19,7 @@ jest.mock('../config/', () => ({
 jest.mock('../services/health-check/get-health-check');
 jest.mock('../middleware/auth');
 jest.mock('../services/mhs/mhs-outbound-client');
-jest.mock('../services/utils/get-practice-asid');
+jest.mock('../services/fhir/sds-fhir-client');
 jest.mock('../templates/generate-pds-retrieval-request');
 jest.mock('../templates/generate-update-ods-request');
 jest.mock('../templates/ehr-request-template');
