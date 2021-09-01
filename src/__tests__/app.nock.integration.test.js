@@ -7,12 +7,10 @@ import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data
 describe('app integration', () => {
   const authKey = 'correct-key';
   const host = 'http://localhost';
-  const odsCode = 'B1234';
 
   beforeEach(() => {
     process.env.API_KEY_FOR_TEST_USER = authKey;
     process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
-    process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'http://localhost/mhs-route';
     process.env.SDS_FHIR_URL = 'http://localhost/sds-fhir';
     process.env.SDS_FHIR_API_KEY = 'key';
   });
@@ -27,6 +25,7 @@ describe('app integration', () => {
     const priorEhrRequestId = uuid();
     const expectedReceivingAsid = '200000000678';
     const ehrRequestId = '26a541ce-a5ab-4713-99a4-150ec3da25c6';
+    const odsCode = 'B1234';
     const mockBody = {
       data: {
         type: 'health-record-transfers',
@@ -41,25 +40,6 @@ describe('app integration', () => {
       }
     };
 
-    const mockFhirResponse = {
-      entry: [
-        {
-          resource: {
-            identifier: [
-              {
-                system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
-                value: expectedReceivingAsid
-              },
-              {
-                system: 'https://fake-fhir',
-                value: 'B12345-836483'
-              }
-            ]
-          }
-        }
-      ]
-    };
-
     const ehrExtractStoredInS3 = ehrExtract => `{"payload": "${ehrExtract}" }`;
     const matchPayload = ehrRequestId => {
       return body => {
@@ -71,6 +51,7 @@ describe('app integration', () => {
       };
     };
     it('should send correctly updated ehr to mhs outbound', done => {
+      const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN030000UK06';
       const ehrExtract = templateEhrExtract(priorEhrRequestId);
       const mhsOutboundHeaders = {
         'Content-Type': 'application/json',
@@ -81,40 +62,23 @@ describe('app integration', () => {
         'wait-for-response': false
       };
 
-      const mhsRouteScope = nock(`${host}/mhs-route`)
-        .get(
-          `/routing?org-code=${odsCode}&service-id=urn:nhs:names:services:gp2gp:RCMR_IN030000UK06`
-        )
-        .reply(200, { uniqueIdentifier: [expectedReceivingAsid] });
-
-      const ehrRepoScope = nock(host).get(ehrPath).reply(200, ehrExtractStoredInS3(ehrExtract));
-      const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
-        .post('/mhs-outbound', matchPayload(ehrRequestId))
-        .reply(202);
-
-      request(app)
-        .post('/health-record-transfers')
-        .set('Authorization', authKey)
-        .send(mockBody)
-        .expect(204)
-        .expect(() => {
-          expect(ehrRepoScope.isDone()).toBe(true);
-          expect(mhsOutboundScope.isDone()).toBe(true);
-          expect(mhsRouteScope.isDone()).toBe(true);
-        })
-        .end(done);
-    });
-
-    it('should send correctly updated ehr to mhs outbound when asid retrieved via fhir', done => {
-      const serviceId = 'urn:nhs:names:services:gp2gp:RCMR_IN030000UK06';
-      const ehrExtract = templateEhrExtract(priorEhrRequestId);
-      const mhsOutboundHeaders = {
-        'Content-Type': 'application/json',
-        'Interaction-ID': 'RCMR_IN030000UK06',
-        'Correlation-Id': conversationId,
-        'Ods-Code': odsCode,
-        'from-asid': '200000001161',
-        'wait-for-response': false
+      const mockFhirResponse = {
+        entry: [
+          {
+            resource: {
+              identifier: [
+                {
+                  system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
+                  value: expectedReceivingAsid
+                },
+                {
+                  system: 'https://fake-fhir',
+                  value: 'B12345-836483'
+                }
+              ]
+            }
+          }
+        ]
       };
 
       const fhirScope = nock(`${host}/sds-fhir`, {
@@ -185,6 +149,7 @@ describe('app integration', () => {
   describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
     const practiceAsid = '200007389';
     const conversationId = uuid();
+    const odsCode = 'B1234';
     const mockBody = {
       conversationId,
       messageId: uuid(),
@@ -202,11 +167,36 @@ describe('app integration', () => {
         'wait-for-response': false
       };
 
-      const mhsRouteScope = nock(`${host}/mhs-route`)
-        .get(
-          `/routing?org-code=${odsCode}&service-id=urn:nhs:names:services:gp2gp:MCCI_IN010000UK13`
-        )
-        .reply(200, { uniqueIdentifier: [practiceAsid] });
+      const mockFhirResponse = {
+        entry: [
+          {
+            resource: {
+              identifier: [
+                {
+                  system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
+                  value: practiceAsid
+                },
+                {
+                  system: 'https://fake-fhir',
+                  value: 'B12345-836483'
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      const fhirScope = nock(`${host}/sds-fhir`, {
+        reqheaders: {
+          apiKey: 'key'
+        }
+      })
+        .get(`/Device`)
+        .query({
+          organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
+          identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gp2gp:MCCI_IN010000UK13`
+        })
+        .reply(200, mockFhirResponse);
 
       const mhsOutboundScope = nock(host, mhsOutboundHeaders).post('/mhs-outbound').reply(204);
 
@@ -216,7 +206,7 @@ describe('app integration', () => {
         .send(mockBody)
         .expect(204)
         .expect(() => {
-          expect(mhsRouteScope.isDone()).toBe(true);
+          expect(fhirScope.isDone()).toBe(true);
           expect(mhsOutboundScope.isDone()).toBe(true);
         })
         .end(done);
@@ -245,11 +235,36 @@ describe('app integration', () => {
         'wait-for-response': false
       };
 
-      const mhsRouteScope = nock(`${host}/mhs-route`)
-        .get(
-          `/routing?org-code=${gpOdsCode}&service-id=urn:nhs:names:services:gp2gp:${interactionId}`
-        )
-        .reply(200, { uniqueIdentifier: [practiceAsid] });
+      const mockFhirResponse = {
+        entry: [
+          {
+            resource: {
+              identifier: [
+                {
+                  system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
+                  value: practiceAsid
+                },
+                {
+                  system: 'https://fake-fhir',
+                  value: 'B12345-836483'
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      const fhirScope = nock(`${host}/sds-fhir`, {
+        reqheaders: {
+          apiKey: 'key'
+        }
+      })
+        .get(`/Device`)
+        .query({
+          organization: `https://fhir.nhs.uk/Id/ods-organization-code|${gpOdsCode}`,
+          identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gp2gp:${interactionId}`
+        })
+        .reply(200, mockFhirResponse);
 
       const mhsOutboundScope = nock(host, mhsOutboundHeaders).post('/mhs-outbound').reply(204);
 
@@ -259,7 +274,7 @@ describe('app integration', () => {
         .send(body);
 
       expect(res.status).toEqual(204);
-      expect(mhsRouteScope.isDone()).toBe(true);
+      expect(fhirScope.isDone()).toBe(true);
       expect(mhsOutboundScope.isDone()).toBe(true);
     });
   });
