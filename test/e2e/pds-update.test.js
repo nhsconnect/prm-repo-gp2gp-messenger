@@ -9,9 +9,9 @@ describe('Patient ODS code update in PDS', () => {
 
   const testData = {
     dev: {
-      odsCode1: 'G83055',
-      odsCode2: 'A91368',
-      nhsNumber: 9692842290
+      odsCode1: 'A20047',
+      odsCode2: 'B85002',
+      nhsNumber: 9692295834
     },
     test: {
       odsCode1: 'A20047',
