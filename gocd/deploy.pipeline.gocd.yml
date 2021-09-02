@@ -79,7 +79,7 @@ pipelines:
         stage: test_docker
       base_infra:
         pipeline: prm-deductions-infra
-        stage: wait_dns_dev
+        stage: deploy_dev
       mhs:
         pipeline: prm-mhs-infra.dev
         stage: deploy
@@ -102,7 +102,7 @@ pipelines:
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
-        stage: wait_dns_test
+        stage: deploy_test
       mhs:
         pipeline: prm-mhs-infra.test
         stage: deploy
@@ -125,7 +125,7 @@ pipelines:
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
-        stage: wait_dns_pre_prod
+        stage: deploy_pre_prod
       mhs:
         pipeline: prm-mhs-infra.pre-prod
         stage: deploy
