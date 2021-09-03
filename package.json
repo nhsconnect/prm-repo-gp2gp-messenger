@@ -19,7 +19,7 @@
     "start": "node build/server.js",
     "start:local": "babel-node -r dotenv/config src/server.js",
     "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js",
-    "preinstall": "npm-force-resolutions"
+    "preinstall": "npm install npm-force-resolutions && npm-force-resolutions"
   },
   "repository": {
     "type": "git",
