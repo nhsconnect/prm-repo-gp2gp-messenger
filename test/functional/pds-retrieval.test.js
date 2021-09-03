@@ -9,7 +9,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
     () => {
       const testData = {
         dev: {
-          nhsNumber: 9692295834
+          nhsNumber: 9693795938
         },
         test: {
           nhsNumber: 9692295621
