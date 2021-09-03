@@ -40,10 +40,9 @@ export const pdsRetrieval = async (req, res, next) => {
 
     switch (messageResponse.status) {
       case 200:
-        logInfo('200 PDS response received', {
-          conversationId,
-          response: messageResponse
-        });
+        logInfo(
+          `200 PDS response received for conversation id: ${conversationId} and response: ${messageResponse}`
+        );
 
         responseBody.data = await new PDSRetrievalQueryResponse().handleMessage(
           messageResponse.data
