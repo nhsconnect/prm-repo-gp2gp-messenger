@@ -75,6 +75,26 @@ resource "aws_security_group" "ecs-tasks-sg" {
   }
 }
 
+resource "aws_security_group" "vpn_to_gp2gp_adaptor_ecs" {
+  name        = "${var.environment}-vpn-to-${var.component_name}-ecs"
+  description = "controls access from vpn to ehr-repo ecs task"
+  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+
+  ingress {
+    description = "Allow vpn to access GP2GP Adaptor ECS"
+    protocol    = "tcp"
+    from_port   = 3000
+    to_port     = 3000
+    security_groups = [data.aws_ssm_parameter.vpn_sg_id.value]
+  }
+
+  tags = {
+    Name = "${var.environment}-vpn-to-${var.component_name}-ecs"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
 data "aws_ssm_parameter" "service-to-ehr-repo-sg-id" {
   name = "/repo/${var.environment}/output/prm-deductions-ehr-repository/service-to-ehr-repo-sg-id"
 }
@@ -85,7 +105,7 @@ resource "aws_security_group_rule" "gp2gp-adaptor-to-ehr-repo" {
   from_port = 443
   to_port = 443
   security_group_id = data.aws_ssm_parameter.service-to-ehr-repo-sg-id.value
-  source_security_group_id = local.ecs_task_sg_id
+  source_security_group_id = aws_security_group.ecs-tasks-sg.id
 }
 
 data "aws_ssm_parameter" "service-to-mhs-outbound-sg-id" {
@@ -98,5 +118,5 @@ resource "aws_security_group_rule" "gp2gp-adaptor-to-mhs-outbound" {
   from_port = 443
   to_port = 443
   security_group_id = data.aws_ssm_parameter.service-to-mhs-outbound-sg-id.value
-  source_security_group_id = local.ecs_task_sg_id
+  source_security_group_id = aws_security_group.ecs-tasks-sg.id
 }

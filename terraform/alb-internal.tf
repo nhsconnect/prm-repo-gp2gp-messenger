@@ -150,7 +150,7 @@ resource "aws_security_group" "alb_to_gp2gp_adaptor_ecs" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    security_groups = [local.ecs_task_sg_id]
+    security_groups = [aws_security_group.ecs-tasks-sg.id]
   }
 
   tags = {
