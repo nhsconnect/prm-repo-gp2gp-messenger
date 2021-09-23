@@ -109,7 +109,7 @@ resource "aws_security_group_rule" "gp2gp-adaptor-to-ehr-repo" {
 }
 
 data "aws_ssm_parameter" "service-to-mhs-outbound-sg-id" {
-  name = "/repo/${var.environment}/output/prm-mhs-infra/service-to-mhs-outbound-sg-id"
+  name = "/repo/${var.environment}/output/prm-mhs-infra/service-to-repo-mhs-outbound-sg-id"
 }
 
 resource "aws_security_group_rule" "gp2gp-adaptor-to-mhs-outbound" {
