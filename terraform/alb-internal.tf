@@ -24,7 +24,8 @@ resource "aws_alb" "alb-internal" {
     aws_security_group.vpn_to_gp2gp_adaptor.id,
     aws_security_group.gocd_to_gp2gp_adaptor.id
   ]
-  internal        = true
+  internal = true
+  drop_invalid_header_fields = true
 
   tags = {
     CreatedBy   = var.repo_name
