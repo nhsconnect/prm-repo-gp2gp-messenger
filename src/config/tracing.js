@@ -1,12 +1,12 @@
 import { context, trace, propagation } from '@opentelemetry/api';
-import { W3CTraceContextPropagator } from '@opentelemetry/core';
+import { HttpTraceContextPropagator } from '@opentelemetry/core';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
-import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
+import { NodeTracerProvider } from '@opentelemetry/node';
 
 const tracerProvider = new NodeTracerProvider({});
 
-propagation.setGlobalPropagator(new W3CTraceContextPropagator());
+propagation.setGlobalPropagator(new HttpTraceContextPropagator());
 
 tracerProvider.register();
 registerInstrumentations({
