@@ -20,6 +20,10 @@ data "aws_ssm_parameter" "deductions_private_vpc_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-vpc-id"
 }
 
+data "aws_ssm_parameter" "deductions_core_vpc_id" {
+  name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-core-vpc-id"
+}
+
 data "aws_ssm_parameter" "GP2GP_ADAPTOR_MHS_OUTBOUND_URL" {
   name = "/repo/${var.environment}/output/prm-mhs-infra/repo-mhs-outbound-url"
 }
