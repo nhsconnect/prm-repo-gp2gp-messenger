@@ -4,6 +4,8 @@
   "description": "GP2GP Adapter Service for making and receiving Health Records using GP2GP",
   "main": "src/server.js",
   "scripts": {
+    "check-audit": "check-audit",
+    "resolve-audit": "resolve-audit",
     "lint": "eslint src/ test/ scripts/",
     "lint:fix": "npm run lint -- --fix",
     "test": "npm run lint:fix && npm run test:unit",
@@ -42,6 +44,7 @@
     "express-winston": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
+    "npm-audit-resolver": "^2.3.1",
     "swagger-ui-express": "^4.1.6",
     "traverse": "^0.6.6",
     "uuid": "^8.3.2",
