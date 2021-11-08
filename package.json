@@ -37,7 +37,7 @@
     "@opentelemetry/tracing": "^0.20.0",
     "aws-sdk": "^2.1023.0",
     "axios": "^0.24.0",
-    "dateformat": "^5.0.2",
+    "dateformat": "^4.6.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.13.0",
