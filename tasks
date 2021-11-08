@@ -71,6 +71,15 @@ function configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor {
 # Terraform Functions #
 #######################
 
+function configure_tf_plan_filename {
+  certs=$1
+  if [[ "${certs}" == "true" ]]; then
+    export TF_PLAN_FILENAME="certs_deployment.tfplan"
+  else
+    export TF_PLAN_FILENAME="deployment.tfplan"
+  fi
+}
+
 function tf_init {
   check_env
   cd terraform
@@ -89,6 +98,8 @@ function tf_plan {
 
   TARGET=""
 
+  configure_tf_plan_filename $certs
+
   if [[ "${certs}" == "true" ]]; then
     TARGET="-target=aws_acm_certificate.gp2gp-adaptor-cert"
   fi
@@ -96,9 +107,9 @@ function tf_plan {
   tf_init
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-    terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars $TARGET -out="nhs_deployment.tfplan"
+    terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars $TARGET -out="deployment.tfplan"
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars -out="nhs_deployment.tfplan" -destroy
+    terraform plan -var task_image_tag=$IMAGE_TAG -var-file=$NHS_ENVIRONMENT.tfvars -out="deployment.tfplan" -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1
@@ -108,8 +119,13 @@ function tf_plan {
 function tf_apply {
   tf_init
   terraform get # modules
-  terraform apply nhs_deployment.tfplan
-  terraform output -json > tf-out.json
+  terraform apply deployment.tfplan
+}
+
+function tf_apply_certs {
+  tf_init
+  terraform get # modules
+  terraform apply certs_deployment.tfplan
 }
 
 
@@ -315,6 +331,14 @@ case "${command}" in
   tf_plan_certs)
       check_env
       dojo -c Dojofile-infra "./tasks _tf_plan_certs $2"
+      ;;
+  _tf_apply_certs)
+      _assume_environment_role $NHS_ENVIRONMENT
+      tf_apply_certs
+      ;;
+  tf_apply_certs)
+      check_env
+      dojo -c Dojofile-infra "./tasks _tf_apply_certs"
       ;;
   _tf_plan)
       _assume_environment_role $NHS_ENVIRONMENT

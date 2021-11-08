@@ -1,8 +1,15 @@
 format_version: 4
 common:
-  deploy_job: &deploy_job
+  plan_job: &plan_job
     resources:
       - docker
+    artifacts:
+      - build:
+          source: terraform/deployment.tfplan
+          destination: terraform/
+      - build:
+          source: terraform/certs_deployment.tfplan
+          destination: terraform/
     tasks:
       - exec:
           command: /bin/bash
@@ -13,12 +20,29 @@ common:
           command: /bin/bash
           arguments:
             - -c
-            - ./tasks tf_apply
+            - ./tasks tf_plan create
+
+  deploy_job: &deploy_job
+    resources:
+      - docker
+    tasks:
+      - fetch:
+          stage: plan
+          job: plan
+          source: terraform/certs_deployment.tfplan
+          destination: terraform/
+          is_file: yes
+      - fetch:
+          stage: plan
+          job: plan
+          source: terraform/deployment.tfplan
+          destination: terraform/
+          is_file: yes
       - exec:
           command: /bin/bash
           arguments:
             - -c
-            - ./tasks tf_plan create
+            - ./tasks tf_apply_certs
       - exec:
           command: /bin/bash
           arguments:
@@ -29,6 +53,7 @@ common:
           arguments:
             - -c
             - ./tasks wait_ecs
+
   common_stages: &common_stages
     - promote_docker_image:
         resources:
@@ -40,6 +65,10 @@ common:
               arguments:
                 - -c
                 - ./tasks promote_docker_image
+    - plan:
+        clean_workspace: true
+        jobs:
+          deploy: *plan_job
     - deploy:
         clean_workspace: true
         jobs:
@@ -132,4 +161,70 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
+
+  'prm-deductions-gp2gp-adaptor.prod':
+    group: deductions
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      test_env:
+        # This dependency ensures gp2gp-adaptor is not deployed to pre-prod env if
+        # the E2E tests did not pass in the test environment
+        pipeline: prm-deductions-gp2gp-adaptor.pre-prod
+        stage: test
+      base_infra:
+        pipeline: prm-deductions-infra
+        stage: deploy_prod
+      mhs:
+        pipeline: prm-mhs-infra.prod
+        stage: deploy
+    environment_variables:
+      NHS_ENVIRONMENT: prod
+    stages:
+      - promote_docker_image:
+          resources:
+            - docker
+          clean_workspace: true
+          tasks:
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - ./tasks promote_docker_image
+      - plan:
+          clean_workspace: true
+          jobs:
+            deploy: *plan_job
+      - deploy:
+          clean_workspace: true
+          approval:
+            type: manual
+            allow_only_on_success: true
+          jobs:
+            deploy: *deploy_job
+#      - test:
+#          clean_workspace: true
+#          jobs:
+#            functional:
+#              resources:
+#                - docker
+#              tasks:
+#                - exec:
+#                    command: /bin/bash
+#                    arguments:
+#                      - -c
+#                      - ./tasks test_functional
+#            e2e:
+#              resources:
+#                - docker
+#              tasks:
+#                - exec:
+#                    command: /bin/bash
+#                    arguments:
+#                      - -c
+#                      - ./tasks test_e2e
+
 
