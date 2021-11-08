@@ -1,6 +1,6 @@
 format_version: 4
 common:
-  plan_job: &plan_job
+  plan: &plan
     resources:
       - docker
     artifacts:
@@ -22,7 +22,7 @@ common:
             - -c
             - ./tasks tf_plan create
 
-  deploy_job: &deploy_job
+  deploy: &deploy
     resources:
       - docker
     tasks:
@@ -68,11 +68,11 @@ common:
     - plan:
         clean_workspace: true
         jobs:
-          deploy: *plan_job
+          plan: *plan
     - deploy:
         clean_workspace: true
         jobs:
-          deploy: *deploy_job
+          deploy: *deploy
     - test:
         clean_workspace: true
         jobs:
@@ -197,14 +197,14 @@ pipelines:
       - plan:
           clean_workspace: true
           jobs:
-            deploy: *plan_job
+            plan: *plan
       - deploy:
           clean_workspace: true
           approval:
             type: manual
             allow_only_on_success: true
           jobs:
-            deploy: *deploy_job
+            deploy: *deploy
 #      - test:
 #          clean_workspace: true
 #          jobs:
