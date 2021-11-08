@@ -61,7 +61,6 @@ common:
           arguments:
             - -c
             - ./tasks wait_ecs
-
   common_stages: &common_stages
     - promote_docker_image:
         resources:
@@ -136,7 +135,6 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: dev
     stages: *common_stages
-
   'prm-deductions-gp2gp-adaptor.test':
     group: deductions
     label_template: '${git[:8]}'
@@ -159,7 +157,6 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: test
     stages: *common_stages
-
   'prm-deductions-gp2gp-adaptor.pre-prod':
     group: deductions
     label_template: '${git[:8]}'
@@ -182,7 +179,6 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
-
   'prm-deductions-gp2gp-adaptor.prod':
     group: deductions
     label_template: '${git[:8]}'
@@ -191,9 +187,7 @@ pipelines:
         type: configrepo
         blacklist:
           - docs/**/*.*
-      test_env:
-        # This dependency ensures gp2gp-adaptor is not deployed to pre-prod env if
-        # the E2E tests did not pass in the test environment
+      pre_prod_env:
         pipeline: prm-deductions-gp2gp-adaptor.pre-prod
         stage: test
       base_infra:
