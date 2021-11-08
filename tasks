@@ -40,6 +40,14 @@ function check_nhs_service {
   fi
 }
 
+function configure_domain_infix {
+  if [[ "${NHS_ENVIRONMENT}" == "prod" ]]; then
+    export DOMAIN_INFIX="prod"
+  else
+    export DOMAIN_INFIX="${NHS_ENVIRONMENT}.non-prod"
+  fi
+}
+
 function configure_local_envs {
   export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
   export REPOSITORY_URI=$IMAGE_REPO_NAME
@@ -254,6 +262,15 @@ case "${command}" in
   test_integration)
       configure_local_envs
       dojo -c Dojofile-itest "./tasks _test_integration"
+      ;;
+  sanity_check)
+      dojo "./tasks _sanity_check"
+      ;;
+  _sanity_check)
+      configure_domain_infix
+      check_env
+      nslookup "gp2gp-adaptor.${DOMAIN_INFIX}.patient-deductions.nhs.uk"
+      curl -i --fail "https://gp2gp-adaptor.${DOMAIN_INFIX}.patient-deductions.nhs.uk/health"
       ;;
   _test_functional)
       npm install
