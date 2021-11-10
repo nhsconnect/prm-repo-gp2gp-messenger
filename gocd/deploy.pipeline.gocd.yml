@@ -243,4 +243,9 @@ pipelines:
                     arguments:
                       - -c
                       - ./tasks sanity_check
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks test_functional
 
