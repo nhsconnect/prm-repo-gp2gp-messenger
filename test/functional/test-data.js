@@ -5,7 +5,7 @@ export const testData = {
   test: {
     nhsNumber: '9692295621'
   },
-  "pre-prod": {
+  'pre-prod': {
     nhsNumber: '9693642120'
   },
   prod: {

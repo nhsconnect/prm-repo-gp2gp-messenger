@@ -5,7 +5,11 @@ import { config } from '../config';
 const TIMEOUT_30_S = 30000;
 
 describe('POST /health-record-requests/:nhsNumber', () => {
-  it(
+  let test_fn = it;
+  if (config.nhsEnvironment === 'prod') {
+    test_fn = it.skip;
+  }
+  test_fn(
     'should test successful POST request for /health-record-requests/:nhsNumber with Authorization',
     () => {
       const testData = {
@@ -19,6 +23,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           nhsNumber: 9693642112
         }
       };
+
       const { nhsNumber } = testData[config.nhsEnvironment];
 
       const body = {
