@@ -49,7 +49,7 @@ describe('mhs-outbound-client', () => {
   });
 
   it('should log an Error if interactionId is not passed in', async () => {
-    await sendMessage({ conversationId,odsCode, message }).catch(() => {});
+    await sendMessage({ conversationId, odsCode, message }).catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(
       'validation failed',
@@ -181,7 +181,9 @@ describe('mhs-outbound-client', () => {
 
   it('should log an Error if there is an error with axios.post request', async () => {
     axios.post.mockRejectedValue(new Error());
-    await sendMessage({ interactionId, conversationId, odsCode, message: 'message' }).catch(() => {});
+    await sendMessage({ interactionId, conversationId, odsCode, message: 'message' }).catch(
+      () => {}
+    );
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(`POST ${url} - Request failed`, expect.anything());
   });

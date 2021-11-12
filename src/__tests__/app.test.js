@@ -82,7 +82,12 @@ describe('app', () => {
     beforeEach(() => {
       uuid.mockImplementation(() => mockUUID);
       when(sendMessage)
-        .calledWith({ interactionId, conversationId: mockUUID, odsCode: 'code', message: fakerequest })
+        .calledWith({
+          interactionId,
+          conversationId: mockUUID,
+          odsCode: 'code',
+          message: fakerequest
+        })
         .mockResolvedValue({ status: 200, data: message });
 
       generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
