@@ -21,6 +21,7 @@ export const pdsRetrieval = async (req, res, next) => {
   const conversationId = uuid();
   const responseBody = { conversationId, data: {}, errors: [] };
   const config = initializeConfig();
+  const spineOrgCode = config.spineOrgCode;
   setCurrentSpanAttributes({ conversationId });
 
   try {
@@ -36,7 +37,12 @@ export const pdsRetrieval = async (req, res, next) => {
       throw new Error('interactionId is not included in the message');
     }
 
-    const messageResponse = await sendMessage({ interactionId, conversationId, message });
+    const messageResponse = await sendMessage({
+      interactionId,
+      conversationId,
+      spineOrgCode,
+      message
+    });
 
     switch (messageResponse.status) {
       case 200:

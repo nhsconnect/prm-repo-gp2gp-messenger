@@ -38,16 +38,6 @@ describe('config', () => {
     });
   });
 
-  describe('pdsAsid', () => {
-    afterEach(() => {
-      process.env.PDS_ASID = originalEnv.PDS_ASID;
-    });
-
-    it('should return B86041 when PDS_ASID is not set', () => {
-      if (process.env.PDS_ASID) delete process.env.PDS_ASID;
-      expect(initializeConfig().pdsAsid).toEqual('928942012545');
-    });
-  });
 
   describe('wholesome config test', () => {
     afterEach(() => {

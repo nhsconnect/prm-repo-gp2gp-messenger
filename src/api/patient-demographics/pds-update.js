@@ -30,6 +30,8 @@ export const pdsUpdate = async (req, res, next) => {
   const { nhsNumber } = req.params;
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
   const interactionId = 'PRPA_IN000203UK03';
+  const config = initializeConfig();
+  const spineOrgCode = config.spineOrgCode;
   setCurrentSpanAttributes({ conversationId });
 
   try {
@@ -59,6 +61,7 @@ export const pdsUpdate = async (req, res, next) => {
     const messageResponse = await sendMessage({
       interactionId,
       conversationId,
+      spineOrgCode,
       message
     });
 

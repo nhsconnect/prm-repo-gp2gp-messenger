@@ -25,7 +25,7 @@ export const stripXMLMessage = xml =>
 export const sendMessage = ({
   interactionId,
   conversationId,
-  odsCode = 'YES',
+  odsCode,
   message,
   messageId = null
 } = {}) => {

@@ -11,7 +11,9 @@ locals {
       { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value },
       { name = "SDS_FHIR_API_KEY", value = data.aws_ssm_parameter.sds_fhir_api_key.value },
       { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value },
-      { name = "LOG_LEVEL", value = var.log_level}
+      { name = "LOG_LEVEL", value = var.log_level},
+      { name = "SPINE_ORG_CODE", value = var.spine_org_code},
+      { name = "PDS_ASID", value = data.aws_ssm_parameter.pds_asid.value  }
     ]
 }
 
@@ -119,4 +121,8 @@ resource "aws_security_group_rule" "gp2gp-adaptor-to-mhs-outbound" {
   to_port = 443
   security_group_id = data.aws_ssm_parameter.service-to-mhs-outbound-sg-id.value
   source_security_group_id = aws_security_group.ecs-tasks-sg.id
+}
+
+data "aws_ssm_parameter" "pds_asid" {
+  name = "/repo/${var.environment}/user-input/external/pds-asid"
 }

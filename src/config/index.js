@@ -3,13 +3,14 @@ export const portNumber = 3000;
 export const initializeConfig = () => ({
   deductionsAsid: process.env.GP2GP_ADAPTOR_REPOSITORY_ASID || '200000001161',
   deductionsOdsCode: (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE || 'B86041').toUpperCase(),
-  pdsAsid: process.env.PDS_ASID || '928942012545',
+  pdsAsid: process.env.PDS_ASID,
   mhsOutboundUrl: process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL,
   mhsRouteUrl: process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL,
   nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',
   nhsNumberPrefix: process.env.NHS_NUMBER_PREFIX,
   sdsFhirApiKey: process.env.SDS_FHIR_API_KEY,
   sdsFhirUrl: process.env.SDS_FHIR_URL,
+  spineOrgCode: process.env.SPINE_ORG_CODE,
   consumerApiKeys: loadConsumerKeys()
 });
 
