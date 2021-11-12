@@ -38,7 +38,6 @@ describe('config', () => {
     });
   });
 
-
   describe('wholesome config test', () => {
     afterEach(() => {
       process.env = originalEnv;

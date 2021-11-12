@@ -15,7 +15,7 @@ jest.mock('../../../middleware/logging');
 const conversationId = uuid();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const interactionId = 'RCMR_IN030000UK06';
-const odsCode = 'YES'
+const odsCode = 'YES';
 const url = 'http://url.com';
 
 describe('mhs-outbound-client', () => {
@@ -31,7 +31,12 @@ describe('mhs-outbound-client', () => {
     }
   };
   const axiosBody = { payload: message };
-  initializeConfig.mockReturnValue({ deductionsAsid: testData.mhs.asid, mhsOutboundUrl: url, spineOdsCode:"YES", pdsAsid: "928942012545" });
+  initializeConfig.mockReturnValue({
+    deductionsAsid: testData.mhs.asid,
+    mhsOutboundUrl: url,
+    spineOdsCode: 'YES',
+    pdsAsid: '928942012545'
+  });
 
   beforeEach(() => {
     axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));
@@ -97,7 +102,7 @@ describe('mhs-outbound-client', () => {
 
   it('should call axios with wait-for-response header set to true for pds update', async () => {
     const interactionId = 'PRPA_IN000203UK03';
-    const response = await sendMessage({ interactionId, conversationId, odsCode,  message });
+    const response = await sendMessage({ interactionId, conversationId, odsCode, message });
     expect(response.status).toBe(200);
     expect(axios.post).toBeCalledWith(url, axiosBody, {
       headers: {
@@ -127,7 +132,13 @@ describe('mhs-outbound-client', () => {
 
   it('should call axios with specified messageId if passed in and return 200', async () => {
     const messageId = uuid().toUpperCase();
-    const response = await sendMessage({ interactionId, conversationId, odsCode, message, messageId });
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message,
+      messageId
+    });
     expect(response.status).toBe(200);
     expect(axios.post).toBeCalledWith(url, axiosBody, {
       headers: {
