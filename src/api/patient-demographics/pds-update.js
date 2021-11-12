@@ -61,7 +61,7 @@ export const pdsUpdate = async (req, res, next) => {
     const messageResponse = await sendMessage({
       interactionId,
       conversationId,
-      odsCode : spineOrgCode,
+      odsCode: spineOrgCode,
       message
     });
 
