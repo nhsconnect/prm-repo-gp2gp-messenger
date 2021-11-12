@@ -37,6 +37,10 @@ export const pdsRetrieval = async (req, res, next) => {
       throw new Error('interactionId is not included in the message');
     }
 
+    if (!spineOrgCode) {
+      throw new Error('Spine Org code is undefined.');
+    }
+
     const messageResponse = await sendMessage({
       interactionId,
       conversationId,
