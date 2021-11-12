@@ -11,7 +11,8 @@ jest.mock('../../../config/logging');
 jest.mock('../../../config/', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
-    deductionsAsid: 'deductionsAsid'
+    deductionsAsid: 'deductionsAsid',
+    spineOrgCode: 'code'
   })
 }));
 jest.mock('../../../services/pds/pds-response-handler');
@@ -66,36 +67,46 @@ describe('/patient-demographics/:nhsNumber', () => {
 
     when(sendMessage)
       .mockResolvedValue({ status: 503, data: 'MHS error' })
-      .calledWith({ interactionId, conversationId: mockUUID, message: fakerequest })
+      .calledWith({
+        interactionId,
+        conversationId: mockUUID,
+        message: fakerequest,
+        odsCode: 'code'
+      })
       .mockResolvedValue({ status: 200, data: message })
       .calledWith({
         interactionId,
         conversationId: mockNoDataUUID,
-        message: fakerequest
+        message: fakerequest,
+        odsCode: 'code'
       })
       .mockResolvedValue({ status: 200 })
       .calledWith({
         interactionId,
         conversationId: mockUUID,
-        message: sendMessageErrorMessage
+        message: sendMessageErrorMessage,
+        odsCode: 'code'
       })
       .mockRejectedValue(Error('rejected'))
       .calledWith({
         interactionId,
         conversationId: mockNoPdsUUID,
-        message: fakerequest
+        message: fakerequest,
+        odsCode: 'code'
       })
       .mockResolvedValue({ status: 200, data: messageNoPdsId })
       .calledWith({
         interactionId,
         conversationId: mockErrorUUID,
-        message: fakerequest
+        message: fakerequest,
+        odsCode: 'code'
       })
       .mockResolvedValue({ status: 500, data: '500 MHS Error' })
       .calledWith({
         interactionId,
         conversationId: mockNoPatientUID,
-        message: fakerequest
+        message: fakerequest,
+        odsCode: 'code'
       })
       .mockResolvedValue({ status: 200, data: 'no patient details' });
 
