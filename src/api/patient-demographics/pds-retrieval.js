@@ -44,7 +44,7 @@ export const pdsRetrieval = async (req, res, next) => {
     const messageResponse = await sendMessage({
       interactionId,
       conversationId,
-      orgCode: spineOrgCode,
+      odsCode: spineOrgCode,
       message
     });
 
