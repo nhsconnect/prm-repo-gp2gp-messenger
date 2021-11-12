@@ -14,7 +14,7 @@ jest.mock('../services/fhir/sds-fhir-client');
 describe('app', () => {
   beforeEach(() => {
     process.env.API_KEY_FOR_TEST_USER = 'correct-key';
-    process.env.SPINE_ODS_CODE = 'YES';
+    process.env.SPINE_ORG_CODE = 'YES';
     process.env.PDS_ASID = '928942012545';
   });
 
