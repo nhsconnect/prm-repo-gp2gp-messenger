@@ -13,7 +13,8 @@ jest.mock('../config/', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     pdsAsid: 'pdsAsid',
     deductionsAsid: 'deductionsAsid',
-    nhsNumberPrefix: '944'
+    nhsNumberPrefix: '944',
+    spineOrgCode: 'code'
   })
 }));
 jest.mock('../services/health-check/get-health-check');
@@ -81,7 +82,7 @@ describe('app', () => {
     beforeEach(() => {
       uuid.mockImplementation(() => mockUUID);
       when(sendMessage)
-        .calledWith({ interactionId, conversationId: mockUUID, message: fakerequest })
+        .calledWith({ interactionId, conversationId: mockUUID, odsCode: 'code', message: fakerequest })
         .mockResolvedValue({ status: 200, data: message });
 
       generatePdsRetrievalQuery.mockResolvedValue(fakerequest);
@@ -112,6 +113,7 @@ describe('app', () => {
         .calledWith({
           interactionId: interactionIdUpdate,
           conversationId: mockUUID,
+          odsCode: 'code',
           message: fakerequestUpdate
         })
         .mockResolvedValue({ status: 202, data: {} });

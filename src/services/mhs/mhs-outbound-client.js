@@ -31,10 +31,6 @@ export const sendMessage = ({
 } = {}) => {
   const config = initializeConfig();
 
-  if (!odsCode) {
-    throw new Error('Ods code is undefined.');
-  }
-
   return new Promise((resolve, reject) => {
     validateInputs({ interactionId, conversationId, odsCode, message });
     const axiosBody = {

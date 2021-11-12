@@ -43,13 +43,13 @@ describe('mhs-outbound-client', () => {
   });
 
   it('should reject with an Error if interactionId is not passed in', () => {
-    return expect(sendMessage({ conversationId, message })).rejects.toEqual(
+    return expect(sendMessage({ conversationId, odsCode, message })).rejects.toEqual(
       Error('interactionId must be passed in')
     );
   });
 
   it('should log an Error if interactionId is not passed in', async () => {
-    await sendMessage({ conversationId, message }).catch(() => {});
+    await sendMessage({ conversationId,odsCode, message }).catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(
       'validation failed',
@@ -58,13 +58,13 @@ describe('mhs-outbound-client', () => {
   });
 
   it('should logs an Error if message is not passed in', () => {
-    return expect(sendMessage({ conversationId, interactionId })).rejects.toEqual(
+    return expect(sendMessage({ conversationId, interactionId, odsCode })).rejects.toEqual(
       Error(['message must be passed in'])
     );
   });
 
   it('should logs an Error if conversationId is not passed in', () => {
-    return expect(sendMessage({ interactionId, message })).rejects.toEqual(
+    return expect(sendMessage({ interactionId, odsCode, message })).rejects.toEqual(
       Error(['conversationId must be passed in'])
     );
   });
@@ -83,7 +83,7 @@ describe('mhs-outbound-client', () => {
   });
 
   it('throws an Error if interactionId is not passed in', () => {
-    return expect(sendMessage({ conversationId, message })).rejects.toThrowError(
+    return expect(sendMessage({ conversationId, odsCode, message })).rejects.toThrowError(
       Error('interactionId must be passed in')
     );
   });
@@ -175,13 +175,13 @@ describe('mhs-outbound-client', () => {
   it('should throw an Error if there is an error with axios.post request', () => {
     axios.post.mockRejectedValue(new Error());
     return expect(
-      sendMessage({ interactionId, conversationId, message: 'message' })
+      sendMessage({ interactionId, conversationId, odsCode, message: 'message' })
     ).rejects.toEqual(Error(`POST ${url} - Request failed`));
   });
 
   it('should log an Error if there is an error with axios.post request', async () => {
     axios.post.mockRejectedValue(new Error());
-    await sendMessage({ interactionId, conversationId, message: 'message' }).catch(() => {});
+    await sendMessage({ interactionId, conversationId, odsCode, message: 'message' }).catch(() => {});
     expect(logError).toHaveBeenCalledTimes(1);
     expect(logError).toHaveBeenCalledWith(`POST ${url} - Request failed`, expect.anything());
   });
