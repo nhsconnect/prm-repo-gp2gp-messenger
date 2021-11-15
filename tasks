@@ -54,11 +54,20 @@ function configure_local_envs {
   configure_service_url
 }
 
-function configure_service_url {
-  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
-    export SERVICE_URL=http://${NHS_SERVICE}:3000
+function configure_domain_infix {
+  if [[ "${NHS_ENVIRONMENT}" == "prod" ]]; then
+    export DOMAIN_INFIX="prod"
   else
-    export SERVICE_URL="https://${NHS_SERVICE}.${NHS_ENVIRONMENT}.non-prod.patient-deductions.nhs.uk"
+    export DOMAIN_INFIX="${NHS_ENVIRONMENT}.non-prod"
+  fi
+}
+
+function configure_service_url {
+  configure_domain_infix
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+    export SERVICE_URL="http://${NHS_SERVICE}:3000"
+  else
+    export SERVICE_URL="https://${NHS_SERVICE}.${DOMAIN_INFIX}.patient-deductions.nhs.uk"
   fi
 }
 
