@@ -14,21 +14,27 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     () => {
       const testData = {
         dev: {
-          nhsNumber: 9692842339
+          nhsNumber: 9692842339,
+          repositoryOdsCode: 'B85002',
+          repositoryAsid: '200000001613'
         },
         test: {
-          nhsNumber: 9692295621
+          nhsNumber: 9692295621,
+          repositoryOdsCode: 'B86041',
+          repositoryAsid: '200000001694'
         },
         'pre-prod': {
-          nhsNumber: 9693642112
+          nhsNumber: 9693642112,
+          repositoryOdsCode: 'N85027',
+          repositoryAsid: '200000001693'
         }
       };
 
-      const { nhsNumber } = testData[config.nhsEnvironment];
+      const { nhsNumber, repositoryOdsCode, repositoryAsid } = testData[config.nhsEnvironment];
 
       const body = {
-        repositoryOdsCode: 'B86041',
-        repositoryAsid: '200000001161',
+        repositoryOdsCode: repositoryOdsCode,
+        repositoryAsid: repositoryAsid,
         practiceOdsCode: 'M85019',
         conversationId: '2d8ac681-0721-4d0c-8b76-5a26987829fb'
       };
