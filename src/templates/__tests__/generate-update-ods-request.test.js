@@ -4,7 +4,7 @@ const { v4: uuid } = require('uuid');
 const testData = require('./testData.json');
 
 describe('generateUpdateOdsRequest', () => {
-  const testObjectMissing = {
+  const updateRequestWithoutPatientDetails = {
     id: uuid(),
     timestamp: dateFormat(Date.now(), 'yyyymmddHHMMss'),
     receivingService: {
@@ -13,11 +13,11 @@ describe('generateUpdateOdsRequest', () => {
     sendingService: {
       asid: testData.mhs.asid
     },
-    newOdsCode: 'mhs.odsCode'
+    newOdsCode: 'GPodsCode'
   };
 
-  const testObjectComplete = {
-    ...testObjectMissing,
+  const validUpdateRequest = {
+    ...updateRequestWithoutPatientDetails,
     patient: {
       nhsNumber: testData.tppPatient.nhsNumber,
       pdsId: testData.tppPatient.pdsId,
@@ -26,7 +26,7 @@ describe('generateUpdateOdsRequest', () => {
   };
 
   it('should throw error when nhsNumber is not defined in inputObject', () => {
-    expect(() => generateUpdateOdsRequest(testObjectMissing)).toThrowError(
+    expect(() => generateUpdateOdsRequest(updateRequestWithoutPatientDetails)).toThrowError(
       'Check template parameter error: nhsNumber is undefined, pdsId is undefined, pdsUpdateChangeNumber is undefined'
     );
   });
@@ -48,22 +48,24 @@ describe('generateUpdateOdsRequest', () => {
   });
 
   it('should not throw error when all required arguments are defined', () => {
-    expect(() => generateUpdateOdsRequest(testObjectComplete)).not.toThrowError();
+    expect(() => generateUpdateOdsRequest(validUpdateRequest)).not.toThrowError();
   });
 
   it('should have populate the xml template with all the required fields', () => {
-    const updateODSRequest = generateUpdateOdsRequest(testObjectComplete);
+    const outboundRequest = generateUpdateOdsRequest(validUpdateRequest);
 
-    const checkEntries = object => {
-      Object.keys(object).map(key => {
-        if (typeof object[key] === 'object') {
-          checkEntries(object[key]);
-        } else {
-          expect(updateODSRequest).toContain(object[key]);
-        }
-      });
-    };
+    expect(outboundRequest).toContain(validUpdateRequest.id);
+    expect(outboundRequest).toContain(validUpdateRequest.timestamp);
+    expect(outboundRequest).toContain(validUpdateRequest.receivingService.asid);
+    expect(outboundRequest).toContain(validUpdateRequest.sendingService.asid);
+    expect(outboundRequest.toUpperCase()).toContain(validUpdateRequest.newOdsCode.toUpperCase());
+    expect(outboundRequest).toContain(validUpdateRequest.patient.nhsNumber);
+    expect(outboundRequest).toContain(validUpdateRequest.patient.pdsId);
+    expect(outboundRequest).toContain(validUpdateRequest.patient.pdsUpdateChangeNumber);
+  });
 
-    checkEntries(testObjectComplete);
+  it('should uppercase the ODS code', () => {
+    const updateODSRequest = generateUpdateOdsRequest(validUpdateRequest);
+    expect(updateODSRequest).toContain('GPODSCODE');
   });
 });

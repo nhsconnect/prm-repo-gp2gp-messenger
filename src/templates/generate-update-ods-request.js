@@ -107,7 +107,7 @@ const template = ({
                         <performer typeCode="PRF">
                           <assignedOrganization classCode="ASSIGNED">
                           <!--  National GP Practice code of primary care provider  -->
-                          <id root="2.16.840.1.113883.2.1.4.3" extension="${newOdsCode}"/>
+                          <id root="2.16.840.1.113883.2.1.4.3" extension="${newOdsCode.toUpperCase()}"/>
                           </assignedOrganization>
                         </performer>
                       </patientCareProvision>
