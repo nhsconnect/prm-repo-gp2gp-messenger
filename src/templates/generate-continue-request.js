@@ -68,7 +68,7 @@ const continueRequest = ({
           <Gp2gpfragment xmlns="urn:nhs:names:services:gp2gp">
             <Version>01</Version>
             <Recipients>
-              <Recipient>${gpOdsCode}</Recipient>
+              <Recipient>${gpOdsCode.toUpperCase()}</Recipient>
             </Recipients>
             <From>${repoOdsCode}</From>
             <subject>Continue Acknowledgement</subject>

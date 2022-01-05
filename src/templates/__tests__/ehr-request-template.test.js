@@ -3,7 +3,7 @@ import generateEhrRequestQuery from '../ehr-request-template';
 import testData from './testData.json';
 
 describe('generateEhrRequestQuery', () => {
-  const testObjectMissing = {
+  const requestWithoutPatientDetails = {
     id: uuid(),
     timestamp: '20200403092516',
     sendingService: {
@@ -16,37 +16,49 @@ describe('generateEhrRequestQuery', () => {
     }
   };
 
-  const testObjectComplete = {
-    ...testObjectMissing,
+  const validRequest = {
+    ...requestWithoutPatientDetails,
     patient: {
       nhsNumber: testData.emisPatient.nhsNumber
     }
   };
 
   it('should throw error when nhsNumber is not defined in inputObject', () => {
-    expect(() => generateEhrRequestQuery(testObjectMissing)).toThrowError(
+    expect(() => generateEhrRequestQuery(requestWithoutPatientDetails)).toThrowError(
       'Check template parameter error: nhsNumber is undefined'
     );
   });
 
   it('should not throw error when all required arguments are defined', () => {
-    expect(() => generateEhrRequestQuery(testObjectComplete)).not.toThrowError();
+    expect(() => generateEhrRequestQuery(validRequest)).not.toThrowError();
   });
 
   it('should have populate the xml template with all the required fields', () => {
-    const ehrRequestQuery = generateEhrRequestQuery(testObjectComplete);
+    const ehrRequestQuery = generateEhrRequestQuery(validRequest);
 
-    const checkEntries = object => {
-      Object.keys(object).map(key => {
-        if (typeof object[key] === 'object') {
-          checkEntries(object[key]);
-        } else {
-          expect(ehrRequestQuery).toContain(object[key]);
-        }
-      });
-    };
+    expect(ehrRequestQuery).toContain(validRequest.id);
+    expect(ehrRequestQuery).toContain(validRequest.timestamp);
+    expect(ehrRequestQuery).toContain(validRequest.sendingService.asid);
+    expect(ehrRequestQuery.toUpperCase()).toContain(
+      validRequest.sendingService.odsCode.toUpperCase()
+    );
 
-    checkEntries(testObjectComplete);
+    expect(ehrRequestQuery).toContain(validRequest.receivingService.asid);
+    expect(ehrRequestQuery.toUpperCase()).toContain(
+      validRequest.receivingService.odsCode.toUpperCase()
+    );
+
+    expect(ehrRequestQuery).toContain(validRequest.patient.nhsNumber);
+  });
+
+  it('should upper case the sending service ODS code', () => {
+    const ehrRequestQuery = generateEhrRequestQuery(validRequest);
+    expect(ehrRequestQuery).toContain('B86041');
+  });
+
+  it('should upper case the receiving service ODS code', () => {
+    const ehrRequestQuery = generateEhrRequestQuery(validRequest);
+    expect(ehrRequestQuery).toContain('N82668');
   });
 
   it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {

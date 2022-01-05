@@ -26,9 +26,20 @@ describe('generateContinueRequest', () => {
     expect(returnValue).toContain(receivingAsid);
     expect(returnValue).toContain(sendingAsid);
     expect(returnValue).toContain(ehrExtractMessageId);
-    expect(returnValue).toContain(gpOdsCode);
+    expect(returnValue.toUpperCase()).toContain(gpOdsCode.toUpperCase());
     expect(returnValue).toContain(repoOdsCode);
     expect(returnValue).toContain(timestamp);
+  });
+
+  it('should upper case the GP ODS code', () => {
+    const returnValue = generateContinueRequest({
+      messageId,
+      receivingAsid,
+      sendingAsid,
+      ehrExtractMessageId,
+      gpOdsCode
+    });
+    expect(returnValue).toContain('N82668');
   });
 
   describe('failure', () => {

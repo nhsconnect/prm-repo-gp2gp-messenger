@@ -70,14 +70,14 @@ const template = ({
               <author typeCode="AUT">
                   <AgentOrgSDS classCode="AGNT">
                       <agentOrganizationSDS classCode="ORG" determinerCode="INSTANCE">
-                          <id root="1.2.826.0.1285.0.1.10" extension="${sendingOdsCode}"/>
+                          <id root="1.2.826.0.1285.0.1.10" extension="${sendingOdsCode.toUpperCase()}"/>
                       </agentOrganizationSDS>
                   </AgentOrgSDS>
               </author>
               <destination typeCode="DST">
                   <AgentOrgSDS classCode="AGNT">
                       <agentOrganizationSDS classCode="ORG" determinerCode="INSTANCE">
-                          <id root="1.2.826.0.1285.0.1.10" extension="${receivingOdsCode}"/>
+                          <id root="1.2.826.0.1285.0.1.10" extension="${receivingOdsCode.toUpperCase()}"/>
                       </agentOrganizationSDS>
                   </AgentOrgSDS>
               </destination>

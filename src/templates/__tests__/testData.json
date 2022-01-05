@@ -21,17 +21,17 @@
   },
   "emisPractise": {
     "name": "Walton Village R",
-    "odsCode": "N82668",
+    "odsCode": "n82668",
     "asid": "200000000205"
   },
   "tppPractise": {
     "name": "",
-    "odsCode": "M85019",
+    "odsCode": "m85019",
     "asid": ""
   },
   "mhs": {
     "name": "Deductions MHS",
-    "odsCode": "B86041",
+    "odsCode": "b86041",
     "asid": "200000001161"
   },
   "pds": {
