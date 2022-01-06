@@ -2,7 +2,7 @@ import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
 import { config } from '../config';
 
-process.on('unhandledRejection', console.warn)
+process.on('unhandledRejection', console.warn);
 
 describe('Patient ODS code update in PDS', () => {
   const RETRY_COUNT = 20;
