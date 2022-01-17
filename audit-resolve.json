@@ -33,6 +33,10 @@
     "1006767|swagger-ui-express>swagger-ui-dist": {
       "decision": "fix",
       "madeAt": 1639561556999
+    },
+    "1006865|axios>follow-redirects": {
+      "decision": "fix",
+      "madeAt": 1642070828199
     }
   },
   "rules": {},
