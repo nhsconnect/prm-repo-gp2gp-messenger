@@ -62,10 +62,10 @@ resource "aws_security_group" "ecs-tasks-sg" {
   }
 
   egress {
-    description = "Allow All Outbound"
-    protocol    = "-1"
+    description = "Allow All TCP Outbound"
+    protocol    = "tcp"
     from_port   = 0
-    to_port     = 0
+    to_port     = 65535
     cidr_blocks = ["0.0.0.0/0"]
   }
 
