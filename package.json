@@ -79,7 +79,6 @@
     "automock": false
   },
   "resolutions": {
-    "color-string": "1.5.5",
     "ansi-regex": "5.0.1"
   }
 }
