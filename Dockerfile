@@ -4,6 +4,7 @@ COPY package*.json /app/
 
 WORKDIR /app
 
+RUN npm install
 RUN npm ci --only=production
 
 # production app image
