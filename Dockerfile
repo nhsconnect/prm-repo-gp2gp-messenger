@@ -40,7 +40,7 @@ COPY run-server.sh            /usr/bin/run-gp2gp-server
 ENV GP2GP_MESSENGER_REPOSITORY_ASID=deduction-asid \
   GP2GP_MESSENGER_REPOSITORY_ODS_CODE=deduction-ods \
   NHS_ENVIRONMENT=local \
-  GP2GP_MESSENGER_MHS_OUTBOUND_URL="" \
+  GP2GP_MESSENGER_MHS_OUTBOUND_URL=""
 
 WORKDIR /app
 
