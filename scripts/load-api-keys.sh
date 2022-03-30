@@ -1,6 +1,6 @@
 #!/bin/bash
 AWS_DEFAULT_REGION=eu-west-2
-NHS_SERVICE=gp2gp-adaptor
+NHS_SERVICE=gp2gp-messenger
 
 echo fetching api keys
 

@@ -22,7 +22,7 @@ describe('GET /error', () => {
       .expect(201)
       .expect(() => {
         expect(logError).toHaveBeenCalledTimes(1);
-        expect(logError).toHaveBeenCalledWith('TEST: GP2GP Adaptor Error logging test entry');
+        expect(logError).toHaveBeenCalledWith('TEST: GP2GP Messenger Error logging test entry');
       })
       .end(done);
   });

@@ -25,7 +25,7 @@ export const addCommonFields = format(info => {
   }
 
   updated.level = updated.level.toUpperCase();
-  updated['service'] = 'gp2gp-adaptor';
+  updated['service'] = 'gp2gp-messenger';
   updated['environment'] = nhsEnvironment;
   return updated;
 });

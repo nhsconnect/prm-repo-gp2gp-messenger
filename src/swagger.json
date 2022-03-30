@@ -3,7 +3,7 @@
   "info": {
     "description": "Service to handle message generation for GP2GP communication",
     "version": "1.0.0",
-    "title": "GP2GP Adaptor"
+    "title": "GP2GP Messenger"
   },
   "tags": [
     {

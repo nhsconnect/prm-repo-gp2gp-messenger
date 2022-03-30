@@ -7,9 +7,8 @@ set -Eeo pipefail
 ###########################
 
 AWS_DEFAULT_REGION=eu-west-2
-IMAGE_REPO_NAME=deductions/gp2gp-adaptor
-MESSENGER_IMAGE_REPO_NAME=deductions/gp2gp-messenger
-export NHS_SERVICE=gp2gp-adaptor
+IMAGE_REPO_NAME=deductions/gp2gp-messenger
+export NHS_SERVICE=gp2gp-messenger
 AWS_HELPERS_VERSION=0.2.18
 echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
 
@@ -52,7 +51,6 @@ function configure_domain_infix {
 function configure_local_envs {
   export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_MESSENGER=auth-key-2
   export REPOSITORY_URI=$IMAGE_REPO_NAME
-  export MESSENGER_REPOSITORY_URI=$MESSENGER_IMAGE_REPO_NAME
   configure_service_url
 }
 
@@ -198,7 +196,6 @@ function configure_docker_repository_uri {
   docker_login
   get_aws_account_id
   export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$IMAGE_REPO_NAME
-  export MESSENGER_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/$MESSENGER_IMAGE_REPO_NAME
 }
 
 function build_docker_image {
@@ -206,7 +203,6 @@ function build_docker_image {
   set_image_tag
   echo Building the Docker image...
   docker build -t $REPOSITORY_URI:latest -t $REPOSITORY_URI:$IMAGE_TAG .
-  docker build -t $MESSENGER_REPOSITORY_URI:latest -t $MESSENGER_REPOSITORY_URI:$IMAGE_TAG .
   echo Build completed on `date`
 }
 
@@ -328,8 +324,6 @@ case "${command}" in
       build_docker_image
       echo "Pushing the Docker image... $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG"
       docker push $REPOSITORY_URI:$IMAGE_TAG
-      echo "Pushing the Docker image... $MESSENGER_REPOSITORY_URI:latest $MESSENGER_REPOSITORY_URI:$IMAGE_TAG"
-      docker push $MESSENGER_REPOSITORY_URI:$IMAGE_TAG
       ;;
   _test_docker)
       npm install
@@ -392,7 +386,6 @@ case "${command}" in
       check_env
       set_image_tag
       promote_docker_image "$IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
-      promote_docker_image "$MESSENGER_IMAGE_REPO_NAME:$IMAGE_TAG" "$NHS_ENVIRONMENT"
       ;;
   _wait_ecs)
       _assume_environment_role $NHS_ENVIRONMENT

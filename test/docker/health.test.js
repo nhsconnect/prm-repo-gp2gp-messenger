@@ -20,7 +20,7 @@ describe('/health', () => {
       expect.objectContaining({
         data: expect.objectContaining({
           version: '1',
-          description: 'Health of GP2GP Adapter service'
+          description: 'Health of GP2GP Messenger service'
         })
       })
     );

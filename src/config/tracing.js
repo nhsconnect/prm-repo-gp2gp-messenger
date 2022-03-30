@@ -16,7 +16,7 @@ registerInstrumentations({
 
 console.log('Tracing initialised');
 
-export const tracer = tracerProvider.getTracer('gp2gp-adaptor-tracer');
+export const tracer = tracerProvider.getTracer('gp2gp-messenger-tracer');
 
 // this works
 export const setCurrentSpanAttributes = attributes => {

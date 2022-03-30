@@ -3,7 +3,7 @@
 !include https://gist.githubusercontent.com/fishey2/c9d9d7c7426d3701959789c10e96fdb0/raw/2afa46ecf5e126ad563693a8dccfa3e7ee46a50c/nhs_stylesheet.iuml
 
 
-participant "GP2GP Adapter" as gp2gp
+participant "GP2GP Messenger" as gp2gp
 
 box "MHS VPC"
     participant "Active MQ Inbound" as mq

@@ -1,4 +1,4 @@
-# GP2GP Adapter Documentation
+# GP2GP Messenger Documentation
 
 1. diagrams - Contains plantuml scripts
 
