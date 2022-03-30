@@ -1,4 +1,4 @@
-# Deductions GP2GP adaptor
+# Deductions GP2GP messenger
 
 This is an implementation of a component to handle the sending of the GP2GP message set used to transfer a patient's Electronic Health Record between GP Practices.
 It uses the GP2GP message format to transfer orphaned and stranded records out of a secure NHS repository.
@@ -26,15 +26,15 @@ If you would like to run the app locally outside `dojo`, you need to:
 1. Run `npm install` to install all node dependencies as per `package.json`.
 2. Set up the env variables and/or copy them into your IDE configurations (`Run -> Edit Configurations ->Environment Variables` in IntelliJ):
 ```
-export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
+export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_MESSENGER=auth-key-2
 export REPOSITORY_URI=$IMAGE_REPO_NAME   
-export NHS_SERVICE=gp2gp-adaptor
+export NHS_SERVICE=gp2gp-messenger
 export SERVICE_URL=http://${NHS_SERVICE}:3000
 export NHS_ENVIRONMENT=local
-export GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid
-export GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods
+export GP2GP_MESSENGER_REPOSITORY_ASID=deduction-asid
+export GP2GP_MESSENGER_REPOSITORY_ODS_CODE=deduction-ods
 ```
-- Locally, the variables `GP2GP_ADAPTOR_REPOSITORY_ASID`, `GP2GP_ADAPTOR_REPOSITORY_ODS_CODE` can be set
+- Locally, the variables `GP2GP_MESSENGER_REPOSITORY_ASID`, `GP2GP_MESSENGER_REPOSITORY_ODS_CODE` can be set
   to any value
   
 3. The app will use a fake MHS when `NHS_ENVIRONMENT` is set to `local` or `dev`. 
