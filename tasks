@@ -206,6 +206,7 @@ function build_docker_image {
   set_image_tag
   echo Building the Docker image...
   docker build -t $REPOSITORY_URI:latest -t $REPOSITORY_URI:$IMAGE_TAG .
+  docker build -t MESSENGER_REPOSITORY_URI:latest -t MESSENGER_REPOSITORY_URI:$IMAGE_TAG .
   echo Build completed on `date`
 }
 
@@ -327,6 +328,8 @@ case "${command}" in
       build_docker_image
       echo "Pushing the Docker image... $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG"
       docker push $REPOSITORY_URI:$IMAGE_TAG
+      echo "Pushing the Docker image... $MESSENGER_REPOSITORY_URI:latest $MESSENGER_REPOSITORY_URI:$IMAGE_TAG"
+      docker push $MESSENGER_REPOSITORY_URI:$IMAGE_TAG
       ;;
   _test_docker)
       npm install
