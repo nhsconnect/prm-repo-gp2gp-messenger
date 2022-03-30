@@ -1,6 +1,6 @@
 format_version: 4
 pipelines:
-  'prm-deductions-gp2gp-adaptor':
+  'prm-deductions-gp2gp-messenger':
     group: deductions
     label_template: '${git[:8]}'
     materials:

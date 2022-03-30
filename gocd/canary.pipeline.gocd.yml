@@ -1,6 +1,6 @@
 format_version: 4
 pipelines:
-  'prm-deductions-gp2gp-adaptor.canary':
+  'prm-deductions-gp2gp-messenger.canary':
     group: deductions-canary
     label_template: '${git[:8]}'
     materials:

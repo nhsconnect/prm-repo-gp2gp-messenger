@@ -115,7 +115,7 @@ common:
                     - -c
                     - ./tasks test_e2e
 pipelines:
-  'prm-deductions-gp2gp-adaptor.dev':
+  'prm-deductions-gp2gp-messenger.dev':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -124,7 +124,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       app:
-        pipeline: prm-deductions-gp2gp-adaptor
+        pipeline: prm-deductions-gp2gp-messenger
         stage: test_docker
       base_infra:
         pipeline: prm-deductions-infra
@@ -135,7 +135,7 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: dev
     stages: *common_stages
-  'prm-deductions-gp2gp-adaptor.test':
+  'prm-deductions-gp2gp-messenger.test':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -144,9 +144,9 @@ pipelines:
         blacklist:
           - docs/**/*.*
       dev_env:
-        # This dependency ensures gp2gp-adaptor is not deployed to test env if
+        # This dependency ensures gp2gp-messenger is not deployed to test env if
         # the E2E tests did not pass in the dev environment
-        pipeline: prm-deductions-gp2gp-adaptor.dev
+        pipeline: prm-deductions-gp2gp-messenger.dev
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
@@ -157,7 +157,7 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: test
     stages: *common_stages
-  'prm-deductions-gp2gp-adaptor.pre-prod':
+  'prm-deductions-gp2gp-messenger.pre-prod':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -166,9 +166,9 @@ pipelines:
         blacklist:
           - docs/**/*.*
       test_env:
-        # This dependency ensures gp2gp-adaptor is not deployed to pre-prod env if
+        # This dependency ensures gp2gp-messenger is not deployed to pre-prod env if
         # the E2E tests did not pass in the test environment
-        pipeline: prm-deductions-gp2gp-adaptor.test
+        pipeline: prm-deductions-gp2gp-messenger.test
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
@@ -179,7 +179,7 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
-  'prm-deductions-gp2gp-adaptor.prod':
+  'prm-deductions-gp2gp-messenger.prod':
     group: deductions
     label_template: '${git[:8]}'
     materials:
@@ -188,7 +188,7 @@ pipelines:
         blacklist:
           - docs/**/*.*
       pre_prod_env:
-        pipeline: prm-deductions-gp2gp-adaptor.pre-prod
+        pipeline: prm-deductions-gp2gp-messenger.pre-prod
         stage: test
       base_infra:
         pipeline: prm-deductions-infra
