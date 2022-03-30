@@ -11,9 +11,9 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       const { nhsNumber } = testData[config.nhsEnvironment];
 
       return expect(
-        axios.get(`${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`, {
+        axios.get(`${config.gp2gpMessengerUrl}/patient-demographics/${nhsNumber}`, {
           headers: {
-            Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
+            Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
           adapter
         })
@@ -32,9 +32,9 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
       const fakeNhsNumber = '0000000000';
 
       return expect(
-        axios.get(`${config.gp2gpAdaptorUrl}/patient-demographics/${fakeNhsNumber}`, {
+        axios.get(`${config.gp2gpMessengerUrl}/patient-demographics/${fakeNhsNumber}`, {
           headers: {
-            Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
+            Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
           adapter
         })

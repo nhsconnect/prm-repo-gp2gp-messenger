@@ -50,7 +50,7 @@ function configure_domain_infix {
 }
 
 function configure_local_envs {
-  export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=auth-key-2
+  export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_MESSENGER=auth-key-2
   export REPOSITORY_URI=$IMAGE_REPO_NAME
   export MESSENGER_REPOSITORY_URI=$MESSENGER_IMAGE_REPO_NAME
   configure_service_url
@@ -83,7 +83,7 @@ function get_aws_account_id {
 
 function configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor {
     parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/api-keys/${NHS_SERVICE}/e2e-test"
-    export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_ADAPTOR=$(_get_aws_ssm_secret ${parameter_name})
+    export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_MESSENGER=$(_get_aws_ssm_secret ${parameter_name})
 }
 
 #######################

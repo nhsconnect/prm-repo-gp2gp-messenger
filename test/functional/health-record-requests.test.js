@@ -40,9 +40,9 @@ describe('POST /health-record-requests/:nhsNumber', () => {
       };
 
       return expect(
-        axios.post(`${config.gp2gpAdaptorUrl}/health-record-requests/${nhsNumber}`, body, {
+        axios.post(`${config.gp2gpMessengerUrl}/health-record-requests/${nhsNumber}`, body, {
           headers: {
-            Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
+            Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
           adapter
         })

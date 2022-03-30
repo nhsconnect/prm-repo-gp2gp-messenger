@@ -16,24 +16,25 @@ describe('config', () => {
 
   describe('deductionsAsid', () => {
     afterEach(() => {
-      process.env.GP2GP_ADAPTOR_REPOSITORY_ASID = originalEnv.GP2GP_ADAPTOR_REPOSITORY_ASID;
+      process.env.GP2GP_MESSENGER_REPOSITORY_ASID = originalEnv.GP2GP_MESSENGER_REPOSITORY_ASID;
     });
 
-    it('should return 200000001161 when GP2GP_ADAPTOR_REPOSITORY_ASID is not set', () => {
-      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ASID)
-        delete process.env.GP2GP_ADAPTOR_REPOSITORY_ASID;
+    it('should return 200000001161 when GP2GP_MESSENGER_REPOSITORY_ASID is not set', () => {
+      if (process.env.GP2GP_MESSENGER_REPOSITORY_ASID)
+        delete process.env.GP2GP_MESSENGER_REPOSITORY_ASID;
       expect(initializeConfig().deductionsAsid).toEqual('200000001161');
     });
   });
 
   describe('deductionsOdsCode', () => {
     afterEach(() => {
-      process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE = originalEnv.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
+      process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE =
+        originalEnv.GP2GP_MESSENGER_REPOSITORY_ODS_CODE;
     });
 
-    it('should return B86041 when GP2GP_ADAPTOR_REPOSITORY_ODS_CODE is not set', () => {
-      if (process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE)
-        delete process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE;
+    it('should return B86041 when GP2GP_MESSENGER_REPOSITORY_ODS_CODE is not set', () => {
+      if (process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE)
+        delete process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE;
       expect(initializeConfig().deductionsOdsCode).toEqual('B86041');
     });
   });
@@ -49,11 +50,10 @@ describe('config', () => {
       });
 
       it('should map config with process.env values if set', () => {
-        process.env.GP2GP_ADAPTOR_REPOSITORY_ASID = 'deductionsAsid';
-        process.env.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE = 'deductionsOdsCode';
+        process.env.GP2GP_MESSENGER_REPOSITORY_ASID = 'deductionsAsid';
+        process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = 'deductionsOdsCode';
         process.env.PDS_ASID = 'pdsAsid';
-        process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
-        process.env.GP2GP_ADAPTOR_MHS_ROUTE_URL = 'mhsRouteUrl';
+        process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
         process.env.NHS_ENVIRONMENT = 'nhsEnvironment';
         process.env.SERVICE_URL = 'url';
 

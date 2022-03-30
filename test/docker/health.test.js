@@ -5,7 +5,7 @@ import { config } from '../config';
 describe('/health', () => {
   it('should return 200', () => {
     return expect(
-      axios.get(`${config.gp2gpAdaptorUrl}/health`, {
+      axios.get(`${config.gp2gpMessengerUrl}/health`, {
         adapter
       })
     ).resolves.toEqual(expect.objectContaining({ status: 200 }));
@@ -13,7 +13,7 @@ describe('/health', () => {
 
   it('should return matching data', () => {
     return expect(
-      axios.get(`${config.gp2gpAdaptorUrl}/health`, {
+      axios.get(`${config.gp2gpMessengerUrl}/health`, {
         adapter
       })
     ).resolves.toEqual(

@@ -4,10 +4,10 @@ locals {
     task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
     task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
     environment_variables        = [
-      { name = "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ODS_CODE.value },
-      { name = "GP2GP_ADAPTOR_REPOSITORY_ASID", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_REPOSITORY_ASID.value },
+      { name = "GP2GP_MESSENGER_REPOSITORY_ODS_CODE", value = data.aws_ssm_parameter.GP2GP_MESSENGER_REPOSITORY_ODS_CODE.value },
+      { name = "GP2GP_MESSENGER_REPOSITORY_ASID", value = data.aws_ssm_parameter.GP2GP_MESSENGER_REPOSITORY_ASID.value },
       { name = "NHS_ENVIRONMENT", value = var.environment },
-      { name = "GP2GP_ADAPTOR_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_ADAPTOR_MHS_OUTBOUND_URL.value },
+      { name = "GP2GP_MESSENGER_MHS_OUTBOUND_URL", value = data.aws_ssm_parameter.GP2GP_MESSENGER_MHS_OUTBOUND_URL.value },
       { name = "NHS_NUMBER_PREFIX", value = data.aws_ssm_parameter.nhs_number_prefix.value },
       { name = "SDS_FHIR_API_KEY", value = data.aws_ssm_parameter.sds_fhir_api_key.value },
       { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value },

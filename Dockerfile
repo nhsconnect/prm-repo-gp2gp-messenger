@@ -37,11 +37,10 @@ COPY build/                   /app/
 COPY scripts/load-api-keys.sh /app/scripts/load-api-keys.sh
 COPY run-server.sh            /usr/bin/run-gp2gp-server
 
-ENV GP2GP_ADAPTOR_REPOSITORY_ASID=deduction-asid \
-  GP2GP_ADAPTOR_REPOSITORY_ODS_CODE=deduction-ods \
+ENV GP2GP_MESSENGER_REPOSITORY_ASID=deduction-asid \
+  GP2GP_MESSENGER_REPOSITORY_ODS_CODE=deduction-ods \
   NHS_ENVIRONMENT=local \
-  GP2GP_ADAPTOR_MHS_OUTBOUND_URL="" \
-  GP2GP_ADAPTOR_MHS_ROUTE_URL=""
+  GP2GP_MESSENGER_MHS_OUTBOUND_URL="" \
 
 WORKDIR /app
 

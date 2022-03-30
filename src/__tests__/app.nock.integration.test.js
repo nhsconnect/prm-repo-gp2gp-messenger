@@ -10,7 +10,7 @@ describe('app integration', () => {
 
   beforeEach(() => {
     process.env.API_KEY_FOR_TEST_USER = authKey;
-    process.env.GP2GP_ADAPTOR_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
+    process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
     process.env.SDS_FHIR_URL = 'http://localhost/sds-fhir';
     process.env.SDS_FHIR_API_KEY = 'key';
     process.env.SPINE_ODS_CODE = 'YES';

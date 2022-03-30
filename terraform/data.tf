@@ -4,11 +4,11 @@ data "aws_ssm_parameter" "private_zone_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-root-zone-id"
 }
 
-data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ODS_CODE" {
+data "aws_ssm_parameter" "GP2GP_MESSENGER_REPOSITORY_ODS_CODE" {
   name = "/repo/${var.environment}/user-input/external/repository-ods-code"
 }
 
-data "aws_ssm_parameter" "GP2GP_ADAPTOR_REPOSITORY_ASID" {
+data "aws_ssm_parameter" "GP2GP_MESSENGER_REPOSITORY_ASID" {
   name = "/repo/${var.environment}/user-input/external/repository-asid"
 }
 
@@ -20,7 +20,7 @@ data "aws_ssm_parameter" "deductions_private_vpc_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/private-vpc-id"
 }
 
-data "aws_ssm_parameter" "GP2GP_ADAPTOR_MHS_OUTBOUND_URL" {
+data "aws_ssm_parameter" "GP2GP_MESSENGER_MHS_OUTBOUND_URL" {
   name = "/repo/${var.environment}/output/prm-mhs-infra/repo-mhs-outbound-url"
 }
 

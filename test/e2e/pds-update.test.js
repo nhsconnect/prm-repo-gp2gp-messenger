@@ -81,10 +81,10 @@ const sleep = async ms => {
 
 const getAndValidatePatientPdsDetails = async nhsNumber => {
   const pdsResponse = await axios.get(
-    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
+    `${config.gp2gpMessengerUrl}/patient-demographics/${nhsNumber}`,
     {
       headers: {
-        Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
+        Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
       },
       adapter
     }
@@ -102,7 +102,7 @@ const updateAndValidatePatientOdsCode = async (
   conversationId
 ) => {
   const pdsResponse = await axios.patch(
-    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
+    `${config.gp2gpMessengerUrl}/patient-demographics/${nhsNumber}`,
     {
       pdsId,
       serialChangeNumber,
@@ -111,7 +111,7 @@ const updateAndValidatePatientOdsCode = async (
     },
     {
       headers: {
-        Authorization: config.e2eTestAuthorizationKeysForGp2gpAdaptor
+        Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
       },
       adapter
     }
