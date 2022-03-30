@@ -63,7 +63,6 @@ describe('config', () => {
             deductionsOdsCode: 'DEDUCTIONSODSCODE',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
-            mhsRouteUrl: 'mhsRouteUrl',
             nhsEnvironment: 'nhsEnvironment'
           })
         );
