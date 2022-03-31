@@ -18,11 +18,11 @@ resource "aws_alb" "alb-internal" {
   name            = "${var.environment}-${var.component_name}-alb-int"
   subnets         = split(",", data.aws_ssm_parameter.private_subnets.value)
   security_groups = [
-    aws_security_group.gp2gp_adaptor_alb.id,
-    aws_security_group.alb_to_gp2gp_adaptor_ecs.id,
-    aws_security_group.service_to_gp2gp_adaptor.id,
-    aws_security_group.vpn_to_gp2gp_adaptor.id,
-    aws_security_group.gocd_to_gp2gp_adaptor.id
+    aws_security_group.gp2gp_messenger_alb.id,
+    aws_security_group.alb_to_gp2gp_messenger_ecs.id,
+    aws_security_group.service_to_gp2gp_messenger.id,
+    aws_security_group.vpn_to_gp2gp_messenger.id,
+    aws_security_group.gocd_to_gp2gp_messenger.id
   ]
   internal = true
   drop_invalid_header_fields = true
@@ -55,7 +55,7 @@ resource "aws_alb_listener" "int-alb-listener-https" {
   protocol          = "HTTPS"
 
   ssl_policy      = "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
-  certificate_arn = aws_acm_certificate_validation.gp2gp-adaptor-cert-validation.certificate_arn
+  certificate_arn = aws_acm_certificate_validation.gp2gp_messenger_cert_validation.certificate_arn
 
   default_action {
     type = "fixed-response"
@@ -128,10 +128,10 @@ resource "aws_alb_listener_rule" "int-alb-https-listener-rule" {
   }
 }
 
-# Exists to be referred by the ECS task of gp2gp adaptor
-resource "aws_security_group" "gp2gp_adaptor_alb" {
+# Exists to be referred by the ECS task of gp2gp messenger
+resource "aws_security_group" "gp2gp_messenger_alb" {
   name        = "${var.environment}-alb-${var.component_name}"
-  description = "GP2GP Adaptor ALB security group"
+  description = "GP2GP Messenger ALB security group"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   tags = {
@@ -141,13 +141,13 @@ resource "aws_security_group" "gp2gp_adaptor_alb" {
   }
 }
 
-resource "aws_security_group" "alb_to_gp2gp_adaptor_ecs" {
+resource "aws_security_group" "alb_to_gp2gp_messenger_ecs" {
   name        = "${var.environment}-alb-to-${var.component_name}-ecr"
-  description = "Allows GP2GP Adaptor ALB connections to GP2GP Adaptor component task"
+  description = "Allows GP2GP Messenger ALB connections to GP2GP Messenger component task"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   egress {
-    description = "Allow outbound connections to GP2GP Adaptor ECS Task"
+    description = "Allow outbound connections to GP2GP Messenger ECS Task"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -161,7 +161,7 @@ resource "aws_security_group" "alb_to_gp2gp_adaptor_ecs" {
   }
 }
 
-resource "aws_security_group" "service_to_gp2gp_adaptor" {
+resource "aws_security_group" "service_to_gp2gp_messenger" {
   name        = "${var.environment}-service-to-${var.component_name}"
   description = "controls access from repo services to ehr-repo"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
@@ -173,17 +173,17 @@ resource "aws_security_group" "service_to_gp2gp_adaptor" {
   }
 }
 
-resource "aws_ssm_parameter" "service_to_gp2gp_adaptor" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/service-to-gp2gp-adaptor-sg-id"
+resource "aws_ssm_parameter" "service_to_gp2gp_messenger" {
+  name = "/repo/${var.environment}/output/${var.repo_name}/service-to-gp2gp-messenger-sg-id"
   type = "String"
-  value = aws_security_group.service_to_gp2gp_adaptor.id
+  value = aws_security_group.service_to_gp2gp_messenger.id
   tags = {
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
-resource "aws_security_group" "vpn_to_gp2gp_adaptor" {
+resource "aws_security_group" "vpn_to_gp2gp_messenger" {
   name        = "${var.environment}-vpn-to-${var.component_name}"
   description = "controls access from vpn to ehr-repo"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
@@ -195,24 +195,24 @@ resource "aws_security_group" "vpn_to_gp2gp_adaptor" {
   }
 }
 
-resource "aws_security_group_rule" "vpn_to_gp2gp_adaptor" {
+resource "aws_security_group_rule" "vpn_to_gp2gp_messenger" {
   count       = var.grant_access_through_vpn ? 1 : 0
   type        = "ingress"
-  description = "Allow vpn to access GP2GP Adaptor ALB"
+  description = "Allow vpn to access GP2GP Messenger ALB"
   protocol    = "tcp"
   from_port   = 443
   to_port     = 443
   source_security_group_id = data.aws_ssm_parameter.vpn_sg_id.value
-  security_group_id = aws_security_group.vpn_to_gp2gp_adaptor.id
+  security_group_id = aws_security_group.vpn_to_gp2gp_messenger.id
 }
 
-resource "aws_security_group" "gocd_to_gp2gp_adaptor" {
+resource "aws_security_group" "gocd_to_gp2gp_messenger" {
   name        = "${var.environment}-gocd-to-${var.component_name}"
   description = "controls access from gocd to ehr-repo"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {
-    description = "Allow gocd to access GP2GP Adaptor ALB"
+    description = "Allow gocd to access GP2GP Messenger ALB"
     protocol    = "tcp"
     from_port   = 443
     to_port     = 443

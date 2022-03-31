@@ -5,7 +5,7 @@ variable "region" {
 
 variable "repo_name" {
   type = string
-  default = "prm-deductions-gp2gp-adaptor"
+  default = "prm-deductions-gp2gp-messenger"
 }
 
 variable "environment" {}

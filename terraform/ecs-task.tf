@@ -52,12 +52,12 @@ resource "aws_security_group" "ecs-tasks-sg" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {
-    description     = "Allow traffic from internal ALB of GP2GP Adaptor"
+    description     = "Allow traffic from internal ALB of GP2GP Messenger"
     protocol        = "tcp"
     from_port       = "3000"
     to_port         = "3000"
     security_groups = [
-      aws_security_group.gp2gp_adaptor_alb.id
+      aws_security_group.gp2gp_messenger_alb.id
     ]
   }
 
@@ -76,14 +76,14 @@ resource "aws_security_group" "ecs-tasks-sg" {
   }
 }
 
-resource "aws_security_group" "vpn_to_gp2gp_adaptor_ecs" {
+resource "aws_security_group" "vpn_to_gp2gp_messenger_ecs" {
   count       = var.allow_vpn_to_ecs_tasks ? 1 : 0
   name        = "${var.environment}-vpn-to-${var.component_name}-ecs"
   description = "controls access from vpn to gp2gp adaptor ecs task"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {
-    description = "Allow vpn to access GP2GP Adaptor ECS"
+    description = "Allow vpn to access GP2GP Messenger ECS"
     protocol    = "tcp"
     from_port   = 3000
     to_port     = 3000
@@ -97,16 +97,16 @@ resource "aws_security_group" "vpn_to_gp2gp_adaptor_ecs" {
   }
 }
 
-data "aws_ssm_parameter" "service-to-ehr-repo-sg-id" {
+data "aws_ssm_parameter" "service_to_ehr_repo_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-ehr-repository/service-to-ehr-repo-sg-id"
 }
 
-resource "aws_security_group_rule" "gp2gp-adaptor-to-ehr-repo" {
+resource "aws_security_group_rule" "gp2gp_messenger_to_ehr_repo" {
   type = "ingress"
   protocol = "TCP"
   from_port = 443
   to_port = 443
-  security_group_id = data.aws_ssm_parameter.service-to-ehr-repo-sg-id.value
+  security_group_id = data.aws_ssm_parameter.service_to_ehr_repo_sg_id.value
   source_security_group_id = aws_security_group.ecs-tasks-sg.id
 }
 
@@ -114,7 +114,7 @@ data "aws_ssm_parameter" "service-to-mhs-outbound-sg-id" {
   name = "/repo/${var.environment}/output/prm-mhs-infra/service-to-repo-mhs-outbound-sg-id"
 }
 
-resource "aws_security_group_rule" "gp2gp-adaptor-to-mhs-outbound" {
+resource "aws_security_group_rule" "gp2gp_messenger_to_mhs_outbound" {
   type = "ingress"
   protocol = "TCP"
   from_port = 443

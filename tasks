@@ -346,9 +346,13 @@ case "${command}" in
   generate_authorization_keys)
       dojo -c Dojofile-infra "./tasks _generate_authorization_keys"
       ;;
-  tf)
+  _tf)
       check_env
-      dojo -c Dojofile-infra "bash"
+      tf_init
+      bash
+      ;;
+  tf)
+      dojo -c Dojofile-infra "./tasks _tf"
       ;;
   _tf_plan_certs)
       _assume_environment_role $NHS_ENVIRONMENT

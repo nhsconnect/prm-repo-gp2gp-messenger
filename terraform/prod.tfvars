@@ -1,7 +1,7 @@
 environment    = "prod"
-component_name = "gp2gp-adaptor"
-dns_name       = "gp2gp-adaptor"
-repo_name      = "prm-deductions-gp2gp-adaptor"
+component_name = "gp2gp-messenger"
+dns_name       = "gp2gp-messenger"
+repo_name      = "prm-deductions-gp2gp-messenger"
 
 task_cpu    = 256
 task_memory = 512
