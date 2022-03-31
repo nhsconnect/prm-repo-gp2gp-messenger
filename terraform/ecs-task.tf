@@ -79,7 +79,7 @@ resource "aws_security_group" "ecs-tasks-sg" {
 resource "aws_security_group" "vpn_to_gp2gp_messenger_ecs" {
   count       = var.allow_vpn_to_ecs_tasks ? 1 : 0
   name        = "${var.environment}-vpn-to-${var.component_name}-ecs"
-  description = "controls access from vpn to gp2gp adaptor ecs task"
+  description = "controls access from vpn to gp2gp messenger ecs task"
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {

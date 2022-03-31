@@ -79,7 +79,7 @@ function get_aws_account_id {
     AWS_ACCOUNT_ID=$(dojo -c Dojofile-infra "aws sts get-caller-identity | jq -r .Account")
 }
 
-function configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor {
+function configure_aws_service_e2e_test_auth_keys_for_gp2gp_messenger {
     parameter_name="/repo/${NHS_ENVIRONMENT}/user-input/api-keys/${NHS_SERVICE}/e2e-test"
     export E2E_TEST_AUTHORIZATION_KEYS_FOR_GP2GP_MESSENGER=$(_get_aws_ssm_secret ${parameter_name})
 }
@@ -118,7 +118,7 @@ function tf_plan {
   configure_tf_plan_filename $certs
 
   if [[ "${certs}" == "true" ]]; then
-    TARGET="-target=aws_acm_certificate.gp2gp-adaptor-cert"
+    TARGET="-target=aws_acm_certificate.gp2gp-messenger-cert"
   fi
 
   tf_init
@@ -165,7 +165,7 @@ function configure_hangout_webhook {
 
 function generate_authorization_keys {
   check_env
-  secret_id="/repo/${NHS_ENVIRONMENT}/user-input/gp2gp-adaptor-authorization-keys"
+  secret_id="/repo/${NHS_ENVIRONMENT}/user-input/gp2gp-messenger-authorization-keys"
   value=$(openssl rand -base64 24  | tr -d "/@\'+")
   set +e
   aws ssm get-parameter --region $AWS_DEFAULT_REGION --name "$secret_id" | jq -r ".Parameter.Value" > /dev/null
@@ -278,8 +278,8 @@ case "${command}" in
   _sanity_check)
       configure_domain_infix
       check_env
-      nslookup "gp2gp-adaptor.${DOMAIN_INFIX}.patient-deductions.nhs.uk"
-      curl -i --fail "https://gp2gp-adaptor.${DOMAIN_INFIX}.patient-deductions.nhs.uk/health"
+      nslookup "gp2gp-messenger.${DOMAIN_INFIX}.patient-deductions.nhs.uk"
+      curl -i --fail "https://gp2gp-messenger.${DOMAIN_INFIX}.patient-deductions.nhs.uk/health"
       ;;
   _test_functional)
       npm install
@@ -292,7 +292,7 @@ case "${command}" in
   test_functional)
       check_env
       _assume_environment_role $NHS_ENVIRONMENT
-      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
+      configure_aws_service_e2e_test_auth_keys_for_gp2gp_messenger
       configure_service_url
       dojo "./tasks _test_functional"
       ;;
@@ -303,7 +303,7 @@ case "${command}" in
   test_e2e)
       check_env
       _assume_environment_role $NHS_ENVIRONMENT
-      configure_aws_service_e2e_test_auth_keys_for_gp2gp_adaptor
+      configure_aws_service_e2e_test_auth_keys_for_gp2gp_messenger
       configure_service_url
       dojo "./tasks _test_e2e"
       ;;
