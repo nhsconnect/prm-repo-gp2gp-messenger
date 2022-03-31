@@ -102,7 +102,7 @@ function tf_init {
   cd terraform
 
   terraform init -reconfigure \
-    -backend-config key="gp2gp-adaptor-${NHS_ENVIRONMENT}/terraform.tfstate" \
+    -backend-config key="${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate" \
     -backend-config bucket="prm-deductions-${NHS_ENVIRONMENT}-terraform-state" \
     -backend-config dynamodb_table="prm-deductions-${NHS_ENVIRONMENT}-terraform-table" \
     -backend-config region=${AWS_DEFAULT_REGION}
