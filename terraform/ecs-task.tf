@@ -13,7 +13,8 @@ locals {
       { name = "SDS_FHIR_URL", value = data.aws_ssm_parameter.sds_fhir_url.value },
       { name = "LOG_LEVEL", value = var.log_level},
       { name = "SPINE_ORG_CODE", value = var.spine_org_code},
-      { name = "PDS_ASID", value = data.aws_ssm_parameter.pds_asid.value  }
+      { name = "PDS_ASID", value = data.aws_ssm_parameter.pds_asid.value  },
+      { name = "SQS_OBSERVABILITY_QUEUE_URL", value = aws_sqs_queue.hl7_message_sent_observability.url  }
     ]
 }
 
