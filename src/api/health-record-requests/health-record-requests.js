@@ -25,7 +25,8 @@ export const healthRecordRequests = async (req, res) => {
   const { nhsNumberPrefix } = initializeConfig();
   const { conversationId, practiceOdsCode } = req.body;
   const { nhsNumber } = req.params;
-  setCurrentSpanAttributes({ conversationId });
+  const { traceId } = req.headers;
+  setCurrentSpanAttributes({ traceId, conversationId });
 
   try {
     if (!checkNhsNumberPrefix(nhsNumberPrefix, nhsNumber)) {
