@@ -22,7 +22,7 @@ export const stripXMLMessage = xml =>
     .replace(/\r?\n|\r/g, '')
     .replace(/>\s+</g, '><');
 
-export const sendMessage = ({
+export const sendMessage = async ({
   interactionId,
   conversationId,
   odsCode,
@@ -30,9 +30,9 @@ export const sendMessage = ({
   messageId = null
 } = {}) => {
   const config = initializeConfig();
+  validateInputs({ interactionId, conversationId, odsCode, message });
 
-  return new Promise((resolve, reject) => {
-    validateInputs({ interactionId, conversationId, odsCode, message });
+  try {
     const axiosBody = {
       payload: stripXMLMessage(message)
     };
@@ -52,16 +52,11 @@ export const sendMessage = ({
       ? headers
       : { headers: { ...headers.headers, 'Message-Id': messageId } };
 
-    const url = config.mhsOutboundUrl;
-
-    return axios
-      .post(url, axiosBody, axiosHeaders)
-      .then(resolve)
-      .catch(error => {
-        const errorMessage = `POST ${url} - ${error.message || 'Request failed'}`;
-        const axiosError = new Error(errorMessage);
-        logError(errorMessage, axiosError);
-        reject(axiosError);
-      });
-  });
+    return await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
+  } catch (error) {
+    const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;
+    const axiosError = new Error(errorMessage);
+    logError(errorMessage, axiosError);
+    throw axiosError;
+  }
 };
