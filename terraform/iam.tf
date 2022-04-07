@@ -28,8 +28,6 @@ resource "aws_iam_role" "gp2gp" {
 
 data "aws_iam_policy_document" "sqs_hl7_observability_policy_doc" {
   statement {
-    effect = "Allow"
-
     actions = [
       "sqs:SendMessage"
     ]
@@ -94,6 +92,17 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
   }
 }
 
+data "aws_iam_policy_document" "kms_policy_doc" {
+  statement {
+    actions = [
+      "kms:*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+}
+
 resource "aws_iam_policy" "gp2gp-sqs" {
   name   = "${var.environment}-gp2gp-messenger-sqs"
   policy = data.aws_iam_policy_document.sqs_hl7_observability_policy_doc.json
@@ -114,6 +123,11 @@ resource "aws_iam_policy" "gp2gp-ssm" {
   policy = data.aws_iam_policy_document.ssm_policy_doc.json
 }
 
+resource "aws_iam_policy" "gp2gp_messenger_kms" {
+  name   = "${var.environment}-${var.component_name}-kms"
+  policy = data.aws_iam_policy_document.kms_policy_doc.json
+}
+
 resource "aws_iam_role_policy_attachment" "gp2gp-messenger-sqs-attach" {
   role       = aws_iam_role.gp2gp.name
   policy_arn = aws_iam_policy.gp2gp-sqs.arn
@@ -132,4 +146,9 @@ resource "aws_iam_role_policy_attachment" "gp2gp-ssm" {
 resource "aws_iam_role_policy_attachment" "gp2gp-logs" {
   role       = aws_iam_role.gp2gp.name
   policy_arn = aws_iam_policy.gp2gp-logs.arn
+}
+
+resource "aws_iam_role_policy_attachment" "gp2gp_messenger_kms" {
+  role       = aws_iam_role.gp2gp.name
+  policy_arn = aws_iam_policy.gp2gp_messenger_kms.arn
 }
