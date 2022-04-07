@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { initializeConfig } from '../../config';
 import { logError } from '../../middleware/logging';
+import { sendToQueue } from '../sqs/sqs-client';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
   if (interactionId && conversationId && message) return;
@@ -32,31 +33,34 @@ export const sendMessage = async ({
   const config = initializeConfig();
   validateInputs({ interactionId, conversationId, odsCode, message });
 
+  const axiosBody = {
+    payload: stripXMLMessage(message)
+  };
+
+  const headers = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Interaction-ID': interactionId,
+      'Correlation-Id': conversationId,
+      'Ods-Code': odsCode,
+      'from-asid': config.deductionsAsid,
+      'wait-for-response': false
+    }
+  };
+
+  const axiosHeaders = !messageId
+    ? headers
+    : { headers: { ...headers.headers, 'Message-Id': messageId } };
+
   try {
-    const axiosBody = {
-      payload: stripXMLMessage(message)
-    };
-
-    const headers = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Interaction-ID': interactionId,
-        'Correlation-Id': conversationId,
-        'Ods-Code': odsCode,
-        'from-asid': config.deductionsAsid,
-        'wait-for-response': false
-      }
-    };
-
-    const axiosHeaders = !messageId
-      ? headers
-      : { headers: { ...headers.headers, 'Message-Id': messageId } };
-
-    return await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
+    const response = await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
+    await sendToQueue({ response, request: { body: axiosBody, headers: axiosHeaders } });
+    return response;
   } catch (error) {
     const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;
     const axiosError = new Error(errorMessage);
     logError(errorMessage, axiosError);
+    await sendToQueue({ error: axiosError, request: { body: axiosBody, headers: axiosHeaders } });
     throw axiosError;
   }
 };

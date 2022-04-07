@@ -6,11 +6,13 @@ import { logError } from '../../../middleware/logging';
 import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval-request';
 import testData from '../../../templates/__tests__/testData.json';
 import { sendMessage, stripXMLMessage } from '../mhs-outbound-client';
+import { sendToQueue } from '../../sqs/sqs-client';
 
 jest.mock('axios');
 jest.mock('../../../config/logging');
 jest.mock('../../../config');
 jest.mock('../../../middleware/logging');
+jest.mock('../../sqs/sqs-client');
 
 const conversationId = uuid();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
@@ -146,6 +148,40 @@ describe('mhs-outbound-client', () => {
         'Message-Id': messageId
       }
     });
+  });
+
+  it('should send request and response to observability queue', async () => {
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message
+    });
+
+    expect(response.status).toBe(200);
+    expect(sendToQueue).toHaveBeenCalledWith(
+      expect.objectContaining({
+        response: response,
+        request: { body: axiosBody, headers: axiosHeaders }
+      })
+    );
+  });
+
+  it('should send errors to observability queue', async () => {
+    axios.post.mockRejectedValue(new Error('some-error'));
+    await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message
+    }).catch(() => {});
+
+    expect(sendToQueue).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: new Error('POST http://url.com - some-error'),
+        request: { body: axiosBody, headers: axiosHeaders }
+      })
+    );
   });
 
   it('should stringify and escape the payload (xml message)', async () => {
