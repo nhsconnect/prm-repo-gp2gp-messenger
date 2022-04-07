@@ -12,10 +12,8 @@ export const sendToQueue = async message => {
       QueueUrl: sqsObservabilityQueueUrl
     };
     const command = new SendMessageCommand(params);
-    //TODO: do we need to await and use the response, or this call can be a fire&forget operation?
     await client.send(command);
   } catch (error) {
     console.log(error);
-    throw error;
   }
 };
