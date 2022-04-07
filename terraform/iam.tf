@@ -28,35 +28,10 @@ resource "aws_iam_role" "gp2gp" {
 
 data "aws_iam_policy_document" "sqs_hl7_observability_policy_doc" {
   statement {
-
     effect = "Allow"
 
     actions = [
       "sqs:SendMessage"
-    ]
-
-    principals {
-      identifiers = ["sns.amazonaws.com"]
-      type        = "Service"
-    }
-
-    resources = [
-      aws_sqs_queue.hl7_message_sent_observability.
-    ]
-
-    condition {
-      test     = "ArnEquals"
-      values   = [aws_sns_topic.event_out_of_order.arn]
-      variable = "aws:SourceArn"
-    }
-  }
-}
-
-data "aws_iam_policy_document" "logs_policy_doc" {
-  statement {
-    actions = [
-      "sqs:SendMessage",
-      "logs:PutLogEvents"
     ]
 
     resources = [
@@ -64,7 +39,6 @@ data "aws_iam_policy_document" "logs_policy_doc" {
     ]
   }
 }
-
 
 data "aws_iam_policy_document" "ecr_policy_doc" {
   statement {
