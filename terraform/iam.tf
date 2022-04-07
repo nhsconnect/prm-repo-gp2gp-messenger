@@ -26,6 +26,45 @@ resource "aws_iam_role" "gp2gp" {
   }
 }
 
+data "aws_iam_policy_document" "sqs_hl7_observability_policy_doc" {
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    principals {
+      identifiers = ["sns.amazonaws.com"]
+      type        = "Service"
+    }
+
+    resources = [
+      aws_sqs_queue.hl7_message_sent_observability.
+    ]
+
+    condition {
+      test     = "ArnEquals"
+      values   = [aws_sns_topic.event_out_of_order.arn]
+      variable = "aws:SourceArn"
+    }
+  }
+}
+
+data "aws_iam_policy_document" "logs_policy_doc" {
+  statement {
+    actions = [
+      "sqs:SendMessage",
+      "logs:PutLogEvents"
+    ]
+
+    resources = [
+      aws_sqs_queue.hl7_message_sent_observability.arn
+    ]
+  }
+}
+
 
 data "aws_iam_policy_document" "ecr_policy_doc" {
   statement {
@@ -81,6 +120,10 @@ data "aws_iam_policy_document" "ssm_policy_doc" {
   }
 }
 
+resource "aws_iam_policy" "gp2gp-sqs" {
+  name   = "${var.environment}-gp2gp-messenger-sqs"
+  policy = data.aws_iam_policy_document.sqs_hl7_observability_policy_doc.json
+}
 
 resource "aws_iam_policy" "gp2gp-ecr" {
   name   = "${var.environment}-gp2gp-ecr"
@@ -95,6 +138,11 @@ resource "aws_iam_policy" "gp2gp-logs" {
 resource "aws_iam_policy" "gp2gp-ssm" {
   name   = "${var.environment}-gp2gp-ssm"
   policy = data.aws_iam_policy_document.ssm_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "gp2gp-messenger-sqs-attach" {
+  role       = aws_iam_role.gp2gp.name
+  policy_arn = aws_iam_policy.gp2gp-sqs.arn
 }
 
 resource "aws_iam_role_policy_attachment" "gp2gp-ecr-attach" {
