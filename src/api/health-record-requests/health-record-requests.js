@@ -3,7 +3,7 @@ import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logWarning } from '../../middleware/logging';
-import { setCurrentSpanAttributes } from '../../config/tracing';
+import { setCurrentSpanAttributes, setTraceId } from '../../config/tracing';
 import { initializeConfig } from '../../config';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
@@ -25,8 +25,10 @@ export const healthRecordRequests = async (req, res) => {
   const { nhsNumberPrefix } = initializeConfig();
   const { conversationId, practiceOdsCode } = req.body;
   const { nhsNumber } = req.params;
-  const { traceId } = req.headers;
-  setCurrentSpanAttributes({ traceId, conversationId });
+  const { traceid } = req.headers;
+
+  setTraceId({ traceid });
+  setCurrentSpanAttributes({ conversationId });
 
   try {
     if (!checkNhsNumberPrefix(nhsNumberPrefix, nhsNumber)) {

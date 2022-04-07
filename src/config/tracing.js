@@ -25,3 +25,11 @@ export const setCurrentSpanAttributes = attributes => {
     currentSpan.setAttributes(attributes);
   }
 };
+
+export const setTraceId = traceId => {
+  const currentSpan = trace.getSpan(context.active());
+  if (currentSpan) {
+    currentSpan.setAttribute('traceId', traceId);
+    trace.setSpan(context.active(), currentSpan);
+  }
+};
