@@ -8,7 +8,7 @@ export const sendToQueue = async message => {
     // where we took the example
     // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/sqs-examples-send-receive-messages.html
     const params = {
-      MessageBody: message,
+      MessageBody: JSON.stringify(message),
       QueueUrl: sqsObservabilityQueueUrl
     };
     const command = new SendMessageCommand(params);
