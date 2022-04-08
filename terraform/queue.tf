@@ -4,7 +4,7 @@ locals {
 
 resource "aws_sqs_queue" "hl7_message_sent_observability" {
   name                       = local.hl7-message-sent-observability-queue-name
-  message_retention_seconds  = 1209600
+  message_retention_seconds  = 1800
   kms_master_key_id = aws_kms_key.hl7_message_sent_observability.key_id
   receive_wait_time_seconds = 20
   visibility_timeout_seconds = 240
