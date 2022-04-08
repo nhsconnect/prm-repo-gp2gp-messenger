@@ -7,10 +7,12 @@ import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { buildEhrRequest } from '../health-record-requests';
 import { initializeConfig } from '../../../config';
 import { logWarning } from '../../../middleware/logging';
+import { setCurrentSpanAttributes } from '../../../config/tracing';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
 jest.mock('../../../config');
+jest.mock('../../../config/tracing');
 jest.mock('../../../templates/ehr-request-template');
 jest.mock('dateformat');
 jest.mock('../../../services/mhs/mhs-outbound-client');
@@ -42,6 +44,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
     it('should call sendMessage with interactionId', done => {
       request(app)
         .post('/health-record-requests/1234567890')
+        .set('traceId', 'some-trace-id')
         .send(body)
         .expect(204)
         .expect(() => {
@@ -49,6 +52,10 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           expect(sendMessage).toHaveBeenCalledWith(
             expect.objectContaining({ interactionId: 'RCMR_IN010000UK05' })
           );
+          expect(setCurrentSpanAttributes).toHaveBeenNthCalledWith(1, { traceId: 'some-trace-id' });
+          expect(setCurrentSpanAttributes).toHaveBeenNthCalledWith(2, {
+            conversationId: body.conversationId
+          });
         })
         .end(done);
     });
