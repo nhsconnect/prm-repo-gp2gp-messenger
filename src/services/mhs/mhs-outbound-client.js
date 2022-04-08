@@ -60,7 +60,10 @@ export const sendMessage = async ({
         request: { body: axiosBody, headers: axiosHeaders }
       },
       {
-        conversationId
+        conversationId: {
+          DataType: 'String',
+          StringValue: conversationId
+        }
       }
     );
     return response;
@@ -68,7 +71,15 @@ export const sendMessage = async ({
     const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;
     const axiosError = new Error(errorMessage);
     logError(errorMessage, axiosError);
-    await sendToQueue({ error: axiosError, request: { body: axiosBody, headers: axiosHeaders } });
+    await sendToQueue(
+      { error: axiosError, request: { body: axiosBody, headers: axiosHeaders } },
+      {
+        conversationId: {
+          DataType: 'String',
+          StringValue: conversationId
+        }
+      }
+    );
     throw axiosError;
   }
 };

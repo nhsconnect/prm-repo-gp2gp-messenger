@@ -164,7 +164,12 @@ describe('mhs-outbound-client', () => {
         response: { data: response.data, status: response.status },
         request: { body: axiosBody, headers: axiosHeaders }
       }),
-      expect.objectContaining({ conversationId: conversationId })
+      expect.objectContaining({
+        conversationId: {
+          DataType: 'String',
+          StringValue: conversationId
+        }
+      })
     );
   });
 
@@ -181,6 +186,12 @@ describe('mhs-outbound-client', () => {
       expect.objectContaining({
         error: new Error('POST http://url.com - some-error'),
         request: { body: axiosBody, headers: axiosHeaders }
+      }),
+      expect.objectContaining({
+        conversationId: {
+          DataType: 'String',
+          StringValue: conversationId
+        }
       })
     );
   });
