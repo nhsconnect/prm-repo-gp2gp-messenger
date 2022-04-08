@@ -163,7 +163,8 @@ describe('mhs-outbound-client', () => {
       expect.objectContaining({
         response: { data: response.data, status: response.status },
         request: { body: axiosBody, headers: axiosHeaders }
-      })
+      }),
+      expect.objectContaining({ conversationId: conversationId })
     );
   });
 
