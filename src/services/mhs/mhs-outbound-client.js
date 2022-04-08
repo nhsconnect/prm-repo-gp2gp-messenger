@@ -54,7 +54,10 @@ export const sendMessage = async ({
 
   try {
     const response = await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
-    await sendToQueue({ response, request: { body: axiosBody, headers: axiosHeaders } });
+    await sendToQueue({
+      response: { data: response.data, status: response.status },
+      request: { body: axiosBody, headers: axiosHeaders }
+    });
     return response;
   } catch (error) {
     const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;

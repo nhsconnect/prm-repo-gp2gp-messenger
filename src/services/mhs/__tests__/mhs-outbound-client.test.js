@@ -41,7 +41,7 @@ describe('mhs-outbound-client', () => {
   });
 
   beforeEach(() => {
-    axios.post.mockResolvedValue(Promise.resolve({ status: 200 }));
+    axios.post.mockResolvedValue(Promise.resolve({ status: 200, data: { test: 'tested' } }));
   });
 
   it('should reject with an Error if interactionId is not passed in', () => {
@@ -161,7 +161,7 @@ describe('mhs-outbound-client', () => {
     expect(response.status).toBe(200);
     expect(sendToQueue).toHaveBeenCalledWith(
       expect.objectContaining({
-        response: response,
+        response: { data: response.data, status: response.status },
         request: { body: axiosBody, headers: axiosHeaders }
       })
     );
