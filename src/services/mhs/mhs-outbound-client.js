@@ -54,7 +54,7 @@ export const sendMessage = async ({
 
   try {
     const response = await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
-    await sendToQueue(
+    await sendToObservabilityQueue(
       {
         response: { data: response.data, status: response.status },
         request: { body: axiosBody, headers: axiosHeaders }
@@ -63,6 +63,14 @@ export const sendMessage = async ({
         conversationId: {
           DataType: 'String',
           StringValue: conversationId
+        },
+        interactionId: {
+          DataType: 'String',
+          StringValue: interactionId
+        },
+        responseStatus: {
+          DataType: 'String',
+          StringValue: response.statusText
         }
       }
     );
@@ -71,15 +79,23 @@ export const sendMessage = async ({
     const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;
     const axiosError = new Error(errorMessage);
     logError(errorMessage, axiosError);
-    await sendToQueue(
+    await sendToObservabilityQueue(
       { error: axiosError, request: { body: axiosBody, headers: axiosHeaders } },
       {
         conversationId: {
           DataType: 'String',
           StringValue: conversationId
+        },
+        interactionId: {
+          DataType: 'String',
+          StringValue: interactionId
         }
       }
     );
     throw axiosError;
   }
 };
+
+async function sendToObservabilityQueue(message, attributes) {
+  await sendToQueue(message, attributes);
+}
