@@ -4,7 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import error from './api/error';
 import healthCheck from './api/health';
 import { healthRecordRequestRouter } from './api/health-record-requests';
-import { patientDemographics } from './api/patient-demographics';
+import { patientDemographicsRouter } from './api/patient-demographics';
 import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
@@ -18,7 +18,7 @@ app.use(requestLogger(options));
 app.use('/health', logging.middleware, healthCheck);
 app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/patient-demographics', logging.middleware, patientDemographics);
+app.use('/patient-demographics', logging.middleware, patientDemographicsRouter);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
 app.use('/health-record-transfers', logging.middleware, healthRecordTransferRouter);
 

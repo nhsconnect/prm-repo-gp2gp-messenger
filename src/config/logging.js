@@ -19,7 +19,7 @@ export const addCommonFields = format(info => {
   const updated = cloneDeep(info);
   const currentSpan = trace.getSpan(context.active());
   if (currentSpan) {
-    updated['traceId'] = currentSpan.spanContext().traceId;
+    updated['traceId'] = currentSpan.attributes.traceId;
     updated['conversationId'] = currentSpan.attributes.conversationId;
     updated['messageId'] = currentSpan.attributes.messageId;
   }

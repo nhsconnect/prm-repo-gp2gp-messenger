@@ -7,8 +7,11 @@ import {
   acknowledgementValidation
 } from './send-ehr-acknowledgement-controller';
 import { continueMessageValidation, sendContinueMessage } from './send-continue-message';
+import * as tracing from '../../middleware/tracing';
 
 const healthRecordRequestRouter = express.Router();
+
+healthRecordRequestRouter.use(tracing.middleware);
 
 healthRecordRequestRouter.post(
   '/continue-message',
