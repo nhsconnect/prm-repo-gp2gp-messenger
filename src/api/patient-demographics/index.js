@@ -1,12 +1,15 @@
-import express from 'express';
-import { authenticateRequest } from '../../middleware/auth';
-import { validate } from '../../middleware/validation';
-import { pdsUpdateValidation, pdsUpdate } from './pds-update';
-import { pdsRetrievalValidation, pdsRetrieval } from './pds-retrieval';
+import express from "express";
+import { authenticateRequest } from "../../middleware/auth";
+import { validate } from "../../middleware/validation";
+import { pdsUpdate, pdsUpdateValidation } from "./pds-update";
+import { pdsRetrieval, pdsRetrievalValidation } from "./pds-retrieval";
+import * as tracing from "../../middleware/tracing";
 
-const patientDemographics = express.Router();
+const patientDemographicsRouter = express.Router();
 
-patientDemographics.patch(
+patientDemographicsRouter.use(tracing.middleware);
+
+patientDemographicsRouter.patch(
   '/:nhsNumber',
   authenticateRequest,
   pdsUpdateValidation,
@@ -14,7 +17,7 @@ patientDemographics.patch(
   pdsUpdate
 );
 
-patientDemographics.get(
+patientDemographicsRouter.get(
   '/:nhsNumber',
   authenticateRequest,
   pdsRetrievalValidation,
@@ -22,4 +25,4 @@ patientDemographics.get(
   pdsRetrieval
 );
 
-export { patientDemographics };
+export { patientDemographicsRouter };

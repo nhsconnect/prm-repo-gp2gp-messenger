@@ -52,8 +52,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           expect(sendMessage).toHaveBeenCalledWith(
             expect.objectContaining({ interactionId: 'RCMR_IN010000UK05' })
           );
-          expect(setCurrentSpanAttributes).toHaveBeenNthCalledWith(1, { traceId: 'some-trace-id' });
-          expect(setCurrentSpanAttributes).toHaveBeenNthCalledWith(2, {
+          expect(setCurrentSpanAttributes).toHaveBeenCalledWith({ traceId: 'some-trace-id' });
+          expect(setCurrentSpanAttributes).toHaveBeenCalledWith({
             conversationId: body.conversationId
           });
         })

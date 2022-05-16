@@ -1,12 +1,12 @@
-import axios from 'axios';
-import request from 'supertest';
-import { v4 as uuid } from 'uuid';
-import app from '../app';
-import { pdsQueryActFailed } from '../services/pds/__tests__/data/pds-query-act-failed';
-import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
-import { expectStructuredLogToContain, transportSpy } from '../__builders__/logging-helper';
-import { logger } from '../config/logging';
-import { getPracticeAsid } from '../services/fhir/sds-fhir-client';
+import axios from "axios";
+import request from "supertest";
+import { v4 as uuid } from "uuid";
+import app from "../app";
+import { pdsQueryActFailed } from "../services/pds/__tests__/data/pds-query-act-failed";
+import { pdsRetrivealQueryResponseSuccess } from "../services/pds/__tests__/data/pds-retrieval-query-response-success";
+import { expectStructuredLogToContain, transportSpy } from "../__builders__/logging-helper";
+import { logger } from "../config/logging";
+import { getPracticeAsid } from "../services/fhir/sds-fhir-client";
 
 jest.mock('axios');
 jest.mock('../services/fhir/sds-fhir-client');
@@ -66,12 +66,13 @@ describe('app', () => {
 
       const res = await request(app)
         .get('/patient-demographics/9999999999')
-        .set('Authorization', 'correct-key');
+        .set('Authorization', 'correct-key')
+        .set('TRACEID', 'a trace ID');
 
       expect(res.statusCode).toBe(200);
       expectStructuredLogToContain(transportSpy, {
         conversationId: expect.anything(),
-        traceId: expect.anything()
+        traceId: 'a trace ID'
       });
     });
 
@@ -129,7 +130,7 @@ describe('app', () => {
       logger.add(transportSpy);
     });
 
-    it('should return a 401 status code for /health-record-requests/:nhsNumber when not authenticated', async () => {
+    it('should return a 401 status code for /health-record-requests/:nhsNumber when not authenticated because authorization header not set', async () => {
       const res = await request(app).post('/health-record-requests/9999999999');
 
       expect(res.statusCode).toBe(401);
@@ -137,6 +138,48 @@ describe('app', () => {
         traceId: expect.anything()
       });
     });
+
+    it('should log with a generated uuid format traceId if traceId not set in request headers', async () => {
+      await request(app).post('/health-record-requests/9999999999');
+
+      expectStructuredLogToContain(transportSpy, {
+        traceId: expect.stringMatching(/[0-9a-fA-F-]{36}/)
+      });
+    });
+
+    it('should log with conversationId provided in request body', async () => {
+      const requestBody = someHealthRecordRequestBody();
+      requestBody.conversationId = uuid();
+
+      await request(app).post('/health-record-requests/9999999991')
+        .set('Authorization', 'correct-key')
+        .send(requestBody);
+
+      expectStructuredLogToContain(transportSpy, {
+        conversationId: requestBody.conversationId
+      });
+    });
+
+    it('should log with traceId provided in request header', async () => {
+      await request(app).post('/health-record-requests/9999999999')
+        .set('Authorization', 'correct-key')
+        .set('traceid', 'our trace ID')
+        .send(someHealthRecordRequestBody());
+
+      expectStructuredLogToContain(transportSpy, {
+        traceId: 'our trace ID'
+      });
+    })
+
+    function someHealthRecordRequestBody() {
+      return {
+        conversationId: uuid(),
+        repositoryOdsCode: "the repo ods code",
+        practiceOdsCode: "some practice ods code",
+        repositoryAsid: "the repo asid"
+      };
+    }
+
   });
 
   describe('POST /health-record-requests/:nhsNumber/acknowledgement', () => {
