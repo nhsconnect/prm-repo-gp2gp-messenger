@@ -3,7 +3,7 @@ import dateFormat from 'dateformat';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logWarning } from '../../middleware/logging';
-import { setCurrentSpanAttributes } from "../../config/tracing";
+import { setCurrentSpanAttributes } from '../../config/tracing';
 import { initializeConfig } from '../../config';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
