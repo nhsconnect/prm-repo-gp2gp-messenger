@@ -1,4 +1,4 @@
-import { context, trace, propagation } from '@opentelemetry/api';
+import { context, propagation, trace } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
@@ -24,3 +24,19 @@ export const setCurrentSpanAttributes = attributes => {
     currentSpan.setAttributes(attributes);
   }
 };
+
+export function getCurrentSpanAttributes() {
+  const currentSpan = trace.getSpan(context.active());
+  if (currentSpan) {
+    return currentSpan.attributes;
+  }
+  return undefined;
+}
+
+export function startRequest(requestHandler) {
+  const span = tracer.startSpan('inboundRequestSpan', context.active());
+  context.with(trace.setSpan(context.active(), span), requestHandler);
+  return {
+    endRequest: () => span.end()
+  };
+}

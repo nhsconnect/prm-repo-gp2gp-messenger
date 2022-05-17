@@ -1,8 +1,8 @@
-import { trace, context } from '@opentelemetry/api';
 import { createLogger, format, transports } from 'winston';
 import traverse from 'traverse';
 import cloneDeep from 'lodash.clonedeep';
 import { initializeConfig } from './index';
+import { getCurrentSpanAttributes } from './tracing';
 
 export const obfuscateSecrets = format(info => {
   const OBFUSCATED_VALUE = '********';
@@ -17,11 +17,11 @@ export const obfuscateSecrets = format(info => {
 export const addCommonFields = format(info => {
   const { nhsEnvironment } = initializeConfig();
   const updated = cloneDeep(info);
-  const currentSpan = trace.getSpan(context.active());
-  if (currentSpan) {
-    updated['traceId'] = currentSpan.attributes.traceId;
-    updated['conversationId'] = currentSpan.attributes.conversationId;
-    updated['messageId'] = currentSpan.attributes.messageId;
+  let attributes = getCurrentSpanAttributes();
+  if (attributes) {
+    updated['traceId'] = attributes.traceId;
+    updated['conversationId'] = attributes.conversationId;
+    updated['messageId'] = attributes.messageId;
   }
 
   updated.level = updated.level.toUpperCase();
