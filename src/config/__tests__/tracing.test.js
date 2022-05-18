@@ -1,4 +1,4 @@
-import { getCurrentSpanAttributes, setCurrentSpanAttributes, startRequest } from "../tracing";
+import { getCurrentSpanAttributes, setCurrentSpanAttributes, startRequest } from '../tracing';
 
 describe('tracing config', () => {
   it('should let us store and retrieve attributes related to the request', () => {

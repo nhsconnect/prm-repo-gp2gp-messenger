@@ -1,6 +1,5 @@
-import { getCurrentSpanAttributes, startRequest } from "../../config/tracing";
-import { middleware } from "../tracing";
-
+import { getCurrentSpanAttributes, startRequest } from '../../config/tracing';
+import { middleware } from '../tracing';
 
 describe('tracing middleware', () => {
   it('should generate traceId if none is provided', () => {
@@ -8,8 +7,7 @@ describe('tracing middleware', () => {
       headers: {}
     };
     startRequest(() => {
-      middleware(req, {}, () => {
-      });
+      middleware(req, {}, () => {});
       const attributes = getCurrentSpanAttributes();
       expect(attributes.traceId).toMatch(/^[0-9a-fA-F-]{36}$/);
     });
@@ -25,6 +23,6 @@ describe('tracing middleware', () => {
       middleware(req, {}, () => {});
       const attributes = getCurrentSpanAttributes();
       expect(attributes.traceId).toBe('testtraceid');
-    })
+    });
   });
 });
