@@ -143,7 +143,7 @@ describe('app', () => {
       await request(app).post('/health-record-requests/9999999999');
 
       expectStructuredLogToContain(transportSpy, {
-        traceId: expect.stringMatching(/[0-9a-fA-F-]{36}/)
+        traceId: expect.stringMatching(/^[0-9a-fA-F-]{36}$/)
       });
     });
 
