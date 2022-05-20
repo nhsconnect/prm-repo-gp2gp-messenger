@@ -30,12 +30,6 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.58.0",
     "@babel/runtime": "^7.17.8",
-    "@opentelemetry/api": "^1.1.0",
-    "@opentelemetry/core": "^1.1.1",
-    "@opentelemetry/instrumentation": "^0.27.0",
-    "@opentelemetry/instrumentation-http": "^0.27.0",
-    "@opentelemetry/sdk-trace-node": "^1.1.1",
-    "@opentelemetry/tracing": "^0.20.0",
     "aws-sdk": "^2.1098.0",
     "axios": "^0.26.1",
     "dateformat": "^4.6.3",
