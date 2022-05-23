@@ -10,27 +10,24 @@ describe('tracing config', () => {
   });
 
   it('should not let us retrieve stored attributes after the request has ended', () => {
-    const requestTracing = startRequest(() => {
+    startRequest(() => {
       setCurrentSpanAttributes({ city: 'London' });
     });
-    requestTracing.endRequest();
     const attributes = getCurrentSpanAttributes();
     expect(attributes).toBe(undefined);
   });
 
   it('should support multiple independent requests', () => {
-    const firstRequestTracing = startRequest(() => {
+    startRequest(() => {
       setCurrentSpanAttributes({ river: 'Thames' });
 
       expect(getCurrentSpanAttributes()).toStrictEqual({ river: 'Thames' });
     });
-    const secondRequestTracing = startRequest(() => {
+    startRequest(() => {
       setCurrentSpanAttributes({ mountain: 'Snowden' });
 
       expect(getCurrentSpanAttributes()).toStrictEqual({ mountain: 'Snowden' });
     });
-    secondRequestTracing.endRequest();
-    firstRequestTracing.endRequest();
   });
 
   it('should let us store and retrieve multiple attributes', () => {

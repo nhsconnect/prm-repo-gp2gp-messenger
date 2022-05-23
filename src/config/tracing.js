@@ -23,7 +23,4 @@ export function startRequest(requestHandler) {
   asyncLocalStorage.run({}, () => {
     requestHandler();
   });
-  return {
-    endRequest: () => {}
-  };
 }
