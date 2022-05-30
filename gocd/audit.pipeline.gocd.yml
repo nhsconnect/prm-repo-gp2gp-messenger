@@ -1,7 +1,7 @@
 format_version: 4
 pipelines:
-  'prm-deductions-gp2gp-messenger.audit':
-    group: deductions-audit
+  gp2gp-messenger.audit:
+    group: repo-audit
     label_template: '${git[:8]}'
     materials:
       git:
