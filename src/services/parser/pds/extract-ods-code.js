@@ -7,7 +7,7 @@ export const extractOdsCode = message =>
     .then(jsObject => jsObject.findAll('patientCareProvisionEvent'))
     .then(patientCareProvisionEvents => {
       logInfo('Total number of patientCareProvisionEvents: ' + patientCareProvisionEvents.length);
-      const effectiveTime = patientCareProvisionEvents[0].effectiveTime;
+      const effectiveTime = patientCareProvisionEvents.find(jsObject => jsObject.effectiveTime);
       const odsCode = patientCareProvisionEvents.find(jsObject => jsObject.code.code === '1')
         .performer.assignedEntity.id.extension;
       logInfo(
