@@ -45,8 +45,13 @@ ENV GP2GP_MESSENGER_REPOSITORY_ASID=deduction-asid \
 
 WORKDIR /app
 
+ARG UTILS_VERSION
+RUN test -n "$UTILS_VERSION"
+COPY utils/$UTILS_VERSION/run-with-redaction.sh ./utils/
+COPY utils/$UTILS_VERSION/redactor              ./utils/
+
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["/usr/bin/run-gp2gp-server"]
+CMD ["/app/utils/run-with-redaction.sh", "/usr/bin/run-gp2gp-server"]
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node
