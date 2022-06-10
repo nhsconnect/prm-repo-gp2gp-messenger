@@ -124,10 +124,7 @@ describe('/patient-demographics/:nhsNumber', () => {
       .expect(() => {
         expect(logInfo).toHaveBeenCalledTimes(3);
         expect(logInfo).toHaveBeenCalledWith(
-          `200 PDS response received for conversation id: ${mockUUID} and response: ${{
-            data: message,
-            status: 200
-          }}`
+          `200 PDS response received for conversation id: ${mockUUID}`
         );
       })
       .end(done);
