@@ -28,6 +28,11 @@ resource "aws_kms_key" "hl7_message_sent_observability" {
   }
 }
 
+resource "aws_kms_alias" "hl7_message_sent_observability_encryption" {
+  name          = "alias/hl7-message-sent-observability-encryption-kms-key"
+  target_key_id = aws_kms_key.hl7_message_sent_observability.id
+}
+
 data "aws_iam_policy_document" "kms_key_policy_doc" {
   statement {
     effect = "Allow"
