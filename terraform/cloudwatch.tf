@@ -1,6 +1,6 @@
 locals {
   error_logs_metric_name              = "ErrorCountInLogs"
-  gp2gp_messenger_service_metric_namespace = "Gp2GpMessenger"
+  gp2gp_messenger_service_metric_namespace = "Gp2gpMessenger"
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
