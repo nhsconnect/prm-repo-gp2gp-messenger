@@ -116,7 +116,7 @@ common:
                     - ./tasks test_e2e
 pipelines:
   'prm-deductions-gp2gp-messenger.dev':
-    group: deductions
+    group: repository
     label_template: '${git[:8]}'
     materials:
       git:
@@ -136,7 +136,7 @@ pipelines:
       NHS_ENVIRONMENT: dev
     stages: *common_stages
   'prm-deductions-gp2gp-messenger.test':
-    group: deductions
+    group: repository
     label_template: '${git[:8]}'
     materials:
       git:
@@ -158,7 +158,7 @@ pipelines:
       NHS_ENVIRONMENT: test
     stages: *common_stages
   'prm-deductions-gp2gp-messenger.pre-prod':
-    group: deductions
+    group: repository
     label_template: '${git[:8]}'
     materials:
       git:
@@ -180,7 +180,7 @@ pipelines:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
   'prm-deductions-gp2gp-messenger.prod':
-    group: deductions
+    group: repository
     label_template: '${git[:8]}'
     materials:
       git:
