@@ -60,7 +60,6 @@
     "jest": "^27.5.1",
     "jest-when": "^3.5.1",
     "nock": "^13.2.4",
-    "nodemon": "^2.0.15",
     "npm-force-resolutions": "0.0.10",
     "prettier": "^2.6.0",
     "supertest": "^6.2.2"
@@ -74,6 +73,7 @@
     "automock": false
   },
   "resolutions": {
-    "ansi-regex": "5.0.1"
+    "ansi-regex": "5.0.1",
+    "glob-parent": "^6.0.1"
   }
 }
