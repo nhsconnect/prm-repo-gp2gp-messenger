@@ -43,7 +43,7 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   namespace                 = "AWS/ApplicationELB"
   period                    = "60"
   statistic                 = "Average"
-  threshold                 = var.service_desired_count
+  threshold                 = "1"
   alarm_description         = "This metric monitors the health of ${var.repo_name}"
   treat_missing_data        = "breaching"
   dimensions                = {
