@@ -43,10 +43,10 @@ resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   namespace                 = "AWS/ApplicationELB"
   period                    = "60"
   statistic                 = "Average"
-  threshold                 = "1"
+  threshold                 = var.service_desired_count
   alarm_description         = "This metric monitors the health of ${var.repo_name}"
   treat_missing_data        = "breaching"
-  datapoints_to_alarm       = "1"
+  datapoints_to_alarm       = var.service_desired_count
   dimensions                = {
     TargetGroup = aws_alb_target_group.internal-alb-tg.arn_suffix
     LoadBalancer = aws_alb.alb-internal.arn_suffix
