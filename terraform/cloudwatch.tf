@@ -35,6 +35,22 @@ resource "aws_ssm_parameter" "error_log_metric_namespace_name" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "error_log_alarm" {
+  alarm_name          = "${var.environment}-${var.component_name}-error-logs"
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = "0"
+  evaluation_periods  = "1"
+  period              = "60"
+  metric_name         = local.error_logs_metric_name
+  namespace           = local.gp2gp_messenger_service_metric_namespace
+  statistic           = "Sum"
+  alarm_description   = "This alarm monitors errors logs in ${var.component_name}"
+  treat_missing_data  = "notBreaching"
+  actions_enabled     = "true"
+  alarm_actions       = [data.aws_sns_topic.alarm_notifications.arn]
+  ok_actions          = [data.aws_sns_topic.alarm_notifications.arn]
+}
+
 resource "aws_cloudwatch_metric_alarm" "healthy_host_count" {
   alarm_name                = "${var.repo_name} service down"
   comparison_operator       = "LessThanThreshold"
