@@ -3,6 +3,7 @@ import generateEhrRequestQuery from '../ehr-request-template';
 import testData from './testData.json';
 
 describe('generateEhrRequestQuery', () => {
+  const ehrRequestId = uuid();
   const requestWithoutPatientDetails = {
     id: uuid(),
     timestamp: '20200403092516',
@@ -13,7 +14,8 @@ describe('generateEhrRequestQuery', () => {
     receivingService: {
       odsCode: testData.emisPractise.odsCode,
       asid: testData.emisPractise.asid
-    }
+    },
+    ehrRequestId
   };
 
   const validRequest = {
@@ -59,6 +61,11 @@ describe('generateEhrRequestQuery', () => {
   it('should upper case the receiving service ODS code', () => {
     const ehrRequestQuery = generateEhrRequestQuery(validRequest);
     expect(ehrRequestQuery).toContain('N82668');
+  });
+
+  it('should use uuid for ehrRequestId', () => {
+    const ehrRequestQuery = generateEhrRequestQuery(validRequest);
+    expect(ehrRequestQuery).toContain(ehrRequestId);
   });
 
   it('should throw error when receivingService and sendingObject is not defined in inputObject', () => {

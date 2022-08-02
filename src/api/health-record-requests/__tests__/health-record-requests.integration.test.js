@@ -52,7 +52,8 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           },
           patient: {
             nhsNumber
-          }
+          },
+          ehrRequestId: expect.anything()
         });
       })
       .end(done);

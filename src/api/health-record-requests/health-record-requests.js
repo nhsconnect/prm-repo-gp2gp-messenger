@@ -1,5 +1,6 @@
 import { param, body } from 'express-validator';
 import dateFormat from 'dateformat';
+import { v4 as uuid } from 'uuid';
 import generateEhrRequestQuery from '../../templates/ehr-request-template';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logWarning } from '../../middleware/logging';
@@ -71,7 +72,8 @@ export const buildEhrRequest = async (req, conversationId, practiceAsid) => {
     },
     patient: {
       nhsNumber: req.params.nhsNumber
-    }
+    },
+    ehrRequestId: uuid()
   });
 };
 

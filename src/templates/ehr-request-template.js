@@ -1,6 +1,13 @@
 const checkTemplateArguments = require('./utils/check_params');
 
-const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingService, patient }) => {
+const generateEhrRequestQuery = ({
+  id,
+  timestamp,
+  receivingService,
+  sendingService,
+  patient,
+  ehrRequestId
+}) => {
   const inputObject = {
     id,
     timestamp,
@@ -17,7 +24,8 @@ const generateEhrRequestQuery = ({ id, timestamp, receivingService, sendingServi
     patient: {
       nhsNumber: undefined,
       ...(patient || {})
-    }
+    },
+    ehrRequestId
   };
 
   checkTemplateArguments(inputObject);
@@ -29,7 +37,8 @@ const template = ({
   timestamp,
   receivingService: { asid: receivingAsid, odsCode: receivingOdsCode },
   sendingService: { asid: sendingAsid, odsCode: sendingOdsCode },
-  patient: { nhsNumber }
+  patient: { nhsNumber },
+  ehrRequestId
 }) =>
   `<RCMR_IN010000UK05 xmlns="urn:hl7-org:v3" 
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -61,7 +70,7 @@ const template = ({
         </author1>
         <subject contextConductionInd="false" typeCode="SUBJ">
             <EhrRequest classCode="EXTRACT" moodCode="RQO">
-              <id root="BBBBA01A-A9D1-A411-F824-9F7A00A33757"/>
+              <id root="${ehrRequestId}"/>
               <recordTarget typeCode="RCT">
                   <patient classCode="PAT">
                       <id root="2.16.840.1.113883.2.1.4.1" extension="${nhsNumber}"/>
