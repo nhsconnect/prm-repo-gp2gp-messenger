@@ -28,14 +28,14 @@ export const healthRecordTransfers = async (req, res) => {
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    const ehrExtract = await retrieveEhrFromRepo(currentEhrUrl);
+    const mhsInboundFormatEhrCoreMessage = await retrieveEhrFromRepo(currentEhrUrl);
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
-    const ehrMessage = ehrExtract.payload;
-    if (!ehrMessage) {
+    const hl7Ehr = mhsInboundFormatEhrCoreMessage.payload;
+    if (!hl7Ehr) {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
     const ehrMessageWithEhrRequestId = await updateExtractForSending(
-      ehrMessage,
+      hl7Ehr,
       ehrRequestId,
       practiceAsid
     );

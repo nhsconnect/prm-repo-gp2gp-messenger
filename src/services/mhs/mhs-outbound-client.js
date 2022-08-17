@@ -28,7 +28,8 @@ export const sendMessage = async ({
   conversationId,
   odsCode,
   message,
-  messageId = null
+  messageId = null,
+  attachments = null
 } = {}) => {
   const config = initializeConfig();
   validateInputs({ interactionId, conversationId, odsCode, message });
@@ -36,6 +37,10 @@ export const sendMessage = async ({
   const axiosBody = {
     payload: stripXMLMessage(message)
   };
+
+  if (attachments) {
+    axiosBody.attachments = attachments
+  }
 
   const headers = {
     headers: {
