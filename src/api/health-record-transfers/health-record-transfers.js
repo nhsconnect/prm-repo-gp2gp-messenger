@@ -1,6 +1,7 @@
 import { body } from 'express-validator';
 import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { wrangleAttachments } from '../../services/mhs/mhs-attachments-wrangler';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { logError, logInfo } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
@@ -39,11 +40,15 @@ export const healthRecordTransfers = async (req, res) => {
       ehrRequestId,
       practiceAsid
     );
+
+    const attachmentsInfo = wrangleAttachments(mhsInboundFormatEhrCoreMessage.ebXML);
+
     await sendMessage({
       interactionId,
       conversationId,
       odsCode,
-      message: ehrMessageWithEhrRequestId
+      message: ehrMessageWithEhrRequestId,
+      ...attachmentsInfo
     });
 
     logInfo('Successfully sent EHR', { conversationId });

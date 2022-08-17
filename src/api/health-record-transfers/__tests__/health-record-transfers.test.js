@@ -5,10 +5,12 @@ import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 import { jsonEhrExtract, payload } from './data/json-formatted-ehr-example';
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
+import { wrangleAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
 
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../services/mhs/mhs-attachments-wrangler');
 jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
@@ -40,7 +42,7 @@ describe('healthRecordTransfers', () => {
     }
   };
 
-  it('should return a 204', async () => {
+  it('should return a 204 for a simple EHR send without attachments', async () => {
     const interactionId = 'RCMR_IN030000UK06';
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
     const expectedSendMessageParameters = {
@@ -52,15 +54,46 @@ describe('healthRecordTransfers', () => {
     retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
     getPracticeAsid.mockResolvedValue(receivingAsid);
+
+    wrangleAttachments.mockReturnValue({});
+
     const res = await request(app)
       .post('/health-record-transfers')
       .set('Authorization', authKey)
       .send(mockBody);
+
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
     expect(updateExtractForSending).toHaveBeenCalledWith(payload, ehrRequestId, receivingAsid);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
+  });
+
+  it('should include attachments as part of mhs message send, if returned from the mhs attachments wrangler based on envelope xml', async () => {
+    const attachments = [{
+      an: "attachment",
+      another: "attachment"
+    }];
+
+    wrangleAttachments.mockReturnValue({ 'attachments': attachments });
+
+    retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
+    updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
+    getPracticeAsid.mockResolvedValue(receivingAsid);
+
+    await request(app)
+      .post('/health-record-transfers')
+      .set('Authorization', authKey)
+      .send(mockBody);
+
+    expect(wrangleAttachments).toHaveBeenCalledWith(jsonEhrExtract.ebXML)
+    expect(sendMessage).toHaveBeenCalledWith({
+      interactionId: 'RCMR_IN030000UK06',
+      conversationId,
+      odsCode,
+      message: messageWithEhrRequestId,
+      attachments
+    });
   });
 
   it('should return a 503 when it cannot retrieve the extract from the message stored in EHR Repo', async () => {
