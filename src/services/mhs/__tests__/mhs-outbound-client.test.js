@@ -103,14 +103,24 @@ describe('mhs-outbound-client', () => {
   });
 
   it('should make post adding attachments to body if passed in', async () => {
-    const attachments = [{ some: "attachment" }]
-    const response = await sendMessage({ interactionId, conversationId, odsCode, message, attachments });
-    expect(response.status).toBe(200);
-    expect(axios.post).toBeCalledWith(url, { ...axiosBody, attachments }, {
-      headers: {
-        ...axiosHeaders.headers
-      }
+    const attachments = [{ some: 'attachment' }];
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message,
+      attachments
     });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(
+      url,
+      { ...axiosBody, attachments },
+      {
+        headers: {
+          ...axiosHeaders.headers
+        }
+      }
+    );
   });
 
   it('should call axios with wait-for-response header set to true for pds update', async () => {

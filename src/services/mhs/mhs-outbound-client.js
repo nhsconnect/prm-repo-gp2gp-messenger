@@ -39,7 +39,7 @@ export const sendMessage = async ({
   };
 
   if (attachments) {
-    axiosBody.attachments = attachments
+    axiosBody.attachments = attachments;
   }
 
   const headers = {

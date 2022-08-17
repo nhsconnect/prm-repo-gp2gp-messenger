@@ -70,12 +70,14 @@ describe('healthRecordTransfers', () => {
   });
 
   it('should include attachments as part of mhs message send, if returned from the mhs attachments wrangler based on envelope xml', async () => {
-    const attachments = [{
-      an: "attachment",
-      another: "attachment"
-    }];
+    const attachments = [
+      {
+        an: 'attachment',
+        another: 'attachment'
+      }
+    ];
 
-    wrangleAttachments.mockReturnValue({ 'attachments': attachments });
+    wrangleAttachments.mockReturnValue({ attachments: attachments });
 
     retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);
@@ -86,7 +88,7 @@ describe('healthRecordTransfers', () => {
       .set('Authorization', authKey)
       .send(mockBody);
 
-    expect(wrangleAttachments).toHaveBeenCalledWith(jsonEhrExtract.ebXML)
+    expect(wrangleAttachments).toHaveBeenCalledWith(jsonEhrExtract.ebXML);
     expect(sendMessage).toHaveBeenCalledWith({
       interactionId: 'RCMR_IN030000UK06',
       conversationId,

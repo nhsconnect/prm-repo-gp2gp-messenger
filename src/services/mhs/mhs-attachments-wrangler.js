@@ -1,3 +1,4 @@
-export const wrangleAttachments = (ebXML) => {
-  return {}
-}
+// this is gonna take ebXML parameter, thanks lint
+export const wrangleAttachments = () => {
+  return {};
+};
