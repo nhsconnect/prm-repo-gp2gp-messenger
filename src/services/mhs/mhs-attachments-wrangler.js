@@ -17,7 +17,6 @@ export const wrangleAttachments = async mhsJsonMessage => {
   const outboundAttachment = { ...attachment };
   delete outboundAttachment.content_id;
 
-
   const description = await new XmlParser()
     .parse(mhsJsonMessage.ebXML)
     .then(jsObject => jsObject.findAll('Reference'))

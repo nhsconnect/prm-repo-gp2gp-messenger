@@ -108,7 +108,6 @@ describe('wrangleAttachments', () => {
     expect(attachmentsInfo).toEqual({});
   });
 
-
   it('should extract an empty attachment info object if no attachments in MHS json', async () => {
     const noReferencesEbxml = `
 <?xml version="1.0" ?>
@@ -125,7 +124,6 @@ describe('wrangleAttachments', () => {
 
     expect(attachmentsInfo).toEqual({});
   });
-
 
   it('should not blow up on an EHR with more than 1 attachment', async () => {
     const sparseEnvelopeXmlWithTwoAttachments = `
