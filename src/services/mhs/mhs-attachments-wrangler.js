@@ -1,12 +1,22 @@
 // this is gonna take ebXML parameter, thanks lint
-import {XmlParser} from "../parser/xml-parser/xml-parser";
-import {logInfo} from "../../middleware/logging";
+import { XmlParser } from '../parser/xml-parser/xml-parser';
+import { logInfo } from '../../middleware/logging';
 
-export const wrangleAttachments = async (mhsJsonMessage) => {
+export const wrangleAttachments = async mhsJsonMessage => {
+  if (mhsJsonMessage.attachments == undefined) {
+    logInfo('No MHS json attachments []');
+    return {};
+  }
+
+  if (mhsJsonMessage.ebXML == undefined) {
+    logInfo('No MHS json ebXML');
+    return {};
+  }
 
   const attachment = mhsJsonMessage.attachments[0];
-  const outboundAttachment = {...attachment};
+  const outboundAttachment = { ...attachment };
   delete outboundAttachment.content_id;
+
 
   const description = await new XmlParser()
     .parse(mhsJsonMessage.ebXML)
@@ -14,13 +24,13 @@ export const wrangleAttachments = async (mhsJsonMessage) => {
     .then(references => {
       logInfo('Total number of references including hl7 core: ' + references.length);
       if (references.length < 2) {
-        return null
+        return null;
       }
       return references[1].Description.innerText;
     });
 
   if (description == null) {
-    return {}
+    return {};
   }
 
   outboundAttachment.description = description;

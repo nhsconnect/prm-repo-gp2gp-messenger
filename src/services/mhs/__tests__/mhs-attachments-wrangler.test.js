@@ -1,10 +1,6 @@
 import { wrangleAttachments } from '../mhs-attachments-wrangler';
-import { v4 } from 'uuid';
-import { XmlParser } from '../../parser/xml-parser/xml-parser';
-
 
 describe('wrangleAttachments', () => {
-
   it('should extract a relevant mhs outbound attachments object from an mhs json for a single in-message (cid) attachment', async () => {
     const sparseEnvelopeXmlWithOneAttachment = `
 <?xml version="1.0" ?>
@@ -23,28 +19,32 @@ describe('wrangleAttachments', () => {
         </eb:Manifest>
     </soap:Body>
 </soap:Envelope>
-`
+`;
     const mhsJsonForSingleAttachmentSmallEhr = {
       ebXML: sparseEnvelopeXmlWithOneAttachment,
       payload: '<some_hl7_payload></some_hl7_payload>',
-      attachments: [{
-        payload: 'some attachment content',
-        is_base64: false,
-        content_id: 'Attachment1@e-mis.com/EMISWeb/GP2GP2.2A',
-        content_type: 'text/plain'
-      }]
-    }
+      attachments: [
+        {
+          payload: 'some attachment content',
+          is_base64: false,
+          content_id: 'Attachment1@e-mis.com/EMISWeb/GP2GP2.2A',
+          content_type: 'text/plain'
+        }
+      ]
+    };
 
     const attachmentsInfo = await wrangleAttachments(mhsJsonForSingleAttachmentSmallEhr);
 
     expect(attachmentsInfo).toEqual({
-      attachments: [{
-        payload: 'some attachment content',
-        is_base64: false,
-        content_type: 'text/plain',
-        description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt'
-        // TBC: , document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
-      }]
+      attachments: [
+        {
+          payload: 'some attachment content',
+          is_base64: false,
+          content_type: 'text/plain',
+          description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt'
+          // TBC: , document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
+        }
+      ]
     });
   });
 
@@ -63,17 +63,69 @@ describe('wrangleAttachments', () => {
         </eb:Manifest>
     </soap:Body>
 </soap:Envelope>
-`
+`;
     const mhsJsonForZeroAttachmentsSmallEhr = {
       ebXML: sparseEnvelopeXmlWithNoAttachments,
       payload: '<some_hl7_payload></some_hl7_payload>',
       attachments: []
-    }
+    };
 
     const attachmentsInfo = await wrangleAttachments(mhsJsonForZeroAttachmentsSmallEhr);
 
     expect(attachmentsInfo).toEqual({});
   });
+
+  it('should extract an empty attachment info object if no ebxml in MHS json', async () => {
+    const mhsJsonForZeroAttachmentsSmallEhr = {
+      payload: '<some_hl7_payload></some_hl7_payload>',
+      attachments: []
+    };
+
+    const attachmentsInfo = await wrangleAttachments(mhsJsonForZeroAttachmentsSmallEhr);
+
+    expect(attachmentsInfo).toEqual({});
+  });
+
+  it('should extract an empty attachment info object if no references in ebxml in MHS json', async () => {
+    const noReferencesEbxml = `
+<?xml version="1.0" ?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+    </soap:Header>
+    <soap:Body>
+    </soap:Body>
+</soap:Envelope>
+`;
+
+    const mhsJsonForZeroAttachmentsSmallEhr = {
+      ebXML: noReferencesEbxml,
+      payload: '<some_hl7_payload></some_hl7_payload>',
+      attachments: []
+    };
+
+    const attachmentsInfo = await wrangleAttachments(mhsJsonForZeroAttachmentsSmallEhr);
+
+    expect(attachmentsInfo).toEqual({});
+  });
+
+
+  it('should extract an empty attachment info object if no attachments in MHS json', async () => {
+    const noReferencesEbxml = `
+<?xml version="1.0" ?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+</soap:Envelope>
+`;
+
+    const mhsJsonForZeroAttachmentsSmallEhr = {
+      ebXML: noReferencesEbxml,
+      payload: '<some_hl7_payload></some_hl7_payload>'
+    };
+
+    const attachmentsInfo = await wrangleAttachments(mhsJsonForZeroAttachmentsSmallEhr);
+
+    expect(attachmentsInfo).toEqual({});
+  });
+
 
   it('should not blow up on an EHR with more than 1 attachment', async () => {
     const sparseEnvelopeXmlWithTwoAttachments = `
@@ -96,26 +148,28 @@ describe('wrangleAttachments', () => {
         </eb:Manifest>
     </soap:Body>
 </soap:Envelope>
-`
+`;
     const mhsJsonForSingleAttachmentSmallEhr = {
       ebXML: sparseEnvelopeXmlWithTwoAttachments,
       payload: '<some_hl7_payload></some_hl7_payload>',
-      attachments: [{
-        payload: 'some attachment content',
-        is_base64: false,
-        content_id: 'Attachment1@e-mis.com/EMISWeb/GP2GP2.2A',
-        content_type: 'text/plain'
-      }, {
-        payload: 'some more attachment content',
-        is_base64: false,
-        content_id: 'Attachment2@e-mis.com/EMISWeb/GP2GP2.2A',
-        content_type: 'text/plain'
-      }]
-    }
+      attachments: [
+        {
+          payload: 'some attachment content',
+          is_base64: false,
+          content_id: 'Attachment1@e-mis.com/EMISWeb/GP2GP2.2A',
+          content_type: 'text/plain'
+        },
+        {
+          payload: 'some more attachment content',
+          is_base64: false,
+          content_id: 'Attachment2@e-mis.com/EMISWeb/GP2GP2.2A',
+          content_type: 'text/plain'
+        }
+      ]
+    };
 
     const attachmentsInfo = await wrangleAttachments(mhsJsonForSingleAttachmentSmallEhr);
 
     expect(attachmentsInfo.attachments).toBeTruthy();
   });
-
 });
