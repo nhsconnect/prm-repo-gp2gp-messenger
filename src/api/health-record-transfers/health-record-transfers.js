@@ -29,9 +29,9 @@ export const healthRecordTransfers = async (req, res) => {
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    const mhsInboundFormatEhrCoreMessage = await retrieveEhrFromRepo(currentEhrUrl);
+    const mhsJsonEhrCoreMessage = await retrieveEhrFromRepo(currentEhrUrl);
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
-    const hl7Ehr = mhsInboundFormatEhrCoreMessage.payload;
+    const hl7Ehr = mhsJsonEhrCoreMessage.payload;
     if (!hl7Ehr) {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
@@ -41,7 +41,7 @@ export const healthRecordTransfers = async (req, res) => {
       practiceAsid
     );
 
-    const attachmentsInfo = wrangleAttachments(mhsInboundFormatEhrCoreMessage.ebXML);
+    const attachmentsInfo = wrangleAttachments(mhsJsonEhrCoreMessage);
 
     await sendMessage({
       interactionId,

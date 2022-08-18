@@ -69,7 +69,7 @@ describe('healthRecordTransfers', () => {
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 
-  it('should include attachments as part of mhs message send, if returned from the mhs attachments wrangler based on envelope xml', async () => {
+  it('should include attachments as part of mhs message send, if returned from the mhs attachments wrangler based on MHS json', async () => {
     const attachments = [
       {
         an: 'attachment',
@@ -88,7 +88,7 @@ describe('healthRecordTransfers', () => {
       .set('Authorization', authKey)
       .send(mockBody);
 
-    expect(wrangleAttachments).toHaveBeenCalledWith(jsonEhrExtract.ebXML);
+    expect(wrangleAttachments).toHaveBeenCalledWith(jsonEhrExtract);
     expect(sendMessage).toHaveBeenCalledWith({
       interactionId: 'RCMR_IN030000UK06',
       conversationId,
