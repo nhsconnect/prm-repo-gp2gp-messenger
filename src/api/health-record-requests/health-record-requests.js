@@ -23,7 +23,8 @@ export const healthRecordRequestValidation = [
 export const healthRecordRequests = async (req, res) => {
   const interactionId = 'RCMR_IN010000UK05';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-  const { nhsNumberPrefix } = initializeConfig();
+  const { nhsNumberPrefix, requestEhrOnlyForSafeListedOdsCodesToggle, safeListedOdsCodes } =
+    initializeConfig();
   const { conversationId, practiceOdsCode } = req.body;
   const { nhsNumber } = req.params;
 
@@ -40,6 +41,23 @@ export const healthRecordRequests = async (req, res) => {
       });
       return;
     }
+
+    if (
+      odsCodeNotInSafeList(
+        practiceOdsCode,
+        requestEhrOnlyForSafeListedOdsCodesToggle,
+        safeListedOdsCodes
+      )
+    ) {
+      const notASafeListedOdsCodeMessage = 'The ODS code provided is not safe listed.';
+
+      logWarning(notASafeListedOdsCodeMessage);
+      res.status(422).json({
+        errors: notASafeListedOdsCodeMessage
+      });
+      return;
+    }
+
     const asid = await getPracticeAsid(practiceOdsCode, serviceId);
     const message = await buildEhrRequest(req, conversationId, asid);
 
@@ -89,4 +107,16 @@ const checkNhsNumberPrefix = (nhsNumberPrefix, nhsNumber) => {
     return false;
   }
   return true;
+};
+
+const odsCodeNotInSafeList = (
+  practiceOdsCode,
+  requestEhrOnlyForSafeListedOdsCodesToggle,
+  safeListedOdsCodes
+) => {
+  if (requestEhrOnlyForSafeListedOdsCodesToggle) {
+    const caseInsensitiveOdsCode = new RegExp(practiceOdsCode, 'i');
+    return !caseInsensitiveOdsCode.test(safeListedOdsCodes);
+  }
+  return false;
 };
