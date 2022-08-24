@@ -157,6 +157,26 @@ pipelines:
     environment_variables:
       NHS_ENVIRONMENT: test
     stages: *common_stages
+  'prm-deductions-gp2gp-messenger.perf':
+    group: repository
+    label_template: '${git[:8]}'
+    materials:
+      git:
+        type: configrepo
+        blacklist:
+          - docs/**/*.*
+      test_env:
+        pipeline: prm-deductions-gp2gp-messenger.test
+        stage: test
+      base_infra:
+        pipeline: prm-deductions-infra
+        stage: deploy_perf
+      mhs:
+        pipeline: prm-mhs-infra.perf
+        stage: deploy
+    environment_variables:
+      NHS_ENVIRONMENT: perf
+    stages: *common_stages
   'prm-deductions-gp2gp-messenger.pre-prod':
     group: repository
     label_template: '${git[:8]}'
