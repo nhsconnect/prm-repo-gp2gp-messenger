@@ -77,7 +77,7 @@ describe('healthRecordTransfers', () => {
       }
     ];
 
-    wrangleAttachments.mockReturnValue({ attachments: attachments });
+    wrangleAttachments.mockResolvedValue({ attachments: attachments });
 
     retrieveEhrFromRepo.mockResolvedValue(jsonEhrExtract);
     updateExtractForSending.mockResolvedValue(messageWithEhrRequestId);

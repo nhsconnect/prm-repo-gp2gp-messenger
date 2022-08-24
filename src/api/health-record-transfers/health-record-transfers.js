@@ -41,7 +41,7 @@ export const healthRecordTransfers = async (req, res) => {
       practiceAsid
     );
 
-    const attachmentsInfo = wrangleAttachments(mhsJsonEhrCoreMessage);
+    const attachmentsInfo = await wrangleAttachments(mhsJsonEhrCoreMessage);
 
     await sendMessage({
       interactionId,
