@@ -14,7 +14,9 @@ locals {
       { name = "LOG_LEVEL", value = var.log_level},
       { name = "SPINE_ORG_CODE", value = var.spine_org_code},
       { name = "PDS_ASID", value = data.aws_ssm_parameter.pds_asid.value  },
-      { name = "SQS_OBSERVABILITY_QUEUE_URL", value = aws_sqs_queue.hl7_message_sent_observability.id  }
+      { name = "SQS_OBSERVABILITY_QUEUE_URL", value = aws_sqs_queue.hl7_message_sent_observability.id  },
+      { name = "REQUEST_EHR_ONLY_FOR_SAFE_LISTED_ODS_CODES", value = tostring(var.request_ehr_only_for_safe_listed_ods_codes)  },
+      { name = "SAFE_LISTED_ODS_CODES", value = data.aws_ssm_parameter.safe_listed_ods_codes.value  }
     ]
 }
 

@@ -35,3 +35,7 @@ data "aws_ssm_parameter" "sds_fhir_api_key" {
 data "aws_ssm_parameter" "sds_fhir_url" {
   name = "/repo/${var.environment}/user-input/external/sds-fhir-url"
 }
+
+data "aws_ssm_parameter" "safe_listed_ods_codes" {
+  name = "/repo/${var.environment}/user-input/external/safe-listed-ods-codes"
+}
