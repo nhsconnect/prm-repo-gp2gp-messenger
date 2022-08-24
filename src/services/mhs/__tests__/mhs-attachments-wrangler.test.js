@@ -41,8 +41,8 @@ describe('wrangleAttachments', () => {
           payload: 'some attachment content',
           is_base64: false,
           content_type: 'text/plain',
-          description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt'
-          // TBC: , document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
+          description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt',
+          document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
         }
       ]
     });

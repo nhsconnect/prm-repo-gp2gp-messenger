@@ -3,12 +3,12 @@ import { XmlParser } from '../parser/xml-parser/xml-parser';
 import { logInfo } from '../../middleware/logging';
 
 export const wrangleAttachments = async mhsJsonMessage => {
-  if (mhsJsonMessage.attachments == undefined) {
+  if (mhsJsonMessage.attachments === undefined) {
     logInfo('No MHS json attachments []');
     return {};
   }
 
-  if (mhsJsonMessage.ebXML == undefined) {
+  if (mhsJsonMessage.ebXML === undefined) {
     logInfo('No MHS json ebXML');
     return {};
   }
@@ -19,7 +19,7 @@ export const wrangleAttachments = async mhsJsonMessage => {
   const outboundAttachment = { ...attachment };
   delete outboundAttachment.content_id;
 
-  const description = await new XmlParser()
+  const attachmentReference = await new XmlParser()
     .parse(mhsJsonMessage.ebXML)
     .then(jsObject => jsObject.findAll('Reference'))
     .then(references => {
@@ -28,8 +28,17 @@ export const wrangleAttachments = async mhsJsonMessage => {
         logInfo('No attachments to wrangle');
         return null;
       }
-      return references[1].Description.innerText;
+      return references[1];
     });
+
+  if (attachmentReference == null) {
+    logInfo('No attachment reference');
+    return {};
+  }
+
+  const description = attachmentReference.Description.innerText;
+  const eb_id = attachmentReference.id;
+  const document_id = eb_id.substring(1);
 
   if (description == null) {
     logInfo('No attachment description');
@@ -37,6 +46,7 @@ export const wrangleAttachments = async mhsJsonMessage => {
   }
 
   outboundAttachment.description = description;
+  outboundAttachment.document_id = document_id;
 
   const attachmentsInfo = {
     attachments: [outboundAttachment]
