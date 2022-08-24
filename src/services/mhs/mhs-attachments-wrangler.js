@@ -13,6 +13,8 @@ export const wrangleAttachments = async mhsJsonMessage => {
     return {};
   }
 
+  logInfo('Got MHS json with ebXML and attachments[] length: ' + mhsJsonMessage.attachments.length);
+
   const attachment = mhsJsonMessage.attachments[0];
   const outboundAttachment = { ...attachment };
   delete outboundAttachment.content_id;
@@ -23,18 +25,23 @@ export const wrangleAttachments = async mhsJsonMessage => {
     .then(references => {
       logInfo('Total number of references including hl7 core: ' + references.length);
       if (references.length < 2) {
+        logInfo('No attachments to wrangle');
         return null;
       }
       return references[1].Description.innerText;
     });
 
   if (description == null) {
+    logInfo('No attachment description');
     return {};
   }
 
   outboundAttachment.description = description;
 
-  return {
+  const attachmentsInfo = {
     attachments: [outboundAttachment]
   };
+
+  logInfo('Attachments wrangled: ' + JSON.stringify(attachmentsInfo));
+  return attachmentsInfo;
 };

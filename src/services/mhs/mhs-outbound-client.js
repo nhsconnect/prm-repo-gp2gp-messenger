@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { initializeConfig } from '../../config';
-import { logError } from '../../middleware/logging';
+import { logError, logInfo } from '../../middleware/logging';
 import { sendToQueue } from '../sqs/sqs-client';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
@@ -39,7 +39,10 @@ export const sendMessage = async ({
   };
 
   if (attachments) {
+    logInfo('Sending attachments to MHS');
     axiosBody.attachments = attachments;
+  } else {
+    logInfo('Sending no attachments to MHS');
   }
 
   const headers = {
