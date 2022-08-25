@@ -10,7 +10,8 @@ export const initializeConfig = () => ({
   sdsFhirApiKey: process.env.SDS_FHIR_API_KEY,
   sdsFhirUrl: process.env.SDS_FHIR_URL,
   spineOrgCode: process.env.SPINE_ORG_CODE,
-  requestEhrOnlyForSafeListedOdsCodesToggle: process.env.REQUEST_EHR_ONLY_FOR_SAFE_LISTED_ODS_CODES,
+  requestEhrOnlyForSafeListedOdsCodesToggle:
+    process.env.REQUEST_EHR_ONLY_FOR_SAFE_LISTED_ODS_CODES === 'true', //Casting string to boolean
   safeListedOdsCodes: process.env.SAFE_LISTED_ODS_CODES,
   consumerApiKeys: loadConsumerKeys()
 });
