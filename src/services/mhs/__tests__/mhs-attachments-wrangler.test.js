@@ -1,8 +1,20 @@
 import { wrangleAttachments } from '../mhs-attachments-wrangler';
 
 describe('wrangleAttachments', () => {
-  it('should extract a relevant mhs outbound attachments object from an mhs json for a single in-message (cid) attachment', async () => {
-    const sparseEnvelopeXmlWithOneAttachment = `
+
+  function base64Encoded(raw) {
+    let buff = new Buffer(raw);
+    return buff.toString('base64');
+  }
+
+  it('should be tested with a working base64 encoder', () => {
+    const someAttachmentText = 'some attachment text';
+    const someAttachmentTextBase64Encoded = 'c29tZSBhdHRhY2htZW50IHRleHQ=';
+
+    expect(base64Encoded(someAttachmentText)).toEqual(someAttachmentTextBase64Encoded);
+  })
+
+  const sparseEnvelopeXmlWithOneAttachment = `
 <?xml version="1.0" ?>
 <soap:Envelope xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:hl7ebxml="urn:hl7-org:transport/ebxml/DSTUv1.0" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
     <soap:Header>
@@ -20,6 +32,8 @@ describe('wrangleAttachments', () => {
     </soap:Body>
 </soap:Envelope>
 `;
+
+  it('should extract a relevant mhs outbound attachments object from an mhs json for a single in-message (cid) attachment forcing base64 encoding if not already', async () => {
     const mhsJsonForSingleAttachmentSmallEhr = {
       ebXML: sparseEnvelopeXmlWithOneAttachment,
       payload: '<some_hl7_payload></some_hl7_payload>',
@@ -38,14 +52,34 @@ describe('wrangleAttachments', () => {
     expect(attachmentsInfo).toEqual({
       attachments: [
         {
-          payload: 'some attachment content',
-          is_base64: false,
+          payload: base64Encoded('some attachment content'),
+          is_base64: true,
           content_type: 'text/plain',
           description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt',
           document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
         }
       ]
     });
+  });
+
+  it('should pass through payload in original base64 encoding if it is already', async () => {
+    const mhsJsonForSingleAttachmentSmallEhr = {
+      ebXML: sparseEnvelopeXmlWithOneAttachment,
+      payload: '<some_hl7_payload></some_hl7_payload>',
+      attachments: [
+        {
+          payload: 'originalbase64encodedpayload',
+          is_base64: true,
+          content_id: 'Attachment1@e-mis.com/EMISWeb/GP2GP2.2A',
+          content_type: 'text/plain'
+        }
+      ]
+    };
+
+    const attachmentsInfo = await wrangleAttachments(mhsJsonForSingleAttachmentSmallEhr);
+
+    expect(attachmentsInfo.attachments[0].is_base64).toEqual(true);
+    expect(attachmentsInfo.attachments[0].payload).toEqual('originalbase64encodedpayload');
   });
 
   it('should extract an empty attachment info object for an EHR without attachments', async () => {
