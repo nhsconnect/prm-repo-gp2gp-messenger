@@ -114,6 +114,9 @@ const odsCodeNotInSafeList = (
   requestEhrOnlyForSafeListedOdsCodesToggle,
   safeListedOdsCodes
 ) => {
+  logInfo(
+    'process only safe listed ODS code toggle is : ' + requestEhrOnlyForSafeListedOdsCodesToggle
+  );
   if (requestEhrOnlyForSafeListedOdsCodesToggle) {
     const caseInsensitiveOdsCode = new RegExp(practiceOdsCode, 'i');
     return !caseInsensitiveOdsCode.test(safeListedOdsCodes);
