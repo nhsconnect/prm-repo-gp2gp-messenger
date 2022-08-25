@@ -1,7 +1,6 @@
 import { wrangleAttachments } from '../mhs-attachments-wrangler';
 
 describe('wrangleAttachments', () => {
-
   function base64Encoded(raw) {
     let buff = new Buffer(raw);
     return buff.toString('base64');
@@ -12,7 +11,7 @@ describe('wrangleAttachments', () => {
     const someAttachmentTextBase64Encoded = 'c29tZSBhdHRhY2htZW50IHRleHQ=';
 
     expect(base64Encoded(someAttachmentText)).toEqual(someAttachmentTextBase64Encoded);
-  })
+  });
 
   const sparseEnvelopeXmlWithOneAttachment = `
 <?xml version="1.0" ?>
