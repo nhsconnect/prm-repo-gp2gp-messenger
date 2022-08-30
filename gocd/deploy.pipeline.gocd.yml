@@ -171,9 +171,6 @@ pipelines:
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_perf
-      mhs:
-        pipeline: prm-mhs-infra.perf
-        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: perf
     stages: *common_stages
