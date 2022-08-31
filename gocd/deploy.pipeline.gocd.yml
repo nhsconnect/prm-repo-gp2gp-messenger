@@ -173,7 +173,45 @@ pipelines:
         stage: deploy_perf
     environment_variables:
       NHS_ENVIRONMENT: perf
-    stages: *common_stages
+    stages:
+      - promote_docker_image:
+          resources:
+            - docker
+          clean_workspace: true
+          tasks:
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - ./tasks promote_docker_image
+      - plan_certs:
+          clean_workspace: true
+          jobs:
+            plan: *plan_certs
+      - deploy_certs:
+          clean_workspace: true
+          jobs:
+            deploy: *deploy_certs
+      - plan:
+          clean_workspace: true
+          jobs:
+            plan: *plan
+      - deploy:
+          clean_workspace: true
+          jobs:
+            deploy: *deploy
+      - test:
+          clean_workspace: true
+          jobs:
+            functional:
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    command: /bin/bash
+                    arguments:
+                      - -c
+                      - ./tasks sanity_check
   'prm-deductions-gp2gp-messenger.pre-prod':
     group: repository
     label_template: '${git[:8]}'
