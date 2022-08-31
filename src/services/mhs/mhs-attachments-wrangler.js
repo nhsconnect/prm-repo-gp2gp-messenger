@@ -1,6 +1,6 @@
 // this is gonna take ebXML parameter, thanks lint
-import { XmlParser } from '../parser/xml-parser/xml-parser';
-import { logInfo } from '../../middleware/logging';
+import {XmlParser} from '../parser/xml-parser/xml-parser';
+import {logInfo} from '../../middleware/logging';
 
 function findAttachmentReferenceByHref(attachmentReferences, content_id) {
   return attachmentReferences.find(a => a.href == content_id);
@@ -19,16 +19,16 @@ export const wrangleAttachments = async mhsJsonMessage => {
 
   logInfo('Got MHS json with ebXML and attachments[] length: ' + mhsJsonMessage.attachments.length);
 
-  const attachmentReferences = await extractAttachmentReferences(mhsJsonMessage);
+  const references = await extractManifestReferences(mhsJsonMessage);
 
-  if (attachmentReferences == null) {
-    logInfo('No attachment reference');
+  if (references == null) {
+    logInfo('No references');
     return {};
   }
 
   const outboundAttachments = mhsJsonMessage.attachments.map(a => {
     let attachmentReference = findAttachmentReferenceByHref(
-      attachmentReferences,
+      references,
       'cid:' + a.content_id
     );
 
@@ -39,8 +39,18 @@ export const wrangleAttachments = async mhsJsonMessage => {
     return composeOutboundAttachment(description, document_id, a);
   });
 
+  const MID_PREFIX = 'mid:';
+  const outboundExternalAttachments = references.filter(ref => ref.href.startsWith(MID_PREFIX)).map(ref => {
+    return {
+      description: ref.Description.innerText,
+      document_id: ref.id,
+      message_id: ref.href.substring(MID_PREFIX.length)
+    };
+  });
+
   const attachmentsInfo = {
-    attachments: outboundAttachments
+    attachments: outboundAttachments,
+    external_attachments: outboundExternalAttachments
   };
 
   logInfo('Attachments wrangled: ' + JSON.stringify(attachmentsInfo));
@@ -63,7 +73,7 @@ function composeOutboundAttachment(description, document_id, attachment) {
   return outboundAttachment;
 }
 
-async function extractAttachmentReferences(mhsJsonMessage) {
+async function extractManifestReferences(mhsJsonMessage) {
   return await new XmlParser()
     .parse(mhsJsonMessage.ebXML)
     .then(jsObject => jsObject.findAll('Reference'))
