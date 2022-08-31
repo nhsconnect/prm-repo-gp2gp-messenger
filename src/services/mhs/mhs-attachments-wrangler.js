@@ -15,21 +15,34 @@ export const wrangleAttachments = async mhsJsonMessage => {
 
   logInfo('Got MHS json with ebXML and attachments[] length: ' + mhsJsonMessage.attachments.length);
 
-  const attachmentReference = await extractAttachmentReference(mhsJsonMessage);
+  const attachmentReferences = await extractAttachmentReferences(mhsJsonMessage);
 
-  if (attachmentReference == null) {
+  if (attachmentReferences == null) {
     logInfo('No attachment reference');
     return {};
   }
 
-  const description = extractDescription(attachmentReference);
+  const description = extractDescription(attachmentReferences[1]);
   if (description == null) {
     logInfo('No attachment description');
     return {};
   }
 
-  const document_id = extractDocumentId(attachmentReference);
-  const attachment = mhsJsonMessage.attachments[0];
+  const document_id = extractDocumentId(attachmentReferences[1]);
+
+  const outboundAttachments = mhsJsonMessage.attachments.map(a =>
+    composeOutboundAttachment(description, document_id, a)
+  );
+
+  const attachmentsInfo = {
+    attachments: outboundAttachments
+  };
+
+  logInfo('Attachments wrangled: ' + JSON.stringify(attachmentsInfo));
+  return attachmentsInfo;
+};
+
+function composeOutboundAttachment(description, document_id, attachment) {
   const outboundAttachment = { ...attachment };
 
   delete outboundAttachment.content_id;
@@ -42,17 +55,11 @@ export const wrangleAttachments = async mhsJsonMessage => {
     outboundAttachment.is_base64 = true;
     outboundAttachment.payload = base64Encoded(attachment.payload);
   }
+  return outboundAttachment;
+}
 
-  const attachmentsInfo = {
-    attachments: [outboundAttachment]
-  };
-
-  logInfo('Attachments wrangled: ' + JSON.stringify(attachmentsInfo));
-  return attachmentsInfo;
-};
-
-async function extractAttachmentReference(mhsJsonMessage) {
-  const attachmentReference = await new XmlParser()
+async function extractAttachmentReferences(mhsJsonMessage) {
+  return await new XmlParser()
     .parse(mhsJsonMessage.ebXML)
     .then(jsObject => jsObject.findAll('Reference'))
     .then(references => {
@@ -61,9 +68,8 @@ async function extractAttachmentReference(mhsJsonMessage) {
         logInfo('No attachments to wrangle');
         return null;
       }
-      return references[1];
+      return references;
     });
-  return attachmentReference;
 }
 
 function extractDescription(attachmentReference) {

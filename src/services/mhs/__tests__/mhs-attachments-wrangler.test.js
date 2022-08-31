@@ -180,7 +180,7 @@ describe('wrangleAttachments', () => {
     </soap:Body>
 </soap:Envelope>
 `;
-    const mhsJsonForSingleAttachmentSmallEhr = {
+    const mhsJsonForTwoAttachmentSmallEhr = {
       ebXML: sparseEnvelopeXmlWithTwoAttachments,
       payload: '<some_hl7_payload></some_hl7_payload>',
       attachments: [
@@ -199,8 +199,25 @@ describe('wrangleAttachments', () => {
       ]
     };
 
-    const attachmentsInfo = await wrangleAttachments(mhsJsonForSingleAttachmentSmallEhr);
+    const expectedOutboundAttachments = [
+      {
+        payload: base64Encoded('some attachment content'),
+        is_base64: true,
+        content_type: 'text/plain',
+        description: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt',
+        document_id: 'E9FBA6F2-96F3-4863-95E7-B5CF34964D85'
+      },
+      {
+        payload: base64Encoded('some more attachment content'),
+        is_base64: true,
+        content_type: 'text/plain',
+        description: 'F9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt',
+        document_id: 'F9FBA6F2-96F3-4863-95E7-B5CF34964D85'
+      }
+    ];
 
-    expect(attachmentsInfo.attachments).toBeTruthy();
+    const outboundAttachmentsInfo = await wrangleAttachments(mhsJsonForTwoAttachmentSmallEhr);
+
+    expect(outboundAttachmentsInfo.attachments).toEqual(expectedOutboundAttachments);
   });
 });
