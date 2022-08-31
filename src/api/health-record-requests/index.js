@@ -1,4 +1,5 @@
 import express from 'express';
+import { perfTestStep } from '../../middleware/perf-health-record-stub';
 import { authenticateRequest } from '../../middleware/auth';
 import { validate } from '../../middleware/validation';
 import { healthRecordRequests, healthRecordRequestValidation } from './health-record-requests';
@@ -15,6 +16,7 @@ healthRecordRequestRouter.use(tracing.middleware);
 
 healthRecordRequestRouter.post(
   '/continue-message',
+  perfTestStep,
   authenticateRequest,
   continueMessageValidation,
   validate,
@@ -23,6 +25,7 @@ healthRecordRequestRouter.post(
 
 healthRecordRequestRouter.post(
   '/:nhsNumber',
+  perfTestStep,
   authenticateRequest,
   healthRecordRequestValidation,
   validate,
@@ -31,6 +34,7 @@ healthRecordRequestRouter.post(
 
 healthRecordRequestRouter.post(
   '/:nhsNumber/acknowledgement',
+  perfTestStep,
   authenticateRequest,
   acknowledgementValidation,
   validate,
