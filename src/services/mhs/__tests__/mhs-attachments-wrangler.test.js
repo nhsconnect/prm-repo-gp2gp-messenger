@@ -14,7 +14,6 @@ describe('wrangleAttachments', () => {
   });
 
   describe('inline cid attachments', () => {
-
     const sparseEnvelopeXmlWithOneAttachment = `
     <?xml version="1.0" ?>
     <soap:Envelope xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:hl7ebxml="urn:hl7-org:transport/ebxml/DSTUv1.0" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -261,14 +260,16 @@ describe('wrangleAttachments', () => {
       //   }
       // ]
 
-
-      const attachmentsInfo = await wrangleAttachments(mhsJsonForCoreMessageExpectingSingleExtraMidMessage);
+      const attachmentsInfo = await wrangleAttachments(
+        mhsJsonForCoreMessageExpectingSingleExtraMidMessage
+      );
 
       expect(attachmentsInfo).toEqual({
         attachments: [],
         external_attachments: [
           {
-            description: 'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
+            description:
+              'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
             document_id: '_' + 'FB01ED63-290B-11ED-8084-AC162D1F16F0',
             message_id: 'FBC31A80-290B-11ED-8084-AC162D1F16F0'
           }
@@ -305,24 +306,27 @@ describe('wrangleAttachments', () => {
         attachments: []
       };
 
-      const attachmentsInfo = await wrangleAttachments(mhsJsonForCoreMessageExpectingTwoExtraMidMessages);
+      const attachmentsInfo = await wrangleAttachments(
+        mhsJsonForCoreMessageExpectingTwoExtraMidMessages
+      );
 
       expect(attachmentsInfo).toEqual({
         attachments: [],
         external_attachments: [
           {
-            description: 'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
+            description:
+              'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
             document_id: '_' + 'FB01ED63-290B-11ED-8084-AC162D1F16F0',
             message_id: 'FBC31A80-290B-11ED-8084-AC162D1F16F0'
           },
           {
-            description: 'Filename=0B01ED63-290B-11ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No',
+            description:
+              'Filename=0B01ED63-290B-11ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No',
             document_id: '_' + '0B01ED63-290B-11ED-8084-AC162D1F16F0',
             message_id: '0BC31A80-290B-11ED-8084-AC162D1F16F0'
           }
         ]
       });
     });
-
-  })
+  });
 });

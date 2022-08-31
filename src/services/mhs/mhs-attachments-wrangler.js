@@ -1,6 +1,6 @@
 // this is gonna take ebXML parameter, thanks lint
-import {XmlParser} from '../parser/xml-parser/xml-parser';
-import {logInfo} from '../../middleware/logging';
+import { XmlParser } from '../parser/xml-parser/xml-parser';
+import { logInfo } from '../../middleware/logging';
 
 function findAttachmentReferenceByHref(attachmentReferences, content_id) {
   return attachmentReferences.find(a => a.href == content_id);
@@ -27,10 +27,7 @@ export const wrangleAttachments = async mhsJsonMessage => {
   }
 
   const outboundAttachments = mhsJsonMessage.attachments.map(a => {
-    let attachmentReference = findAttachmentReferenceByHref(
-      references,
-      'cid:' + a.content_id
-    );
+    let attachmentReference = findAttachmentReferenceByHref(references, 'cid:' + a.content_id);
 
     const description = extractDescription(attachmentReference);
 
@@ -40,13 +37,15 @@ export const wrangleAttachments = async mhsJsonMessage => {
   });
 
   const MID_PREFIX = 'mid:';
-  const outboundExternalAttachments = references.filter(ref => ref.href.startsWith(MID_PREFIX)).map(ref => {
-    return {
-      description: ref.Description.innerText,
-      document_id: ref.id,
-      message_id: ref.href.substring(MID_PREFIX.length)
-    };
-  });
+  const outboundExternalAttachments = references
+    .filter(ref => ref.href.startsWith(MID_PREFIX))
+    .map(ref => {
+      return {
+        description: ref.Description.innerText,
+        document_id: ref.id,
+        message_id: ref.href.substring(MID_PREFIX.length)
+      };
+    });
 
   const attachmentsInfo = {
     attachments: outboundAttachments,
