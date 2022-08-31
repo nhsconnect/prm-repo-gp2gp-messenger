@@ -2,6 +2,10 @@
 import { XmlParser } from '../parser/xml-parser/xml-parser';
 import { logInfo } from '../../middleware/logging';
 
+function findAttachmentReferenceByHref(attachmentReferences, content_id) {
+  return attachmentReferences.find(a => a.href == content_id);
+}
+
 export const wrangleAttachments = async mhsJsonMessage => {
   if (mhsJsonMessage.attachments === undefined) {
     logInfo('No MHS json attachments []');
@@ -22,17 +26,18 @@ export const wrangleAttachments = async mhsJsonMessage => {
     return {};
   }
 
-  const description = extractDescription(attachmentReferences[1]);
-  if (description == null) {
-    logInfo('No attachment description');
-    return {};
-  }
+  const outboundAttachments = mhsJsonMessage.attachments.map(a => {
+    let attachmentReference = findAttachmentReferenceByHref(
+      attachmentReferences,
+      'cid:' + a.content_id
+    );
 
-  const document_id = extractDocumentId(attachmentReferences[1]);
+    const description = extractDescription(attachmentReference);
 
-  const outboundAttachments = mhsJsonMessage.attachments.map(a =>
-    composeOutboundAttachment(description, document_id, a)
-  );
+    const document_id = extractDocumentId(attachmentReference);
+
+    return composeOutboundAttachment(description, document_id, a);
+  });
 
   const attachmentsInfo = {
     attachments: outboundAttachments

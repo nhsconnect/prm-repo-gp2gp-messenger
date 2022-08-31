@@ -158,7 +158,7 @@ describe('wrangleAttachments', () => {
     expect(attachmentsInfo).toEqual({});
   });
 
-  it('should not blow up on an EHR with more than 1 attachment', async () => {
+  it('should compose outbound attachments for EHR with more than 1 inline cid attachment', async () => {
     const sparseEnvelopeXmlWithTwoAttachments = `
 <?xml version="1.0" ?>
 <soap:Envelope xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:hl7ebxml="urn:hl7-org:transport/ebxml/DSTUv1.0" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -211,7 +211,7 @@ describe('wrangleAttachments', () => {
         payload: base64Encoded('some more attachment content'),
         is_base64: true,
         content_type: 'text/plain',
-        description: 'F9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment.txt',
+        description: 'F9FBA6F2-96F3-4863-95E7-B5CF34964D85_attachment2.txt',
         document_id: 'F9FBA6F2-96F3-4863-95E7-B5CF34964D85'
       }
     ];
