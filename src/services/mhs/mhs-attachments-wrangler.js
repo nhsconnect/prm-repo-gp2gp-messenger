@@ -52,7 +52,8 @@ export const wrangleAttachments = async mhsJsonMessage => {
     external_attachments: outboundExternalAttachments
   };
 
-  logInfo('Attachments wrangled: ' + JSON.stringify(attachmentsInfo));
+  logInfo('Attachments wrangled: ' + attachmentsInfo.attachments.length);
+  logInfo('External attachments wrangled: ' + attachmentsInfo.external_attachments.length);
   return attachmentsInfo;
 };
 
