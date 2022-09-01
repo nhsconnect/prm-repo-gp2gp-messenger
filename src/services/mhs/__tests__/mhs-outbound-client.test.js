@@ -123,6 +123,50 @@ describe('mhs-outbound-client', () => {
     );
   });
 
+  it('should make post adding external attachments (describing mid messages containing further large ehr fragments) to body if passed in', async () => {
+    const external_attachments = [{ some: 'external attachment' }];
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message,
+      external_attachments
+    });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(
+      url,
+      { ...axiosBody, external_attachments },
+      {
+        headers: {
+          ...axiosHeaders.headers
+        }
+      }
+    );
+  });
+
+  it('should make post adding both attachments and external attachments  if passed in', async () => {
+    const attachments = [{ some: 'attachment' }];
+    const external_attachments = [{ some: 'external attachment' }];
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message,
+      attachments,
+      external_attachments
+    });
+    expect(response.status).toBe(200);
+    expect(axios.post).toBeCalledWith(
+      url,
+      { ...axiosBody, attachments, external_attachments },
+      {
+        headers: {
+          ...axiosHeaders.headers
+        }
+      }
+    );
+  });
+
   it('should call axios with wait-for-response header set to true for pds update', async () => {
     const interactionId = 'PRPA_IN000203UK03';
     const response = await sendMessage({ interactionId, conversationId, odsCode, message });

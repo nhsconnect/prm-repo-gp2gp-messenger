@@ -29,7 +29,8 @@ export const sendMessage = async ({
   odsCode,
   message,
   messageId = null,
-  attachments = null
+  attachments = null,
+  external_attachments = null
 } = {}) => {
   const config = initializeConfig();
   validateInputs({ interactionId, conversationId, odsCode, message });
@@ -43,6 +44,13 @@ export const sendMessage = async ({
     axiosBody.attachments = attachments;
   } else {
     logInfo('Sending no attachments to MHS');
+  }
+
+  if (external_attachments) {
+    logInfo('Sending external_attachments to MHS');
+    axiosBody.external_attachments = external_attachments;
+  } else {
+    logInfo('Sending no external_attachments to MHS');
   }
 
   const headers = {
