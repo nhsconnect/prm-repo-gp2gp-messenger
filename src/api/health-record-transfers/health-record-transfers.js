@@ -17,6 +17,7 @@ export const healthRecordTransferValidation = [
   body('data.links.currentEhrUrl').notEmpty().withMessage('Value has not been provided')
 ];
 
+const REPOSITORY_DEV_ODS_CODE_HARDCODED_FOR_EHR_OUT_SPIKE_2572 = 'B85002';
 export const healthRecordTransfers = async (req, res) => {
   const { data } = req.body;
   const {
@@ -38,7 +39,8 @@ export const healthRecordTransfers = async (req, res) => {
     const ehrMessageWithEhrRequestId = await updateExtractForSending(
       hl7Ehr,
       ehrRequestId,
-      practiceAsid
+      practiceAsid,
+      REPOSITORY_DEV_ODS_CODE_HARDCODED_FOR_EHR_OUT_SPIKE_2572
     );
 
     const attachmentsInfo = await wrangleAttachments(mhsJsonEhrCoreMessage);

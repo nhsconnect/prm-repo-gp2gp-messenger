@@ -42,9 +42,10 @@ describe('healthRecordTransfers', () => {
     }
   };
 
-  it('should return a 204 for a simple EHR send without attachments', async () => {
+  it('should return a 204 for a simple EHR send without attachments - hardcoded to repo dev as EHR sender', async () => {
     const interactionId = 'RCMR_IN030000UK06';
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
+    const REPOSITORY_DEV_ODS_CODE = 'B85002';
     const expectedSendMessageParameters = {
       interactionId,
       conversationId,
@@ -65,7 +66,7 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-    expect(updateExtractForSending).toHaveBeenCalledWith(payload, ehrRequestId, receivingAsid);
+    expect(updateExtractForSending).toHaveBeenCalledWith(payload, ehrRequestId, receivingAsid, REPOSITORY_DEV_ODS_CODE);
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 

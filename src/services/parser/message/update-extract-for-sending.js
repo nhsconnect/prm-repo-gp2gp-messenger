@@ -1,8 +1,12 @@
-import { initializeConfig } from '../../../config';
-import { Builder } from 'xml2js';
+import {initializeConfig} from '../../../config';
 import * as xml2js from 'xml2js';
+import {Builder} from 'xml2js';
 
-export const updateExtractForSending = async (ehrExtract, ehrRequestId, receivingAsid) => {
+function updateAuthorOdsCode(authorParent, sendingOdsCode) {
+  authorParent.author.AgentOrgSDS.agentOrganizationSDS.id['$'].extension = sendingOdsCode;
+}
+
+export const updateExtractForSending = async (ehrExtract, ehrRequestId, receivingAsid, sendingOdsCode) => {
   const config = initializeConfig();
   const parsedEhr = await new xml2js.Parser({ explicitArray: false }).parseStringPromise(
     ehrExtract
@@ -27,6 +31,9 @@ export const updateExtractForSending = async (ehrExtract, ehrRequestId, receivin
     sendingAsid
   );
   controlActEvent.subject.EhrExtract.inFulfillmentOf.priorEhrRequest.id['$'].root = ehrRequestId;
+
+  updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
+  updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
 
   rcmrUK06.ControlActEvent = controlActEvent;
   parsedEhr.RCMR_IN030000UK06 = rcmrUK06;
