@@ -66,7 +66,12 @@ describe('healthRecordTransfers', () => {
     expect(res.status).toBe(204);
     expect(retrieveEhrFromRepo).toHaveBeenCalledWith(currentEhrUrl);
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-    expect(updateExtractForSending).toHaveBeenCalledWith(payload, ehrRequestId, receivingAsid, REPOSITORY_DEV_ODS_CODE);
+    expect(updateExtractForSending).toHaveBeenCalledWith(
+      payload,
+      ehrRequestId,
+      receivingAsid,
+      REPOSITORY_DEV_ODS_CODE
+    );
     expect(sendMessage).toHaveBeenCalledWith(expectedSendMessageParameters);
   });
 

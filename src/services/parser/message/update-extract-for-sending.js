@@ -1,12 +1,17 @@
-import {initializeConfig} from '../../../config';
+import { initializeConfig } from '../../../config';
 import * as xml2js from 'xml2js';
-import {Builder} from 'xml2js';
+import { Builder } from 'xml2js';
 
 function updateAuthorOdsCode(authorParent, sendingOdsCode) {
   authorParent.author.AgentOrgSDS.agentOrganizationSDS.id['$'].extension = sendingOdsCode;
 }
 
-export const updateExtractForSending = async (ehrExtract, ehrRequestId, receivingAsid, sendingOdsCode) => {
+export const updateExtractForSending = async (
+  ehrExtract,
+  ehrRequestId,
+  receivingAsid,
+  sendingOdsCode
+) => {
   const config = initializeConfig();
   const parsedEhr = await new xml2js.Parser({ explicitArray: false }).parseStringPromise(
     ehrExtract
