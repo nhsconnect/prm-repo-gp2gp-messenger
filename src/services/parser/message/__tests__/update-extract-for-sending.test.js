@@ -31,8 +31,8 @@ describe('updateExtractForSending', () => {
       newReceivingAsid
     );
 
-    const parsedNewEhrExtract = new XmlParser().parse(newEhrExtract);
-    const parsedExpectedEhrExtract = new XmlParser().parse(expectedEhrExtract);
+    const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
+    const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
     expect(parsedNewEhrExtract).toEqual(parsedExpectedEhrExtract);
   });
 });
