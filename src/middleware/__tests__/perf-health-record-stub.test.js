@@ -8,7 +8,7 @@ describe('perf health record stub', () => {
   });
 
   it('should return status 204 when we are in perf environment', async () => {
-    const mockRes = { status: jest.fn() };
+    const mockRes = { status: jest.fn(() => ({ send: jest.fn() })) };
     const mockedNext = jest.fn();
     process.env.NHS_ENVIRONMENT = 'perf';
     perfTestStep({}, mockRes, mockedNext);
