@@ -179,12 +179,12 @@
     "/health-record-transfers": {
       "post": {
         "tags": ["health-record-transfers"],
-        "summary": "Retrieves EHR ans transfers it outside of the repository",
+        "summary": "Sends EHR core message out from Repository",
         "consumes": ["application/json"],
         "parameters": [
           {
             "in": "body",
-            "name": "conversationId",
+            "name": "outbound EHR details",
             "schema": {
               "$ref": "#/definitions/HealthRecordTransfer"
             }
@@ -192,7 +192,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Health record successfully sent"
+            "description": "Core message sent"
           },
           "401": {
             "description": "Authorization header missing"
@@ -207,7 +207,51 @@
             }
           },
           "503": {
-            "description": "Downstream error when sending EHR extract",
+            "description": "Downstream error when sending core message",
+            "schema": {
+              "$ref": "#/definitions/ServerError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/health-record-transfers/fragment": {
+      "post": {
+        "tags": ["health-record-transfers"],
+        "summary": "Sends Large EHR fragment message out from Repository",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "outbound EHR fragment details",
+            "schema": {
+              "$ref": "#/definitions/HealthRecordTransferFragment"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Message sent OK"
+          },
+          "401": {
+            "description": "Authorization header missing"
+          },
+          "403": {
+            "description": "Authorization key invalid"
+          },
+          "422": {
+            "description": "Validation failed",
+            "schema": {
+              "$ref": "#/definitions/ValidationErrors"
+            }
+          },
+          "503": {
+            "description": "Downstream error when sending message",
             "schema": {
               "$ref": "#/definitions/ServerError"
             }
@@ -325,7 +369,7 @@
   "definitions": {
     "HealthRecordTransfer": {
       "type": "object",
-      "description": "Sends health record to MHS",
+      "description": "Sends core health record message to MHS",
       "properties": {
         "data": {
           "type": "object",
@@ -354,6 +398,49 @@
               "type": "object",
               "properties": {
                 "currentEhrUrl": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "HealthRecordTransferFragment": {
+      "type": "object",
+      "description": "Sends large health record fragment message to MHS",
+      "properties": {
+        "data": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["health-record-transfer-fragment"]
+            },
+            "outboundConversationId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "outboundMessageId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "odsCode": {
+                  "type": "string"
+                },
+                "ehrRequestId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "originalMessageUrl": {
                   "type": "string"
                 }
               }

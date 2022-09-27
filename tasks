@@ -290,6 +290,10 @@ case "${command}" in
       configure_local_envs
       dojo -c Dojofile-itest "./tasks _test_integration"
       ;;
+  test_integration_shell)
+      configure_local_envs
+      dojo -c Dojofile-itest
+      ;;
   sanity_check)
       dojo "./tasks _sanity_check"
       ;;
