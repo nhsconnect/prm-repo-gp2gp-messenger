@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { retrieveEhrFromRepo } from '../../services/ehr/retrieve-ehr-from-repo';
+import { retrieveMessageFromRepo } from '../../services/ehr/retrieve-message-from-repo';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { wrangleAttachments } from '../../services/mhs/mhs-attachments-wrangler';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
@@ -30,7 +30,7 @@ export const healthRecordTransfers = async (req, res) => {
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    const mhsJsonEhrCoreMessage = await retrieveEhrFromRepo(currentEhrUrl);
+    const mhsJsonEhrCoreMessage = await retrieveMessageFromRepo(currentEhrUrl);
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     const hl7Ehr = mhsJsonEhrCoreMessage.payload;
     if (!hl7Ehr) {

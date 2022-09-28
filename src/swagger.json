@@ -428,7 +428,7 @@
             "attributes": {
               "type": "object",
               "properties": {
-                "odsCode": {
+                "recipientOdsCode": {
                   "type": "string"
                 },
                 "ehrRequestId": {

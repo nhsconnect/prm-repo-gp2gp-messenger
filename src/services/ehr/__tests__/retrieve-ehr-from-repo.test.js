@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { retrieveEhrFromRepo } from '../retrieve-ehr-from-repo';
+import { retrieveMessageFromRepo } from '../retrieve-message-from-repo';
 import { logError, logInfo } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
@@ -12,7 +12,7 @@ describe('retrieveEhrFromRepo', () => {
     const expectedEhrExtract = 'content of the ehr extract';
 
     nock(host).get('/conversationId/messageId').reply(200, expectedEhrExtract);
-    const ehrExtract = await retrieveEhrFromRepo(ehrUrl);
+    const ehrExtract = await retrieveMessageFromRepo(ehrUrl);
 
     expect(ehrExtract).toEqual(expectedEhrExtract);
     expect(logInfo).toHaveBeenCalledWith('Successfully retrieved EHR from repo');
@@ -24,7 +24,7 @@ describe('retrieveEhrFromRepo', () => {
 
     let error = null;
     try {
-      await retrieveEhrFromRepo(ehrUrl);
+      await retrieveMessageFromRepo(ehrUrl);
     } catch (err) {
       error = err;
     }

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { logError, logInfo } from '../../middleware/logging';
 
-export const retrieveEhrFromRepo = async ehrUrl => {
+export const retrieveMessageFromRepo = async messageUrl => {
   try {
-    const res = await axios.get(ehrUrl);
+    const res = await axios.get(messageUrl);
     logInfo('Successfully retrieved EHR from repo');
     return res.data;
   } catch (err) {
