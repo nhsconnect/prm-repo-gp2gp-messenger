@@ -1,8 +1,8 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../app';
-import {pdsRetrivealQueryResponseSuccess} from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
+import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
 
 function templateLargeEhrFragmentMessage(messageId) {
   return `<COPC_IN000001UK01 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:hl7-org:v3">
@@ -61,7 +61,7 @@ function templateLargeEhrFragmentMessage(messageId) {
                 </subject>
         </ControlActEvent>
 </COPC_IN000001UK01>
-`
+`;
 }
 
 describe('app integration', () => {
@@ -158,9 +158,14 @@ describe('app integration', () => {
         })
         .reply(200, mockFhirResponse);
 
-      const ehrMessageDownloadScope = nock(host).get(ehrMessageDownloadUrl).reply(200, ehrExtractStoredInS3(ehrExtract));
-      const mhsOutboundScope = nock(host, {reqheaders: mhsOutboundHeaders})
-        .post('/mhs-outbound', matchPayloadInteractionIdAndReplacedValues('RCMR_IN030000UK06', ehrRequestId))
+      const ehrMessageDownloadScope = nock(host)
+        .get(ehrMessageDownloadUrl)
+        .reply(200, ehrExtractStoredInS3(ehrExtract));
+      const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
+        .post(
+          '/mhs-outbound',
+          matchPayloadInteractionIdAndReplacedValues('RCMR_IN030000UK06', ehrRequestId)
+        )
         .reply(202);
 
       request(app)
@@ -178,14 +183,15 @@ describe('app integration', () => {
 
     it('should send correctly updated large ehr fragment message to mhs outbound', done => {
       const serviceId = 'urn:nhs:names:services:gp2gp:COPC_IN000001UK01';
-      const ehrFragment = templateLargeEhrFragmentMessage(`${'7AADADC8-B06A-41BA-8BBE-B1AE4C0CBCAD'}`);
+      const ehrFragment = templateLargeEhrFragmentMessage(
+        `${'7AADADC8-B06A-41BA-8BBE-B1AE4C0CBCAD'}`
+      );
       const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
       const expectedMhsOutboundHeaders = {
         'Content-Type': 'application/json',
         'Interaction-ID': COPC_INTERACTION_ID,
         'Correlation-Id': conversationId,
         'from-asid': '200000001161',
-
 
         'Ods-Code': recipientOdsCode,
 
@@ -261,7 +267,6 @@ describe('app integration', () => {
         })
         .end(done);
     });
-
   });
 
   describe('GET /patient-demographics', () => {
@@ -275,7 +280,7 @@ describe('app integration', () => {
         'wait-for-response': false
       };
 
-      const mhsOutboundScope = nock(host, {reqheaders: mhsOutboundHeaders})
+      const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
         .post('/mhs-outbound')
         .reply(200, pdsRetrivealQueryResponseSuccess);
 

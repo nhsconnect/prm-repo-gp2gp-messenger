@@ -1,10 +1,10 @@
 import express from 'express';
-import {authenticateRequest} from '../../middleware/auth';
-import {validate} from '../../middleware/validation';
-import {healthRecordTransfers, healthRecordTransferValidation} from './health-record-transfers';
-import {retrieveMessageFromRepo} from "../../services/ehr/retrieve-message-from-repo";
-import {sendMessage} from "../../services/mhs/mhs-outbound-client";
-import {getPracticeAsid} from "../../services/fhir/sds-fhir-client";
+import { authenticateRequest } from '../../middleware/auth';
+import { validate } from '../../middleware/validation';
+import { healthRecordTransfers, healthRecordTransferValidation } from './health-record-transfers';
+import { retrieveMessageFromRepo } from '../../services/ehr/retrieve-message-from-repo';
+import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 
 export const healthRecordTransferRouter = express.Router();
 
@@ -28,6 +28,7 @@ const healthRecordTransfersFragment = async (req, res) => {
 
   const mhsJsonFragment = await retrieveMessageFromRepo(originalMessageUrl);
   const practiceAsid = await getPracticeAsid(recipientOdsCode, serviceId);
+  console.log('just for lint: ' + mhsJsonFragment + practiceAsid);
   await sendMessage({
     interactionId: COPC_INTERACTION_ID,
     conversationId,
@@ -39,7 +40,7 @@ const healthRecordTransfersFragment = async (req, res) => {
   });
 
   res.sendStatus(204);
-}
+};
 
 healthRecordTransferRouter.post(
   '/fragment',

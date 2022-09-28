@@ -11,7 +11,7 @@ jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/mhs/mhs-attachments-wrangler');
-jest.mock('../../../services/ehr/retrieve-ehr-from-repo');
+jest.mock('../../../services/ehr/retrieve-message-from-repo');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' }
