@@ -1,9 +1,18 @@
 import { updateFragmentForSending } from '../update-fragment-for-sending';
 import { XmlParser } from '../../xml-parser/xml-parser';
 import { templateLargeEhrFragmentMessage } from '../../../../templates/message-fragment-payload-template';
+import { initializeConfig } from '../../../../config';
+
+jest.mock('../../../../config');
 
 describe('updateFragmentForSending', () => {
-  xit('WIP should update ehr fragment payload with new sender, recipient and message identifiers', async () => {
+  it('WIP should update ehr fragment payload with new sender, recipient and message identifiers', async () => {
+    const sendingAsid = 'new-sending-asid';
+    const sendingOdsCode = 'new-sending-ods-code';
+    initializeConfig.mockReturnValue({
+      deductionsAsid: sendingAsid,
+      deductionsOdsCode: sendingOdsCode
+    });
     const originalFragment = templateLargeEhrFragmentMessage(
       'old-message-id',
       'old-recipient-asid',
@@ -15,18 +24,16 @@ describe('updateFragmentForSending', () => {
     const expectedFragment = templateLargeEhrFragmentMessage(
       'new-message-id',
       'new-recipient-asid',
-      'new-sending-asid',
+      sendingAsid,
       'new-recipient-ods-code',
-      'new-sending-ods-code'
+      sendingOdsCode
     );
 
     const newFragment = await updateFragmentForSending(
       originalFragment,
       'new-message-id',
       'new-recipient-asid',
-      'new-sending-asid',
-      'new-recipient-ods-code',
-      'new-sending-ods-code'
+      'new-recipient-ods-code'
     );
 
     const parsedNewFragment = await new XmlParser().parse(newFragment);

@@ -23,9 +23,9 @@ export const healthRecordTransfersFragment = async (req, res) => {
     odsCode: recipientOdsCode,
     message: updateFragmentForSending(
       mhsJsonFragment.payload,
+      messageId,
       recipientAsid,
-      conversationId,
-      messageId
+      recipientOdsCode
     ),
     attachments: [],
     external_attachments: []

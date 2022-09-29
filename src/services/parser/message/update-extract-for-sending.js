@@ -40,9 +40,6 @@ export const updateExtractForSending = async (
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
 
-  rcmrUK06.ControlActEvent = controlActEvent;
-  parsedEhr.RCMR_IN030000UK06 = rcmrUK06;
-
   const builder = new Builder();
   return builder.buildObject(parsedEhr);
 };
