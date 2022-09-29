@@ -36,7 +36,7 @@ export const healthRecordTransfers = async (req, res) => {
     if (!hl7Ehr) {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
-    const ehrMessageWithEhrRequestId = await updateExtractForSending(
+    const updatedEhrCorePayload = await updateExtractForSending(
       hl7Ehr,
       ehrRequestId,
       practiceAsid,
@@ -49,7 +49,7 @@ export const healthRecordTransfers = async (req, res) => {
       interactionId,
       conversationId,
       odsCode,
-      message: ehrMessageWithEhrRequestId,
+      message: updatedEhrCorePayload,
       ...attachmentsInfo
     });
 
