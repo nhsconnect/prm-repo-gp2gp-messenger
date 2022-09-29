@@ -11,7 +11,7 @@ jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/mhs/mhs-attachments-wrangler');
-jest.mock('../../../services/ehr/retrieve-message-from-repo');
+jest.mock('../../../services/ehr/download-from-url.js');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' }
@@ -64,7 +64,7 @@ describe('healthRecordTransfers', () => {
       .send(mockBody);
 
     expect(res.status).toBe(204);
-    expect(downloadFromUrl).toHaveBeenCalledWith(currentEhrUrl);
+    expect(downloadFromUrl).toHaveBeenCalledWith(currentEhrUrl, 'EHR core from repo');
     expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
     expect(updateExtractForSending).toHaveBeenCalledWith(
       payload,
