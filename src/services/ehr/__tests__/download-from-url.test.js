@@ -4,7 +4,7 @@ import { logError, logInfo } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 
-describe('retrieveEhrFromRepo', () => {
+describe('downloadFromUrl', () => {
   const host = 'http://localhost';
   const ehrUrl = `${host}/conversationId/messageId`;
 
@@ -15,7 +15,7 @@ describe('retrieveEhrFromRepo', () => {
     const ehrExtract = await downloadFromUrl(ehrUrl, 'EHR core from repo');
 
     expect(ehrExtract).toEqual(expectedEhrExtract);
-    expect(logInfo).toHaveBeenCalledWith('Successfully retrieved EHR from repo');
+    expect(logInfo).toHaveBeenCalledWith('Successfully retrieved EHR core from repo');
   });
 
   it('should log and throw error when axios returns 503', async () => {
@@ -24,12 +24,12 @@ describe('retrieveEhrFromRepo', () => {
 
     let error = null;
     try {
-      await downloadFromUrl(ehrUrl, 'EHR core from repo');
+      await downloadFromUrl(ehrUrl, 'EHR fragment from repo');
     } catch (err) {
       error = err;
     }
 
     expect(error).not.toBeNull();
-    expect(logError).toHaveBeenCalledWith(`Cannot retrieve EHR extract from repo`, expectedError);
+    expect(logError).toHaveBeenCalledWith(`Cannot retrieve EHR fragment from repo`, expectedError);
   });
 });
