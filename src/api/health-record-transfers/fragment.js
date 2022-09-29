@@ -21,9 +21,8 @@ export const healthRecordTransfersFragment = async (req, res) => {
     interactionId: COPC_INTERACTION_ID,
     conversationId,
     odsCode: recipientOdsCode,
-    // WIP stubbed
     message: updateFragmentForSending(
-      COPC_INTERACTION_ID,
+      mhsJsonFragment.payload,
       recipientAsid,
       conversationId,
       messageId
