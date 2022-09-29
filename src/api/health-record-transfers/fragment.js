@@ -1,4 +1,4 @@
-import { retrieveMessageFromRepo } from '../../services/ehr/retrieve-message-from-repo';
+import { downloadFromUrl } from '../../services/ehr/download-from-url';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { updateFragmentForSending } from '../../services/parser/message/update-fragment-for-sending';
@@ -14,7 +14,7 @@ export const healthRecordTransfersFragment = async (req, res) => {
     links: { originalMessageUrl }
   } = data;
 
-  const mhsJsonFragment = await retrieveMessageFromRepo(originalMessageUrl);
+  const mhsJsonFragment = await downloadFromUrl(originalMessageUrl, 'EHR fragment from repo');
   const recipientAsid = await getPracticeAsid(recipientOdsCode, serviceId);
   console.log('just for lint: ' + mhsJsonFragment + recipientAsid);
   await sendMessage({
