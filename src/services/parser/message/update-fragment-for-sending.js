@@ -27,6 +27,8 @@ export async function updateFragmentForSending(
   );
   copcUK01.id['$'].root = messageId;
 
+  copcUK01.ControlActEvent.author1.AgentSystemSDS.agentSystemSDS.id['$'].extension = recipientAsid;
+
   let payloadInformation = copcUK01.ControlActEvent.subject.PayloadInformation;
   payloadInformation.id['$'].root = messageId;
   payloadInformation.pertinentInformation.pertinentPayloadBody.id['$'].root = messageId;

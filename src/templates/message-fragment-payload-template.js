@@ -28,7 +28,8 @@ export function templateLargeEhrFragmentMessage(
                         <AgentSystemSDS type="RoleHeir" classCode="AGNT">
                                 <agentSystemSDS type="Device" classCode="DEV" determinerCode="INSTANCE">
 <!--                                Unsure whether below value is supposed to be sending or receiving practice asid ?? -->
-                                        <id root="1.2.826.0.1285.0.2.0.107" extension="200000001613"/> 
+<!--                                Updated to use recipient asid for testing, as emis example seemed to us the receiving practice asid-->
+                                        <id root="1.2.826.0.1285.0.2.0.107" extension="${recipientAsid}"/> 
                                 </agentSystemSDS>
                         </AgentSystemSDS>
                 </author1>
