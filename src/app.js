@@ -9,12 +9,18 @@ import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
+import helmet from 'helmet';
 
 const app = express();
 
 app.use(express.json());
 app.use(requestLogger(options));
-
+// Sets "Strict-Transport-Security: max-age=31536000; includeSubDomains"
+app.use(
+  helmet.hsts({
+    maxAge: 31536000
+  })
+);
 app.use('/health', logging.middleware, healthCheck);
 app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
