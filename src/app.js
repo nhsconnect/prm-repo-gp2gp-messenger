@@ -10,6 +10,7 @@ import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
 import helmet from 'helmet';
+import { rateLimiter } from './middleware/rateLimiter';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
     maxAge: 31536000
   })
 );
+app.use(rateLimiter);
 app.use('/health', logging.middleware, healthCheck);
 app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
