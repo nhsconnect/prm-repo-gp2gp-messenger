@@ -20,8 +20,7 @@
     "build": "babel src -d build --ignore '**/*.test.js' --ignore '**/__mocks__/*' --ignore '**/__tests__/*' && cp src/*.json build",
     "start": "node build/server.js",
     "start:local": "babel-node -r dotenv/config src/server.js",
-    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js",
-    "preinstall": "npm install npm-force-resolutions && npm-force-resolutions"
+    "start:nodemon": "nodemon --exec babel-node -r dotenv/config src/server.js"
   },
   "repository": {
     "type": "git",
@@ -63,7 +62,7 @@
     "nock": "^13.2.4",
     "npm-force-resolutions": "0.0.10",
     "prettier": "^2.6.0",
-    "supertest": "^6.2.2"
+    "supertest": "^6.3.3"
   },
   "jest": {
     "testPathIgnorePatterns": [
@@ -73,8 +72,7 @@
     "clearMocks": true,
     "automock": false
   },
-  "resolutions": {
-    "ansi-regex": "5.0.1",
+  "overrides": {
     "glob-parent": "^6.0.1"
   }
 }
