@@ -6,6 +6,7 @@ import healthCheck from './api/health';
 import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographicsRouter } from './api/patient-demographics';
 import { healthRecordTransferRouter } from './api/health-record-transfers';
+import { ehrOutRouter } from './api/ehr-out';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
@@ -27,6 +28,7 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographicsRouter);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
 app.use('/health-record-transfers', logging.middleware, healthRecordTransferRouter);
+app.use('/ehr-out-transfers', logging.middleware, ehrOutRouter);
 
 app.use(errorLogger(options));
 
