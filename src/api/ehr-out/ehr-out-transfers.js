@@ -3,7 +3,7 @@ import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { logInfo } from '../../middleware/logging';
 
 export const ehrOutTransfers = async (req, res) => {
-  const { conversationId, odsCode, ehrRequestId, coreEhr } = req.body;
+  const { conversationId, odsCode } = req.body;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   setCurrentSpanAttributes({ conversationId });
