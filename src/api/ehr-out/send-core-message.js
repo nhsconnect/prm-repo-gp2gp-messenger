@@ -3,6 +3,8 @@ import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { logError, logInfo } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
+import { wrangleAttachments } from '../../services/mhs/mhs-attachments-wrangler';
+import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 
 export const sendCoreMessage = async (req, res) => {
   const { conversationId, odsCode, coreEhr, ehrRequestId } = req.body;
@@ -21,7 +23,22 @@ export const sendCoreMessage = async (req, res) => {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
 
-    await updateExtractForSending(hl7Ehr, ehrRequestId, receivingPracticeAsid, repositoryOdsCode);
+    const updatedEhrCorePayload = await updateExtractForSending(
+      hl7Ehr,
+      ehrRequestId,
+      receivingPracticeAsid,
+      repositoryOdsCode
+    );
+
+    const attachmentsInfo = await wrangleAttachments(coreEhr);
+
+    await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message: updatedEhrCorePayload,
+      ...attachmentsInfo
+    });
 
     res.sendStatus(204);
   } catch (err) {

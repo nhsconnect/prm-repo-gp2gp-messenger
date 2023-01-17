@@ -1,11 +1,15 @@
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
+import { wrangleAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
 import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
+import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
+jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../services/mhs/mhs-attachments-wrangler');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' },
@@ -56,8 +60,13 @@ describe('ehr out transfers', () => {
     });
   });
 
-  it('should invoke updateExtractForSending', async () => {
+  it('should invoke updateExtractForSending, wrangleAttachments and sendMessage', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
+    updateExtractForSending.mockReturnValue('payload');
+    wrangleAttachments.mockReturnValue({
+      attachments: 'outboundAttachments',
+      external_attachments: 'outboundExternalAttachments'
+    });
 
     const res = await request(app)
       .post('/ehr-out-transfers/core')
@@ -70,6 +79,15 @@ describe('ehr out transfers', () => {
       'mockAsid',
       'test_odscode'
     );
+    expect(wrangleAttachments).toHaveBeenCalledWith(mockRequestBody.coreEhr);
+    expect(sendMessage).toHaveBeenCalledWith({
+      conversationId: '00000000-0000-4000-a000-000000000000',
+      interactionId: 'RCMR_IN030000UK06',
+      message: 'payload',
+      odsCode: 'testOdsCode',
+      attachments: 'outboundAttachments',
+      external_attachments: 'outboundExternalAttachments'
+    });
     expect(res.status).toBe(204);
   });
 });
