@@ -1,8 +1,8 @@
 import express from 'express';
 import { authenticateRequest } from '../../middleware/auth';
 import { validate } from '../../middleware/validation';
-import { ehrOutTransfers } from './ehr-out-transfers';
+import { sendCoreMessage } from './send-core-message';
 
 export const ehrOutRouter = express.Router();
 
-ehrOutRouter.post('/core', authenticateRequest, validate, ehrOutTransfers);
+ehrOutRouter.post('/core', authenticateRequest, validate, sendCoreMessage);

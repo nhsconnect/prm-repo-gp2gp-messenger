@@ -2,7 +2,7 @@ import { setCurrentSpanAttributes } from '../../config/tracing';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { logError, logInfo } from '../../middleware/logging';
 
-export const ehrOutTransfers = async (req, res) => {
+export const sendCoreMessage = async (req, res) => {
   const { conversationId, odsCode, coreEhr } = req.body;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
