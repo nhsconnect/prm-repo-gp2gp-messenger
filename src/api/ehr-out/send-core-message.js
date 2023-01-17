@@ -1,22 +1,27 @@
 import { setCurrentSpanAttributes } from '../../config/tracing';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { logError, logInfo } from '../../middleware/logging';
+import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
+import { initializeConfig } from '../../config/index';
 
 export const sendCoreMessage = async (req, res) => {
-  const { conversationId, odsCode, coreEhr } = req.body;
+  const { conversationId, odsCode, coreEhr, ehrRequestId } = req.body;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
+  const repositoryOdsCode = initializeConfig().deductionsOdsCode;
   setCurrentSpanAttributes({ conversationId });
 
   try {
     logInfo('Getting asid for practice');
-    const asid = await getPracticeAsid(odsCode, serviceId); //need to rename the variable to receivingPracticeAcid
-    logInfo('Got asid for practice and its ' + asid);
+    const receivingPracticeAsid = await getPracticeAsid(odsCode, serviceId);
+    logInfo('Got asid for practice and its ' + receivingPracticeAsid);
 
     const hl7Ehr = coreEhr.payload;
     if (!hl7Ehr) {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
+
+    await updateExtractForSending(hl7Ehr, ehrRequestId, receivingPracticeAsid, repositoryOdsCode);
 
     res.sendStatus(204);
   } catch (err) {

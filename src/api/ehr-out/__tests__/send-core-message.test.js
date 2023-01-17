@@ -1,12 +1,15 @@
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
+import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
 import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
 
 jest.mock('../../../services/fhir/sds-fhir-client');
+jest.mock('../../../services/parser/message/update-extract-for-sending');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
-    consumerApiKeys: { TEST_USER: 'correct-key' }
+    consumerApiKeys: { TEST_USER: 'correct-key' },
+    deductionsOdsCode: 'test_odscode'
   })
 }));
 
@@ -51,5 +54,22 @@ describe('ehr out transfers', () => {
         'Could not extract payload from the JSON message stored in EHR Repo'
       ]
     });
+  });
+
+  it('should invoke updateExtractForSending', async () => {
+    getPracticeAsid.mockReturnValue('mockAsid');
+
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(mockRequestBody);
+
+    expect(updateExtractForSending).toHaveBeenCalledWith(
+      mockRequestBody.coreEhr.payload,
+      mockRequestBody.ehrRequestId,
+      'mockAsid',
+      'test_odscode'
+    );
+    expect(res.status).toBe(204);
   });
 });
