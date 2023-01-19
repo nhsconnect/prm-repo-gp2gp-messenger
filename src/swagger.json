@@ -527,7 +527,7 @@
           "format": "uuid"
         },
         "coreEhr": {
-          "type": "string"
+          "type": "object"
         }
       }
     },
