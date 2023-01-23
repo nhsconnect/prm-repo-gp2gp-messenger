@@ -3,7 +3,6 @@ import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { logError, logInfo } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
-import { wrangleAttachments } from '../../services/mhs/mhs-attachments-wrangler';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 
 export const sendCoreMessage = async (req, res) => {
@@ -30,14 +29,13 @@ export const sendCoreMessage = async (req, res) => {
       repositoryOdsCode
     );
 
-    const attachmentsInfo = await wrangleAttachments(coreEhr);
-
     await sendMessage({
       interactionId,
       conversationId,
       odsCode,
       message: updatedEhrCorePayload,
-      ...attachmentsInfo
+      attachments: coreEhr.attachments,
+      external_attachments: coreEhr.external_attachments
     });
 
     res.sendStatus(204);

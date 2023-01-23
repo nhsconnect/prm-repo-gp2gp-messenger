@@ -1,6 +1,5 @@
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { updateExtractForSending } from '../../../services/parser/message/update-extract-for-sending';
-import { wrangleAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
 import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
@@ -30,7 +29,12 @@ const mockRequestBody = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
   ehrRequestId: 'ehrRequestId',
-  coreEhr: { ebXML: 'ebxml', payload: 'payload', attachments: [] }
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [{ message_id: '5678' }]
+  }
 };
 describe('ehr out transfers', () => {
   const odsCode = 'testOdsCode';
@@ -63,10 +67,6 @@ describe('ehr out transfers', () => {
   it('should invoke updateExtractForSending, wrangleAttachments and sendMessage', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
-    wrangleAttachments.mockReturnValue({
-      attachments: 'outboundAttachments',
-      external_attachments: 'outboundExternalAttachments'
-    });
 
     const res = await request(app)
       .post('/ehr-out-transfers/core')
@@ -79,14 +79,14 @@ describe('ehr out transfers', () => {
       'mockAsid',
       'test_odscode'
     );
-    expect(wrangleAttachments).toHaveBeenCalledWith(mockRequestBody.coreEhr);
+
     expect(sendMessage).toHaveBeenCalledWith({
       conversationId: '00000000-0000-4000-a000-000000000000',
       interactionId: 'RCMR_IN030000UK06',
       message: 'payload',
       odsCode: 'testOdsCode',
-      attachments: 'outboundAttachments',
-      external_attachments: 'outboundExternalAttachments'
+      attachments: mockRequestBody.coreEhr.attachments,
+      external_attachments: mockRequestBody.coreEhr.external_attachments
     });
     expect(res.status).toBe(204);
   });
