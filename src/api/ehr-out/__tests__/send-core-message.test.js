@@ -18,6 +18,20 @@ jest.mock('../../../config', () => ({
 
 const authKey = 'correct-key';
 const conversationId = v4();
+
+const externalAttachmentWithTitle = {
+  message_id: '5678',
+  document_id: 'CA0F6E92-592E-4491-9ECC-2E0C77C90BE4',
+  title: 'title',
+  description: 'description'
+};
+
+const externalAttachmentWithoutTitle = {
+  message_id: '5678',
+  document_id: 'CA0F6E92-592E-4491-9ECC-2E0C77C90BE4',
+  description: 'description'
+};
+
 const mockRequestBodyWithMissingPayload = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
@@ -33,7 +47,7 @@ const mockRequestBody = {
     ebXML: 'ebxml',
     payload: 'payload',
     attachments: [[{ message_id: '1234' }]],
-    external_attachments: [{ message_id: '5678' }]
+    external_attachments: [externalAttachmentWithTitle, externalAttachmentWithTitle]
   }
 };
 
@@ -45,7 +59,7 @@ const invalidConversationId = {
     ebXML: 'ebxml',
     payload: 'payload',
     attachments: [[{ message_id: '1234' }]],
-    external_attachments: [{ message_id: '5678' }]
+    external_attachments: [externalAttachmentWithTitle]
   }
 };
 const invalidEhrRequestId = {
@@ -127,7 +141,27 @@ describe('ehr out transfers', () => {
       message: 'payload',
       odsCode: 'testOdsCode',
       attachments: mockRequestBody.coreEhr.attachments,
-      external_attachments: mockRequestBody.coreEhr.external_attachments
+      external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
+    });
+    expect(res.status).toBe(204);
+  });
+
+  it('should remove title field from all external attachments', async () => {
+    getPracticeAsid.mockReturnValue('mockAsid');
+    updateExtractForSending.mockReturnValue('payload');
+
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(mockRequestBody);
+
+    expect(sendMessage).toHaveBeenCalledWith({
+      conversationId: '00000000-0000-4000-a000-000000000000',
+      interactionId: 'RCMR_IN030000UK06',
+      message: 'payload',
+      odsCode: 'testOdsCode',
+      attachments: mockRequestBody.coreEhr.attachments,
+      external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
     });
     expect(res.status).toBe(204);
   });

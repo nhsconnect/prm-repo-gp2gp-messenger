@@ -42,7 +42,7 @@ export const sendCoreMessage = async (req, res) => {
       odsCode,
       message: updatedEhrCorePayload,
       attachments: coreEhr.attachments,
-      external_attachments: coreEhr.external_attachments
+      external_attachments: removeTitleFromExternalAttachments(coreEhr.external_attachments)
     });
 
     res.sendStatus(204);
@@ -51,3 +51,13 @@ export const sendCoreMessage = async (req, res) => {
     res.status(503).send({ errors: ['Sending EHR Extract failed', err.message] });
   }
 };
+
+function removeTitleFromExternalAttachments(externalAttachments) {
+  // for(const externalAttachment in externalAttachments){
+  //     delete externalAttachment['title']
+  // }
+  return externalAttachments.map(externalAttachment => {
+    delete externalAttachment.title;
+    return externalAttachment;
+  });
+}
