@@ -21,14 +21,14 @@ const conversationId = v4();
 const mockRequestBodyWithMissingPayload = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
-  ehrRequestId: 'ehrRequestId',
+  ehrRequestId: v4(),
   coreEhr: 'core ehr stored in ehr repository'
 };
 
 const mockRequestBody = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
-  ehrRequestId: 'ehrRequestId',
+  ehrRequestId: v4(),
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -36,6 +36,47 @@ const mockRequestBody = {
     external_attachments: [{ message_id: '5678' }]
   }
 };
+
+const invalidConversationId = {
+  conversationId: 'not-uuid',
+  ehrRequestId: v4(),
+  odsCode: 'ods-code',
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [{ message_id: '5678' }]
+  }
+};
+const invalidEhrRequestId = {
+  conversationId: v4(),
+  ehrRequestId: 'ehrRequestId',
+  odsCode: 'ods-code',
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [{ message_id: '5678' }]
+  }
+};
+
+const missingCoreEhr = {
+  conversationId: v4(),
+  ehrRequestId: v4(),
+  odsCode: 'ods-code'
+};
+
+const missingOdsCode = {
+  conversationId: v4(),
+  ehrRequestId: v4(),
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [{ message_id: '5678' }]
+  }
+};
+
 describe('ehr out transfers', () => {
   const odsCode = 'testOdsCode';
   const interactionId = 'RCMR_IN030000UK06';
@@ -89,5 +130,65 @@ describe('ehr out transfers', () => {
       external_attachments: mockRequestBody.coreEhr.external_attachments
     });
     expect(res.status).toBe(204);
+  });
+
+  it('should return an error when conversationId is not a uuid', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(invalidConversationId);
+    expect(res.status).toEqual(422);
+    expect(res.body).toEqual({
+      errors: [
+        {
+          conversationId: "'conversationId' provided is not of type UUID"
+        }
+      ]
+    });
+  });
+
+  it('should return an error when ehrRequestId is not a uuid', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(invalidEhrRequestId);
+    expect(res.status).toEqual(422);
+    expect(res.body).toEqual({
+      errors: [
+        {
+          ehrRequestId: 'Provided value is not of type UUID'
+        }
+      ]
+    });
+  });
+
+  it('should return an error when request body has no odsCode', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(missingOdsCode);
+    expect(res.status).toEqual(422);
+    expect(res.body).toEqual({
+      errors: [
+        {
+          odsCode: 'Value has not been provided'
+        }
+      ]
+    });
+  });
+
+  it('should return an error when request body has no coreEhr', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(missingCoreEhr);
+    expect(res.status).toEqual(422);
+    expect(res.body).toEqual({
+      errors: [
+        {
+          coreEhr: 'Value has not been provided'
+        }
+      ]
+    });
   });
 });

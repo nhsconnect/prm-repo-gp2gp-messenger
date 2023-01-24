@@ -4,7 +4,14 @@ import { logError, logInfo } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { body } from 'express-validator';
 
+export const sendCoreMessageValidation = [
+  body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),
+  body('odsCode').notEmpty().withMessage('Value has not been provided'),
+  body('ehrRequestId').isUUID().withMessage('Provided value is not of type UUID'),
+  body('coreEhr').notEmpty().withMessage('Value has not been provided')
+];
 export const sendCoreMessage = async (req, res) => {
   const { conversationId, odsCode, coreEhr, ehrRequestId } = req.body;
   const interactionId = 'RCMR_IN030000UK06';
