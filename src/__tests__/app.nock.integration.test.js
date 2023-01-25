@@ -15,7 +15,7 @@ describe('app integration', () => {
     process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
     process.env.SDS_FHIR_URL = 'http://localhost/sds-fhir';
     process.env.SDS_FHIR_API_KEY = 'key';
-    process.env.SPINE_ODS_CODE = 'YES';
+    process.env.SPINE_ORG_CODE = 'YES';
     process.env.PDS_ASID = '928942012545';
   });
 
@@ -214,8 +214,8 @@ describe('app integration', () => {
   });
 
   describe('GET /patient-demographics', () => {
-    // TODO fix test config, Ods code not set
-    it.skip('should return a 200 status code for /patient-demographics/:nhsNumber', done => {
+
+    it('should return a 200 status code for /patient-demographics/:nhsNumber', done => {
       const mhsOutboundHeaders = {
         'Content-Type': 'application/json',
         'Interaction-ID': 'QUPA_IN000008UK02',

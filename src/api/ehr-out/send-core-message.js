@@ -1,6 +1,6 @@
 import { setCurrentSpanAttributes } from '../../config/tracing';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
-import { logError, logInfo } from '../../middleware/logging';
+import { logError } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
@@ -14,23 +14,21 @@ export const sendCoreMessageValidation = [
 ];
 export const sendCoreMessage = async (req, res) => {
   const { conversationId, odsCode, coreEhr, ehrRequestId } = req.body;
+  const { payload, attachments, external_attachments } = coreEhr;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const repositoryOdsCode = initializeConfig().deductionsOdsCode;
   setCurrentSpanAttributes({ conversationId });
 
   try {
-    logInfo('Getting asid for practice');
     const receivingPracticeAsid = await getPracticeAsid(odsCode, serviceId);
-    logInfo('Got asid for practice and its ' + receivingPracticeAsid);
 
-    const hl7Ehr = coreEhr.payload;
-    if (!hl7Ehr) {
+    if (!payload) {
       throw new Error('Could not extract payload from the JSON message stored in EHR Repo');
     }
 
     const updatedEhrCorePayload = await updateExtractForSending(
-      hl7Ehr,
+      payload,
       ehrRequestId,
       receivingPracticeAsid,
       repositoryOdsCode
@@ -41,8 +39,8 @@ export const sendCoreMessage = async (req, res) => {
       conversationId,
       odsCode,
       message: updatedEhrCorePayload,
-      attachments: coreEhr.attachments,
-      external_attachments: removeTitleFromExternalAttachments(coreEhr.external_attachments)
+      attachments,
+      external_attachments: removeTitleFromExternalAttachments(external_attachments)
     });
 
     res.sendStatus(204);
@@ -53,9 +51,6 @@ export const sendCoreMessage = async (req, res) => {
 };
 
 function removeTitleFromExternalAttachments(externalAttachments) {
-  // for(const externalAttachment in externalAttachments){
-  //     delete externalAttachment['title']
-  // }
   return externalAttachments.map(externalAttachment => {
     delete externalAttachment.title;
     return externalAttachment;
