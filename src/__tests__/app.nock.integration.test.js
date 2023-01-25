@@ -214,7 +214,6 @@ describe('app integration', () => {
   });
 
   describe('GET /patient-demographics', () => {
-
     it('should return a 200 status code for /patient-demographics/:nhsNumber', done => {
       const mhsOutboundHeaders = {
         'Content-Type': 'application/json',
