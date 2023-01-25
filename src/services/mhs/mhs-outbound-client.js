@@ -40,17 +40,13 @@ export const sendMessage = async ({
   };
 
   if (attachments) {
-    logInfo('Sending attachments to MHS');
+    logInfo(`Sending ${attachments.length} attachments to MHS`);
     axiosBody.attachments = attachments;
-  } else {
-    logInfo('Sending no attachments to MHS');
   }
 
   if (external_attachments) {
-    logInfo('Sending external_attachments to MHS');
+    logInfo(`Sending ${external_attachments.length} external_attachments to MHS`);
     axiosBody.external_attachments = external_attachments;
-  } else {
-    logInfo('Sending no external_attachments to MHS');
   }
 
   const headers = {
