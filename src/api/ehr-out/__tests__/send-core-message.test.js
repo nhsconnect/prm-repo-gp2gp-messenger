@@ -4,6 +4,7 @@ import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
+import { removeTitleFromExternalAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
 
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
@@ -122,6 +123,10 @@ describe('ehr out transfers', () => {
   it('should invoke updateExtractForSending, wrangleAttachments and sendMessage', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
+    removeTitleFromExternalAttachments.mockReturnValue([
+      externalAttachmentWithoutTitle,
+      externalAttachmentWithoutTitle
+    ]);
 
     const res = await request(app)
       .post('/ehr-out-transfers/core')
@@ -149,6 +154,10 @@ describe('ehr out transfers', () => {
   it('should remove title field from all external attachments', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
+    removeTitleFromExternalAttachments.mockReturnValue([
+      externalAttachmentWithoutTitle,
+      externalAttachmentWithoutTitle
+    ]);
 
     const res = await request(app)
       .post('/ehr-out-transfers/core')

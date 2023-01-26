@@ -4,6 +4,7 @@ import { logError } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { removeTitleFromExternalAttachments } from '../../services/mhs/mhs-attachments-wrangler';
 import { body } from 'express-validator';
 
 export const sendCoreMessageValidation = [
@@ -49,10 +50,3 @@ export const sendCoreMessage = async (req, res) => {
     res.status(503).send({ errors: ['Sending EHR Extract failed', err.message] });
   }
 };
-
-function removeTitleFromExternalAttachments(externalAttachments) {
-  return externalAttachments.map(externalAttachment => {
-    delete externalAttachment.title;
-    return externalAttachment;
-  });
-}

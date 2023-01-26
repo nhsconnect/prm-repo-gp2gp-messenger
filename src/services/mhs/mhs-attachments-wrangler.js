@@ -102,3 +102,10 @@ function base64Encoded(raw) {
   let buff = new Buffer(raw);
   return buff.toString('base64');
 }
+
+export function removeTitleFromExternalAttachments(externalAttachments) {
+  return externalAttachments.map(externalAttachment => {
+    delete externalAttachment.title;
+    return externalAttachment;
+  });
+}
