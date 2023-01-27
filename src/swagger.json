@@ -274,7 +274,7 @@
             "in": "body",
             "name": "EHR core details",
             "schema": {
-              "$ref": "#/definitions/EhrOutTransfer"
+              "$ref": "#/definitions/EhrOutTransferCore"
             }
           }
         ],
@@ -401,6 +401,50 @@
           }
         }
       }
+    },
+    "/ehr-out-transfers/fragment": {
+      "post": {
+        "tags": ["ehr-out-transfers"],
+        "summary": "Sends EHR fragment from Repository to MHS",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "EHR fragment details",
+            "schema": {
+              "$ref": "#/definitions/EhrOutTransferFragment"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Message sent OK"
+          },
+          "401": {
+            "description": "Authorization header missing"
+          },
+          "403": {
+            "description": "Authorization key invalid"
+          },
+          "422": {
+            "description": "Validation failed",
+            "schema": {
+              "$ref": "#/definitions/ValidationErrors"
+            }
+          },
+          "503": {
+            "description": "Downstream error when sending message",
+            "schema": {
+              "$ref": "#/definitions/ServerError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
     }
   },
   "securityDefinitions": {
@@ -511,7 +555,7 @@
         }
       }
     },
-    "EhrOutTransfer": {
+    "EhrOutTransferCore": {
       "type": "object",
       "description": "Sends core health record message to MHS",
       "properties": {
@@ -527,6 +571,26 @@
           "format": "uuid"
         },
         "coreEhr": {
+          "type": "object"
+        }
+      }
+    },
+    "EhrOutTransferFragment": {
+      "type": "object",
+      "description": "Sends fragment health record message to MHS",
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "odsCode": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "fragmentMessage": {
           "type": "object"
         }
       }
