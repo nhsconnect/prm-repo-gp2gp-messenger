@@ -1,5 +1,9 @@
 import { body } from 'express-validator';
 import { setCurrentSpanAttributes } from '../../config/tracing';
+import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
+import { updateFragmentForSending } from '../../services/parser/message/update-fragment-for-sending';
+import { sendMessage } from '../../services/mhs/mhs-outbound-client';
+import { removeTitleFromExternalAttachments } from '../../services/mhs/mhs-attachments-wrangler';
 
 export const sendFragmentMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),
@@ -9,9 +13,25 @@ export const sendFragmentMessageValidation = [
 ];
 
 export const sendFragmentMessage = async (req, res) => {
-  // const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
-  // const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
-  const { conversationId } = req.body;
+  const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
+  const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
+  const { conversationId, odsCode, messageId, fragmentMessage } = req.body;
   setCurrentSpanAttributes(conversationId);
+
+  const receivingPractiseAsid = getPracticeAsid(odsCode, serviceId);
+  const updatedFragmentPayload = await updateFragmentForSending(
+    fragmentMessage.payload,
+    messageId,
+    receivingPractiseAsid,
+    odsCode
+  );
+  await sendMessage({
+    interactionId: COPC_INTERACTION_ID,
+    conversationId,
+    odsCode: odsCode,
+    message: updatedFragmentPayload,
+    attachments: fragmentMessage.attachments,
+    external_attachments: removeTitleFromExternalAttachments(fragmentMessage.external_attachments)
+  });
   res.sendStatus(204);
 };
