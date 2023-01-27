@@ -41,6 +41,17 @@ const mockRequestBody = {
     external_attachments: [externalAttachmentWithTitle, externalAttachmentWithTitle]
   }
 };
+
+const mockRequestBodyWithMissingPayload = {
+  conversationId: conversationId,
+  odsCode: 'testOdsCode',
+  messageId: v4(),
+  fragmentMessage: {
+    ebXML: 'ebxml',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [externalAttachmentWithTitle, externalAttachmentWithTitle]
+  }
+};
 describe('ehr out transfers send fragment message', () => {
   const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
@@ -83,6 +94,21 @@ describe('ehr out transfers send fragment message', () => {
       message: 'anything',
       attachments: mockRequestBody.fragmentMessage.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
+    });
+  });
+
+  it('should return status code 500 and log error message when encounters exception', async () => {
+    getPracticeAsid.mockImplementation(() => {
+      throw new Error('No ASID entries found for ODS code');
+    });
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send(mockRequestBodyWithMissingPayload);
+
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({
+      errors: ['Sending Ehr fragment message failed', 'No ASID entries found for ODS code']
     });
   });
 });
