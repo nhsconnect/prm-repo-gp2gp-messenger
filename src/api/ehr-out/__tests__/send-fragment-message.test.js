@@ -111,4 +111,42 @@ describe('ehr out transfers send fragment message', () => {
       errors: ['Sending Ehr fragment message failed', 'No ASID entries found for ODS code']
     });
   });
+
+  it('should give error response code 422 when conversation id is not a uuid', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send({ ...mockRequestBody, conversationId: 'non-uuid' });
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual({
+      errors: [{ conversationId: "'conversationId' provided is not of type UUID" }]
+    });
+  });
+
+  it('should give error response code 422 when messageId id is not a uuid', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send({ ...mockRequestBody, messageId: 'non-uuid' });
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual({ errors: [{ messageId: 'Provided value is not of type UUID' }] });
+  });
+
+  it('should give error response code 422 when ods code is empty', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send({ ...mockRequestBody, odsCode: '' });
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual({ errors: [{ odsCode: 'Value has not been provided' }] });
+  });
+
+  it('should give error response code 422 when fragment Message is empty', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send({ ...mockRequestBody, fragmentMessage: '' });
+    expect(res.status).toBe(422);
+    expect(res.body).toEqual({ errors: [{ fragmentMessage: 'Value has not been provided' }] });
+  });
 });
