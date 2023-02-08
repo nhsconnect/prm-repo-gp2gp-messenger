@@ -14,6 +14,10 @@ data "aws_ssm_parameter" "private_subnets" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/deductions-private-private-subnets"
 }
 
+data "aws_ssm_parameter" "alb_access_logs_bucket" {
+  name = "/repo/${var.environment}/output/prm-deductions-infra/alb-access-logs-s3-bucket-id"
+}
+
 resource "aws_alb" "alb-internal" {
   name            = "${var.environment}-${var.component_name}-alb-int"
   subnets         = split(",", data.aws_ssm_parameter.private_subnets.value)
@@ -27,6 +31,12 @@ resource "aws_alb" "alb-internal" {
   internal = true
   drop_invalid_header_fields = true
   enable_deletion_protection = true
+
+  access_logs {
+    bucket = data.aws_ssm_parameter.alb_access_logs_bucket.value
+    enabled = true
+    prefix = "gp2gp-messenger/"
+  }
 
   tags = {
     CreatedBy   = var.repo_name
@@ -234,7 +244,6 @@ data "aws_ssm_parameter" "vpn_sg_id" {
 data "aws_ssm_parameter" "gocd_sg_id" {
   name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }
-
 
 resource "aws_cloudwatch_metric_alarm" "alb_http_errors" {
   alarm_name                = "${var.repo_name} 5xx errors"
