@@ -4,7 +4,7 @@ import app from '../../../app';
 import { buildEhrAcknowledgementPayload } from '../../../templates/generate-ehr-acknowledgement';
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { logInfo, logError } from '../../../middleware/logging';
+import { logError, logInfo } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
@@ -15,14 +15,19 @@ jest.mock('../../../services/mhs/mhs-outbound-client');
 function expectValidationErrors(
   nhsNumber,
   conversationId,
-  messageId,
+  ehrCoreMessageId,
   odsCode,
   repositoryAsid,
   errors
 ) {
   return request(app)
     .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-    .send({ conversationId, messageId, odsCode, repositoryAsid })
+    .send({
+      conversationId,
+      messageId: ehrCoreMessageId,
+      odsCode,
+      repositoryAsid
+    })
     .expect(422)
     .expect(res => {
       expect(res.body).toEqual({
@@ -33,7 +38,7 @@ function expectValidationErrors(
 
 describe('POST /health-record-requests/{conversation-id}/acknowledgement', () => {
   const conversationId = uuidv4();
-  const messageId = uuidv1();
+  const ehrCoreMessageId = uuidv1();
   const nhsNumber = '1234567890';
   const odsCode = 'B1234';
   const interactionId = 'MCCI_IN010000UK13';
@@ -41,24 +46,34 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const message = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
-  const buildAckMessageInputValues = {
+  const ackParametersUsingConversationIdAsAckMessageId = {
     acknowledgementMessageId: conversationId,
     receivingAsid: practiceAsid,
     sendingAsid: repositoryAsid,
-    acknowledgedMessageId: messageId
+    acknowledgedMessageId: ehrCoreMessageId
   };
 
   describe('sendEhrAcknowledgement', () => {
     getPracticeAsid.mockReturnValue(practiceAsid);
 
-    it('should return a 204 status code', done => {
+    it('should return a 204 status code and build ack with necessary params including using conversationID as unique ackMessageId and sent EHR core messageId as acknowledged message id', done => {
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode, repositoryAsid })
+        .send({
+          conversationId,
+          messageId: ehrCoreMessageId,
+          odsCode,
+          repositoryAsid
+        })
         .expect(204)
         .expect(() => {
           expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith({
+            acknowledgementMessageId: conversationId,
+            receivingAsid: practiceAsid,
+            sendingAsid: repositoryAsid,
+            acknowledgedMessageId: ehrCoreMessageId
+          });
         })
         .end(done);
     });
@@ -75,9 +90,14 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
       buildEhrAcknowledgementPayload.mockReturnValue(message);
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode, repositoryAsid })
+        .send({
+          conversationId,
+          messageId: ehrCoreMessageId,
+          odsCode,
+          repositoryAsid
+        })
         .expect(() => {
-          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(ackParametersUsingConversationIdAsAckMessageId);
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
@@ -94,10 +114,15 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
       sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
       await request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
-        .send({ conversationId, messageId, odsCode, repositoryAsid })
+        .send({
+          conversationId,
+          messageId: ehrCoreMessageId,
+          odsCode,
+          repositoryAsid
+        })
         .expect(503)
         .expect(() => {
-          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(ackParametersUsingConversationIdAsAckMessageId);
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
@@ -112,27 +137,27 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   describe('acknowledgementValidation', () => {
     it('should return a 422 status code when nhsNumber is not 10 digits', done => {
       const invalidNhsNumber = '123';
-      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, repositoryAsid, [
+      expectValidationErrors(invalidNhsNumber, conversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
         { nhsNumber: "'nhsNumber' provided is not 10 digits" }
       ]).end(done);
     });
 
     it('should return a 422 status code when nhsNumber is not numeric', done => {
       const invalidNhsNumber = 'notNumeric';
-      expectValidationErrors(invalidNhsNumber, conversationId, messageId, odsCode, repositoryAsid, [
+      expectValidationErrors(invalidNhsNumber, conversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
         { nhsNumber: "'nhsNumber' provided is not numeric" }
       ]).end(done);
     });
 
     it('should return a 422 status code when conversationId is not type uuid', done => {
       const invalidConversationId = '123';
-      expectValidationErrors(nhsNumber, invalidConversationId, messageId, odsCode, repositoryAsid, [
+      expectValidationErrors(nhsNumber, invalidConversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
         { conversationId: "'conversationId' provided is not of type UUIDv4" }
       ]).end(done);
     });
 
     it('should return a 422 status code when conversationId is not provided', done => {
-      expectValidationErrors(nhsNumber, null, messageId, odsCode, repositoryAsid, [
+      expectValidationErrors(nhsNumber, null, ehrCoreMessageId, odsCode, repositoryAsid, [
         { conversationId: "'conversationId' provided is not of type UUIDv4" },
         { conversationId: "'conversationId' is not configured" }
       ]).end(done);
@@ -153,13 +178,13 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     });
 
     it('should return a 422 status code when odsCode is not provided', done => {
-      expectValidationErrors(nhsNumber, conversationId, messageId, null, repositoryAsid, [
+      expectValidationErrors(nhsNumber, conversationId, ehrCoreMessageId, null, repositoryAsid, [
         { odsCode: "'odsCode' is not configured" }
       ]).end(done);
     });
 
     it('should return a 422 status code when repositoryAsid is not provided', done => {
-      expectValidationErrors(nhsNumber, conversationId, messageId, odsCode, null, [
+      expectValidationErrors(nhsNumber, conversationId, ehrCoreMessageId, odsCode, null, [
         { repositoryAsid: "'repositoryAsid' is not configured" }
       ]).end(done);
     });
