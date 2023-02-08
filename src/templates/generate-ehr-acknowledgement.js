@@ -1,18 +1,24 @@
 import dateFormat from 'dateformat';
 
-export const buildEhrAcknowledgement = ({
-  conversationId,
+export const buildEhrAcknowledgementPayload = ({
+  acknowledgementMessageId,
   receivingAsid,
   sendingAsid,
-  messageId
+  acknowledgedMessageId
 }) => {
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-  return ackMessageTemplate({ conversationId, timestamp, receivingAsid, sendingAsid, messageId });
+  return ackMessageTemplate({
+    acknowledgementMessageId: acknowledgementMessageId.toUpperCase(),
+    timestamp,
+    receivingAsid,
+    sendingAsid,
+    acknowledgedMessageId: acknowledgedMessageId.toUpperCase()
+  });
 };
 
-const ackMessageTemplate = ({ conversationId, timestamp, receivingAsid, sendingAsid, messageId }) =>
+const ackMessageTemplate = ({ acknowledgementMessageId, timestamp, receivingAsid, sendingAsid, acknowledgedMessageId }) =>
   `<MCCI_IN010000UK13 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ..SchemasMCCI_IN010000UK13.xsd">
-   <id root="${conversationId}" />
+   <id root="${acknowledgementMessageId}" />
    <creationTime value="${timestamp}" />
    <versionCode code="V3NPfIT4.2.00" />
    <interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="MCCI_IN010000UK13" />
@@ -21,7 +27,7 @@ const ackMessageTemplate = ({ conversationId, timestamp, receivingAsid, sendingA
    <acceptAckCode code="NE" />
    <acknowledgement typeCode="AA">
       <messageRef>
-         <id root="${messageId}" />
+         <id root="${acknowledgedMessageId}" />
       </messageRef>
    </acknowledgement>
    <communicationFunctionRcv typeCode="RCV">

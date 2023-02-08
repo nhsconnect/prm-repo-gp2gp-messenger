@@ -1,6 +1,6 @@
 import { updateFragmentForSending } from '../update-fragment-for-sending';
 import { XmlParser } from '../../xml-parser/xml-parser';
-import { templateLargeEhrFragmentMessage } from '../../../../templates/message-fragment-payload-template';
+import { templateLargeEhrFragmentTestMessage } from '../../../../templates/__tests__/test-fragment-message-payload-template';
 import { initializeConfig } from '../../../../config';
 
 jest.mock('../../../../config');
@@ -13,7 +13,7 @@ describe('updateFragmentForSending', () => {
       deductionsAsid: sendingAsid,
       deductionsOdsCode: sendingOdsCode
     });
-    const originalFragment = templateLargeEhrFragmentMessage(
+    const originalFragment = templateLargeEhrFragmentTestMessage(
       'old-message-id',
       'old-recipient-asid',
       'old-sending-asid',
@@ -21,7 +21,7 @@ describe('updateFragmentForSending', () => {
       'old-sending-ods-code'
     );
 
-    const expectedFragment = templateLargeEhrFragmentMessage(
+    const expectedFragment = templateLargeEhrFragmentTestMessage(
       'new-message-id',
       'new-recipient-asid',
       sendingAsid,

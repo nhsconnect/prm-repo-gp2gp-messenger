@@ -1,4 +1,6 @@
-export function templateLargeEhrFragmentMessage(
+test.skip('workaround for non-test file', () => 1)
+
+export function templateLargeEhrFragmentTestMessage(
   messageId,
   recipientAsid,
   sendingAsid,

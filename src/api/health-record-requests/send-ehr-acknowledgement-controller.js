@@ -1,5 +1,5 @@
 import { body, param } from 'express-validator';
-import { buildEhrAcknowledgement } from '../../templates/generate-ehr-acknowledgement';
+import { buildEhrAcknowledgementPayload } from '../../templates/generate-ehr-acknowledgement';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
 import { logInfo, logError } from '../../middleware/logging';
 import { setCurrentSpanAttributes } from '../../config/tracing';
@@ -26,11 +26,11 @@ export const sendEhrAcknowledgement = async (req, res) => {
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     setCurrentSpanAttributes({ conversationId, messageId });
 
-    const message = await buildEhrAcknowledgement({
-      conversationId,
+    const message = await buildEhrAcknowledgementPayload({
+      acknowledgementMessageId: conversationId,
       receivingAsid: practiceAsid,
       sendingAsid: repositoryAsid,
-      messageId
+      acknowledgedMessageId: messageId
     });
     await sendMessage({ interactionId, conversationId, odsCode, message });
     logInfo('Acknowledgement sent to MHS');

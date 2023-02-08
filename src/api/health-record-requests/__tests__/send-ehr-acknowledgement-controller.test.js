@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { v1 as uuidv1, v4 as uuidv4 } from 'uuid';
 import app from '../../../app';
-import { buildEhrAcknowledgement } from '../../../templates/generate-ehr-acknowledgement';
+import { buildEhrAcknowledgementPayload } from '../../../templates/generate-ehr-acknowledgement';
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { logInfo, logError } from '../../../middleware/logging';
@@ -42,10 +42,10 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
   const buildAckMessageInputValues = {
-    conversationId,
+    acknowledgementMessageId: conversationId,
     receivingAsid: practiceAsid,
     sendingAsid: repositoryAsid,
-    messageId
+    acknowledgedMessageId: messageId
   };
 
   describe('sendEhrAcknowledgement', () => {
@@ -58,7 +58,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         .expect(204)
         .expect(() => {
           expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
         })
         .end(done);
     });
@@ -72,12 +72,12 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     });
 
     it('should send acknowledgement to mhs with correct values', done => {
-      buildEhrAcknowledgement.mockReturnValue(message);
+      buildEhrAcknowledgementPayload.mockReturnValue(message);
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(() => {
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
@@ -90,14 +90,14 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
     });
 
     it('should return a 503 when cannot send acknowledgement to mhs', async () => {
-      buildEhrAcknowledgement.mockReturnValue(message);
+      buildEhrAcknowledgementPayload.mockReturnValue(message);
       sendMessage.mockRejectedValue('cannot send acknowledgement to mhs');
       await request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({ conversationId, messageId, odsCode, repositoryAsid })
         .expect(503)
         .expect(() => {
-          expect(buildEhrAcknowledgement).toHaveBeenCalledWith(buildAckMessageInputValues);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(buildAckMessageInputValues);
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,

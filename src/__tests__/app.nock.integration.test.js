@@ -3,7 +3,7 @@ import nock from 'nock';
 import request from 'supertest';
 import app from '../app';
 import { pdsRetrivealQueryResponseSuccess } from '../services/pds/__tests__/data/pds-retrieval-query-response-success';
-import { templateLargeEhrFragmentMessage } from '../templates/message-fragment-payload-template';
+import { templateLargeEhrFragmentTestMessage } from '../templates/__tests__/test-fragment-message-payload-template';
 
 const DEFAULT_SENDING_ASID = '200000001161';
 describe('app integration', () => {
@@ -122,7 +122,7 @@ describe('app integration', () => {
       it('should send correctly updated large ehr fragment message to mhs outbound', done => {
         const serviceId = 'urn:nhs:names:services:gp2gp:COPC_IN000001UK01';
         let recipientAsid = '2000000THEM';
-        const originalEhrFragmentPayload = templateLargeEhrFragmentMessage(
+        const originalEhrFragmentPayload = templateLargeEhrFragmentTestMessage(
           '7AADADC8-B06A-41BA-8BBE-B1AE4C0CBCAD',
           'some-old-recipient-asid',
           'some-old-sender-asid',
