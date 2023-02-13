@@ -1,3 +1,4 @@
+
 {
   "swagger": "2.0",
   "info": {
@@ -629,16 +630,20 @@
       "description": "Sends EHR acknowledgement",
       "properties": {
         "conversationId": {
-          "type": "string"
+          "type": "string",
+          "description": "Conversation ID of EHR out transfer"
         },
         "messageId": {
-          "type": "string"
+          "type": "string",
+          "description": "The ID of the EHR core extract message being acknowledged"
         },
         "odsCode": {
-          "type": "string"
+          "type": "string",
+          "description": "The ODS code of the entity the EHR has been received from"
         },
         "repositoryAsid": {
-          "type": "string"
+          "type": "string",
+          "description": "The ASID code of the Repository instance that has received the EHR"
         }
       }
     },
