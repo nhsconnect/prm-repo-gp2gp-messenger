@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid';
 import dateFormat from 'dateformat';
 import testData from './testData.json';
 import { buildEhrAcknowledgementPayload } from '../generate-ehr-acknowledgement';
@@ -21,8 +20,8 @@ describe('generateEhrAcknowledgement', () => {
 
     const ack = (await new XmlParser().parse(payload)).data.MCCI_IN010000UK13;
 
-    expect(ack.id).toEqual({ root: parameters.acknowledgementMessageId })
-    expect(ack.acknowledgement.messageRef.id).toEqual({ root: parameters.acknowledgedMessageId })
+    expect(ack.id).toEqual({ root: parameters.acknowledgementMessageId });
+    expect(ack.acknowledgement.messageRef.id).toEqual({ root: parameters.acknowledgedMessageId });
 
     expect(payload).toContain(parameters.sendingAsid);
     expect(payload).toContain(parameters.receivingAsid);
@@ -40,7 +39,9 @@ describe('generateEhrAcknowledgement', () => {
 
     const ack = (await parse(payload)).data.MCCI_IN010000UK13;
 
-    expect(ack.id).toEqual({ root: parameters.acknowledgementMessageId.toUpperCase() })
-    expect(ack.acknowledgement.messageRef.id).toEqual({ root: parameters.acknowledgedMessageId.toUpperCase() })
+    expect(ack.id).toEqual({ root: parameters.acknowledgementMessageId.toUpperCase() });
+    expect(ack.acknowledgement.messageRef.id).toEqual({
+      root: parameters.acknowledgedMessageId.toUpperCase()
+    });
   });
 });

@@ -97,7 +97,9 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
           repositoryAsid
         })
         .expect(() => {
-          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(ackParametersUsingConversationIdAsAckMessageId);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(
+            ackParametersUsingConversationIdAsAckMessageId
+          );
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
@@ -122,7 +124,9 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
         })
         .expect(503)
         .expect(() => {
-          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(ackParametersUsingConversationIdAsAckMessageId);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith(
+            ackParametersUsingConversationIdAsAckMessageId
+          );
           expect(sendMessage).toHaveBeenCalledWith({
             interactionId,
             conversationId,
@@ -137,23 +141,38 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   describe('acknowledgementValidation', () => {
     it('should return a 422 status code when nhsNumber is not 10 digits', done => {
       const invalidNhsNumber = '123';
-      expectValidationErrors(invalidNhsNumber, conversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
-        { nhsNumber: "'nhsNumber' provided is not 10 digits" }
-      ]).end(done);
+      expectValidationErrors(
+        invalidNhsNumber,
+        conversationId,
+        ehrCoreMessageId,
+        odsCode,
+        repositoryAsid,
+        [{ nhsNumber: "'nhsNumber' provided is not 10 digits" }]
+      ).end(done);
     });
 
     it('should return a 422 status code when nhsNumber is not numeric', done => {
       const invalidNhsNumber = 'notNumeric';
-      expectValidationErrors(invalidNhsNumber, conversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
-        { nhsNumber: "'nhsNumber' provided is not numeric" }
-      ]).end(done);
+      expectValidationErrors(
+        invalidNhsNumber,
+        conversationId,
+        ehrCoreMessageId,
+        odsCode,
+        repositoryAsid,
+        [{ nhsNumber: "'nhsNumber' provided is not numeric" }]
+      ).end(done);
     });
 
     it('should return a 422 status code when conversationId is not type uuid', done => {
       const invalidConversationId = '123';
-      expectValidationErrors(nhsNumber, invalidConversationId, ehrCoreMessageId, odsCode, repositoryAsid, [
-        { conversationId: "'conversationId' provided is not of type UUIDv4" }
-      ]).end(done);
+      expectValidationErrors(
+        nhsNumber,
+        invalidConversationId,
+        ehrCoreMessageId,
+        odsCode,
+        repositoryAsid,
+        [{ conversationId: "'conversationId' provided is not of type UUIDv4" }]
+      ).end(done);
     });
 
     it('should return a 422 status code when conversationId is not provided', done => {

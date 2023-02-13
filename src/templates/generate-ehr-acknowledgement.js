@@ -16,7 +16,13 @@ export const buildEhrAcknowledgementPayload = ({
   });
 };
 
-const ackMessageTemplate = ({ acknowledgementMessageId, timestamp, receivingAsid, sendingAsid, acknowledgedMessageId }) =>
+const ackMessageTemplate = ({
+  acknowledgementMessageId,
+  timestamp,
+  receivingAsid,
+  sendingAsid,
+  acknowledgedMessageId
+}) =>
   `<MCCI_IN010000UK13 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ..SchemasMCCI_IN010000UK13.xsd">
    <id root="${acknowledgementMessageId}" />
    <creationTime value="${timestamp}" />
