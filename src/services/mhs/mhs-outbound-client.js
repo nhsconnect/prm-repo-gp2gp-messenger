@@ -4,6 +4,7 @@ import { logError, logInfo } from '../../middleware/logging';
 import { sendToQueue } from '../sqs/sqs-client';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
+
   if (interactionId && conversationId && message) return;
 
   const errorMessages = [];
@@ -33,7 +34,12 @@ export const sendMessage = async ({
   external_attachments = null
 } = {}) => {
   const config = initializeConfig();
-  validateInputs({ interactionId, conversationId, odsCode, message });
+
+  // If conversationId or messageId is defined, convert to uppercase in order to meet gp2gp specification.
+  conversationId = conversationId?.toUpperCase();
+  messageId = messageId?.toUpperCase();
+
+  validateInputs({ interactionId, conversationId, message });
 
   const axiosBody = {
     payload: stripXMLMessage(message)

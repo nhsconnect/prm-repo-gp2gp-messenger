@@ -14,7 +14,7 @@ jest.mock('../../../config');
 jest.mock('../../../middleware/logging');
 jest.mock('../../sqs/sqs-client');
 
-const conversationId = uuid();
+const conversationId = uuid().toUpperCase();
 const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
 const interactionId = 'RCMR_IN030000UK06';
 const odsCode = 'YES';
@@ -214,6 +214,52 @@ describe('mhs-outbound-client', () => {
       }
     });
   });
+
+  it('should convert conversationId to upper case', async () => {
+    // Given
+    const lowerCaseConversationId = '517e7157-ed12-4d14-9bbe-1f3b6d485a4c';
+    const upperCaseConversationId = lowerCaseConversationId.toUpperCase();
+
+    // When
+    const response = await sendMessage({
+      interactionId,
+      conversationId: lowerCaseConversationId,
+      odsCode,
+      message
+    });
+
+    // Then
+    expect(axios.post).toBeCalledWith(url, axiosBody, {
+      headers: {
+        ...axiosHeaders.headers,
+        'Correlation-Id': upperCaseConversationId
+      }
+    });
+  });
+
+  it('should convert messageId to upper case', async () => {
+    // Given
+    const lowerCaseMessageId = '724bf695-98a1-493c-8c23-e7aee841c804';
+    const upperCaseMessageId = lowerCaseMessageId.toUpperCase();
+
+    // When
+    const response = await sendMessage({
+      interactionId,
+      conversationId,
+      odsCode,
+      message,
+      messageId: lowerCaseMessageId
+    });
+
+    // Then
+    expect(axios.post).toBeCalledWith(url, axiosBody, {
+      headers: {
+        ...axiosHeaders.headers,
+        'Message-Id': upperCaseMessageId
+      }
+    });
+  });
+
 
   it('should send request and response to observability queue', async () => {
     const response = await sendMessage({
