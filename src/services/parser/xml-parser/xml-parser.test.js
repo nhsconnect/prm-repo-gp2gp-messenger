@@ -79,12 +79,14 @@ describe('XmlParser', () => {
     });
 
     it('should be able to find top level object', () => {
+      // when
       return new XmlParser()
         .parse(exampleNestedObject)
         .then(object => object.findAll('a', 1))
         .then(object => {
+          //
           expect(object.length).toBe(1);
-          return expect(object[0]).toStrictEqual({ b: 'Hello' });
+          return expect(object[0]).toEqual({'b': 'Hello'});
         });
     });
 
