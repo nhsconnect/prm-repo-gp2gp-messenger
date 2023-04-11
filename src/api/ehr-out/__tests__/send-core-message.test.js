@@ -92,6 +92,17 @@ const missingOdsCode = {
   }
 };
 
+const missingExternalAttachmentsInCore = {
+  conversationId: v4(),
+  ehrRequestId: v4(),
+  odsCode: 'ods-code',
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]]
+  }
+};
+
 describe('ehr out transfers', () => {
   const odsCode = 'testOdsCode';
   const interactionId = 'RCMR_IN030000UK06';
@@ -123,7 +134,7 @@ describe('ehr out transfers', () => {
   it('should invoke updateExtractForSending, wrangleAttachments and sendMessage', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
-    removeTitleFromExternalAttachments.mockReturnValue([
+    removeTitleFromExternalAttachments.mockReturnValueOnce([
       externalAttachmentWithoutTitle,
       externalAttachmentWithoutTitle
     ]);
@@ -154,7 +165,7 @@ describe('ehr out transfers', () => {
   it('should remove title field from all external attachments', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
-    removeTitleFromExternalAttachments.mockReturnValue([
+    removeTitleFromExternalAttachments.mockReturnValueOnce([
       externalAttachmentWithoutTitle,
       externalAttachmentWithoutTitle
     ]);
@@ -233,5 +244,35 @@ describe('ehr out transfers', () => {
         }
       ]
     });
+  });
+
+  it('should be able to send core message without external attachments', async () => {
+    // given
+    const expectedMessage = {
+      conversationId: missingExternalAttachmentsInCore.conversationId,
+      interactionId: 'RCMR_IN030000UK06',
+      message: 'payload',
+      odsCode: missingExternalAttachmentsInCore.odsCode,
+      attachments: missingExternalAttachmentsInCore.coreEhr.attachments,
+      external_attachments: null
+    }
+    removeTitleFromExternalAttachments.mockImplementationOnce((externalAttachments) =>
+      externalAttachments.map(externalAttachment => {
+        delete externalAttachment.title;
+        return externalAttachment
+      })
+    )
+
+    // when
+    updateExtractForSending.mockReturnValue('payload');
+
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(missingExternalAttachmentsInCore);
+
+    // then
+    expect(res.status).toEqual(204);
+    expect(sendMessage).toHaveBeenCalledWith(expectedMessage);
   });
 });
