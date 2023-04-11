@@ -86,7 +86,7 @@ describe('XmlParser', () => {
         .then(object => {
           //
           expect(object.length).toBe(1);
-          return expect(object[0]).toEqual({'b': 'Hello'});
+          return expect(object[0]).toEqual({ b: 'Hello' });
         });
     });
 
