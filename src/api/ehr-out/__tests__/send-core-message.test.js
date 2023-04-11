@@ -256,12 +256,6 @@ describe('ehr out transfers', () => {
       attachments: missingExternalAttachmentsInCore.coreEhr.attachments,
       external_attachments: null
     }
-    removeTitleFromExternalAttachments.mockImplementationOnce((externalAttachments) =>
-      externalAttachments.map(externalAttachment => {
-        delete externalAttachment.title;
-        return externalAttachment
-      })
-    )
 
     // when
     updateExtractForSending.mockReturnValue('payload');
@@ -274,5 +268,6 @@ describe('ehr out transfers', () => {
     // then
     expect(res.status).toEqual(204);
     expect(sendMessage).toHaveBeenCalledWith(expectedMessage);
+    expect(removeTitleFromExternalAttachments).not.toHaveBeenCalled();
   });
 });

@@ -4,6 +4,7 @@ import app from '../../../app';
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { updateFragmentForSending } from '../../../services/parser/message/update-fragment-for-sending';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
+import {removeTitleFromExternalAttachments} from "../../../services/mhs/mhs-attachments-wrangler";
 
 jest.mock('../../../services/mhs/mhs-outbound-client');
 jest.mock('../../../services/parser/message/update-fragment-for-sending');
@@ -14,6 +15,9 @@ jest.mock('../../../config', () => ({
     deductionsOdsCode: 'test_odscode'
   })
 }));
+jest.mock("../../../services/mhs/mhs-attachments-wrangler");
+
+
 
 const authKey = 'correct-key';
 const conversationId = v4();
@@ -52,6 +56,18 @@ const mockRequestBodyWithMissingPayload = {
     external_attachments: [externalAttachmentWithTitle, externalAttachmentWithTitle]
   }
 };
+
+const missingExternalAttachmentsInFragment = {
+  conversationId: v4(),
+  messageId: v4(),
+  odsCode: 'ods-code',
+  fragmentMessage: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]]
+  }
+};
+
 describe('ehr out transfers send fragment message', () => {
   const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
@@ -149,4 +165,29 @@ describe('ehr out transfers send fragment message', () => {
     expect(res.status).toBe(422);
     expect(res.body).toEqual({ errors: [{ fragmentMessage: 'Value has not been provided' }] });
   });
+
+  it('should be able to send fragment message without external attachments', async() => {
+    // given
+    const expectedMessage = {
+      interactionId: COPC_INTERACTION_ID,
+      conversationId: missingExternalAttachmentsInFragment.conversationId,
+      odsCode: missingExternalAttachmentsInFragment.odsCode,
+      message: 'anything',
+      attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
+      external_attachments: null
+    }
+
+    updateFragmentForSending.mockReturnValue(expectedMessage.message);
+
+    // when
+    const res = await request(app)
+      .post('/ehr-out-transfers/fragment')
+      .set('Authorization', authKey)
+      .send(missingExternalAttachmentsInFragment);
+
+    // then
+    expect(res.status).toEqual(204);
+    expect(sendMessage).toHaveBeenCalledWith(expectedMessage);
+    expect(removeTitleFromExternalAttachments).not.toHaveBeenCalled();
+  })
 });
