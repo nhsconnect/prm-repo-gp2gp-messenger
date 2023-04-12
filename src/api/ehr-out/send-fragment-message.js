@@ -34,7 +34,9 @@ export const sendFragmentMessage = async (req, res) => {
       odsCode: odsCode,
       message: updatedFragmentPayload,
       attachments: fragmentMessage.attachments,
-      external_attachments: removeTitleFromExternalAttachments(fragmentMessage.external_attachments)
+      external_attachments: fragmentMessage.external_attachments
+        ? removeTitleFromExternalAttachments(fragmentMessage.external_attachments)
+        : null
     });
 
     res.sendStatus(204);
