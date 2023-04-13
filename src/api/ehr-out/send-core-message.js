@@ -42,8 +42,8 @@ export const sendCoreMessage = async (req, res) => {
       message: updatedEhrCorePayload,
       attachments,
       external_attachments: external_attachments
-         ? removeTitleFromExternalAttachments(external_attachments)
-         : null
+        ? removeTitleFromExternalAttachments(external_attachments)
+        : null
     });
 
     res.sendStatus(204);
