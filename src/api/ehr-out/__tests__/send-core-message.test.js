@@ -255,7 +255,7 @@ describe('ehr out transfers', () => {
       odsCode: missingExternalAttachmentsInCore.odsCode,
       attachments: missingExternalAttachmentsInCore.coreEhr.attachments,
       external_attachments: null
-    }
+    };
 
     // when
     updateExtractForSending.mockReturnValue('payload');
