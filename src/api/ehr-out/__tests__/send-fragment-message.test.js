@@ -114,6 +114,7 @@ describe('ehr out transfers send fragment message', () => {
       conversationId: mockRequestBody.conversationId,
       odsCode: mockRequestBody.odsCode,
       message: 'anything',
+      messageId: mockRequestBody.messageId,
       attachments: mockRequestBody.fragmentMessage.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
     });
@@ -179,6 +180,7 @@ describe('ehr out transfers send fragment message', () => {
       interactionId: COPC_INTERACTION_ID,
       conversationId: missingExternalAttachmentsInFragment.conversationId,
       odsCode: missingExternalAttachmentsInFragment.odsCode,
+      messageId: missingExternalAttachmentsInFragment.messageId,
       message: 'anything',
       attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
       external_attachments: null

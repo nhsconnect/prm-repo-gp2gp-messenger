@@ -33,6 +33,7 @@ export const sendFragmentMessage = async (req, res) => {
       conversationId,
       odsCode: odsCode,
       message: updatedFragmentPayload,
+      messageId,
       attachments: fragmentMessage.attachments,
       external_attachments: fragmentMessage.external_attachments
         ? removeTitleFromExternalAttachments(fragmentMessage.external_attachments)
