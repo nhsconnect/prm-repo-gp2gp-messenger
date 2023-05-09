@@ -15,7 +15,7 @@ import helmet from 'helmet';
 const app = express();
 
 app.disable('x-powered-by');
-app.use(express.json());
+app.use(express.json({ limit: '6mb' }));
 app.use(requestLogger(options));
 // Sets "Strict-Transport-Security: max-age=31536000; includeSubDomains"
 app.use(
