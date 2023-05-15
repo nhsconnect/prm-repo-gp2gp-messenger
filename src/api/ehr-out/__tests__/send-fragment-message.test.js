@@ -4,9 +4,13 @@ import app from '../../../app';
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { updateFragmentForSending } from '../../../services/parser/message/update-fragment-for-sending';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { removeTitleFromExternalAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
+import {
+  removeTitleFromExternalAttachments,
+  wrangleAttachments
+} from '../../../services/mhs/mhs-attachments-wrangler';
 
 jest.mock('../../../services/mhs/mhs-outbound-client');
+jest.mock('../../../services/mhs/mhs-attachments-wrangler');
 jest.mock('../../../services/parser/message/update-fragment-for-sending');
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../config', () => ({
@@ -70,6 +74,11 @@ describe('ehr out transfers send fragment message', () => {
   const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
   const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
   it('should call getPracticeAsid', async () => {
+    wrangleAttachments.mockReturnValue({
+      attachments: [[{ message_id: '1234' }]],
+      external_attachments: [{ message_id: '5678' }]
+    });
+
     const res = await request(app)
       .post('/ehr-out-transfers/fragment')
       .set('Authorization', authKey)
@@ -79,7 +88,13 @@ describe('ehr out transfers send fragment message', () => {
   });
 
   it('should call updateFragmentForSending', async () => {
-    getPracticeAsid.mockReturnValueOnce('mock-asid');
+    getPracticeAsid.mockReturnValue('mock-asid');
+
+    wrangleAttachments.mockReturnValue({
+      attachments: [[{ message_id: '1234' }]],
+      external_attachments: [{ message_id: '5678' }]
+    });
+
     const res = await request(app)
       .post('/ehr-out-transfers/fragment')
       .set('Authorization', authKey)
@@ -94,10 +109,16 @@ describe('ehr out transfers send fragment message', () => {
   });
 
   it('should call sendMessage', async () => {
-    // when
-    getPracticeAsid.mockReturnValueOnce('mock-asid');
-    updateFragmentForSending.mockReturnValueOnce('anything');
-    removeTitleFromExternalAttachments.mockReturnValueOnce([
+    getPracticeAsid.mockReturnValue('mock-asid');
+
+    updateFragmentForSending.mockReturnValue('anything');
+
+    wrangleAttachments.mockReturnValue({
+      attachments: [[{ message_id: '1234' }]],
+      external_attachments: [{ message_id: '5678' }]
+    });
+
+    removeTitleFromExternalAttachments.mockReturnValue([
       externalAttachmentWithoutTitle,
       externalAttachmentWithoutTitle
     ]);

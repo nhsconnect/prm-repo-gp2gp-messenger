@@ -4,7 +4,8 @@ import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import { removeTitleFromExternalAttachments } from '../../../services/mhs/mhs-attachments-wrangler';
+import {removeTitleFromExternalAttachments, wrangleAttachments} from '../../../services/mhs/mhs-attachments-wrangler';
+import {jsonEhrExtract} from "../../health-record-transfers/__tests__/data/json-formatted-ehr-example";
 
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
@@ -108,6 +109,11 @@ describe('ehr out transfers', () => {
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   it('should call getPracticeAsid', async () => {
+    wrangleAttachments.mockReturnValue({
+      attachments: [[{ message_id: '1234' }]],
+      external_attachments: [{ message_id: '5678' }]
+    });
+
     const res = await request(app)
       .post('/ehr-out-transfers/core')
       .set('Authorization', authKey)
@@ -134,7 +140,11 @@ describe('ehr out transfers', () => {
   it('should invoke updateExtractForSending, wrangleAttachments and sendMessage', async () => {
     getPracticeAsid.mockReturnValue('mockAsid');
     updateExtractForSending.mockReturnValue('payload');
-    removeTitleFromExternalAttachments.mockReturnValueOnce([
+    wrangleAttachments.mockReturnValue({
+      attachments: [[{ message_id: '1234' }]],
+      external_attachments: [{ message_id: '5678' }]
+    });
+    removeTitleFromExternalAttachments.mockReturnValue([
       externalAttachmentWithoutTitle,
       externalAttachmentWithoutTitle
     ]);
@@ -150,6 +160,8 @@ describe('ehr out transfers', () => {
       'mockAsid',
       'test_odscode'
     );
+
+    expect(wrangleAttachments).toHaveBeenCalledWith(mockRequestBody.coreEhr);
 
     expect(sendMessage).toHaveBeenCalledWith({
       conversationId: '00000000-0000-4000-a000-000000000000',

@@ -3,7 +3,10 @@ import { setCurrentSpanAttributes } from '../../config/tracing';
 import { getPracticeAsid } from '../../services/fhir/sds-fhir-client';
 import { updateFragmentForSending } from '../../services/parser/message/update-fragment-for-sending';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { removeTitleFromExternalAttachments } from '../../services/mhs/mhs-attachments-wrangler';
+import {
+  removeTitleFromExternalAttachments,
+  wrangleAttachments
+} from '../../services/mhs/mhs-attachments-wrangler';
 import { logError } from '../../middleware/logging';
 
 export const sendFragmentMessageValidation = [
@@ -28,14 +31,16 @@ export const sendFragmentMessage = async (req, res) => {
       odsCode
     );
 
+    const { attachments, external_attachments } = await wrangleAttachments(fragmentMessage);
+
     await sendMessage({
       interactionId: COPC_INTERACTION_ID,
       conversationId,
       odsCode: odsCode,
       message: updatedFragmentPayload,
-      attachments: fragmentMessage.attachments,
-      external_attachments: fragmentMessage.external_attachments
-        ? removeTitleFromExternalAttachments(fragmentMessage.external_attachments)
+      attachments,
+      external_attachments: external_attachments
+        ? removeTitleFromExternalAttachments(external_attachments)
         : null
     });
 
