@@ -4,7 +4,10 @@ import { logError } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import {removeTitleFromExternalAttachments, wrangleAttachments} from '../../services/mhs/mhs-attachments-wrangler';
+import {
+  removeTitleFromExternalAttachments,
+  wrangleAttachments
+} from '../../services/mhs/mhs-attachments-wrangler';
 import { body } from 'express-validator';
 
 export const sendCoreMessageValidation = [

@@ -4,8 +4,10 @@ import request from 'supertest';
 import { v4 } from '../../../__mocks__/uuid';
 import app from '../../../app';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
-import {removeTitleFromExternalAttachments, wrangleAttachments} from '../../../services/mhs/mhs-attachments-wrangler';
-import {jsonEhrExtract} from "../../health-record-transfers/__tests__/data/json-formatted-ehr-example";
+import {
+  removeTitleFromExternalAttachments,
+  wrangleAttachments
+} from '../../../services/mhs/mhs-attachments-wrangler';
 
 jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../services/parser/message/update-extract-for-sending');
