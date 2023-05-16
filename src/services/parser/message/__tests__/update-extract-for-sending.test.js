@@ -1,6 +1,17 @@
-import { updateExtractForSending } from '../update-extract-for-sending';
+import {jsObjectToXmlString, updateExtractForSending, xmlStringToJsObject} from '../update-extract-for-sending';
 import { v4 } from 'uuid';
 import { XmlParser } from '../../xml-parser/xml-parser';
+import { readFileSync } from "fs";
+import * as path from "path";
+
+// export const templateEhrExtract = (receivingAsid, sendingAsid, priorEhrRequestId, authorOdsCode) => {
+//   const template = readFileSync(path.join(__dirname, "data/templateEhrExtract"), "utf-8");
+//   return template
+//       .replaceAll("${receivingAsid}", receivingAsid)
+//       .replaceAll("${sendingAsid}", sendingAsid)
+//       .replaceAll("${priorEhrRequestId}", priorEhrRequestId)
+//       .replaceAll("${authorOdsCode}", authorOdsCode)
+// }
 
 export const templateEhrExtract = (receivingAsid, sendingAsid, priorEhrRequestId, authorOdsCode) =>
   `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -505,31 +516,78 @@ describe('updateExtractForSending', () => {
     const oldReceivingAsid = '200000001161';
     const oldEhrRequestId = 'BBBBA01A-A9D1-A411-F824-9F7A00A33757';
     const originalEhrExtract = templateEhrExtract(
-      oldReceivingAsid,
-      oldSendingAsid,
-      oldEhrRequestId,
-      'some-old-author-ods-code'
+        oldReceivingAsid,
+        oldSendingAsid,
+        oldEhrRequestId,
+        'some-old-author-ods-code'
     );
 
     const newSendingAsid = '200000001161';
     const newReceivingAsid = '200000001162';
     const ehrRequestId = v4();
     const expectedEhrExtract = templateEhrExtract(
-      newReceivingAsid,
-      newSendingAsid,
-      ehrRequestId,
-      'sending-ods-code'
+        newReceivingAsid,
+        newSendingAsid,
+        ehrRequestId,
+        'sending-ods-code'
     );
 
     const newEhrExtract = await updateExtractForSending(
-      originalEhrExtract,
-      ehrRequestId,
-      newReceivingAsid,
-      'sending-ods-code'
+        originalEhrExtract,
+        ehrRequestId,
+        newReceivingAsid,
+        'sending-ods-code'
     );
 
     const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
     const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
     expect(parsedNewEhrExtract).toEqual(parsedExpectedEhrExtract);
+
   });
+
+  // it('should keep escaped linebreak symbol unchanged', async () => {
+  //   // given
+  //   const oldSendingAsid = '200000000149';
+  //   const oldReceivingAsid = '200000001161';
+  //   const oldEhrRequestId = 'BBBBA01A-A9D1-A411-F824-9F7A00A33757';
+  //   const originalEhrExtract = templateEhrExtract(
+  //       oldReceivingAsid,
+  //       oldSendingAsid,
+  //       oldEhrRequestId,
+  //       'some-old-author-ods-code'
+  //   );
+  //
+  //   // manually add some escaped linebreaks "&#10;" to ehr extract
+  //   originalEhrExtract.replace(
+  //       "Drinking status on eventdate: Current drinker",
+  //       "Drinking status on eventdate: &#10;&#10;&#10; Current drinker"
+  //   )
+  //
+  //   const newSendingAsid = '200000001161';
+  //   const newReceivingAsid = '200000001162';
+  //   const ehrRequestId = v4();
+  //
+  //   const newEhrExtract = await updateExtractForSending(
+  //       originalEhrExtract,
+  //       ehrRequestId,
+  //       newReceivingAsid,
+  //       'sending-ods-code'
+  //   );
+  //
+  //   expect(newEhrExtract.includes("Drinking status on eventdate: &#10;&#10;&#10; Current drinker")).toBe(true);
+  // });
 });
+
+describe('xml parsing and building', () => {
+  it("should keep escaped linebreak symbol unchanged", async() => {
+    // given
+    const inputXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><text>Drinking status on eventdate: &#10;&#10;&#10; Current drinker</text>";
+
+    // when
+    const jsObjectAfterParse = await xmlStringToJsObject(inputXml);
+    const xmlStringAfterRebuild = jsObjectToXmlString(jsObjectAfterParse);
+
+    // then
+    expect(xmlStringAfterRebuild).toEqual(inputXml);
+  })
+})
