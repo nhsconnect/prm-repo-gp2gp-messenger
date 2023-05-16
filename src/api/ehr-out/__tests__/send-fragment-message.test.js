@@ -206,6 +206,10 @@ describe('ehr out transfers send fragment message', () => {
     };
 
     updateFragmentForSending.mockReturnValue(expectedMessage.message);
+    wrangleAttachments.mockReturnValue({
+      attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
+      external_attachments: null
+    });
 
     // when
     const res = await request(app)

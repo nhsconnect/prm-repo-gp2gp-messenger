@@ -273,6 +273,10 @@ describe('ehr out transfers', () => {
 
     // when
     updateExtractForSending.mockReturnValue('payload');
+    wrangleAttachments.mockReturnValue({
+      attachments: missingExternalAttachmentsInCore.coreEhr.attachments,
+      external_attachments: null
+    });
 
     const res = await request(app)
       .post('/ehr-out-transfers/core')
