@@ -241,8 +241,7 @@ export const templateEhrExtract = (receivingAsid, sendingAsid, priorEhrRequestId
                                                         <component contextConductionInd="true" typeCode="COMP">
                                                             <NarrativeStatement classCode="OBS" moodCode="EVN">
                                                                 <id root="15FF7FA4-DBD9-4C37-A479-7A86A890B7A8"/>
-                                                                <text>Drinking status on eventdate: Current drinker
-                                                                </text>
+                                                                <text>Drinking status on eventdate: Current drinker</text>
                                                                 <statusCode code="COMPLETE"/>
                                                                 <availabilityTime value="20180612"/>
                                                             </NarrativeStatement>
@@ -383,9 +382,8 @@ export const templateEhrExtract = (receivingAsid, sendingAsid, priorEhrRequestId
                                                         <component contextConductionInd="true" typeCode="COMP">
                                                             <NarrativeStatement classCode="OBS" moodCode="EVN">
                                                                 <id root="8D5D514B-28C6-47B0-B0FA-60446F4B9FFA"/>
-                                                                <text>Posture for BP recording: Sitting, Cuff size used:
-                                                                    Standard
-                                                                </text>
+                                                                <text>Posture for BP recording: Sitting, 
+                                                                Cuff size used: Standard</text>
                                                                 <statusCode code="COMPLETE"/>
                                                                 <availabilityTime value="20180612"/>
                                                             </NarrativeStatement>
@@ -542,52 +540,38 @@ describe('updateExtractForSending', () => {
     const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
     const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
     expect(parsedNewEhrExtract).toEqual(parsedExpectedEhrExtract);
-
   });
 
-  // it('should keep escaped linebreak symbol unchanged', async () => {
-  //   // given
-  //   const oldSendingAsid = '200000000149';
-  //   const oldReceivingAsid = '200000001161';
-  //   const oldEhrRequestId = 'BBBBA01A-A9D1-A411-F824-9F7A00A33757';
-  //   const originalEhrExtract = templateEhrExtract(
-  //       oldReceivingAsid,
-  //       oldSendingAsid,
-  //       oldEhrRequestId,
-  //       'some-old-author-ods-code'
-  //   );
-  //
-  //   // manually add some escaped linebreaks "&#10;" to ehr extract
-  //   originalEhrExtract.replace(
-  //       "Drinking status on eventdate: Current drinker",
-  //       "Drinking status on eventdate: &#10;&#10;&#10; Current drinker"
-  //   )
-  //
-  //   const newSendingAsid = '200000001161';
-  //   const newReceivingAsid = '200000001162';
-  //   const ehrRequestId = v4();
-  //
-  //   const newEhrExtract = await updateExtractForSending(
-  //       originalEhrExtract,
-  //       ehrRequestId,
-  //       newReceivingAsid,
-  //       'sending-ods-code'
-  //   );
-  //
-  //   expect(newEhrExtract.includes("Drinking status on eventdate: &#10;&#10;&#10; Current drinker")).toBe(true);
-  // });
-});
-
-describe('xml parsing and building', () => {
-  it("should keep escaped linebreak symbol unchanged", async() => {
+  it('should keep escaped special characters (linebreak, apostrophes, quotation marks) unchanged', async () => {
     // given
-    const inputXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><text>Drinking status on eventdate: &#10;&#10;&#10; Current drinker</text>";
+    const oldSendingAsid = '200000000149';
+    const oldReceivingAsid = '200000001161';
+    const oldEhrRequestId = 'BBBBA01A-A9D1-A411-F824-9F7A00A33757';
+    const originalEhrExtract = templateEhrExtract(
+        oldReceivingAsid,
+        oldSendingAsid,
+        oldEhrRequestId,
+        'some-old-author-ods-code'
+    );
 
-    // when
-    const jsObjectAfterParse = await xmlStringToJsObject(inputXml);
-    const xmlStringAfterRebuild = jsObjectToXmlString(jsObjectAfterParse);
+    // manually add some escaped special characters to the ehr extract
+    const replacedText = "Drinking status on eventdate: &#10;&#10;&#10; &apos; &quot; &Current drinker"
+    const ehrExtractWithSpecialChars = originalEhrExtract.replace(
+        "Drinking status on eventdate: Current drinker",
+        replacedText
+    )
 
-    // then
-    expect(xmlStringAfterRebuild).toEqual(inputXml);
-  })
-})
+    const newSendingAsid = '200000001161';
+    const newReceivingAsid = '200000001162';
+    const ehrRequestId = v4();
+
+    const newEhrExtract = await updateExtractForSending(
+        ehrExtractWithSpecialChars,
+        ehrRequestId,
+        newReceivingAsid,
+        'sending-ods-code'
+    );
+
+    expect(newEhrExtract.includes(replacedText)).toBe(true);
+  });
+});
