@@ -21,7 +21,7 @@ export async function updateFragmentForSending(
   updateIdExtension(copcUK01.ControlActEvent.author1.AgentSystemSDS.agentSystemSDS, recipientAsid);
 
   let payloadInformation = copcUK01.ControlActEvent.subject.PayloadInformation;
-  updateIdRoot(payloadInformation, messageId)
+  updateIdRoot(payloadInformation, messageId);
   updateIdRoot(payloadInformation.pertinentInformation.pertinentPayloadBody, messageId);
 
   let gp2gpfragment = payloadInformation.value.Gp2gpfragment;

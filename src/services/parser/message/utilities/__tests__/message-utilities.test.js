@@ -1,4 +1,4 @@
-import {jsObjectToXmlString, xmlStringToJsObject} from "../message-utilities";
+import { jsObjectToXmlString, xmlStringToJsObject } from "../message-utilities";
 
 describe('message-utilities', () => {
     it("should keep escaped linebreak symbols unchanged", async () => {
