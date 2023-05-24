@@ -23,7 +23,7 @@ export const sendFragmentMessage = async (req, res) => {
     const { conversationId, odsCode, messageId, fragmentMessage } = req.body;
     setCurrentSpanAttributes(conversationId);
 
-    const receivingPractiseAsid = getPracticeAsid(odsCode, serviceId);
+    const receivingPractiseAsid = await getPracticeAsid(odsCode, serviceId);
     const updatedFragmentPayload = await updateFragmentForSending(
       fragmentMessage.payload,
       messageId,
