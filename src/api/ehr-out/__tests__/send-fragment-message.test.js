@@ -39,7 +39,7 @@ const externalAttachmentWithoutTitle = {
 const mockRequestBody = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
-  messageId: v4(),
+  messageId: v4().toUpperCase(),
   fragmentMessage: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -51,7 +51,7 @@ const mockRequestBody = {
 const mockRequestBodyWithMissingPayload = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
-  messageId: v4(),
+  messageId: v4().toUpperCase(),
   fragmentMessage: {
     ebXML: 'ebxml',
     attachments: [[{ message_id: '1234' }]],
@@ -61,7 +61,7 @@ const mockRequestBodyWithMissingPayload = {
 
 const missingExternalAttachmentsInFragment = {
   conversationId: v4(),
-  messageId: v4(),
+  messageId: v4().toUpperCase(),
   odsCode: 'ods-code',
   fragmentMessage: {
     ebXML: 'ebxml',
@@ -135,6 +135,7 @@ describe('ehr out transfers send fragment message', () => {
       conversationId: mockRequestBody.conversationId,
       odsCode: mockRequestBody.odsCode,
       message: 'anything',
+      messageId: mockRequestBody.messageId,
       attachments: mockRequestBody.fragmentMessage.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
     });
@@ -201,6 +202,7 @@ describe('ehr out transfers send fragment message', () => {
       conversationId: missingExternalAttachmentsInFragment.conversationId,
       odsCode: missingExternalAttachmentsInFragment.odsCode,
       message: 'anything',
+      messageId: missingExternalAttachmentsInFragment.messageId,
       attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
       external_attachments: null
     };

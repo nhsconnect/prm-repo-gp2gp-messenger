@@ -20,7 +20,10 @@ export const sendFragmentMessage = async (req, res) => {
   try {
     const COPC_INTERACTION_ID = 'COPC_IN000001UK01';
     const serviceId = `urn:nhs:names:services:gp2gp:${COPC_INTERACTION_ID}`;
-    const { conversationId, odsCode, messageId, fragmentMessage } = req.body;
+    const { conversationId, odsCode, fragmentMessage } = req.body;
+    let { messageId } = req.body;
+    messageId = messageId.toUpperCase();
+
     setCurrentSpanAttributes(conversationId);
 
     const receivingPractiseAsid = await getPracticeAsid(odsCode, serviceId);
@@ -38,6 +41,7 @@ export const sendFragmentMessage = async (req, res) => {
       conversationId,
       odsCode: odsCode,
       message: updatedFragmentPayload,
+      messageId,
       attachments,
       external_attachments: external_attachments
         ? removeTitleFromExternalAttachments(external_attachments)
