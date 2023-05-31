@@ -203,7 +203,6 @@ describe('ehr out transfers send fragment message', () => {
       odsCode: missingExternalAttachmentsInFragment.odsCode,
       messageId: missingExternalAttachmentsInFragment.messageId,
       message: 'anything',
-      messageId: missingExternalAttachmentsInFragment.messageId,
       attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
       external_attachments: null
     };
