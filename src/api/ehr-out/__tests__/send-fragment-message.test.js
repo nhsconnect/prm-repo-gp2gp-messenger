@@ -201,8 +201,8 @@ describe('ehr out transfers send fragment message', () => {
       interactionId: COPC_INTERACTION_ID,
       conversationId: missingExternalAttachmentsInFragment.conversationId,
       odsCode: missingExternalAttachmentsInFragment.odsCode,
-      message: 'anything',
       messageId: missingExternalAttachmentsInFragment.messageId,
+      message: 'anything',
       attachments: missingExternalAttachmentsInFragment.fragmentMessage.attachments,
       external_attachments: null
     };

@@ -40,6 +40,7 @@ const mockRequestBodyWithMissingPayload = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
   ehrRequestId: v4(),
+  messageId: v4(),
   coreEhr: 'core ehr stored in ehr repository'
 };
 
@@ -47,6 +48,7 @@ const mockRequestBody = {
   conversationId: conversationId,
   odsCode: 'testOdsCode',
   ehrRequestId: v4(),
+  messageId: v4(),
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -58,6 +60,7 @@ const mockRequestBody = {
 const invalidConversationId = {
   conversationId: 'not-uuid',
   ehrRequestId: v4(),
+  messageId: v4(),
   odsCode: 'ods-code',
   coreEhr: {
     ebXML: 'ebxml',
@@ -69,6 +72,19 @@ const invalidConversationId = {
 const invalidEhrRequestId = {
   conversationId: v4(),
   ehrRequestId: 'ehrRequestId',
+  messageId: v4(),
+  odsCode: 'ods-code',
+  coreEhr: {
+    ebXML: 'ebxml',
+    payload: 'payload',
+    attachments: [[{ message_id: '1234' }]],
+    external_attachments: [{ message_id: '5678' }]
+  }
+};
+const invalidMessageId = {
+  conversationId: v4(),
+  ehrRequestId: v4(),
+  messageId: 'INVALID-MESSAGE-ID',
   odsCode: 'ods-code',
   coreEhr: {
     ebXML: 'ebxml',
@@ -81,12 +97,14 @@ const invalidEhrRequestId = {
 const missingCoreEhr = {
   conversationId: v4(),
   ehrRequestId: v4(),
+  messageId: v4(),
   odsCode: 'ods-code'
 };
 
 const missingOdsCode = {
   conversationId: v4(),
   ehrRequestId: v4(),
+  messageId: v4(),
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -98,6 +116,7 @@ const missingOdsCode = {
 const missingExternalAttachmentsInCore = {
   conversationId: v4(),
   ehrRequestId: v4(),
+  messageId: v4(),
   odsCode: 'ods-code',
   coreEhr: {
     ebXML: 'ebxml',
@@ -168,6 +187,7 @@ describe('ehr out transfers', () => {
     expect(sendMessage).toHaveBeenCalledWith({
       conversationId: '00000000-0000-4000-a000-000000000000',
       interactionId: 'RCMR_IN030000UK06',
+      messageId: mockRequestBody.messageId,
       message: 'payload',
       odsCode: 'testOdsCode',
       attachments: mockRequestBody.coreEhr.attachments,
@@ -193,6 +213,7 @@ describe('ehr out transfers', () => {
       conversationId: '00000000-0000-4000-a000-000000000000',
       interactionId: 'RCMR_IN030000UK06',
       message: 'payload',
+      messageId: mockRequestBody.messageId,
       odsCode: 'testOdsCode',
       attachments: mockRequestBody.coreEhr.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
@@ -225,6 +246,21 @@ describe('ehr out transfers', () => {
       errors: [
         {
           ehrRequestId: 'Provided value is not of type UUID'
+        }
+      ]
+    });
+  });
+
+  it('should return an error when messageId is not a uuid', async () => {
+    const res = await request(app)
+      .post('/ehr-out-transfers/core')
+      .set('Authorization', authKey)
+      .send(invalidMessageId);
+    expect(res.status).toEqual(422);
+    expect(res.body).toEqual({
+      errors: [
+        {
+          messageId: 'Provided value is not of type UUID'
         }
       ]
     });
@@ -266,6 +302,7 @@ describe('ehr out transfers', () => {
       conversationId: missingExternalAttachmentsInCore.conversationId,
       interactionId: 'RCMR_IN030000UK06',
       message: 'payload',
+      messageId: missingExternalAttachmentsInCore.messageId,
       odsCode: missingExternalAttachmentsInCore.odsCode,
       attachments: missingExternalAttachmentsInCore.coreEhr.attachments,
       external_attachments: null
