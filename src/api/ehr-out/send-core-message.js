@@ -4,18 +4,22 @@ import { logError } from '../../middleware/logging';
 import { updateExtractForSending } from '../../services/parser/message/update-extract-for-sending';
 import { initializeConfig } from '../../config/index';
 import { sendMessage } from '../../services/mhs/mhs-outbound-client';
-import { removeTitleFromExternalAttachments } from '../../services/mhs/mhs-attachments-wrangler';
+import {
+  removeTitleFromExternalAttachments,
+  wrangleAttachments
+} from '../../services/mhs/mhs-attachments-wrangler';
 import { body } from 'express-validator';
 
 export const sendCoreMessageValidation = [
   body('conversationId').isUUID().withMessage("'conversationId' provided is not of type UUID"),
+  body('messageId').isUUID().withMessage('Provided value is not of type UUID'),
   body('odsCode').notEmpty().withMessage('Value has not been provided'),
   body('ehrRequestId').isUUID().withMessage('Provided value is not of type UUID'),
   body('coreEhr').notEmpty().withMessage('Value has not been provided')
 ];
 export const sendCoreMessage = async (req, res) => {
-  const { conversationId, odsCode, coreEhr, ehrRequestId } = req.body;
-  const { payload, attachments, external_attachments } = coreEhr;
+  const { conversationId, odsCode, coreEhr, ehrRequestId, messageId } = req.body;
+  const { payload } = coreEhr;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   const repositoryOdsCode = initializeConfig().deductionsOdsCode;
@@ -35,13 +39,18 @@ export const sendCoreMessage = async (req, res) => {
       repositoryOdsCode
     );
 
+    const { attachments, external_attachments } = await wrangleAttachments(coreEhr);
+
     await sendMessage({
       interactionId,
       conversationId,
       odsCode,
       message: updatedEhrCorePayload,
+      messageId,
       attachments,
-      external_attachments: removeTitleFromExternalAttachments(external_attachments)
+      external_attachments: external_attachments
+        ? removeTitleFromExternalAttachments(external_attachments)
+        : null
     });
 
     res.sendStatus(204);

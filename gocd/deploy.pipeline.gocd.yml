@@ -129,9 +129,9 @@ pipelines:
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_dev
-      mhs:
-        pipeline: prm-mhs-infra.dev
-        stage: deploy
+#      mhs:
+#        pipeline: prm-mhs-infra.dev
+#        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: dev
     stages: *common_stages
@@ -151,9 +151,9 @@ pipelines:
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_test
-      mhs:
-        pipeline: prm-mhs-infra.test
-        stage: deploy
+#      mhs:
+#        pipeline: prm-mhs-infra.test
+#        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: test
     stages: *common_stages
@@ -228,9 +228,9 @@ pipelines:
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_pre_prod
-      mhs:
-        pipeline: prm-mhs-infra.pre-prod
-        stage: deploy
+#      mhs:
+#        pipeline: prm-mhs-infra.pre-prod
+#        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: pre-prod
     stages: *common_stages
@@ -248,9 +248,9 @@ pipelines:
       base_infra:
         pipeline: prm-deductions-infra
         stage: deploy_prod
-      mhs:
-        pipeline: prm-mhs-infra.prod
-        stage: deploy
+#      mhs:
+#        pipeline: prm-mhs-infra.prod
+#        stage: deploy
     environment_variables:
       NHS_ENVIRONMENT: prod
     stages:
