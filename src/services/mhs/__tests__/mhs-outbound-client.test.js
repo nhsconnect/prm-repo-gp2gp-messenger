@@ -221,7 +221,7 @@ describe('mhs-outbound-client', () => {
     const upperCaseConversationId = lowerCaseConversationId.toUpperCase();
 
     // When
-    const response = await sendMessage({
+    await sendMessage({
       interactionId,
       conversationId: lowerCaseConversationId,
       odsCode,
@@ -243,7 +243,7 @@ describe('mhs-outbound-client', () => {
     const upperCaseMessageId = lowerCaseMessageId.toUpperCase();
 
     // When
-    const response = await sendMessage({
+    await sendMessage({
       interactionId,
       conversationId,
       odsCode,
@@ -259,7 +259,6 @@ describe('mhs-outbound-client', () => {
       }
     });
   });
-
 
   it('should send request and response to observability queue', async () => {
     const response = await sendMessage({

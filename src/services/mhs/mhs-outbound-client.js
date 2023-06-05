@@ -4,7 +4,6 @@ import { logError, logInfo } from '../../middleware/logging';
 import { sendToQueue } from '../sqs/sqs-client';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
-
   if (interactionId && conversationId && message) return;
 
   const errorMessages = [];
@@ -36,8 +35,8 @@ export const sendMessage = async ({
   const config = initializeConfig();
 
   // If conversationId or messageId is defined, convert to uppercase in order to meet gp2gp specification.
-  conversationId = conversationId?.toUpperCase();
-  messageId = messageId?.toUpperCase();
+  conversationId = conversationId ? conversationId.toUpperCase() : conversationId;
+  messageId = messageId ? messageId.toUpperCase() : messageId;
 
   validateInputs({ interactionId, conversationId, message });
 
