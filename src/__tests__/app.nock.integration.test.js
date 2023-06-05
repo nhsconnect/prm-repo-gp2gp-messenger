@@ -25,7 +25,7 @@ describe('app integration', () => {
 
     const ehrMessageDownloadUrl = '/some-url-for-downloading-message-probably-s3-presigned';
     const messageDownloadUrl = `${host}${ehrMessageDownloadUrl}`;
-    const conversationId = '41291044-8259-4d83-ae2b-93b7bfcabe73';
+    const conversationId = '41291044-8259-4D83-AE2B-93B7BFCABE73';
     const priorEhrRequestId = uuid();
     const expectedRecipientAsid = '200000000678';
     const ehrRequestId = '26a541ce-a5ab-4713-99a4-150ec3da25c6';
