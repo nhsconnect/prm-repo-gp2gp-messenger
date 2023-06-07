@@ -1,5 +1,10 @@
 import { initializeConfig } from '../../../config';
-import { xmlStringToJsObject, jsObjectToXmlString, updateIdExtension, updateIdRoot } from "./utilities/message-utilities";
+import {
+  xmlStringToJsObject,
+  jsObjectToXmlString,
+  updateIdExtension,
+  updateIdRoot
+} from './utilities/message-utilities';
 
 export async function updateFragmentForSending(
   fragmentPayload,
