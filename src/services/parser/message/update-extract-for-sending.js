@@ -1,5 +1,9 @@
 import { initializeConfig } from '../../../config';
-import { xmlStringToJsObject, jsObjectToXmlString, updateIdExtension } from "./utilities/message-utilities";
+import {
+  xmlStringToJsObject,
+  jsObjectToXmlString,
+  updateIdExtension
+} from './utilities/message-utilities';
 
 export const updateExtractForSending = async (
   ehrExtract,
@@ -18,7 +22,7 @@ export const updateExtractForSending = async (
   updateIdExtension(rcmrUK06.communicationFunctionRcv.device, receivingAsid);
   updateIdExtension(rcmrUK06.communicationFunctionSnd.device, sendingAsid);
   updateIdExtension(controlActEvent.author1.AgentSystemSDS.agentSystemSDS, sendingAsid);
-  controlActEvent.subject.EhrExtract.inFulfillmentOf.priorEhrRequest.id["@_root"] = ehrRequestId;
+  controlActEvent.subject.EhrExtract.inFulfillmentOf.priorEhrRequest.id['@_root'] = ehrRequestId;
 
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
@@ -29,4 +33,4 @@ export const updateExtractForSending = async (
 const updateAuthorOdsCode = (authorParent, sendingOdsCode) => {
   const field = authorParent.author.AgentOrgSDS.agentOrganizationSDS;
   updateIdExtension(field, sendingOdsCode);
-}
+};
