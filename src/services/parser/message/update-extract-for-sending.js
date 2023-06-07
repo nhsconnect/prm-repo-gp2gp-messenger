@@ -1,10 +1,5 @@
 import { initializeConfig } from '../../../config';
-import * as xml2js from 'xml2js';
-import { Builder } from 'xml2js';
-
-function updateAuthorOdsCode(authorParent, sendingOdsCode) {
-  authorParent.author.AgentOrgSDS.agentOrganizationSDS.id['$'].extension = sendingOdsCode;
-}
+import { xmlStringToJsObject, jsObjectToXmlString, updateIdExtension } from "./utilities/message-utilities";
 
 export const updateExtractForSending = async (
   ehrExtract,
@@ -13,38 +8,25 @@ export const updateExtractForSending = async (
   sendingOdsCode
 ) => {
   const config = initializeConfig();
-  const parsedEhr = await new xml2js.Parser({ explicitArray: false }).parseStringPromise(
-    ehrExtract
-  );
+  const parsedEhr = await xmlStringToJsObject(ehrExtract);
 
   const sendingAsid = config.deductionsAsid;
 
   const rcmrUK06 = parsedEhr.RCMR_IN030000UK06;
   const controlActEvent = rcmrUK06.ControlActEvent;
 
-  rcmrUK06.communicationFunctionRcv.device = updateId(
-    rcmrUK06.communicationFunctionRcv.device,
-    receivingAsid
-  );
-  rcmrUK06.communicationFunctionSnd.device = updateId(
-    rcmrUK06.communicationFunctionSnd.device,
-    sendingAsid
-  );
-
-  controlActEvent.author1.AgentSystemSDS.agentSystemSDS = updateId(
-    controlActEvent.author1.AgentSystemSDS.agentSystemSDS,
-    sendingAsid
-  );
-  controlActEvent.subject.EhrExtract.inFulfillmentOf.priorEhrRequest.id['$'].root = ehrRequestId;
+  updateIdExtension(rcmrUK06.communicationFunctionRcv.device, receivingAsid);
+  updateIdExtension(rcmrUK06.communicationFunctionSnd.device, sendingAsid);
+  updateIdExtension(controlActEvent.author1.AgentSystemSDS.agentSystemSDS, sendingAsid);
+  controlActEvent.subject.EhrExtract.inFulfillmentOf.priorEhrRequest.id["@_root"] = ehrRequestId;
 
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
 
-  const builder = new Builder();
-  return builder.buildObject(parsedEhr);
+  return jsObjectToXmlString(parsedEhr);
 };
 
-const updateId = (field, newId) => {
-  field.id['$'].extension = newId;
-  return field;
-};
+const updateAuthorOdsCode = (authorParent, sendingOdsCode) => {
+  const field = authorParent.author.AgentOrgSDS.agentOrganizationSDS;
+  updateIdExtension(field, sendingOdsCode);
+}
