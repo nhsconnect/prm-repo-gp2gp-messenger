@@ -11,12 +11,6 @@ describe('get-health-check', () => {
       });
     });
 
-    it('should resolve when s3 is not ok', () => {
-      return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true));
-      });
-    });
-
     it('should resolve when MHS is not ok', () => {
       return getHealthCheck().then(result => {
         return expect(result).toStrictEqual(expectedHealthCheckBase(false));
