@@ -14,7 +14,8 @@ export const jsObjectToXmlString = jsObject => {
   return new XMLBuilder({
     processEntities: false,
     ignoreAttributes: false,
-    suppressBooleanAttributes: false
+    suppressBooleanAttributes: false,
+    suppressEmptyNode: true
   }).build(jsObject);
 };
 

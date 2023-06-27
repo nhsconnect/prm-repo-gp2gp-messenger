@@ -2,6 +2,7 @@ import axios from 'axios';
 import { initializeConfig } from '../../config';
 import { logError, logInfo } from '../../middleware/logging';
 import { sendToQueue } from '../sqs/sqs-client';
+import { logOutboundMessage } from './logging-utils';
 
 const validateInputs = ({ interactionId, conversationId, message }) => {
   if (interactionId && conversationId && message) return;
@@ -71,6 +72,7 @@ export const sendMessage = async ({
 
   try {
     const response = await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
+    logOutboundMessage({ body: axiosBody, headers: response.request.headers });
     await sendToObservabilityQueue(
       {
         response: { data: response.data, status: response.status },

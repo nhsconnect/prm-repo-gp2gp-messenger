@@ -51,4 +51,15 @@ describe('message-utilities', () => {
     // then
     expect(xmlStringAfterRebuild).toEqual(inputXml);
   });
+
+  it(`should keep self closing tags unchanged`, async () => {
+    const inputXml = '<acceptAckCode code="NE"/>';
+
+    // when
+    const jsObjectAfterParse = xmlStringToJsObject(inputXml);
+    const xmlStringAfterRebuild = jsObjectToXmlString(jsObjectAfterParse);
+
+    // then
+    expect(xmlStringAfterRebuild).toEqual(inputXml);
+  })
 });
