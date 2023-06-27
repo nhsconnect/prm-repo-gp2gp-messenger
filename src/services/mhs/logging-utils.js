@@ -20,6 +20,7 @@ export const logOutboundMessage = (message, loggerFunction) => {
     );
   }
 
+  // TODO: wrap this in try catch to ensure that logging not affecting actual task in any case
   logLargeMessage(removeBase64Payloads(message), loggerFunction);
 };
 export const removeBase64Payloads = inputObject => {

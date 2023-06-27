@@ -10,7 +10,6 @@ const loadTestData = filename => {
   return JSON.parse(readFileSync(path.join(__dirname, 'data', filename), 'utf8'));
 };
 
-
 describe('logging-utils', () => {
   describe('removeBase64Payloads', () => {
     it('should take a javascript object and redact any base64 encoded contents', () => {
