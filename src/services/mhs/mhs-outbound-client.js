@@ -72,7 +72,7 @@ export const sendMessage = async ({
 
   try {
     const response = await axios.post(config.mhsOutboundUrl, axiosBody, axiosHeaders);
-    logOutboundMessage({ body: axiosBody, headers: response.request.headers });
+    logOutboundMessage({ body: axiosBody, headers: response.request?.headers });
     await sendToObservabilityQueue(
       {
         response: { data: response.data, status: response.status },

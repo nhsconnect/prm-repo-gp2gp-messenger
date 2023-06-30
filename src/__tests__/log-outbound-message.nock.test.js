@@ -66,15 +66,18 @@ const createMockFhirScope = () => {
 
 const createMockMHSScope = () => {
   const postRequestBody = {};
+  const postRequestHeaders = {};
 
   const scope = nock(MOCK_MHS_OUTBOUND_URL)
     .post('')
-    .reply((_, requestBody) => {
+    .reply(function (_, requestBody) {
       Object.assign(postRequestBody, requestBody);
+      Object.assign(postRequestHeaders, this.req.headers);
       return [200, 'OK'];
     });
 
   scope.postRequestBody = postRequestBody;
+  scope.postRequestHeaders = postRequestHeaders;
   return scope;
 };
 
@@ -95,6 +98,12 @@ describe('logOutboundMessage', () => {
     process.env.GP2GP_MESSENGER_REPOSITORY_ASID = FAKE_REPO_ASID_CODE;
     process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = FAKE_REPO_ODS_CODE;
   });
+
+  // TODO: merge the duplication of two test by parameterized test
+  const test_cases = [
+    { type: 'core', interaction_id: 'RCMR_IN030000UK06' },
+    { name: 'fragment', interaction_id: 'COPC_IN000001UK01' },
+  ];
 
   describe('case of sending a EHR fragment', () => {
     it('should log the outbound COPC fragment message with all base64 contents removed', async () => {
@@ -189,9 +198,9 @@ describe('logOutboundMessage', () => {
       // then
       // verify that the base64 payload in the outbound post request body is still intact
       expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
-      expect(mhsAdaptorScope.postRequestBody.attachments[0].payload).toEqual(
-        fragmentMessage.attachments[0].payload
-      );
+      mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
+        expect(attachment.payload).toEqual(fragmentMessage.attachments[index].payload);
+      });
     });
   });
 
@@ -252,6 +261,7 @@ describe('logOutboundMessage', () => {
       expect(outboundMessageInLog.body.external_attachments).toEqual(
         mhsAdaptorScope.postRequestBody.external_attachments
       );
+      expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.postRequestHeaders);
 
       // The attachment are not exactly equal, as the one in logs got base64 contents removed.
       // Other than that, the logged attachments should be same as the actual attachments in outbound post request
@@ -287,9 +297,9 @@ describe('logOutboundMessage', () => {
       // then
       // verify that the base64 payload in the outbound post request body is still intact
       expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
-      expect(mhsAdaptorScope.postRequestBody.attachments[0].payload).toEqual(
-        coreEhr.attachments[0].payload
-      );
+      mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
+        expect(attachment.payload).toEqual(coreEhr.attachments[index].payload);
+      });
     });
   });
 });
