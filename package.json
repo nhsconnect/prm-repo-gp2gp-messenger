@@ -68,7 +68,8 @@
   "jest": {
     "testPathIgnorePatterns": [
       ".*/__tests__/data/.*",
-      "src/templates/__tests__/test-fragment-message-payload-template.js"
+      "src/templates/__tests__/test-fragment-message-payload-template.js",
+      ".*/test_utils.js"
     ],
     "resetModules": true,
     "clearMocks": true,

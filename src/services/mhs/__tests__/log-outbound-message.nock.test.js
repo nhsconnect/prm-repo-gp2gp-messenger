@@ -7,6 +7,12 @@ import nock from 'nock';
 import app from '../../../app';
 import { logInfo } from '../../../middleware/logging';
 import { removeBase64Payloads } from '../logging-utils';
+import {
+  buildPostRequestBody,
+  createMockFhirScope,
+  EhrMessageType,
+  isSmallerThan256KB
+} from './test_utils';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../services/sqs/sqs-client');
@@ -21,6 +27,7 @@ const FAKE_DEST_ASID_CODE = 'fake_dest_asid_code';
 const FAKE_REPO_ODS_CODE = 'B85002';
 const FAKE_DEST_ODS_CODE = 'M85019';
 
+// TODO: move this to utils file
 const loadTestFileAndFillIds = (filename, { conversationId, messageId, ehrRequestId }) => {
   const filepath = path.join(__dirname, 'data', filename);
   const jsonString = readFileSync(filepath, 'utf8')
@@ -34,106 +41,87 @@ const loadTestFileAndFillIds = (filename, { conversationId, messageId, ehrReques
   return JSON.parse(jsonString);
 };
 
-const isSmallerThan256KB = jsObject => {
-  return JSON.stringify(jsObject).length < 256 * 1024;
-};
-
-const createMockFhirScope = () => {
-  const mockFhirResponse = {
-    entry: [
-      {
-        resource: {
-          identifier: [
-            {
-              system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
-              value: FAKE_DEST_ASID_CODE
-            }
-          ]
-        }
-      }
-    ]
+const generateTestData = () => {
+  return {
+    conversationId: randomUuid(),
+    messageId: randomUuid(),
+    ehrRequestId: randomUuid(),
+    mhsOutboundUrl: 'http://localhost/mhs-outbound',
+    sdsFhirUrl: 'http://localhost/sds-fhir',
+    repoAsidCode: 'fake_repo_asid_code',
+    destAsidCode: 'fake_dest_asid_code',
+    repoOdsCode: 'B85002',
+    destOdsCode: 'M85019'
   };
-
-  return nock(MOCK_SDS_FHIR_URL, {
-    reqheaders: {
-      apiKey: 'fake-sds-api-key'
-    }
-  })
-    .get(`/Device`)
-    .query(() => true)
-    .reply(200, mockFhirResponse);
 };
 
 const createMockMHSScope = () => {
-  const postRequestBody = {};
-  const postRequestHeaders = {};
+  const body = {};
+  const headers = {};
 
   const scope = nock(MOCK_MHS_OUTBOUND_URL)
     .post('')
     .reply(function (_, requestBody) {
-      Object.assign(postRequestBody, requestBody);
-      Object.assign(postRequestHeaders, this.req.headers);
+      Object.assign(body, requestBody);
+      Object.assign(headers, this.req.headers);
       return [200, 'OK'];
     });
 
-  scope.postRequestBody = postRequestBody;
-  scope.postRequestHeaders = postRequestHeaders;
+  scope.outboundBody = body;
+  scope.outboundHeaders = headers;
   return scope;
 };
 
 describe('logOutboundMessage', () => {
-  const conversationId = randomUuid();
-  const messageId = randomUuid();
-  const ehrRequestId = randomUuid();
-  const ids = { conversationId, messageId, ehrRequestId };
-  const odsCode = FAKE_DEST_ODS_CODE;
-  const authKey = 'fake-auth-key';
+  const fakeAuthKey = 'fake-auth-key';
 
   beforeEach(() => {
-    process.env.API_KEY_FOR_TEST_USER = authKey;
+    process.env.API_KEY_FOR_TEST_USER = fakeAuthKey;
     process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = MOCK_MHS_OUTBOUND_URL;
     process.env.SDS_FHIR_URL = MOCK_SDS_FHIR_URL;
     process.env.SDS_FHIR_API_KEY = 'fake-sds-api-key';
-    process.env.SPINE_ORG_CODE = 'YES';
     process.env.GP2GP_MESSENGER_REPOSITORY_ASID = FAKE_REPO_ASID_CODE;
     process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = FAKE_REPO_ODS_CODE;
   });
 
-  // TODO: merge the duplication of two test by parameterized test
   const testCases = [
-    { messageType: 'core', interactionId: 'RCMR_IN030000UK06' },
-    { messageType: 'fragment', interactionId: 'COPC_IN000001UK01' }
+    { messageType: EhrMessageType.core, interactionId: 'RCMR_IN030000UK06' },
+    { messageType: EhrMessageType.fragment, interactionId: 'COPC_IN000001UK01' }
   ];
 
   describe.each(testCases)('Test case for EHR $messageType', ({ messageType, interactionId }) => {
     it(`should log outbound message with all base64 contents removed`, async () => {
       // given
-      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, ids);
+      const testData = generateTestData();
+      const { conversationId, messageId } = testData;
+      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, testData);
       const expectedOutboundMessageBody = loadTestFileAndFillIds(
         `expectedOutbound${messageType}Body`,
-        ids
+        testData
       );
+      const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testData);
+      // const mockRequestBody = {
+      //   conversationId,
+      //   messageId,
+      //   odsCode
+      // };
 
-      const mockRequestBody = {
-        conversationId,
-        messageId,
-        odsCode
-      };
+      // if (messageType === 'core') {
+      //   mockRequestBody.coreEhr = ehrMessage;
+      //   mockRequestBody.ehrRequestId = ehrRequestId;
+      // } else {
+      //   mockRequestBody.fragmentMessage = ehrMessage;
+      // }
 
-      if (messageType === 'core') {
-        mockRequestBody.coreEhr = ehrMessage;
-        mockRequestBody.ehrRequestId = ehrRequestId;
-      } else {
-        mockRequestBody.fragmentMessage = ehrMessage;
-      }
+      // expect(fakeMockRequestBody).toEqual(mockRequestBody);
 
       // when
-      const sdsFhirScope = createMockFhirScope();
+      const sdsFhirScope = createMockFhirScope(testData);
       const mhsAdaptorScope = createMockMHSScope();
 
       const response = await request(app)
         .post(`/ehr-out-transfers/${messageType}`)
-        .set('Authorization', authKey)
+        .set('Authorization', fakeAuthKey)
         .send(mockRequestBody);
 
       // then
@@ -164,51 +152,40 @@ describe('logOutboundMessage', () => {
 
       // Verify the logged content is same as the post request of gp2gp messenger --> outbound MHS adaptor
       // payload (the hl7v3 xml part) and external_attachments should be identical
-      expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.postRequestBody.payload);
+      expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.outboundBody.payload);
       expect(outboundMessageInLog.body.external_attachments).toEqual(
-        mhsAdaptorScope.postRequestBody.external_attachments
+        mhsAdaptorScope.outboundBody.external_attachments
       );
 
       // attachment are not exactly equal, as the one in logs got base64 contents removed.
       // other than the base64 payloads, they should be the same
       expect(outboundMessageInLog.body.attachments).not.toEqual(
-        mhsAdaptorScope.postRequestBody.attachments
+        mhsAdaptorScope.outboundBody.attachments
       );
       expect(outboundMessageInLog.body.attachments).toEqual(
-        removeBase64Payloads(mhsAdaptorScope.postRequestBody.attachments)
+        removeBase64Payloads(mhsAdaptorScope.outboundBody.attachments)
       );
     });
 
     it('should keep the base64 content in the actual outbound post request unchanged', async () => {
       // given
-      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, ids);
-
-      const mockRequestBody = {
-        conversationId,
-        messageId,
-        odsCode
-      };
-
-      if (messageType === 'core') {
-        mockRequestBody.coreEhr = ehrMessage;
-        mockRequestBody.ehrRequestId = ehrRequestId;
-      } else {
-        mockRequestBody.fragmentMessage = ehrMessage;
-      }
+      const testData = generateTestData();
+      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, testData);
+      const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testData);
 
       // when
-      createMockFhirScope();
+      createMockFhirScope(testData);
       const mhsAdaptorScope = createMockMHSScope();
 
       await request(app)
         .post(`/ehr-out-transfers/${messageType}`)
-        .set('Authorization', authKey)
+        .set('Authorization', fakeAuthKey)
         .send(mockRequestBody);
 
       // then
       // verify that the base64 payload in the outbound post request body is still intact
-      expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
-      mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
+      expect(isSmallerThan256KB(mhsAdaptorScope.outboundBody)).toBe(false);
+      mhsAdaptorScope.outboundBody.attachments.forEach((attachment, index) => {
         expect(attachment.payload).toEqual(ehrMessage.attachments[index].payload);
       });
     });
