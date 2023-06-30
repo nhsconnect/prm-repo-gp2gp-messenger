@@ -4,12 +4,12 @@ import { readFileSync } from 'fs';
 import request from 'supertest';
 import nock from 'nock';
 
-import app from '../app';
-import { logInfo } from '../middleware/logging';
-import { removeBase64Payloads } from '../services/mhs/logging-utils';
+import app from '../../../app';
+import { logInfo } from '../../../middleware/logging';
+import { removeBase64Payloads } from '../logging-utils';
 
-jest.mock('../middleware/logging');
-jest.mock('../services/sqs/sqs-client');
+jest.mock('../../../middleware/logging');
+jest.mock('../../../services/sqs/sqs-client');
 
 const { v4 } = jest.requireActual('uuid');
 const randomUuid = () => v4().toUpperCase();
@@ -208,7 +208,7 @@ describe('logOutboundMessage', () => {
     it('should log the outbound EHR core message with all base64 contents removed', async () => {
       // given
       const coreEhr = loadTestFileAndFillIds('TestEhrCore', ids);
-      const expectedOutboundMessage = loadTestFileAndFillIds('ExpectedOutboundEhrCoreBody', ids);
+      const expectedOutboundMessage = loadTestFileAndFillIds('ExpectedOutboundCoreBody', ids);
 
       const mockRequestBody = {
         conversationId,
