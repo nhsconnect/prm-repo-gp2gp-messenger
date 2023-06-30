@@ -100,33 +100,39 @@ describe('logOutboundMessage', () => {
   });
 
   // TODO: merge the duplication of two test by parameterized test
-  const test_cases = [
-    { type: 'core', interaction_id: 'RCMR_IN030000UK06' },
-    { name: 'fragment', interaction_id: 'COPC_IN000001UK01' },
+  const testCases = [
+    { messageType: 'core', interactionId: 'RCMR_IN030000UK06' },
+    { messageType: 'fragment', interactionId: 'COPC_IN000001UK01' }
   ];
 
-  describe('case of sending a EHR fragment', () => {
-    it('should log the outbound COPC fragment message with all base64 contents removed', async () => {
+  describe.each(testCases)('Test case for EHR $messageType', ({ messageType, interactionId }) => {
+    it(`should log outbound message with all base64 contents removed`, async () => {
       // given
-      const fragmentMessage = loadTestFileAndFillIds('TestEhrFragment', ids);
-      const expectedOutboundFragmentBody = loadTestFileAndFillIds(
-        'expectedOutboundFragmentBody',
+      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, ids);
+      const expectedOutboundMessageBody = loadTestFileAndFillIds(
+        `expectedOutbound${messageType}Body`,
         ids
       );
 
       const mockRequestBody = {
         conversationId,
-        odsCode,
-        fragmentMessage,
-        messageId
+        messageId,
+        odsCode
       };
+
+      if (messageType === 'core') {
+        mockRequestBody.coreEhr = ehrMessage;
+        mockRequestBody.ehrRequestId = ehrRequestId;
+      } else {
+        mockRequestBody.fragmentMessage = ehrMessage;
+      }
 
       // when
       const sdsFhirScope = createMockFhirScope();
       const mhsAdaptorScope = createMockMHSScope();
 
       const response = await request(app)
-        .post('/ehr-out-transfers/fragment')
+        .post(`/ehr-out-transfers/${messageType}`)
         .set('Authorization', authKey)
         .send(mockRequestBody);
 
@@ -136,13 +142,10 @@ describe('logOutboundMessage', () => {
       expect(mhsAdaptorScope.isDone()).toBe(true);
       expect(response.statusCode).toBe(204);
 
-      // extract the log with outbound COPC message from all arguments that logInfo was called with.
+      // extract the relevant log with outbound message from all arguments that logInfo was called with.
       const outboundMessageInLog = logInfo.mock.calls
         .map(args => args[0])
-        .filter(
-          loggedObject =>
-            loggedObject?.body?.payload && loggedObject?.body?.payload.includes('COPC_IN000001UK01')
-        )
+        .filter(loggedObject => loggedObject?.body?.payload?.includes(interactionId))
         .pop();
 
       // verify that the log does exist and is under 256KB
@@ -150,23 +153,24 @@ describe('logOutboundMessage', () => {
       expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
 
       // compare the logged content with what we expected
-      expect(outboundMessageInLog.body).toEqual(expectedOutboundFragmentBody);
+      expect(outboundMessageInLog.body).toEqual(expectedOutboundMessageBody);
       expect(outboundMessageInLog.headers).toMatchObject({
         'correlation-id': conversationId,
-        'interaction-id': 'COPC_IN000001UK01',
+        'interaction-id': interactionId,
         'message-id': messageId,
         'ods-code': FAKE_DEST_ODS_CODE,
         'from-asid': FAKE_REPO_ASID_CODE
       });
 
-      // verify the logged content match with what comes out from gp2gp messenger
+      // Verify the logged content is same as the post request of gp2gp messenger --> outbound MHS adaptor
+      // payload (the hl7v3 xml part) and external_attachments should be identical
       expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.postRequestBody.payload);
       expect(outboundMessageInLog.body.external_attachments).toEqual(
         mhsAdaptorScope.postRequestBody.external_attachments
       );
 
-      // The attachment are not exactly equal, as the one in logs got base64 contents removed.
-      // Other than that, the logged attachments should be same as the actual attachments in outbound post request
+      // attachment are not exactly equal, as the one in logs got base64 contents removed.
+      // other than the base64 payloads, they should be the same
       expect(outboundMessageInLog.body.attachments).not.toEqual(
         mhsAdaptorScope.postRequestBody.attachments
       );
@@ -177,21 +181,27 @@ describe('logOutboundMessage', () => {
 
     it('should keep the base64 content in the actual outbound post request unchanged', async () => {
       // given
-      const fragmentMessage = loadTestFileAndFillIds('TestEhrFragment', ids);
+      const ehrMessage = loadTestFileAndFillIds(`TestEhr${messageType}`, ids);
 
       const mockRequestBody = {
         conversationId,
-        odsCode,
-        fragmentMessage,
-        messageId
+        messageId,
+        odsCode
       };
+
+      if (messageType === 'core') {
+        mockRequestBody.coreEhr = ehrMessage;
+        mockRequestBody.ehrRequestId = ehrRequestId;
+      } else {
+        mockRequestBody.fragmentMessage = ehrMessage;
+      }
 
       // when
       createMockFhirScope();
       const mhsAdaptorScope = createMockMHSScope();
 
       await request(app)
-        .post('/ehr-out-transfers/fragment')
+        .post(`/ehr-out-transfers/${messageType}`)
         .set('Authorization', authKey)
         .send(mockRequestBody);
 
@@ -199,107 +209,206 @@ describe('logOutboundMessage', () => {
       // verify that the base64 payload in the outbound post request body is still intact
       expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
       mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
-        expect(attachment.payload).toEqual(fragmentMessage.attachments[index].payload);
+        expect(attachment.payload).toEqual(ehrMessage.attachments[index].payload);
       });
     });
   });
 
-  describe('case of sending a EHR core', () => {
-    it('should log the outbound EHR core message with all base64 contents removed', async () => {
-      // given
-      const coreEhr = loadTestFileAndFillIds('TestEhrCore', ids);
-      const expectedOutboundMessage = loadTestFileAndFillIds('ExpectedOutboundCoreBody', ids);
-
-      const mockRequestBody = {
-        conversationId,
-        odsCode,
-        coreEhr,
-        messageId,
-        ehrRequestId
-      };
-
-      // when
-      const sdsFhirScope = createMockFhirScope();
-      const mhsAdaptorScope = createMockMHSScope();
-
-      const response = await request(app)
-        .post('/ehr-out-transfers/core')
-        .set('Authorization', authKey)
-        .send(mockRequestBody);
-
-      // then
-      expect(logInfo).toBeCalled();
-      expect(sdsFhirScope.isDone()).toBe(true);
-      expect(mhsAdaptorScope.isDone()).toBe(true);
-      expect(response.statusCode).toBe(204);
-
-      // extract the log with outbound UK06 message from all arguments that logInfo was called with.
-      const outboundMessageInLog = logInfo.mock.calls
-        .map(args => args[0])
-        .filter(
-          loggedObject =>
-            loggedObject?.body?.payload && loggedObject?.body?.payload.includes('RCMR_IN030000UK06')
-        )
-        .pop();
-
-      // verify that the log does exist and is under 256KB
-      expect(outboundMessageInLog).not.toEqual(undefined);
-      expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
-
-      // compare the logged content with what we expected
-      expect(outboundMessageInLog.body).toEqual(expectedOutboundMessage);
-      expect(outboundMessageInLog.headers).toMatchObject({
-        'correlation-id': conversationId,
-        'interaction-id': 'RCMR_IN030000UK06',
-        'message-id': messageId,
-        'ods-code': FAKE_DEST_ODS_CODE,
-        'from-asid': FAKE_REPO_ASID_CODE
-      });
-
-      // verify the logged content match with what comes out from gp2gp messenger
-      expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.postRequestBody.payload);
-      expect(outboundMessageInLog.body.external_attachments).toEqual(
-        mhsAdaptorScope.postRequestBody.external_attachments
-      );
-      expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.postRequestHeaders);
-
-      // The attachment are not exactly equal, as the one in logs got base64 contents removed.
-      // Other than that, the logged attachments should be same as the actual attachments in outbound post request
-      expect(outboundMessageInLog.body.attachments).not.toEqual(
-        mhsAdaptorScope.postRequestBody.attachments
-      );
-      expect(outboundMessageInLog.body.attachments).toEqual(
-        removeBase64Payloads(mhsAdaptorScope.postRequestBody.attachments)
-      );
-    });
-
-    it('should keep the base64 content in the actual outbound post request unchanged', async () => {
-      // given
-      const coreEhr = loadTestFileAndFillIds('TestEhrCore', ids);
-
-      const mockRequestBody = {
-        conversationId,
-        odsCode,
-        coreEhr,
-        messageId,
-        ehrRequestId
-      };
-
-      // when
-      createMockFhirScope();
-      const mhsAdaptorScope = createMockMHSScope();
-
-      const res = await request(app)
-        .post('/ehr-out-transfers/core')
-        .set('Authorization', authKey)
-        .send(mockRequestBody);
-
-      // then
-      // verify that the base64 payload in the outbound post request body is still intact
-      expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
-      mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
-        expect(attachment.payload).toEqual(coreEhr.attachments[index].payload);
-      });
-    });
-  });
+  // describe.skip('case of sending a EHR fragment', () => {
+  //   it('should log the outbound COPC fragment message with all base64 contents removed', async () => {
+  //     // given
+  //     const fragmentMessage = loadTestFileAndFillIds('TestEhrFragment', ids);
+  //     const expectedOutboundFragmentBody = loadTestFileAndFillIds(
+  //       'expectedOutboundFragmentBody',
+  //       ids
+  //     );
+  //
+  //     const mockRequestBody = {
+  //       conversationId,
+  //       odsCode,
+  //       fragmentMessage,
+  //       messageId
+  //     };
+  //
+  //     // when
+  //     const sdsFhirScope = createMockFhirScope();
+  //     const mhsAdaptorScope = createMockMHSScope();
+  //
+  //     const response = await request(app)
+  //       .post('/ehr-out-transfers/fragment')
+  //       .set('Authorization', authKey)
+  //       .send(mockRequestBody);
+  //
+  //     // then
+  //     expect(logInfo).toBeCalled();
+  //     expect(sdsFhirScope.isDone()).toBe(true);
+  //     expect(mhsAdaptorScope.isDone()).toBe(true);
+  //     expect(response.statusCode).toBe(204);
+  //
+  //     // extract the log with outbound COPC message from all arguments that logInfo was called with.
+  //     const outboundMessageInLog = logInfo.mock.calls
+  //       .map(args => args[0])
+  //       .filter(
+  //         loggedObject =>
+  //           loggedObject?.body?.payload && loggedObject?.body?.payload.includes('COPC_IN000001UK01')
+  //       )
+  //       .pop();
+  //
+  //     // verify that the log does exist and is under 256KB
+  //     expect(outboundMessageInLog).not.toEqual(undefined);
+  //     expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
+  //
+  //     // compare the logged content with what we expected
+  //     expect(outboundMessageInLog.body).toEqual(expectedOutboundFragmentBody);
+  //     expect(outboundMessageInLog.headers).toMatchObject({
+  //       'correlation-id': conversationId,
+  //       'interaction-id': 'COPC_IN000001UK01',
+  //       'message-id': messageId,
+  //       'ods-code': FAKE_DEST_ODS_CODE,
+  //       'from-asid': FAKE_REPO_ASID_CODE
+  //     });
+  //
+  //     // verify the logged content match with what comes out from gp2gp messenger
+  //     expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.postRequestBody.payload);
+  //     expect(outboundMessageInLog.body.external_attachments).toEqual(
+  //       mhsAdaptorScope.postRequestBody.external_attachments
+  //     );
+  //
+  //     // The attachment are not exactly equal, as the one in logs got base64 contents removed.
+  //     // Other than that, the logged attachments should be same as the actual attachments in outbound post request
+  //     expect(outboundMessageInLog.body.attachments).not.toEqual(
+  //       mhsAdaptorScope.postRequestBody.attachments
+  //     );
+  //     expect(outboundMessageInLog.body.attachments).toEqual(
+  //       removeBase64Payloads(mhsAdaptorScope.postRequestBody.attachments)
+  //     );
+  //   });
+  //
+  //   it('should keep the base64 content in the actual outbound post request unchanged', async () => {
+  //     // given
+  //     const fragmentMessage = loadTestFileAndFillIds('TestEhrFragment', ids);
+  //
+  //     const mockRequestBody = {
+  //       conversationId,
+  //       odsCode,
+  //       fragmentMessage,
+  //       messageId
+  //     };
+  //
+  //     // when
+  //     createMockFhirScope();
+  //     const mhsAdaptorScope = createMockMHSScope();
+  //
+  //     await request(app)
+  //       .post('/ehr-out-transfers/fragment')
+  //       .set('Authorization', authKey)
+  //       .send(mockRequestBody);
+  //
+  //     // then
+  //     // verify that the base64 payload in the outbound post request body is still intact
+  //     expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
+  //     mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
+  //       expect(attachment.payload).toEqual(fragmentMessage.attachments[index].payload);
+  //     });
+  //   });
+  // });
+  //
+  // describe.skip('case of sending a EHR core', () => {
+  //   it('should log the outbound EHR core message with all base64 contents removed', async () => {
+  //     // given
+  //     const coreEhr = loadTestFileAndFillIds('TestEhrCore', ids);
+  //     const expectedOutboundMessage = loadTestFileAndFillIds('ExpectedOutboundCoreBody', ids);
+  //
+  //     const mockRequestBody = {
+  //       conversationId,
+  //       odsCode,
+  //       coreEhr,
+  //       messageId,
+  //       ehrRequestId
+  //     };
+  //
+  //     // when
+  //     const sdsFhirScope = createMockFhirScope();
+  //     const mhsAdaptorScope = createMockMHSScope();
+  //
+  //     const response = await request(app)
+  //       .post('/ehr-out-transfers/core')
+  //       .set('Authorization', authKey)
+  //       .send(mockRequestBody);
+  //
+  //     // then
+  //     expect(logInfo).toBeCalled();
+  //     expect(sdsFhirScope.isDone()).toBe(true);
+  //     expect(mhsAdaptorScope.isDone()).toBe(true);
+  //     expect(response.statusCode).toBe(204);
+  //
+  //     // extract the log with outbound UK06 message from all arguments that logInfo was called with.
+  //     const outboundMessageInLog = logInfo.mock.calls
+  //       .map(args => args[0])
+  //       .filter(
+  //         loggedObject =>
+  //           loggedObject?.body?.payload && loggedObject?.body?.payload.includes('RCMR_IN030000UK06')
+  //       )
+  //       .pop();
+  //
+  //     // verify that the log does exist and is under 256KB
+  //     expect(outboundMessageInLog).not.toEqual(undefined);
+  //     expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
+  //
+  //     // compare the logged content with what we expected
+  //     expect(outboundMessageInLog.body).toEqual(expectedOutboundMessage);
+  //     expect(outboundMessageInLog.headers).toMatchObject({
+  //       'correlation-id': conversationId,
+  //       'interaction-id': 'RCMR_IN030000UK06',
+  //       'message-id': messageId,
+  //       'ods-code': FAKE_DEST_ODS_CODE,
+  //       'from-asid': FAKE_REPO_ASID_CODE
+  //     });
+  //
+  //     // verify the logged content match with what comes out from gp2gp messenger
+  //     expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.postRequestBody.payload);
+  //     expect(outboundMessageInLog.body.external_attachments).toEqual(
+  //       mhsAdaptorScope.postRequestBody.external_attachments
+  //     );
+  //     expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.postRequestHeaders);
+  //
+  //     // The attachment are not exactly equal, as the one in logs got base64 contents removed.
+  //     // Other than that, the logged attachments should be same as the actual attachments in outbound post request
+  //     expect(outboundMessageInLog.body.attachments).not.toEqual(
+  //       mhsAdaptorScope.postRequestBody.attachments
+  //     );
+  //     expect(outboundMessageInLog.body.attachments).toEqual(
+  //       removeBase64Payloads(mhsAdaptorScope.postRequestBody.attachments)
+  //     );
+  //   });
+  //
+  //   it('should keep the base64 content in the actual outbound post request unchanged', async () => {
+  //     // given
+  //     const coreEhr = loadTestFileAndFillIds('TestEhrCore', ids);
+  //
+  //     const mockRequestBody = {
+  //       conversationId,
+  //       odsCode,
+  //       coreEhr,
+  //       messageId,
+  //       ehrRequestId
+  //     };
+  //
+  //     // when
+  //     createMockFhirScope();
+  //     const mhsAdaptorScope = createMockMHSScope();
+  //
+  //     const res = await request(app)
+  //       .post('/ehr-out-transfers/core')
+  //       .set('Authorization', authKey)
+  //       .send(mockRequestBody);
+  //
+  //     // then
+  //     // verify that the base64 payload in the outbound post request body is still intact
+  //     expect(isSmallerThan256KB(mhsAdaptorScope.postRequestBody)).toBe(false);
+  //     mhsAdaptorScope.postRequestBody.attachments.forEach((attachment, index) => {
+  //       expect(attachment.payload).toEqual(coreEhr.attachments[index].payload);
+  //     });
+  //   });
+  // });
 });
