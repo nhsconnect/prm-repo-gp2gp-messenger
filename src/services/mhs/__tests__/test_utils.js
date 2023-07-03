@@ -1,36 +1,101 @@
 import nock from 'nock';
+import path from 'path';
+import { readFileSync } from 'fs';
+
+// import the actual uuid package here, as there is a global jest mock for that lib in `src/__mocks__/uuid.js` used by other tests
+const { v4 } = jest.requireActual('uuid');
+const randomUUID = () => v4().toUpperCase();
+
+const FAKE_AUTH_KEY = 'fake-auth-key';
+const MOCK_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
+const MOCK_SDS_FHIR_URL = 'http://localhost/sds-fhir';
+const FAKE_SDS_API_KEY = 'fake-sds-api-key';
+const FAKE_REPO_ASID_CODE = 'fake_repo_asid_code';
+const FAKE_DEST_ASID_CODE = 'fake_dest_asid_code';
+const FAKE_REPO_ODS_CODE = 'B85002';
+const FAKE_DEST_ODS_CODE = 'M85019';
+
+export const setupEnvVarsForTest = () => {
+  process.env.API_KEY_FOR_TEST_USER = FAKE_AUTH_KEY;
+  process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = MOCK_MHS_OUTBOUND_URL;
+  process.env.SDS_FHIR_URL = MOCK_SDS_FHIR_URL;
+  process.env.SDS_FHIR_API_KEY = FAKE_SDS_API_KEY;
+  process.env.GP2GP_MESSENGER_REPOSITORY_ASID = FAKE_REPO_ASID_CODE;
+  process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = FAKE_REPO_ODS_CODE;
+};
+
+export const TestConstants = {
+  mhsOutboundUrl: MOCK_MHS_OUTBOUND_URL,
+  sdsFhirUrl: MOCK_SDS_FHIR_URL,
+  repoAsidCode: FAKE_REPO_ASID_CODE,
+  destAsidCode: FAKE_DEST_ASID_CODE,
+  repoOdsCode: FAKE_REPO_ODS_CODE,
+  destOdsCode: FAKE_DEST_ODS_CODE
+};
 
 export const EhrMessageType = {
   core: 'core',
   fragment: 'fragment'
 };
 
-//   { messageType: 'core', interactionId: 'RCMR_IN030000UK06' },
-//   { messageType: 'fragment', interactionId: 'COPC_IN000001UK01' }
-// }
+export const generateTestData = () => {
+  return {
+    conversationId: randomUUID(),
+    messageId: randomUUID(),
+    ehrRequestId: randomUUID()
+  };
+};
+
 export const isSmallerThan256KB = jsObject => {
+  /*
+  A function to roughly estimate whether a js Object will be greater than 256KB size in logs.
+  Return true if it is smaller than 256KB when converted to string.
+  */
   return JSON.stringify(jsObject).length < 256 * 1024;
+};
+
+export const buildInboundMessage = (messageType, testUUIDs) => {
+  const filename = `TestEhr${messageType}`;
+  return loadTestFileAndFillIds(filename, testUUIDs);
+};
+
+export const buildExpectedOutboundMessageBody = (messageType, testUUIDs) => {
+  const filename = `expectedOutbound${messageType}Body`;
+  return loadTestFileAndFillIds(filename, testUUIDs);
+};
+
+const loadTestFileAndFillIds = (filename, { conversationId, messageId, ehrRequestId }) => {
+  const filepath = path.join(__dirname, 'data', filename);
+  const jsonString = readFileSync(filepath, 'utf8')
+    .replaceAll('__CONVERSATION_ID__', conversationId)
+    .replaceAll('__MESSAGE_ID__', messageId)
+    .replaceAll('__EHR_REQUEST_ID__', ehrRequestId)
+    .replaceAll('__REPO_ASID_CODE__', FAKE_REPO_ASID_CODE)
+    .replaceAll('__REPO_ODS_CODE__', FAKE_REPO_ODS_CODE)
+    .replaceAll('__DEST_ASID_CODE__', FAKE_DEST_ASID_CODE)
+    .replaceAll('__DEST_ODS_CODE__', FAKE_DEST_ODS_CODE);
+  return JSON.parse(jsonString);
 };
 
 export const buildPostRequestBody = (
   messageType,
   ehrMessage,
-  { conversationId, messageId, destOdsCode, ehrRequestId }
+  { conversationId, messageId, ehrRequestId }
 ) => {
   switch (messageType) {
     case EhrMessageType.core:
       return {
         conversationId,
         messageId,
-        odsCode: destOdsCode,
+        ehrRequestId,
+        odsCode: FAKE_DEST_ODS_CODE,
         coreEhr: ehrMessage,
-        ehrRequestId
       };
     case EhrMessageType.fragment:
       return {
         conversationId,
         messageId,
-        odsCode: destOdsCode,
+        odsCode: FAKE_DEST_ODS_CODE,
         fragmentMessage: ehrMessage
       };
     default:
@@ -38,7 +103,10 @@ export const buildPostRequestBody = (
   }
 };
 
-export const createMockFhirScope = ({ sdsFhirUrl, destAsidCode }) => {
+export const createMockFhirScope = () => {
+  /*
+  Create a nock scope to mock the SDS FHIR api, which gp2gp messager get ASID codes from.
+  */
   const mockFhirResponse = {
     entry: [
       {
@@ -46,7 +114,7 @@ export const createMockFhirScope = ({ sdsFhirUrl, destAsidCode }) => {
           identifier: [
             {
               system: 'https://fhir.nhs.uk/Id/nhsSpineASID',
-              value: destAsidCode
+              value: FAKE_DEST_ASID_CODE
             }
           ]
         }
@@ -54,12 +122,34 @@ export const createMockFhirScope = ({ sdsFhirUrl, destAsidCode }) => {
     ]
   };
 
-  return nock(sdsFhirUrl, {
+  return nock(MOCK_SDS_FHIR_URL, {
     reqheaders: {
-      apiKey: 'fake-sds-api-key'
+      apiKey: FAKE_SDS_API_KEY
     }
   })
     .get(`/Device`)
     .query(() => true)
     .reply(200, mockFhirResponse);
+};
+
+export const createMockMHSScope = () => {
+  /*
+  Create a nock scope to mock the outbound MHS adaptor.
+  This function use some special trick to capture the outbound request headers and body.
+  Please keep the function in .reply intact and don't change it to an arrow function.
+  */
+  const body = {};
+  const headers = {};
+
+  const scope = nock(MOCK_MHS_OUTBOUND_URL)
+    .post('')
+    .reply(function (_, requestBody) {
+      Object.assign(body, requestBody);
+      Object.assign(headers, this.req.headers);
+      return [200, 'OK'];
+    });
+
+  scope.outboundBody = body;
+  scope.outboundHeaders = headers;
+  return scope;
 };
