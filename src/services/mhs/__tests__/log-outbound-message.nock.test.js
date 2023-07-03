@@ -5,13 +5,13 @@ import { logInfo } from '../../../middleware/logging';
 import { removeBase64Payloads } from '../logging-utils';
 import {
   EhrMessageType,
-  TestConstants,
   buildPostRequestBody,
   createMockFhirScope,
   createMockMHSScope,
-  generateTestData,
+  generateRandomIdsForTest,
   isSmallerThan256KB,
-  setupEnvVarsForTest, buildInboundMessage, buildExpectedOutboundMessageBody
+  setupEnvVarsForTest,
+  loadMessageWithIds,
 } from './test_utils';
 
 jest.mock('../../../middleware/logging');
@@ -32,11 +32,10 @@ describe('logOutboundMessage', () => {
   describe.each(testCases)('Test case for EHR $messageType', ({ messageType, interactionId }) => {
     it(`should log outbound message with all base64 contents removed`, async () => {
       // given
-      const testUUIDs = generateTestData();
-      const { conversationId, messageId } = testUUIDs;
-      const ehrMessage = buildInboundMessage(messageType, testUUIDs);
-      const expectedOutboundMessageBody = buildExpectedOutboundMessageBody(messageType, testUUIDs);
+      const testUUIDs = generateRandomIdsForTest();
+      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
       const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
+
       // when
       const sdsFhirScope = createMockFhirScope();
       const mhsAdaptorScope = createMockMHSScope();
@@ -62,24 +61,14 @@ describe('logOutboundMessage', () => {
       expect(outboundMessageInLog).not.toEqual(undefined);
       expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
 
-      // compare the logged content with what we expected
-      expect(outboundMessageInLog.body).toEqual(expectedOutboundMessageBody);
-      expect(outboundMessageInLog.headers).toMatchObject({
-        'correlation-id': conversationId,
-        'interaction-id': interactionId,
-        'message-id': messageId,
-        'ods-code': TestConstants.destOdsCode,
-        'from-asid': TestConstants.repoAsidCode
-      });
-
       // Verify the logging correctly capture the post request of gp2gp messenger --> outbound MHS adaptor
-      expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.outboundHeaders)
+      expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.outboundHeaders);
       // payload (the hl7v3 xml part) and external_attachments should be identical
       expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.outboundBody.payload);
       expect(outboundMessageInLog.body.external_attachments).toEqual(
         mhsAdaptorScope.outboundBody.external_attachments
       );
-      // attachment are not exactly equal, as the one in logs got base64 contents removed.
+      // attachments are not exactly equal, as the attachments in log got base64 contents removed.
       // other than the base64 payloads, they should be the same
       expect(outboundMessageInLog.body.attachments).not.toEqual(
         mhsAdaptorScope.outboundBody.attachments
@@ -91,8 +80,8 @@ describe('logOutboundMessage', () => {
 
     it('should keep the base64 content in the actual outbound post request unchanged', async () => {
       // given
-      const testUUIDs = generateTestData();
-      const ehrMessage = buildInboundMessage(messageType, testUUIDs);
+      const testUUIDs = generateRandomIdsForTest();
+      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
       const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
 
       // when
@@ -116,6 +105,47 @@ describe('logOutboundMessage', () => {
         const base64ContentFromOriginFile = ehrMessage.attachments[index].payload;
         expect(base64ContentFromOutbound).toEqual(base64ContentFromOriginFile);
       });
+    });
+  });
+
+  describe('Special test case: EHR with Large medical history which is > 256KB even without the base64 content', () => {
+    it(`should log the whole outbound message in multiple lines of logs, each line to be within 256 KB`, async () => {
+      // given
+      const messageType = EhrMessageType.coreWithLargeMedicalHistory;
+      const testUUIDs = generateRandomIdsForTest();
+      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
+      const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
+
+      // when
+      createMockFhirScope();
+      const mhsAdaptorScope = createMockMHSScope();
+
+      await request(app)
+        .post(`/ehr-out-transfers/core`)
+        .set('Authorization', fakeAuthKey)
+        .send(mockRequestBody);
+
+      // then
+      expect(logInfo).toBeCalled();
+      const relevantLogs = logInfo.mock.calls
+        .map(args => args[0])
+        .filter(loggedText => loggedText.match(/Part \d+ of \d+: /));
+
+      // verify that every line of the log is less than 256 KB
+      expect(relevantLogs.length).toBeGreaterThan(0);
+      relevantLogs.forEach(singleLineOfLog => {
+        expect(isSmallerThan256KB(singleLineOfLog)).toBe(true);
+      });
+
+      // verify that we can combine all lines of the log to reconstruct the actual outbound message (with base64 contents removed)
+      const combinedLogs = relevantLogs
+        .map(singleLineOfLog => singleLineOfLog.replace(/Part \d+ of \d+: /, ''))
+        .join('');
+
+      const restoredMessage = JSON.parse(combinedLogs);
+
+      expect(restoredMessage.headers).toEqual(mhsAdaptorScope.outboundHeaders);
+      expect(restoredMessage.body).toEqual(removeBase64Payloads(mhsAdaptorScope.outboundBody));
     });
   });
 });
