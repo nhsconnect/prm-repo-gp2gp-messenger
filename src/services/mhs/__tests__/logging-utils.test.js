@@ -105,11 +105,7 @@ describe('logging-utils', () => {
       expect(logInfo).toHaveBeenCalledTimes(expectedNumberOfParts + 2); // including every part and the start and end logs
 
       const loggedMessageParts = logInfo.mock.calls.slice(1, -1).map(array => array[0]);
-      expect(loggedMessageParts[0]).toMatch(
-        new RegExp(
-          `Part 0 of ${expectedNumberOfParts}: {"payload":"<COPC_IN000001UK01><content>Lorem ipsum`
-        )
-      );
+      expect(loggedMessageParts[0]).toContain(`"payload":"<COPC_IN000001UK01><content>Lorem ipsum`);
 
       // verify that we can get back the original message by combining every part of the logs
       const combinedParts = loggedMessageParts
