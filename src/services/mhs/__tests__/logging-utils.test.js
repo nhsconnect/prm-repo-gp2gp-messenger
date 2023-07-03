@@ -40,7 +40,7 @@ describe('logging-utils', () => {
     });
   });
 
-  describe('logLargeMessage', () => {
+  describe('checkSizeAndLogMessage', () => {
     it('should log a message of < 256 KB normally', () => {
       // given
       const inputMessage = {
