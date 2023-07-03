@@ -11,7 +11,7 @@ import {
   generateRandomIdsForTest,
   isSmallerThan256KB,
   setupEnvVarsForTest,
-  loadMessageWithIds,
+  loadMessageWithIds
 } from './test_utils';
 
 jest.mock('../../../middleware/logging');

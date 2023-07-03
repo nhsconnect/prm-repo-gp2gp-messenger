@@ -1,6 +1,6 @@
-import nock from 'nock';
 import path from 'path';
 import { readFileSync } from 'fs';
+import nock from 'nock';
 
 const FAKE_AUTH_KEY = 'fake-auth-key';
 const MOCK_MHS_OUTBOUND_URL = 'http://localhost/mhs-outbound';
@@ -39,10 +39,6 @@ export const generateRandomIdsForTest = () => {
 };
 
 export const isSmallerThan256KB = input => {
-  /*
-  A function to roughly estimate whether a js Object will be greater than 256KB size in logs.
-  Return true if it is smaller than 256KB when converted to string.
-  */
   const jsObjectAsString = typeof input == 'string' ? input : JSON.stringify(input);
   return jsObjectAsString.length < 256 * 1024;
 };
@@ -95,7 +91,7 @@ export const buildPostRequestBody = (
 
 export const createMockFhirScope = () => {
   /*
-  Create a nock scope to mock the SDS FHIR api, which gp2gp messager get ASID codes from.
+  Create a nock scope to mock the SDS FHIR api, which gp2gp messenger get ASID codes from.
   */
   const mockFhirResponse = {
     entry: [

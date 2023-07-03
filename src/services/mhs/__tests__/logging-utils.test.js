@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import cloneDeep from 'lodash.clonedeep';
-import { LOG_SIZE_LIMIT, logLargeMessage, removeBase64Payloads } from '../logging-utils';
+import { LOG_SIZE_LIMIT, checkSizeAndLogMessage, removeBase64Payloads } from '../logging-utils';
 import { logInfo } from '../../../middleware/logging';
 
 jest.mock('../../../middleware/logging');
@@ -65,7 +65,7 @@ describe('logging-utils', () => {
       };
 
       // when
-      logLargeMessage(inputMessage);
+      checkSizeAndLogMessage(inputMessage);
 
       // then
       expect(logInfo).toHaveBeenCalledWith(inputMessage);
@@ -99,7 +99,7 @@ describe('logging-utils', () => {
       };
 
       // when
-      logLargeMessage(inputMessage);
+      checkSizeAndLogMessage(inputMessage);
 
       // then
       const expectedNumberOfParts = Math.ceil(veryLongString.length / LOG_SIZE_LIMIT);
