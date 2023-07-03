@@ -71,12 +71,11 @@ describe('logging-utils', () => {
       expect(logInfo).toHaveBeenCalledWith(inputMessage);
     });
 
+    // prettier-ignore
     it('should log a message of > 256 KB in multiple parts', () => {
       // given
-      const veryLongString =
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'.repeat(
-          25000
-        );
+      const veryLongString = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          .repeat(25000);
       const inputMessage = {
         payload: `<COPC_IN000001UK01><content>${veryLongString}</content></COPC_IN000001UK01>`,
         attachments: [
