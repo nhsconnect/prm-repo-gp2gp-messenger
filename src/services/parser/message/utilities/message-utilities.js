@@ -4,6 +4,7 @@ export const xmlStringToJsObject = xmlString => {
   return new XMLParser({
     processEntities: false,
     ignoreAttributes: false,
+    trimValues: false,
     numberParseOptions: {
       leadingZeros: false
     }

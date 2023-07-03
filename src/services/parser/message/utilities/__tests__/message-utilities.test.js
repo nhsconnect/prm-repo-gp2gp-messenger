@@ -14,6 +14,19 @@ describe('message-utilities', () => {
     expect(xmlStringAfterRebuild).toEqual(inputXml);
   });
 
+  it('should keep leading and trailing whitespaces in tags unchanged', async () => {
+    // given
+    const inputXml =
+      '<text>     Drinking status on eventdate: &#10;&#10;&#10;   &#13;&#10; Current drinker    </text>';
+
+    // when
+    const jsObjectAfterParse = xmlStringToJsObject(inputXml);
+    const xmlStringAfterRebuild = jsObjectToXmlString(jsObjectAfterParse);
+
+    // then
+    expect(xmlStringAfterRebuild).toEqual(inputXml);
+  });
+
   it('should keep escaped greater than (>) and less than (<) symbols unchanged', async () => {
     // given
     const inputXml =
