@@ -11,7 +11,7 @@ import {
   generateRandomIdsForTest,
   isSmallerThan256KB,
   setupEnvVarsForTest,
-  loadMessageWithIds
+  loadMessageAndUpdateIds
 } from './test_utils';
 
 jest.mock('../../../middleware/logging');
@@ -33,7 +33,7 @@ describe('logOutboundMessage', () => {
     it(`should log outbound message with all base64 contents removed`, async () => {
       // given
       const testUUIDs = generateRandomIdsForTest();
-      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
+      const ehrMessage = loadMessageAndUpdateIds(messageType, testUUIDs);
       const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
 
       // when
@@ -81,7 +81,7 @@ describe('logOutboundMessage', () => {
     it('should keep the base64 content in the actual outbound post request unchanged', async () => {
       // given
       const testUUIDs = generateRandomIdsForTest();
-      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
+      const ehrMessage = loadMessageAndUpdateIds(messageType, testUUIDs);
       const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
 
       // when
@@ -113,7 +113,7 @@ describe('logOutboundMessage', () => {
       // given
       const messageType = EhrMessageType.coreWithLargeMedicalHistory;
       const testUUIDs = generateRandomIdsForTest();
-      const ehrMessage = loadMessageWithIds(messageType, testUUIDs);
+      const ehrMessage = loadMessageAndUpdateIds(messageType, testUUIDs);
       const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
 
       // when

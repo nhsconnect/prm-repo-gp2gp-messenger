@@ -43,14 +43,14 @@ export const isSmallerThan256KB = input => {
   return jsObjectAsString.length < 256 * 1024;
 };
 
-export const loadMessageWithIds = (messageType, testUUIDs) => {
+export const loadMessageAndUpdateIds = (
+  messageType,
+  { conversationId, messageId, ehrRequestId }
+) => {
   const filename = `TestEhr${messageType}`;
-  return loadTestFileAndFillIds(filename, testUUIDs);
-};
-
-const loadTestFileAndFillIds = (filename, { conversationId, messageId, ehrRequestId }) => {
   const filepath = path.join(__dirname, 'data', filename);
-  const jsonString = readFileSync(filepath, 'utf8')
+
+  const fileContentWithIdsReplaced = readFileSync(filepath, 'utf8')
     .replaceAll('__CONVERSATION_ID__', conversationId)
     .replaceAll('__MESSAGE_ID__', messageId)
     .replaceAll('__EHR_REQUEST_ID__', ehrRequestId)
@@ -59,7 +59,7 @@ const loadTestFileAndFillIds = (filename, { conversationId, messageId, ehrReques
     .replaceAll('__REPO_ODS_CODE__', FAKE_REPO_ODS_CODE)
     .replaceAll('__DEST_ASID_CODE__', FAKE_DEST_ASID_CODE)
     .replaceAll('__DEST_ODS_CODE__', FAKE_DEST_ODS_CODE);
-  return JSON.parse(jsonString);
+  return JSON.parse(fileContentWithIdsReplaced);
 };
 
 export const buildPostRequestBody = (
