@@ -98,6 +98,7 @@ export const sendMessage = async ({
     const errorMessage = `POST ${config.mhsOutboundUrl} - ${error.message || 'Request failed'}`;
     const axiosError = new Error(errorMessage);
     logError(errorMessage, axiosError);
+    logOutboundMessage({ body: axiosBody, headers: error?.request?.headers });
     await sendToObservabilityQueue(
       { error: axiosError, request: { body: axiosBody, headers: axiosHeaders } },
       {

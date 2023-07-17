@@ -106,6 +106,53 @@ describe('logOutboundMessage', () => {
         expect(base64ContentFromOutbound).toEqual(base64ContentFromOriginFile);
       });
     });
+
+    it('should log the message even if mhs outbound adaptor responded with error status code', async () => {
+      // given
+      const testUUIDs = generateRandomIdsForTest();
+      const ehrMessage = loadMessageAndUpdateIds(messageType, testUUIDs);
+      const mockRequestBody = buildPostRequestBody(messageType, ehrMessage, testUUIDs);
+
+      // when
+      const sdsFhirScope = createMockFhirScope();
+      const mhsAdaptorScope = createMockMHSScope([500, 'Internal server error']);
+
+      const response = await request(app)
+        .post(`/ehr-out-transfers/${messageType}`)
+        .set('Authorization', fakeAuthKey)
+        .send(mockRequestBody);
+
+      // then
+      expect(logInfo).toBeCalled();
+      expect(sdsFhirScope.isDone()).toBe(true);
+      expect(mhsAdaptorScope.isDone()).toBe(true);
+      expect(response.statusCode).toBe(503);
+
+      const outboundMessageInLog = logInfo.mock.calls
+        .map(args => args[0])
+        .filter(loggedObject => loggedObject?.body?.payload?.includes(interactionId))
+        .pop();
+
+      // verify that the log does exist and is under 256KB
+      expect(outboundMessageInLog).not.toEqual(undefined);
+      expect(isSmallerThan256KB(outboundMessageInLog)).toBe(true);
+
+      // Verify the logging correctly capture the post request of gp2gp messenger --> outbound MHS adaptor
+      expect(outboundMessageInLog.headers).toEqual(mhsAdaptorScope.outboundHeaders);
+      // payload (the hl7v3 xml part) and external_attachments should be identical
+      expect(outboundMessageInLog.body.payload).toEqual(mhsAdaptorScope.outboundBody.payload);
+      expect(outboundMessageInLog.body.external_attachments).toEqual(
+        mhsAdaptorScope.outboundBody.external_attachments
+      );
+      // attachments are not exactly equal, as the attachments in log got base64 contents removed.
+      // other than the base64 payloads, they should be the same
+      expect(outboundMessageInLog.body.attachments).not.toEqual(
+        mhsAdaptorScope.outboundBody.attachments
+      );
+      expect(outboundMessageInLog.body.attachments).toEqual(
+        removeBase64Payloads(mhsAdaptorScope.outboundBody.attachments)
+      );
+    });
   });
 
   describe('Special test case: EHR with Large medical history which is > 256KB even without the base64 content', () => {

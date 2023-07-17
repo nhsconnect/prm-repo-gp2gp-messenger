@@ -118,7 +118,7 @@ export const createMockFhirScope = () => {
     .reply(200, mockFhirResponse);
 };
 
-export const createMockMHSScope = () => {
+export const createMockMHSScope = (response = [200, 'OK']) => {
   /*
   Create a nock scope to mock the outbound MHS adaptor.
   This function use some special trick to capture the outbound request headers and body.
@@ -132,7 +132,29 @@ export const createMockMHSScope = () => {
     .reply(function (_, requestBody) {
       Object.assign(body, requestBody);
       Object.assign(headers, this.req.headers);
-      return [200, 'OK'];
+      return response;
+    });
+
+  scope.outboundBody = body;
+  scope.outboundHeaders = headers;
+  return scope;
+};
+
+export const createMockMHSScopeFor500Error = () => {
+  /*
+  Create a nock scope to mock the outbound MHS adaptor.
+  This function use some special trick to capture the outbound request headers and body.
+  Please keep the function in .reply intact and don't change it to an arrow function.
+  */
+  const body = {};
+  const headers = {};
+
+  const scope = nock(MOCK_MHS_OUTBOUND_URL)
+    .post('')
+    .reply(function (_, requestBody) {
+      Object.assign(body, requestBody);
+      Object.assign(headers, this.req.headers);
+      return [500, 'Internal server error'];
     });
 
   scope.outboundBody = body;
