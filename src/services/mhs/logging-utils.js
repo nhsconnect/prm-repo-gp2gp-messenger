@@ -29,15 +29,20 @@ export const removeBase64Payloads = inputObject => {
    * Recursively drill down the input object and remove any base64 payloads found.
    * The initial input is assumed to be a JS object or an array containing JS objects.
    */
+  // If the input isn't an JS object, just return it unchanged
   if (inputObject === null || typeof inputObject !== 'object') return inputObject;
 
+  // If the input is an array, run this function on each member and return a new copy
   if (Array.isArray(inputObject)) return inputObject.map(removeBase64Payloads);
 
+  // If the input is an JS object, continue below
   const result = {};
   for (let key in inputObject) {
+    // apply this function on each child of the object
     result[key] = removeBase64Payloads(inputObject[key]);
   }
 
+  // If the current level got a base64 payload, replace the payload with the string '[REMOVED]'
   if (inputObject?.is_base64 === true && 'payload' in inputObject) {
     result['payload'] = '[REMOVED]';
   }
