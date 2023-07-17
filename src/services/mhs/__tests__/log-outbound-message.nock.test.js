@@ -12,7 +12,7 @@ import {
   isSmallerThan256KB,
   setupEnvVarsForTest,
   loadMessageAndUpdateIds
-} from './test_utils';
+} from './test-utils';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../services/sqs/sqs-client');
