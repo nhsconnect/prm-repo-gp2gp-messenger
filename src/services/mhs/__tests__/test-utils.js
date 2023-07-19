@@ -22,8 +22,8 @@ export const setupEnvVarsForTest = () => {
 };
 
 export const EhrMessageType = {
-  core: 'core',
-  fragment: 'fragment',
+  core: 'Core',
+  fragment: 'Fragment',
   coreWithLargeMedicalHistory: 'CoreWithLargeMedicalHistory'
 };
 
@@ -49,6 +49,8 @@ export const loadMessageAndUpdateIds = (
 ) => {
   const filename = `TestEhr${messageType}`;
   const filepath = path.join(__dirname, 'data', filename);
+
+  console.log(filepath)
 
   const fileContentWithIdsReplaced = readFileSync(filepath, 'utf8')
     .replaceAll('__CONVERSATION_ID__', conversationId)
