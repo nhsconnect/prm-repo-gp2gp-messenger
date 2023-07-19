@@ -8,18 +8,21 @@ export const templateEhrExtract = (
   receivingAsid,
   sendingAsid,
   priorEhrRequestId,
-  authorOdsCode
+  authorOdsCode,
+  destOdsCode
 ) => {
   const template = readFileSync(path.join(__dirname, 'data', 'templateEhrExtract'), 'utf-8');
   return template
     .replaceAll('${receivingAsid}', receivingAsid)
     .replaceAll('${sendingAsid}', sendingAsid)
     .replaceAll('${priorEhrRequestId}', priorEhrRequestId)
-    .replaceAll('${authorOdsCode}', authorOdsCode);
+    .replaceAll('${authorOdsCode}', authorOdsCode)
+    .replaceAll('${destOdsCode}', destOdsCode);
 };
 
 describe('updateExtractForSending', () => {
   it('should use the new ehr request id, sending asid and receiving asid - as well as overriding author with sending ods code as TPP uses it for COPC continue message destination', async () => {
+    // given
     const oldSendingAsid = '200000000149';
     const oldReceivingAsid = '200000001161';
     const oldEhrRequestId = 'BBBBA01A-A9D1-A411-F824-9F7A00A33757';
@@ -27,7 +30,8 @@ describe('updateExtractForSending', () => {
       oldReceivingAsid,
       oldSendingAsid,
       oldEhrRequestId,
-      'some-old-author-ods-code'
+      'old-author-ods-code',
+      'old-destination-ods-code'
     );
 
     const newSendingAsid = '200000001161';
@@ -37,16 +41,20 @@ describe('updateExtractForSending', () => {
       newReceivingAsid,
       newSendingAsid,
       ehrRequestId,
-      'sending-ods-code'
+      'sending-ods-code',
+      'destination-ods-code'
     );
 
+    // when
     const newEhrExtract = await updateExtractForSending(
       originalEhrExtract,
       ehrRequestId,
       newReceivingAsid,
-      'sending-ods-code'
+      'sending-ods-code',
+      'destination-ods-code'
     );
 
+    // then
     const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
     const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
     expect(parsedNewEhrExtract).toEqual(parsedExpectedEhrExtract);
@@ -61,7 +69,8 @@ describe('updateExtractForSending', () => {
       oldReceivingAsid,
       oldSendingAsid,
       oldEhrRequestId,
-      'some-old-author-ods-code'
+      'old-author-ods-code',
+      'old-destination-ods-code'
     );
 
     // manually add some escaped special characters to the ehr extract
@@ -79,7 +88,8 @@ describe('updateExtractForSending', () => {
       ehrExtractWithSpecialChars,
       ehrRequestId,
       newReceivingAsid,
-      'sending-ods-code'
+      'sending-ods-code',
+      'destination-ods-code'
     );
 
     expect(newEhrExtract.includes(replacedText)).toBe(true);

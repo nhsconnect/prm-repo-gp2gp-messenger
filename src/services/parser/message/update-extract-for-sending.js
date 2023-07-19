@@ -9,7 +9,8 @@ export const updateExtractForSending = async (
   ehrExtract,
   ehrRequestId,
   receivingAsid,
-  sendingOdsCode
+  sendingOdsCode,
+  destinationOdsCode
 ) => {
   const config = initializeConfig();
   const parsedEhr = await xmlStringToJsObject(ehrExtract);
@@ -26,6 +27,8 @@ export const updateExtractForSending = async (
 
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
+
+  updateIdExtension(controlActEvent.subject.EhrExtract.destination.AgentOrgSDS.agentOrganizationSDS, destinationOdsCode)
 
   return jsObjectToXmlString(parsedEhr);
 };

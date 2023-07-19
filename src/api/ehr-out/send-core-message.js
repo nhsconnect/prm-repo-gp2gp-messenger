@@ -36,7 +36,8 @@ export const sendCoreMessage = async (req, res) => {
       payload,
       ehrRequestId,
       receivingPracticeAsid,
-      repositoryOdsCode
+      repositoryOdsCode,
+      odsCode
     );
 
     const { attachments, external_attachments } = await wrangleAttachments(coreEhr);

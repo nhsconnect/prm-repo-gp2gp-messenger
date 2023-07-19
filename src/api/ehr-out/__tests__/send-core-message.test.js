@@ -16,12 +16,13 @@ jest.mock('../../../services/mhs/mhs-attachments-wrangler');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' },
-    deductionsOdsCode: 'test_odscode'
+    deductionsOdsCode: 'repo_ods_code'
   })
 }));
 
 const authKey = 'correct-key';
 const conversationId = v4();
+const destinationOdsCode = 'destination_ods_code'
 
 const externalAttachmentWithTitle = {
   message_id: '5678',
@@ -38,7 +39,7 @@ const externalAttachmentWithoutTitle = {
 
 const mockRequestBodyWithMissingPayload = {
   conversationId: conversationId,
-  odsCode: 'testOdsCode',
+  odsCode: destinationOdsCode,
   ehrRequestId: v4(),
   messageId: v4(),
   coreEhr: 'core ehr stored in ehr repository'
@@ -46,7 +47,7 @@ const mockRequestBodyWithMissingPayload = {
 
 const mockRequestBody = {
   conversationId: conversationId,
-  odsCode: 'testOdsCode',
+  odsCode: destinationOdsCode,
   ehrRequestId: v4(),
   messageId: v4(),
   coreEhr: {
@@ -61,7 +62,7 @@ const invalidConversationId = {
   conversationId: 'not-uuid',
   ehrRequestId: v4(),
   messageId: v4(),
-  odsCode: 'ods-code',
+  odsCode: destinationOdsCode,
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -73,7 +74,7 @@ const invalidEhrRequestId = {
   conversationId: v4(),
   ehrRequestId: 'ehrRequestId',
   messageId: v4(),
-  odsCode: 'ods-code',
+  odsCode: destinationOdsCode,
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -85,7 +86,7 @@ const invalidMessageId = {
   conversationId: v4(),
   ehrRequestId: v4(),
   messageId: 'INVALID-MESSAGE-ID',
-  odsCode: 'ods-code',
+  odsCode: destinationOdsCode,
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -98,7 +99,7 @@ const missingCoreEhr = {
   conversationId: v4(),
   ehrRequestId: v4(),
   messageId: v4(),
-  odsCode: 'ods-code'
+  odsCode: destinationOdsCode
 };
 
 const missingOdsCode = {
@@ -117,7 +118,7 @@ const missingExternalAttachmentsInCore = {
   conversationId: v4(),
   ehrRequestId: v4(),
   messageId: v4(),
-  odsCode: 'ods-code',
+  odsCode: destinationOdsCode,
   coreEhr: {
     ebXML: 'ebxml',
     payload: 'payload',
@@ -126,7 +127,7 @@ const missingExternalAttachmentsInCore = {
 };
 
 describe('ehr out transfers', () => {
-  const odsCode = 'testOdsCode';
+  const odsCode = destinationOdsCode;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
   it('should call getPracticeAsid', async () => {
@@ -179,7 +180,8 @@ describe('ehr out transfers', () => {
       mockRequestBody.coreEhr.payload,
       mockRequestBody.ehrRequestId,
       'mockAsid',
-      'test_odscode'
+      'repo_ods_code',
+      destinationOdsCode
     );
 
     expect(wrangleAttachments).toHaveBeenCalledWith(mockRequestBody.coreEhr);
@@ -189,7 +191,7 @@ describe('ehr out transfers', () => {
       interactionId: 'RCMR_IN030000UK06',
       messageId: mockRequestBody.messageId,
       message: 'payload',
-      odsCode: 'testOdsCode',
+      odsCode: destinationOdsCode,
       attachments: mockRequestBody.coreEhr.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
     });
@@ -214,7 +216,7 @@ describe('ehr out transfers', () => {
       interactionId: 'RCMR_IN030000UK06',
       message: 'payload',
       messageId: mockRequestBody.messageId,
-      odsCode: 'testOdsCode',
+      odsCode: destinationOdsCode,
       attachments: mockRequestBody.coreEhr.attachments,
       external_attachments: [externalAttachmentWithoutTitle, externalAttachmentWithoutTitle]
     });
