@@ -28,7 +28,10 @@ export const updateExtractForSending = async (
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract, sendingOdsCode);
   updateAuthorOdsCode(controlActEvent.subject.EhrExtract.component.ehrFolder, sendingOdsCode);
 
-  updateIdExtension(controlActEvent.subject.EhrExtract.destination.AgentOrgSDS.agentOrganizationSDS, destinationOdsCode)
+  updateIdExtension(
+    controlActEvent.subject.EhrExtract.destination.AgentOrgSDS.agentOrganizationSDS,
+    destinationOdsCode
+  );
 
   return jsObjectToXmlString(parsedEhr);
 };

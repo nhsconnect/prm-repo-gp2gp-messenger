@@ -13,10 +13,9 @@ describe('updateExtractForSending', () => {
   const OLD_DEST_ODS_CODE = 'OLD-DESTINATION-ODS-CODE';
 
   const NEW_SENDING_ASID = '200000001161';
-  const NEW_RECEIVING_ASID = '200000001162'
+  const NEW_RECEIVING_ASID = '200000001162';
   const NEW_AUTHOR_ODS_CODE = 'NEW-AUTHOR-ODS-CODE';
   const NEW_DEST_ODS_CODE = 'NEW-DESTINATION-ODS-CODE';
-
 
   const templateEhrExtract = (
     receivingAsid,

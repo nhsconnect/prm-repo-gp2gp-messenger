@@ -22,7 +22,7 @@ jest.mock('../../../config', () => ({
 
 const authKey = 'correct-key';
 const conversationId = v4();
-const destinationOdsCode = 'destination_ods_code'
+const destinationOdsCode = 'destination_ods_code';
 
 const externalAttachmentWithTitle = {
   message_id: '5678',
