@@ -61,7 +61,7 @@ export const sendMessage = async ({
       'Interaction-ID': interactionId,
       'Correlation-Id': conversationId,
       'Ods-Code': odsCode,
-      'from-asid': config.deductionsAsid,
+      'from-asid': config.repoAsid,
       'wait-for-response': false
     }
   };

@@ -15,7 +15,7 @@ export const updateExtractForSending = async (
   const config = initializeConfig();
   const parsedEhr = await xmlStringToJsObject(ehrExtract);
 
-  const sendingAsid = config.deductionsAsid;
+  const sendingAsid = config.repoAsid;
 
   const rcmrUK06 = parsedEhr.RCMR_IN030000UK06;
   const controlActEvent = rcmrUK06.ControlActEvent;

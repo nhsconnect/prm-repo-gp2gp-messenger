@@ -25,8 +25,8 @@ describe('POST /patient-demographics/:nhsNumber', () => {
   beforeEach(() => {
     initializeConfig.mockReturnValue({
       pdsAsid: 'pdsAsid',
-      deductionsAsid: 'deductionsAsid',
-      deductionsOdsCode: 'deductionsOds',
+      repoAsid: 'repoAsid',
+      repoOdsCode: 'deductionsOds',
       nhsNumberPrefix: '944'
     });
 
@@ -138,7 +138,7 @@ describe('POST /patient-demographics/:nhsNumber', () => {
           id: mockUUID,
           timestamp: fakeDateNow,
           receivingService: { asid: 'pdsAsid' },
-          sendingService: { asid: 'deductionsAsid' },
+          sendingService: { asid: 'repoAsid' },
           newOdsCode: '12345',
           patient: {
             nhsNumber: '9442964410',

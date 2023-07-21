@@ -13,7 +13,7 @@ describe('generateContinueRequest', () => {
 
   it('should return the continue request template with correct values', () => {
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
-    const repoOdsCode = initializeConfig().deductionsOdsCode;
+    const repoOdsCode = initializeConfig().repoOdsCode;
     const returnValue = generateContinueRequest({
       messageId,
       receivingAsid,

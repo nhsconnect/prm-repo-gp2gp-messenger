@@ -15,10 +15,10 @@ jest.mock('../../../services/mhs/mhs-outbound-client');
 
 describe('sendContinueMessage', () => {
   const authorizationKeys = 'correct-key';
-  const deductionsAsid = '20000000890';
+  const repoAsid = '20000000890';
   initializeConfig.mockReturnValue({
     consumerApiKeys: { TEST_USER: authorizationKeys },
-    deductionsAsid: deductionsAsid
+    repoAsid: repoAsid
   });
 
   const serviceId = 'urn:nhs:names:services:gp2gp:COPC_IN000001UK01';
@@ -39,7 +39,7 @@ describe('sendContinueMessage', () => {
     const generateContinueRequestInputValues = {
       messageId,
       receivingAsid: gpReceivingAsid,
-      sendingAsid: deductionsAsid,
+      sendingAsid: repoAsid,
       ehrExtractMessageId,
       gpOdsCode
     };

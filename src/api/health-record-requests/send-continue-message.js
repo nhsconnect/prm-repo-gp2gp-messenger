@@ -28,7 +28,7 @@ export const sendContinueMessage = async (req, res) => {
     const message = await generateContinueRequest({
       messageId,
       receivingAsid: practiceAsid,
-      sendingAsid: config.deductionsAsid,
+      sendingAsid: config.repoAsid,
       ehrExtractMessageId: ehrExtractMessageId.toUpperCase(),
       gpOdsCode
     });

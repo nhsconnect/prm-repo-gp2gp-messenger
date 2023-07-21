@@ -25,7 +25,7 @@ export const pdsUpdateValidation = [
 ];
 
 export const pdsUpdate = async (req, res, next) => {
-  const { deductionsAsid, pdsAsid, nhsNumberPrefix } = initializeConfig();
+  const { repoAsid, pdsAsid, nhsNumberPrefix } = initializeConfig();
   const { conversationId, newOdsCode, pdsId, serialChangeNumber } = req.body;
   const { nhsNumber } = req.params;
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
@@ -49,7 +49,7 @@ export const pdsUpdate = async (req, res, next) => {
       id: conversationId,
       timestamp,
       receivingService: { asid: pdsAsid },
-      sendingService: { asid: deductionsAsid },
+      sendingService: { asid: repoAsid },
       newOdsCode: newOdsCode,
       patient: {
         nhsNumber: nhsNumber,

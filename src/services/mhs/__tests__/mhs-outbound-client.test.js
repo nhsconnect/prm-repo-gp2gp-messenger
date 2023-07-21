@@ -34,7 +34,7 @@ describe('mhs-outbound-client', () => {
   };
   const axiosBody = { payload: message };
   initializeConfig.mockReturnValue({
-    deductionsAsid: testData.mhs.asid,
+    repoAsid: testData.mhs.asid,
     mhsOutboundUrl: url,
     spineOdsCode: 'YES',
     pdsAsid: '928942012545'

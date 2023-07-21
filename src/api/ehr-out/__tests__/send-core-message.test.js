@@ -16,7 +16,7 @@ jest.mock('../../../services/mhs/mhs-attachments-wrangler');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' },
-    deductionsOdsCode: 'repo_ods_code'
+    repoOdsCode: 'repo_ods_code'
   })
 }));
 
