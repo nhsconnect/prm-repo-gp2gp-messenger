@@ -42,7 +42,7 @@ describe('updateExtractForSending', () => {
     );
   };
 
-  it('should use the new ehr request id, sending asid and receiving asid - as well as overriding author with sending ods code as TPP uses it for COPC continue message destination', async () => {
+  it('should update sender and receiver ASID codes, ODS codes and EHR Request ID in EHR Core', async () => {
     // given
     const originalEhrExtract = buildInputEhrExtract();
     const ehrRequestId = v4();

@@ -26,7 +26,7 @@ describe('POST /patient-demographics/:nhsNumber', () => {
     initializeConfig.mockReturnValue({
       pdsAsid: 'pdsAsid',
       repoAsid: 'repoAsid',
-      repoOdsCode: 'deductionsOds',
+      repoOdsCode: 'repoOdsCode',
       nhsNumberPrefix: '944'
     });
 
