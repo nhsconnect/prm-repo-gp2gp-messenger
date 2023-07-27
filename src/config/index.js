@@ -1,8 +1,8 @@
 export const portNumber = 3000;
 
 export const initializeConfig = () => ({
-  deductionsAsid: process.env.GP2GP_MESSENGER_REPOSITORY_ASID || '200000001161',
-  deductionsOdsCode: (process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE || 'B86041').toUpperCase(),
+  repoAsid: process.env.GP2GP_MESSENGER_REPOSITORY_ASID || '200000001161',
+  repoOdsCode: (process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE || 'B86041').toUpperCase(),
   pdsAsid: process.env.PDS_ASID,
   mhsOutboundUrl: process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL,
   nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',

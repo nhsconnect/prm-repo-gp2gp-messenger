@@ -9,7 +9,7 @@ export const generateContinueRequest = ({
   ehrExtractMessageId,
   gpOdsCode
 }) => {
-  const { deductionsOdsCode } = initializeConfig();
+  const { repoOdsCode } = initializeConfig();
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
   const inputObject = {
     id: messageId,
@@ -18,7 +18,7 @@ export const generateContinueRequest = ({
     sendingAsid,
     ehrExtractMessageId,
     gpOdsCode,
-    repoOdsCode: deductionsOdsCode
+    repoOdsCode: repoOdsCode
   };
   checkTemplateArguments(inputObject);
   return continueRequest(inputObject);

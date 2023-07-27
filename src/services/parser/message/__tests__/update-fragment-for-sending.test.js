@@ -10,8 +10,8 @@ describe('updateFragmentForSending', () => {
     const sendingAsid = 'new-sending-asid';
     const sendingOdsCode = 'new-sending-ods-code';
     initializeConfig.mockReturnValue({
-      deductionsAsid: sendingAsid,
-      deductionsOdsCode: sendingOdsCode
+      repoAsid: sendingAsid,
+      repoOdsCode: sendingOdsCode
     });
     const originalFragment = templateLargeEhrFragmentTestMessage(
       'old-message-id',

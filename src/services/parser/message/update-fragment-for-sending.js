@@ -13,8 +13,8 @@ export async function updateFragmentForSending(
   recipientOdsCode
 ) {
   const config = initializeConfig();
-  const sendingAsid = config.deductionsAsid;
-  const sendingOdsCode = config.deductionsOdsCode;
+  const sendingAsid = config.repoAsid;
+  const sendingOdsCode = config.repoOdsCode;
 
   const payloadXml = xmlStringToJsObject(fragmentPayload);
 

@@ -22,7 +22,7 @@ export const sendCoreMessage = async (req, res) => {
   const { payload } = coreEhr;
   const interactionId = 'RCMR_IN030000UK06';
   const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-  const repositoryOdsCode = initializeConfig().deductionsOdsCode;
+  const repositoryOdsCode = initializeConfig().repoOdsCode;
   setCurrentSpanAttributes({ conversationId });
 
   try {
@@ -36,7 +36,8 @@ export const sendCoreMessage = async (req, res) => {
       payload,
       ehrRequestId,
       receivingPracticeAsid,
-      repositoryOdsCode
+      repositoryOdsCode,
+      odsCode
     );
 
     const { attachments, external_attachments } = await wrangleAttachments(coreEhr);

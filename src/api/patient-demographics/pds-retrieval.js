@@ -29,7 +29,7 @@ export const pdsRetrieval = async (req, res, next) => {
       id: conversationId,
       timestamp,
       receivingService: { asid: config.pdsAsid },
-      sendingService: { asid: config.deductionsAsid },
+      sendingService: { asid: config.repoAsid },
       patient: { nhsNumber: req.params.nhsNumber }
     });
 

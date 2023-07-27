@@ -14,7 +14,7 @@ describe('config', () => {
     });
   });
 
-  describe('deductionsAsid', () => {
+  describe('repoAsid', () => {
     afterEach(() => {
       process.env.GP2GP_MESSENGER_REPOSITORY_ASID = originalEnv.GP2GP_MESSENGER_REPOSITORY_ASID;
     });
@@ -22,11 +22,11 @@ describe('config', () => {
     it('should return 200000001161 when GP2GP_MESSENGER_REPOSITORY_ASID is not set', () => {
       if (process.env.GP2GP_MESSENGER_REPOSITORY_ASID)
         delete process.env.GP2GP_MESSENGER_REPOSITORY_ASID;
-      expect(initializeConfig().deductionsAsid).toEqual('200000001161');
+      expect(initializeConfig().repoAsid).toEqual('200000001161');
     });
   });
 
-  describe('deductionsOdsCode', () => {
+  describe('repoOdsCode', () => {
     afterEach(() => {
       process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE =
         originalEnv.GP2GP_MESSENGER_REPOSITORY_ODS_CODE;
@@ -35,7 +35,7 @@ describe('config', () => {
     it('should return B86041 when GP2GP_MESSENGER_REPOSITORY_ODS_CODE is not set', () => {
       if (process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE)
         delete process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE;
-      expect(initializeConfig().deductionsOdsCode).toEqual('B86041');
+      expect(initializeConfig().repoOdsCode).toEqual('B86041');
     });
   });
 
@@ -50,8 +50,8 @@ describe('config', () => {
       });
 
       it('should map config with process.env values if set', () => {
-        process.env.GP2GP_MESSENGER_REPOSITORY_ASID = 'deductionsAsid';
-        process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = 'deductionsOdsCode';
+        process.env.GP2GP_MESSENGER_REPOSITORY_ASID = 'repoAsid';
+        process.env.GP2GP_MESSENGER_REPOSITORY_ODS_CODE = 'REPO_ODS_CODE';
         process.env.PDS_ASID = 'pdsAsid';
         process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL = 'mhsOutboundUrl';
         process.env.NHS_ENVIRONMENT = 'nhsEnvironment';
@@ -59,8 +59,8 @@ describe('config', () => {
 
         expect(initializeConfig()).toEqual(
           expect.objectContaining({
-            deductionsAsid: 'deductionsAsid',
-            deductionsOdsCode: 'DEDUCTIONSODSCODE',
+            repoAsid: 'repoAsid',
+            repoOdsCode: 'REPO_ODS_CODE',
             pdsAsid: 'pdsAsid',
             mhsOutboundUrl: 'mhsOutboundUrl',
             nhsEnvironment: 'nhsEnvironment'

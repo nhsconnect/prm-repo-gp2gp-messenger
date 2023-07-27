@@ -16,7 +16,7 @@ jest.mock('../../../services/fhir/sds-fhir-client');
 jest.mock('../../../config', () => ({
   initializeConfig: jest.fn().mockReturnValue({
     consumerApiKeys: { TEST_USER: 'correct-key' },
-    deductionsOdsCode: 'test_odscode'
+    repoOdsCode: 'repo_ods_code'
   })
 }));
 jest.mock('../../../services/mhs/mhs-attachments-wrangler');
