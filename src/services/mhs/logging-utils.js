@@ -1,6 +1,6 @@
 import { logError, logInfo } from '../../middleware/logging';
 
-export const LOG_SIZE_LIMIT = 256 * 1024; // the 256 KB size limit of Cloud Watch
+export const SIZE_LIMIT = 256 * 1024; // the 256 KB size limit of Cloud Watch
 
 export const logOutboundMessage = message => {
   /**
@@ -59,7 +59,7 @@ export const checkSizeAndLogMessage = message => {
    */
 
   const messageAsString = JSON.stringify(message);
-  if (messageAsString.length < LOG_SIZE_LIMIT) {
+  if (messageAsString.length < SIZE_LIMIT) {
     logInfo(message);
   } else {
     logMessageInMultipleParts(messageAsString);
@@ -73,7 +73,7 @@ const logMessageInMultipleParts = messageAsString => {
    * Give a number to each part as logging in cloudwatch may be not in right order
    */
 
-  const lineLength = LOG_SIZE_LIMIT - 50; // leave some space for metadata "Part x of y"
+  const lineLength = SIZE_LIMIT - 50; // leave some space for metadata "Part x of y"
   const numberOfParts = Math.ceil(messageAsString.length / lineLength);
   logInfo(
     `Received a message larger than the size limit of a single log. Attempt to log it in ${numberOfParts} parts`
@@ -87,3 +87,9 @@ const logMessageInMultipleParts = messageAsString => {
 
   logInfo(`Finished logging all parts of the message.`);
 };
+
+export const trimMessageForObservabilityQueue = (message) => {
+  return JSON.stringify(message).length > SIZE_LIMIT
+    ? removeBase64Payloads(message)
+    : message;
+}

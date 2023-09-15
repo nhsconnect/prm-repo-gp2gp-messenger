@@ -1,8 +1,9 @@
 import { updateExtractForSending } from '../update-extract-for-sending';
+import { XmlParser } from '../../xml-parser/xml-parser';
+import isEqual from 'lodash.isequal';
 import { readFileSync } from 'fs';
 import * as path from 'path';
 import { v4 } from 'uuid';
-import { XmlParser } from '../../xml-parser/xml-parser';
 
 describe('updateExtractForSending', () => {
   // Constants for test
@@ -67,7 +68,7 @@ describe('updateExtractForSending', () => {
     // then
     const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
     const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
-    expect(parsedNewEhrExtract).toEqual(parsedExpectedEhrExtract);
+    expect(isEqual(parsedNewEhrExtract, parsedExpectedEhrExtract)).toBe(true);
   });
 
   it('should keep escaped special characters (linebreak, apostrophes, quotation marks) unchanged', async () => {
