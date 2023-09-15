@@ -88,8 +88,6 @@ const logMessageInMultipleParts = messageAsString => {
   logInfo(`Finished logging all parts of the message.`);
 };
 
-export const trimMessageForObservabilityQueue = (message) => {
-  return JSON.stringify(message).length > SIZE_LIMIT
-    ? removeBase64Payloads(message)
-    : message;
-}
+export const trimMessageForObservabilityQueue = message => {
+  return JSON.stringify(message).length > SIZE_LIMIT ? removeBase64Payloads(message) : message;
+};
