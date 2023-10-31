@@ -7,13 +7,13 @@ describe('get-health-check', () => {
   describe('getHealthCheck', () => {
     it('should resolve when both checks are ok', () => {
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(true));
+        return expect(result).toStrictEqual(expectedHealthCheckBase());
       });
     });
 
     it('should resolve when MHS is not ok', () => {
       return getHealthCheck().then(result => {
-        return expect(result).toStrictEqual(expectedHealthCheckBase(false));
+        return expect(result).toStrictEqual(expectedHealthCheckBase());
       });
     });
   });

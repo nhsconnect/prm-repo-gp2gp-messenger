@@ -1,4 +1,4 @@
-const recursiveTemplateCheck = (inputObject, maxDepth = 10, errorMessages) => {
+const recursiveTemplateCheck = (inputObject, errorMessages, maxDepth = 10) => {
   if (maxDepth-- === 0) {
     throw new Error('maxDepth reached, exiting');
   }
@@ -12,14 +12,14 @@ const recursiveTemplateCheck = (inputObject, maxDepth = 10, errorMessages) => {
       errorMessages.push(` ${key} is undefined`);
     }
     if (typeof inputObject[key] === 'object') {
-      recursiveTemplateCheck(inputObject[key], maxDepth, errorMessages);
+      recursiveTemplateCheck(inputObject[key], errorMessages, maxDepth);
     }
   });
 };
 
 const checkTemplateArguments = (inputObject, maxDepth) => {
   const errorMessages = [];
-  recursiveTemplateCheck(inputObject, maxDepth, errorMessages);
+  recursiveTemplateCheck(inputObject, errorMessages, maxDepth);
   if (errorMessages.length > 0) throw new Error(`Check template parameter error:${errorMessages}`);
 };
 
