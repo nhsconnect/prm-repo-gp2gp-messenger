@@ -164,7 +164,27 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   });
 
   describe('ODS code safe list', () => {
-    it('should return 422 status if ods code is not safe listed', done => {
+    it('should return 422 status if ods code is not in the safe list array', done => {
+      initializeConfig.mockReturnValueOnce({
+        requestEhrOnlyForSafeListedOdsCodesToggle: true,
+        safeListedOdsCodes: ['SAFE08', 'SAFE09'],
+        nhsNumberPrefix: '123'
+      });
+      request(app)
+        .post('/health-record-requests/1234567890')
+        .expect(res => {
+          expect(res.status).toEqual(422);
+          expect(res.body).toEqual(
+            expect.objectContaining({
+              errors: 'The ODS code provided is not safe listed.'
+            })
+          );
+        })
+        .send(body)
+        .end(done);
+    });
+
+    it('should return 422 status if ods code is not in safe list consisting of one string', done => {
       initializeConfig.mockReturnValueOnce({
         requestEhrOnlyForSafeListedOdsCodesToggle: true,
         safeListedOdsCodes: 'SAFE09',
@@ -184,7 +204,16 @@ describe('POST /health-record-requests/:nhsNumber', () => {
         .end(done);
     });
 
-    it('should return 204 status if ods code is safe listed', done => {
+    it('should return 204 status if ods code is in the safe list array', done => {
+      initializeConfig.mockReturnValueOnce({
+        requestEhrOnlyForSafeListedOdsCodesToggle: true,
+        safeListedOdsCodes: ['SAFE08', 'practice_ods_code'],
+        nhsNumberPrefix: '123'
+      });
+      request(app).post('/health-record-requests/1234567890').expect(204).send(body).end(done);
+    });
+
+    it('should return 204 status if ods code is in the safe list consisting of one string', done => {
       initializeConfig.mockReturnValueOnce({
         requestEhrOnlyForSafeListedOdsCodesToggle: true,
         safeListedOdsCodes: 'practice_ods_code',

@@ -119,7 +119,12 @@ const odsCodeNotInSafeList = (
   );
   if (!requestEhrOnlyForSafeListedOdsCodesToggle) return false;
 
-  return safeListedOdsCodes.some(
-    safeListedOdsCode => safeListedOdsCode.toLowerCase() === practiceOdsCode.toLowerCase()
-  );
+  return Array.isArray(safeListedOdsCodes)
+    ? !safeListedOdsCodes.some(safeListedOdsCode =>
+        compareOdsCodesCaseInsensitive(safeListedOdsCode, practiceOdsCode)
+      )
+    : !compareOdsCodesCaseInsensitive(safeListedOdsCodes, practiceOdsCode);
 };
+
+const compareOdsCodesCaseInsensitive = (odsCode1, odsCode2) =>
+  odsCode1.toLowerCase() === odsCode2.toLowerCase();
