@@ -89,8 +89,11 @@ export const pdsUpdate = async (req, res, next) => {
 
 const checkNhsNumberPrefix = (nhsNumberPrefix, nhsNumber) => {
   if (!nhsNumberPrefix) {
-    logWarning('PDS Update request failed as no nhs number prefix env variable has been set');
-    return false;
+    // TODO: Found that previous team has hardcoded checking for synthetic patients only. We need to process real patients.
+    // logWarning('PDS Update request failed as no nhs number prefix env variable has been set');
+    // return false;
+    logInfo('NhsNumberPrefix has not been set.');
+    return true;
   }
   if (!nhsNumber.startsWith(nhsNumberPrefix)) {
     logWarning(

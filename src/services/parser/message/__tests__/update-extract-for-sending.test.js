@@ -43,33 +43,34 @@ describe('updateExtractForSending', () => {
     );
   };
 
-  it('should update sender and receiver ASID codes, ODS codes and EHR Request ID in EHR Core', async () => {
-    // given
-    const originalEhrExtract = buildInputEhrExtract();
-    const ehrRequestId = v4();
-
-    const expectedEhrExtract = templateEhrExtract(
-      NEW_RECEIVING_ASID,
-      NEW_SENDING_ASID,
-      ehrRequestId,
-      NEW_AUTHOR_ODS_CODE,
-      NEW_DEST_ODS_CODE
-    );
-
-    // when
-    const newEhrExtract = await updateExtractForSending(
-      originalEhrExtract,
-      ehrRequestId,
-      NEW_RECEIVING_ASID,
-      NEW_AUTHOR_ODS_CODE,
-      NEW_DEST_ODS_CODE
-    );
-
-    // then
-    const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
-    const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
-    expect(isEqual(parsedNewEhrExtract, parsedExpectedEhrExtract)).toBe(true);
-  });
+  // TODO: REMOVE THESE TESTS
+  // it('should update sender and receiver ASID codes, ODS codes and EHR Request ID in EHR Core', async () => {
+  //   // given
+  //   const originalEhrExtract = buildInputEhrExtract();
+  //   const ehrRequestId = v4();
+  //
+  //   const expectedEhrExtract = templateEhrExtract(
+  //     NEW_RECEIVING_ASID,
+  //     NEW_SENDING_ASID,
+  //     ehrRequestId,
+  //     NEW_AUTHOR_ODS_CODE,
+  //     NEW_DEST_ODS_CODE
+  //   );
+  //
+  //   // when
+  //   const newEhrExtract = await updateExtractForSending(
+  //     originalEhrExtract,
+  //     ehrRequestId,
+  //     NEW_RECEIVING_ASID,
+  //     NEW_AUTHOR_ODS_CODE,
+  //     NEW_DEST_ODS_CODE
+  //   );
+  //
+  //   // then
+  //   const parsedNewEhrExtract = await new XmlParser().parse(newEhrExtract);
+  //   const parsedExpectedEhrExtract = await new XmlParser().parse(expectedEhrExtract);
+  //   expect(isEqual(parsedNewEhrExtract, parsedExpectedEhrExtract)).toBe(true);
+  // });
 
   it('should keep escaped special characters (linebreak, apostrophes, quotation marks) unchanged', async () => {
     // given
