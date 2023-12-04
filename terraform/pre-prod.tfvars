@@ -15,3 +15,5 @@ log_level = "info"
 
 grant_access_through_vpn = true
 spine_org_code = "YES"
+
+request_ehr_only_for_safe_listed_ods_codes = true
