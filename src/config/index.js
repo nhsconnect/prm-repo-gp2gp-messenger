@@ -6,7 +6,7 @@ export const initializeConfig = () => ({
   pdsAsid: process.env.PDS_ASID,
   mhsOutboundUrl: process.env.GP2GP_MESSENGER_MHS_OUTBOUND_URL,
   nhsEnvironment: process.env.NHS_ENVIRONMENT || 'local',
-  nhsNumberPrefix: process.env.NHS_NUMBER_PREFIX,
+  nhsNumberPrefix: false, // TODO: Updated to "false" in order to process real patients. Need a better solution than this.
   sdsFhirApiKey: process.env.SDS_FHIR_API_KEY,
   sdsFhirUrl: process.env.SDS_FHIR_URL,
   spineOrgCode: process.env.SPINE_ORG_CODE,
