@@ -128,7 +128,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
   });
 
   describe('NHS Number prefix checks', () => {
-      // TODO: REMOVE THESE TESTS
+    // TODO: REMOVE THESE TESTS
     // it('should not allow a health record request and return 404 when nhs number prefix is empty', async () => {
     //   initializeConfig.mockReturnValueOnce({ nhsNumberPrefix: '' });
     //   const res = await request(app).post('/health-record-requests/1234567890').send(body);
