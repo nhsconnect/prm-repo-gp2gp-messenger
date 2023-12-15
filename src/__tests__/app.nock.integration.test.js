@@ -25,7 +25,6 @@ describe('app integration', () => {
         'Interaction-ID': 'QUPA_IN000008UK02',
         'Ods-Code': 'YES',
         'from-asid': DEFAULT_SENDING_ASID,
-        'wait-for-response': false
       };
 
       const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
