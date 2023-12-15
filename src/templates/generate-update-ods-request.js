@@ -37,7 +37,7 @@ const template = ({
   timestamp,
   receivingService: { asid: receivingAsid },
   sendingService: { asid: sendingAsid },
-  newOdsCode: newOdsCode,
+  newOdsCode,
   patient: { nhsNumber, pdsId, pdsUpdateChangeNumber }
 }) =>
   ` 

@@ -38,7 +38,7 @@ describe('generatePdsRetrievalQuery', () => {
     const pdsRequestQuery = await generatePdsRetrievalQuery(testObjectComplete);
 
     const checkEntries = object => {
-      Object.keys(object).map(key => {
+      Object.keys(object).forEach(key => {
         if (typeof object[key] === 'object') {
           checkEntries(object[key]);
         } else {

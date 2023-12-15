@@ -26,7 +26,7 @@ export const sendEhrAcknowledgement = async (req, res) => {
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
     setCurrentSpanAttributes({ conversationId, messageId: ehrCoreMessageId });
 
-    const message = await buildEhrAcknowledgementPayload({
+    const message = buildEhrAcknowledgementPayload({
       acknowledgementMessageId: conversationId,
       receivingAsid: practiceAsid,
       sendingAsid: repositoryAsid,
