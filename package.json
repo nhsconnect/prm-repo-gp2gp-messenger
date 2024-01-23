@@ -30,7 +30,7 @@
     "@aws-sdk/client-sqs": "^3.470.0",
     "@babel/runtime": "^7.17.8",
     "aws-sdk": "^2.1354.0",
-    "axios": "^1.6.5",
+    "axios": "^0.26.1",
     "dateformat": "^4.6.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
@@ -64,7 +64,7 @@
     "nock": "^13.2.4",
     "npm-force-resolutions": "0.0.10",
     "prettier": "^2.6.0",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.3"
   },
   "jest": {
     "testPathIgnorePatterns": [
