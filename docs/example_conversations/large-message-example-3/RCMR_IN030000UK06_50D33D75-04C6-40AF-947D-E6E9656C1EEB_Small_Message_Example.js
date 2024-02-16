@@ -155,7 +155,7 @@ Content-Transfer-Encoding: 8bit
                                     <Agent classCode="AGNT">
                                         <id root="9DD8EABA-3409-4EE1-97B9-E2CF45B02219"/>
                                         <agentDevice classCode="DEV" determinerCode="INSTANCE">
-                                            <id root="9820A209-34D8-11D6-8AE0-00C04FC19B17"/>
+                                            <id root="9820A209-34D8-41D6-8AE0-00C04FC19B17"/>
                                             <code code="24551000000106" codeSystem="2.16.840.1.113883.2.1.3.2.4.15" displayName="GP computer systems"/>
                                             <softwareName>Vision 3</softwareName>
                                         </agentDevice>

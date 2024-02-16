@@ -35,7 +35,7 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Header>
 <SOAP:Body>
 	<eb:Manifest SOAP:mustUnderstand="1" eb:version="2.0">
-		<eb:Reference xlink:href="cid:5548ea65-3d95-11e3-b6ae-df63bc51a0f2@spine.nhs.uk">
+		<eb:Reference xlink:href="cid:5548ea65-3d95-41e3-b6ae-df63bc51a0f2@spine.nhs.uk">
 			<eb:Schema eb:location="http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd" eb:version="1.0"/>
 			<eb:Description xml:lang="en">HL7 payload</eb:Description> 
 			<hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
@@ -63,7 +63,7 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Envelope>
 
 ----=_MIME-Boundary
-Content-Id: <5548ea65-3d95-11e3-b6ae-df63bc51a0f2@spine.nhs.uk>
+Content-Id: <5548ea65-3d95-41e3-b6ae-df63bc51a0f2@spine.nhs.uk>
 Content-Type: application/xml; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 

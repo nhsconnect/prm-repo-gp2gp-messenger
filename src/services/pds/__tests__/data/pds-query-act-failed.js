@@ -5,7 +5,7 @@ xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
 xmlns="urn:hl7-org:v3" 
 xmlns:hl7="urn:hl7-org:v3">
 <SOAP-ENV:Header>
-    <wsa:MessageID>uuid:DC50384E-5E2A-11EA-A673-F40343488B16</wsa:MessageID>
+    <wsa:MessageID>uuid:DC50384E-5E2A-41EA-A673-F40343488B16</wsa:MessageID>
     <wsa:Action>urn:nhs:names:services:pdsquery/QUQI_IN010000UK14</wsa:Action>
     <wsa:To/>
     <wsa:From>
@@ -26,7 +26,7 @@ xmlns:hl7="urn:hl7-org:v3">
 <SOAP-ENV:Body>
     <retrievalQueryResponse>
         <QUQI_IN010000UK14>
-            <id root="DC50384E-5E2A-11EA-A673-F40343488B16"/>
+            <id root="DC50384E-5E2A-41EA-A673-F40343488B16"/>
             <creationTime value="20200304151436"/>
             <versionCode code="3NPfIT6.3.01"/>
             <interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="QUQI_IN010000UK14"/>
