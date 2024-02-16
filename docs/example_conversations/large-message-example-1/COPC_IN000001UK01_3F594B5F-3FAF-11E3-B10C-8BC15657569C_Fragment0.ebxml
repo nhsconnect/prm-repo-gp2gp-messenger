@@ -21,7 +21,7 @@ Content-Transfer-Encoding: 8bit
 			<eb:PartyId eb:type="urn:nhs:names:partyType:ocs+serviceInstance">RHM-803229</eb:PartyId>
 		</eb:To>
 		<eb:CPAId>S2030731A2137927</eb:CPAId>
-		<eb:ConversationId>6E242658-3D8E-11E3-A7DC-172BDA00FA67</eb:ConversationId>
+		<eb:ConversationId>6E242658-3D8E-41e3-A7DC-172BDA00FA67</eb:ConversationId>
 		<eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
 		<eb:Action>COPC_IN000001UK01</eb:Action>
 		<eb:MessageData>
@@ -35,12 +35,12 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Header>
 <SOAP:Body>
 	<eb:Manifest SOAP:mustUnderstand="1" eb:version="2.0">
-		<eb:Reference xlink:href="cid:3f594b60-3faf-11e3-b10c-8bc15657569c@spine.nhs.uk">
+		<eb:Reference xlink:href="cid:3f594b60-3faf-41e3-b10c-8bc15657569c@spine.nhs.uk">
 			<eb:Schema eb:location="http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd" eb:version="1.0"/>
 			<eb:Description xml:lang="en">HL7 payload</eb:Description> 
 			<hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
 		</eb:Reference>
-		<eb:Reference xlink:href="cid:3f597271-3faf-11e3-b10c-8bc15657569c">
+		<eb:Reference xlink:href="cid:3f597271-3faf-41e3-b10c-8bc15657569c">
 <eb:Description xml:lang="en">Attachment</eb:Description>
 </eb:Reference>
 
@@ -49,7 +49,7 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Envelope>
 
 ----=_MIME-Boundary
-Content-Id: <3f594b60-3faf-11e3-b10c-8bc15657569c@spine.nhs.uk>
+Content-Id: <3f594b60-3faf-41e3-b10c-8bc15657569c@spine.nhs.uk>
 Content-Type: application/xml; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
@@ -110,7 +110,7 @@ Content-Transfer-Encoding: 8bit
 </COPC_IN000001UK01>
 
 ----=_MIME-Boundary
-Content-Id: <3f597271-3faf-11e3-b10c-8bc15657569c>
+Content-Id: <3f597271-3faf-41e3-b10c-8bc15657569c>
 Content-Type: text/plain
 Content-Transfer-Encoding: base64
 

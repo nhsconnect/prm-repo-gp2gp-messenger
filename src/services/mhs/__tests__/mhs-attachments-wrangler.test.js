@@ -236,8 +236,8 @@ describe('wrangleAttachments', () => {
                 <eb:Description xml:lang="en">RCMR_IN030000UK06</eb:Description>
                 <hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
             </eb:Reference>
-            <eb:Reference xlink:href="mid:FBC31A80-290B-11ED-8084-AC162D1F16F0" eb:id="_FB01ED63-290B-11ED-8084-AC162D1F16F0">
-                    <eb:Description xml:lang="en-gb">Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No</eb:Description>
+            <eb:Reference xlink:href="mid:FBC31A80-290B-41ED-8084-AC162D1F16F0" eb:id="_FB01ED63-290B-41ED-8084-AC162D1F16F0">
+                    <eb:Description xml:lang="en-gb">Filename=FB01ED63-290B-41ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No</eb:Description>
             </eb:Reference>
         </eb:Manifest>
     </soap:Body>
@@ -260,9 +260,9 @@ describe('wrangleAttachments', () => {
         external_attachments: [
           {
             description:
-              'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
-            document_id: '_' + 'FB01ED63-290B-11ED-8084-AC162D1F16F0',
-            message_id: 'FBC31A80-290B-11ED-8084-AC162D1F16F0'
+              'Filename=FB01ED63-290B-41ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
+            document_id: '_' + 'FB01ED63-290B-41ED-8084-AC162D1F16F0',
+            message_id: 'FBC31A80-290B-41ED-8084-AC162D1F16F0'
           }
         ]
       });
@@ -279,11 +279,11 @@ describe('wrangleAttachments', () => {
                 <eb:Description xml:lang="en">RCMR_IN030000UK06</eb:Description>
                 <hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
             </eb:Reference>
-            <eb:Reference xlink:href="mid:1BC31A80-290B-11ED-8084-AC162D1F16F0" eb:id="_FB01ED63-290B-11ED-8084-AC162D1F16F0">
-                    <eb:Description xml:lang="en-gb">Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No</eb:Description>
+            <eb:Reference xlink:href="mid:1BC31A80-290B-41ED-8084-AC162D1F16F0" eb:id="_FB01ED63-290B-41ED-8084-AC162D1F16F0">
+                    <eb:Description xml:lang="en-gb">Filename=FB01ED63-290B-41ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No</eb:Description>
             </eb:Reference>
-            <eb:Reference xlink:href="mid:ABC31A80-290B-11ED-8084-AC162D1F16F0" eb:id="_0B01ED63-290B-11ED-8084-AC162D1F16F0">
-                    <eb:Description xml:lang="en-gb">Filename=0B01ED63-290B-11ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No</eb:Description>
+            <eb:Reference xlink:href="mid:ABC31A80-290B-41ED-8084-AC162D1F16F0" eb:id="_0B01ED63-290B-41ED-8084-AC162D1F16F0">
+                    <eb:Description xml:lang="en-gb">Filename=0B01ED63-290B-41ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No</eb:Description>
             </eb:Reference>
         </eb:Manifest>
     </soap:Body>
@@ -306,15 +306,15 @@ describe('wrangleAttachments', () => {
         external_attachments: [
           {
             description:
-              'Filename=FB01ED63-290B-11ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
-            document_id: '_' + 'FB01ED63-290B-11ED-8084-AC162D1F16F0',
-            message_id: '1BC31A80-290B-11ED-8084-AC162D1F16F0'
+              'Filename=FB01ED63-290B-41ED-8084-AC162D1F16F0_image1.jpeq ContentType=application/octet-stream Compressed=No',
+            document_id: '_' + 'FB01ED63-290B-41ED-8084-AC162D1F16F0',
+            message_id: '1BC31A80-290B-41ED-8084-AC162D1F16F0'
           },
           {
             description:
-              'Filename=0B01ED63-290B-11ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No',
-            document_id: '_' + '0B01ED63-290B-11ED-8084-AC162D1F16F0',
-            message_id: 'ABC31A80-290B-11ED-8084-AC162D1F16F0'
+              'Filename=0B01ED63-290B-41ED-8084-AC162D1F16F0_image2.jpeq ContentType=image/jpeg Compressed=No',
+            document_id: '_' + '0B01ED63-290B-41ED-8084-AC162D1F16F0',
+            message_id: 'ABC31A80-290B-41ED-8084-AC162D1F16F0'
           }
         ]
       });

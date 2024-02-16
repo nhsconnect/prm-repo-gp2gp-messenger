@@ -10,10 +10,10 @@ function parse(payload) {
 describe('generateEhrAcknowledgement', () => {
   it('should return the acknowledgement message template with correct values populated', async () => {
     const parameters = {
-      acknowledgementMessageId: '11111111-28C0-11EB-ADC1-0242AC120002',
+      acknowledgementMessageId: '11111111-28C0-41eb-ADC1-0242AC120002',
       receivingAsid: testData.emisPractise.asid,
       sendingAsid: testData.mhs.asid,
-      acknowledgedMessageId: '22222222-28C0-11EB-ADC1-0242AC120002'
+      acknowledgedMessageId: '22222222-28C0-41eb-ADC1-0242AC120002'
     };
     const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
     const payload = buildEhrAcknowledgementPayload(parameters);
@@ -30,10 +30,10 @@ describe('generateEhrAcknowledgement', () => {
 
   it('should populate the acknowledgement message forcing message IDs to uppercase', async () => {
     const parameters = {
-      acknowledgementMessageId: '11111111-28c0-11eb-adc1-0242ac120002',
+      acknowledgementMessageId: '11111111-28c0-41eb-adc1-0242ac120002',
       receivingAsid: testData.emisPractise.asid,
       sendingAsid: testData.mhs.asid,
-      acknowledgedMessageId: '22222222-28c0-11eb-adc1-0242ac120002'
+      acknowledgedMessageId: '22222222-28c0-41eb-adc1-0242ac120002'
     };
     const payload = buildEhrAcknowledgementPayload(parameters);
 

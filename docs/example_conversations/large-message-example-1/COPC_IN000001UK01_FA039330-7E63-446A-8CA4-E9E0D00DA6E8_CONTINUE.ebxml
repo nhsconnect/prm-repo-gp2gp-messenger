@@ -21,7 +21,7 @@ Content-Transfer-Encoding: 8bit
 			<eb:PartyId eb:type="urn:nhs:names:partyType:ocs+serviceInstance">RHM-801710</eb:PartyId>
 		</eb:To>
 		<eb:CPAId>S2030731A2137927</eb:CPAId>
-		<eb:ConversationId>6E242658-3D8E-11E3-A7DC-172BDA00FA67</eb:ConversationId>
+		<eb:ConversationId>6E242658-3D8E-41e3-A7DC-172BDA00FA67</eb:ConversationId>
 		<eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
 		<eb:Action>COPC_IN000001UK01</eb:Action>
 		<eb:MessageData>
@@ -33,7 +33,7 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Header>
 <SOAP:Body>
 	<eb:Manifest SOAP:mustUnderstand="1" eb:version="2.0">
-		<eb:Reference xlink:href="cid:3f35e4da-3faf-11e3-b10c-8bc15657569c@spine.nhs.uk">
+		<eb:Reference xlink:href="cid:3f35e4da-3faf-41e3-b10c-8bc15657569c@spine.nhs.uk">
 			<eb:Schema eb:location="http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd" eb:version="1.0"/>
 			<eb:Description xml:lang="en">HL7 payload</eb:Description> 
 			<hl7ebxml:Payload style="HL7" encoding="XML" version="3.0"/>
@@ -43,7 +43,7 @@ Content-Transfer-Encoding: 8bit
 </SOAP:Envelope>
 
 ----=_MIME-Boundary
-Content-Id: <3f35e4da-3faf-11e3-b10c-8bc15657569c@spine.nhs.uk>
+Content-Id: <3f35e4da-3faf-41e3-b10c-8bc15657569c@spine.nhs.uk>
 Content-Type: application/xml; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
@@ -113,7 +113,7 @@ Content-Transfer-Encoding: 8bit
 														<code code="0" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101" displayName="Continue"/>
 													</acknowledgementDetail>
 													<messageRef>
-														<id root="6E242658-3D8E-11E3-A7DC-172BDA00FA67"/>
+														<id root="6E242658-3D8E-41e3-A7DC-172BDA00FA67"/>
 													</messageRef>
 												</acknowledgement>
 												<communicationFunctionRcv>
@@ -128,7 +128,7 @@ Content-Transfer-Encoding: 8bit
 												</communicationFunctionSnd>
 											</Message>
 											<gp:acknowledgedMessage>
-												<gp:id root="6E242658-3D8E-11E3-A7DC-172BDA00FA67"/>
+												<gp:id root="6E242658-3D8E-41e3-A7DC-172BDA00FA67"/>
 											</gp:acknowledgedMessage>
 										</gp:Gp2gpfragment>
 									</value>
