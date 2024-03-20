@@ -121,4 +121,3 @@ or
 Run the following command to confirm the role was assumed correctly:
 
 `aws sts get-caller-identity`
-
