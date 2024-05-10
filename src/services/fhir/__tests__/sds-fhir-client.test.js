@@ -110,8 +110,7 @@ describe('sds-fhir-client', () => {
     await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
-      errorMessage
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${errorMessage.message}`
     );
   });
 
@@ -132,8 +131,7 @@ describe('sds-fhir-client', () => {
     await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
-      errorMessage
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${errorMessage.message}`
     );
   });
 
@@ -154,8 +152,7 @@ describe('sds-fhir-client', () => {
     await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
-      errorMessage
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${errorMessage.message}`
     );
   });
 
@@ -176,8 +173,7 @@ describe('sds-fhir-client', () => {
     await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
-      errorMessage
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${errorMessage.message}`
     );
   });
 
@@ -198,8 +194,7 @@ describe('sds-fhir-client', () => {
     await expect(getPracticeAsid(odsCode, serviceId)).rejects.toThrow(errorMessage);
     expect(scope.isDone()).toBe(true);
     expect(logError).toHaveBeenCalledWith(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`,
-      errorMessage
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${errorMessage.message}`
     );
   });
 });
