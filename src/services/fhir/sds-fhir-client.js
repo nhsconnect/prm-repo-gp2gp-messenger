@@ -6,17 +6,26 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
   const { sdsFhirUrl, sdsFhirApiKey } = initializeConfig();
   logInfo(`Getting ASID via FHIR for ODS code ${odsCode}`);
   try {
-    const response = await axios.get(`${sdsFhirUrl}/Device`, {
-      params: {
-        organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
-        identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
-      },
-      headers: {
-        apiKey: sdsFhirApiKey
-      }
-    });
+    const entries = axios
+      .get(`${sdsFhirUrl}/Device`, {
+        params: {
+          organization: `https://fhir.nhs.uk/Id/ods-organization-code|${odsCode}`,
+          identifier: `https://fhir.nhs.uk/Id/nhsServiceInteractionId|${serviceId}`
+        },
+        headers: {
+          apiKey: sdsFhirApiKey
+        }
+      })
+      .then(response => response.data.entry)
+      .catch(error => {
+        logError(
+          `Error: Request failed with non-2xx status code\n
+          Response body: ${error.response.data}\n
+          HTTP Status code: ${error.response.status}`
+        );
 
-    const entries = response.data.entry;
+        throw error;
+      });
 
     if (entries.length === 0) {
       throw new Error(`No ASID entries found for ODS code ${odsCode}`);
