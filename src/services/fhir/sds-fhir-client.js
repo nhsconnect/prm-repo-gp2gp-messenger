@@ -44,7 +44,9 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
     return asidCode;
   } catch (err) {
     logError(
-      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${JSON.stringify(err)}`
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${
+        err.message ? err.message : 'No Error Message'
+      }`
     );
     if (err.response) {
       logError(
