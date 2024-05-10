@@ -18,8 +18,6 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
 
     const entries = response.data.entry;
 
-    logInfo(`Found entries, length: ${entries.length}`);
-
     if (entries.length === 0) {
       throw new Error(`No ASID entries found for ODS code ${odsCode}`);
     }
