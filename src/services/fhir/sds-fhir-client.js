@@ -3,7 +3,7 @@ import { initializeConfig } from '../../config';
 import { logInfo } from '../../middleware/logging';
 
 export const getPracticeAsid = async (odsCode, serviceId) => {
-  logInfo(`Attempting to query SDS in regards to ODS code ${odsCode} to fetch the practice ASID`);
+  logInfo(`Fetching practice ASID for ODS code ${odsCode} via the SDS FHIR API`);
 
   const sdsQueryResponse = await querySds(odsCode, serviceId);
   const entries = sdsQueryResponse.data.entry;
@@ -15,6 +15,7 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
         identifier.system === 'https://fhir.nhs.uk/Id/nhsMhsPartyKey' &&
         identifier.value.includes(`${odsCode}-`)
       ) {
+        // TODO PRMT-4832 - If multiple ASID codes are present here, throw an error.
         // If the identifier matches, store the ASID value
         asidCode = entry.resource.identifier.find(
           id => id.system === 'https://fhir.nhs.uk/Id/nhsSpineASID'
