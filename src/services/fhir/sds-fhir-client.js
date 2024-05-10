@@ -18,6 +18,8 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
 
     const entries = response.data.entry;
 
+    logInfo(`Found entries, length: ${entries.length}`);
+
     if (entries.length === 0) {
       throw new Error(`No ASID entries found for ODS code ${odsCode}`);
     }
@@ -43,7 +45,9 @@ export const getPracticeAsid = async (odsCode, serviceId) => {
     logInfo(`Successfully retrieved ASID: ${asidCode} via FHIR for ODS code ${odsCode}`);
     return asidCode;
   } catch (err) {
-    logError(`Failed to retrieve ASID from FHIR for ODS Code: ${odsCode}`, err);
+    logError(
+      `Failed to retrieve ASID from FHIR for ODS Code: ${odsCode} - error: ${JSON.stringify(err)}`
+    );
     if (err.response) {
       logError(
         `Error: Request failed with non-2xx status code\n
