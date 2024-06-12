@@ -21,7 +21,7 @@ jobs:
 
       - name: Run test coverage
         run: |
-          ./tasks test_coverage
+          ./tasks _test_coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
