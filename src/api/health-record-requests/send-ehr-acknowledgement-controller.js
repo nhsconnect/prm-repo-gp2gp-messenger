@@ -27,7 +27,8 @@ export const sendEhrAcknowledgement = async (req, res) => {
       conversationId,
       odsCode,
       repositoryAsid,
-      errorCode
+      errorCode,
+      errorDisplayName
     } = req.body;
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
 
@@ -38,7 +39,8 @@ export const sendEhrAcknowledgement = async (req, res) => {
       receivingAsid: practiceAsid,
       sendingAsid: repositoryAsid,
       acknowledgedMessageId: ehrCoreMessageId,
-      errorCode
+      errorCode,
+      errorDisplayName
     });
     await sendMessage({ interactionId, conversationId, odsCode, message });
     logInfo('Acknowledgement sent to MHS');

@@ -1,15 +1,17 @@
 import dateFormat from 'dateformat';
-import {logInfo} from "../middleware/logging";
+import { logInfo } from '../middleware/logging';
 
 export const buildEhrAcknowledgementPayload = ({
   acknowledgementMessageId,
   receivingAsid,
   sendingAsid,
   acknowledgedMessageId,
-  errorCode
+  errorCode,
+  errorDisplayName
 }) => {
   const timestamp = dateFormat(Date.now(), 'yyyymmddHHMMss');
   let acknowledgementTypeCode;
+  let acknowledgementDetail;
   let controlActEventReason;
 
   switch (errorCode) {
@@ -19,20 +21,23 @@ export const buildEhrAcknowledgementPayload = ({
       break;
     case '30':
     case '99':
-      logInfo(`Building negative acknowledgement message with typeCode: AE and errorCode: ${errorCode}`);
+      logInfo(`Building negative acknowledgement message with typeCode: AE, errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`);
       acknowledgementTypeCode = 'AE'; // negative ACK, unknown failure reason
-      controlActEventReason = controlActEventReasonTemplate(errorCode);
+      acknowledgementDetail = acknowledgementDetailTemplate(acknowledgementTypeCode, errorCode, errorDisplayName);
+      controlActEventReason = controlActEventReasonTemplate(errorCode, errorDisplayName);
       break;
     default: // negative ACK, known failure reason
-      logInfo(`Building negative acknowledgement message with typeCode: AR and errorCode: ${errorCode}`);
+      logInfo(`Building negative acknowledgement message with typeCode: AR and errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`);
       acknowledgementTypeCode = 'AR';
-      controlActEventReason = controlActEventReasonTemplate(errorCode);
+      acknowledgementDetail = acknowledgementDetailTemplate(acknowledgementTypeCode, errorCode, errorDisplayName);
+      controlActEventReason = controlActEventReasonTemplate(errorCode, errorDisplayName);
   }
 
   return ackMessageTemplate({
     acknowledgementMessageId: acknowledgementMessageId.toUpperCase(),
     timestamp,
-    acknowledgementTypeCode: acknowledgementTypeCode,
+    acknowledgementTypeCode,
+    acknowledgementDetail,
     acknowledgedMessageId: acknowledgedMessageId.toUpperCase(),
     receivingAsid,
     sendingAsid,
@@ -40,11 +45,15 @@ export const buildEhrAcknowledgementPayload = ({
   });
 };
 
-const controlActEventReasonTemplate = errorCode =>
-  // TODO PRMP-534 identify what the 'codeSystem' codes need to be. is it the sending/receiving ASID?
+const acknowledgementDetailTemplate = (acknowledgementTypeCode, errorCode, errorDisplayName) =>
+  `<acknowledgementDetail typeCode="${acknowledgementTypeCode}">
+     <code code="${errorCode}" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101" displayName="${errorDisplayName}"/>
+   </acknowledgementDetail>`;
+
+const controlActEventReasonTemplate = (errorCode, errorDisplayName) =>
   `<reason typeCode="RSON">
      <justifyingDetectedIssueEvent classCode="ALRT" moodCode="EVN">
-        <code code="${errorCode}" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101">
+        <code code="${errorCode}" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.101" displayName="${errorDisplayName}">
            <qualifier>
               <value code="ER" codeSystem="2.16.840.1.113883.2.1.3.2.4.17.104" />
            </qualifier>
@@ -56,6 +65,7 @@ const ackMessageTemplate = ({
   acknowledgementMessageId,
   timestamp,
   acknowledgementTypeCode,
+  acknowledgementDetail, // will be null in the case of positive ack
   acknowledgedMessageId,
   receivingAsid,
   sendingAsid,
@@ -69,7 +79,8 @@ const ackMessageTemplate = ({
    <processingCode code="P" />
    <processingModeCode code="T" />
    <acceptAckCode code="NE" />
-   <acknowledgement typeCode=${acknowledgementTypeCode}>
+   <acknowledgement typeCode="${acknowledgementTypeCode}">
+      ${acknowledgementDetail}
       <messageRef>
          <id root="${acknowledgedMessageId}" />
       </messageRef>
