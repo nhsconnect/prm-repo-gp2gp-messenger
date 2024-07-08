@@ -18,6 +18,8 @@ export const buildEhrAcknowledgementPayload = ({
     case null:
       logInfo('Building positive acknowledgement message with typeCode: AA');
       acknowledgementTypeCode = 'AA'; // positive ACK
+      acknowledgementDetail = '';
+      controlActEventReason = '';
       break;
     case '30':
     case '99':
