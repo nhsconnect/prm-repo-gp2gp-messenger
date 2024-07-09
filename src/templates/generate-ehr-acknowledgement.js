@@ -24,15 +24,27 @@ export const buildEhrAcknowledgementPayload = ({
       break;
     case '30':
     case '99':
-      logInfo(`Building negative acknowledgement message with typeCode: AE, errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`);
+      logInfo(
+        `Building negative acknowledgement message with typeCode: AE, errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`
+      );
       acknowledgementTypeCode = 'AE'; // negative ACK, unknown failure reason
-      acknowledgementDetail = acknowledgementDetailTemplate(acknowledgementTypeCode, errorCode, errorDisplayName);
+      acknowledgementDetail = acknowledgementDetailTemplate(
+        acknowledgementTypeCode,
+        errorCode,
+        errorDisplayName
+      );
       controlActEventReason = controlActEventReasonTemplate(errorCode, errorDisplayName);
       break;
     default: // negative ACK, known failure reason
-      logInfo(`Building negative acknowledgement message with typeCode: AR and errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`);
+      logInfo(
+        `Building negative acknowledgement message with typeCode: AR and errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`
+      );
       acknowledgementTypeCode = 'AR';
-      acknowledgementDetail = acknowledgementDetailTemplate(acknowledgementTypeCode, errorCode, errorDisplayName);
+      acknowledgementDetail = acknowledgementDetailTemplate(
+        acknowledgementTypeCode,
+        errorCode,
+        errorDisplayName
+      );
       controlActEventReason = controlActEventReasonTemplate(errorCode, errorDisplayName);
   }
 
