@@ -16,6 +16,7 @@ export const buildEhrAcknowledgementPayload = ({
 
   switch (errorCode) {
     case null:
+    case undefined:
       logInfo('Building positive acknowledgement message with typeCode: AA');
       acknowledgementTypeCode = 'AA'; // positive ACK
       acknowledgementDetail = '';
