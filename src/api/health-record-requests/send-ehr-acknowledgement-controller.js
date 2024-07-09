@@ -22,15 +22,25 @@ export const sendEhrAcknowledgement = async (req, res) => {
   try {
     const interactionId = 'MCCI_IN010000UK13';
     const serviceId = `urn:nhs:names:services:gp2gp:${interactionId}`;
-    const { messageId: ehrCoreMessageId, conversationId, odsCode, repositoryAsid } = req.body;
+    const {
+      messageId: ehrCoreMessageId,
+      conversationId,
+      odsCode,
+      repositoryAsid,
+      errorCode,
+      errorDisplayName
+    } = req.body;
     const practiceAsid = await getPracticeAsid(odsCode, serviceId);
+
     setCurrentSpanAttributes({ conversationId, messageId: ehrCoreMessageId });
 
-    const message = await buildEhrAcknowledgementPayload({
+    const message = buildEhrAcknowledgementPayload({
       acknowledgementMessageId: conversationId,
       receivingAsid: practiceAsid,
       sendingAsid: repositoryAsid,
-      acknowledgedMessageId: ehrCoreMessageId
+      acknowledgedMessageId: ehrCoreMessageId,
+      errorCode,
+      errorDisplayName
     });
     await sendMessage({ interactionId, conversationId, odsCode, message });
     logInfo('Acknowledgement sent to MHS');
