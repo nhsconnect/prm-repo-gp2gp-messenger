@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
 import { logInfo } from '../middleware/logging';
+import { AcknowledgementErrorCode } from '../constants/enums';
 
 export const buildEhrAcknowledgementPayload = ({
   acknowledgementMessageId,
@@ -22,8 +23,8 @@ export const buildEhrAcknowledgementPayload = ({
         receivingAsid,
         sendingAsid
       });
-    case '30': // negative ACK, unknown failure reason
-    case '99': // negative ACK, unknown failure reason
+    case AcknowledgementErrorCode.ERROR_CODE_30.errorCode: // negative ACK, large message general failure, unknown failure reason
+    case AcknowledgementErrorCode.ERROR_CODE_99.errorCode: // negative ACK, unknown failure reason
       logInfo(
         `Building negative acknowledgement message with typeCode: AE, errorCode: ${errorCode} and errorDisplayName: ${errorDisplayName}`
       );
