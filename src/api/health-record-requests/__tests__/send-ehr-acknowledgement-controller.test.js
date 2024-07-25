@@ -5,6 +5,7 @@ import { buildEhrAcknowledgementPayload } from '../../../templates/generate-ehr-
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { logError, logInfo } from '../../../middleware/logging';
+import {AcknowledgementErrorCode} from "../../../constants/enums";
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
@@ -46,6 +47,8 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   const message = 'fake-acknowledgement-message';
   const repositoryAsid = '200000001162';
   const practiceAsid = '200000001163';
+  const errorCode = AcknowledgementErrorCode.ERROR_CODE_06.errorCode;
+  const errorDisplayName = AcknowledgementErrorCode.ERROR_CODE_06.errorDisplayName;
   const ackParametersUsingConversationIdAsAckMessageId = {
     acknowledgementMessageId: conversationId,
     receivingAsid: practiceAsid,
@@ -56,7 +59,7 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
   describe('sendEhrAcknowledgement', () => {
     getPracticeAsid.mockReturnValue(practiceAsid);
 
-    it('should return a 204 status code and build ack with necessary params including using conversationID as unique ackMessageId and sent EHR core messageId as acknowledged message id', done => {
+    it('should return a 204 status code and build positive ack with necessary params including using conversationID as unique ackMessageId and sent EHR core messageId as acknowledged message id', done => {
       request(app)
         .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
         .send({
@@ -73,6 +76,32 @@ describe('POST /health-record-requests/{conversation-id}/acknowledgement', () =>
             receivingAsid: practiceAsid,
             sendingAsid: repositoryAsid,
             acknowledgedMessageId: ehrCoreMessageId
+          });
+        })
+        .end(done);
+    });
+
+    it('should return a 204 status code and build negative ack with necessary params including using conversationID as unique ackMessageId and sent EHR core messageId as acknowledged message id', done => {
+      request(app)
+        .post(`/health-record-requests/${nhsNumber}/acknowledgement`)
+        .send({
+          conversationId,
+          messageId: ehrCoreMessageId,
+          odsCode,
+          repositoryAsid,
+          errorCode,
+          errorDisplayName
+        })
+        .expect(204)
+        .expect(() => {
+          expect(getPracticeAsid).toHaveBeenCalledWith(odsCode, serviceId);
+          expect(buildEhrAcknowledgementPayload).toHaveBeenCalledWith({
+            acknowledgementMessageId: conversationId,
+            receivingAsid: practiceAsid,
+            sendingAsid: repositoryAsid,
+            acknowledgedMessageId: ehrCoreMessageId,
+            errorCode,
+            errorDisplayName
           });
         })
         .end(done);
