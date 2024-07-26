@@ -29,7 +29,7 @@ describe('mhs-outbound-client', () => {
       'Correlation-Id': conversationId,
       'Ods-Code': 'YES',
       'from-asid': testData.mhs.asid,
-      'wait-for-response': false
+      'wait-for-response': 'false'
     }
   };
   const axiosBody = { payload: message };
@@ -175,7 +175,7 @@ describe('mhs-outbound-client', () => {
       headers: {
         ...axiosHeaders.headers,
         'Interaction-ID': interactionId,
-        'wait-for-response': false
+        'wait-for-response': 'false'
       }
     });
   });
@@ -186,7 +186,7 @@ describe('mhs-outbound-client', () => {
     expect(axios.post).toBeCalledWith(url, axiosBody, {
       headers: {
         ...axiosHeaders.headers,
-        'wait-for-response': false
+        'wait-for-response': 'false'
       }
     });
   });
