@@ -62,7 +62,7 @@ export const sendMessage = async ({
       'Correlation-Id': conversationId,
       'Ods-Code': odsCode,
       'from-asid': config.repoAsid,
-      'wait-for-response': false
+      'wait-for-response': 'false'
     }
   };
 

@@ -1,4 +1,4 @@
-FROM node:14.19.0-alpine AS builder
+FROM node:22.5-alpine AS builder
 
 COPY package*.json /app/
 

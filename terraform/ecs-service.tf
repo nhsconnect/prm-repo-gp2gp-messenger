@@ -1,9 +1,9 @@
 locals {
-  ecs_cluster_id    = aws_ecs_cluster.ecs-cluster.id
-  ecs_task_sg_ids   = var.allow_vpn_to_ecs_tasks ? [aws_security_group.ecs-tasks-sg.id, aws_security_group.vpn_to_gp2gp_messenger_ecs[0].id] : [aws_security_group.ecs-tasks-sg.id]
-  private_subnets   = split(",", data.aws_ssm_parameter.deductions_private_private_subnets.value)
+  ecs_cluster_id  = aws_ecs_cluster.ecs-cluster.id
+  ecs_task_sg_ids = var.allow_vpn_to_ecs_tasks ? [aws_security_group.ecs-tasks-sg.id, aws_security_group.vpn_to_gp2gp_messenger_ecs[0].id] : [aws_security_group.ecs-tasks-sg.id]
+  private_subnets = split(",", data.aws_ssm_parameter.deductions_private_private_subnets.value)
   # alb_tg_arn        = aws_alb_target_group.alb-tg.arn
-  int_alb_tg_arn    = aws_alb_target_group.internal-alb-tg.arn
+  int_alb_tg_arn = aws_alb_target_group.internal-alb-tg.arn
 }
 
 resource "aws_ecs_service" "ecs-service" {
@@ -31,13 +31,13 @@ resource "aws_ecs_service" "ecs-service" {
   }
 
   depends_on = [
-                    # aws_alb_target_group.alb-tg,
-                    aws_alb_target_group.internal-alb-tg,
-                    # aws_alb_listener_rule.alb-http-listener-rule,
-                    aws_alb_listener_rule.int-alb-http-listener-rule,
-                    # aws_alb_listener_rule.alb-https-listener-rule,
-                    aws_alb_listener_rule.int-alb-https-listener-rule
-                    ]
+    # aws_alb_target_group.alb-tg,
+    aws_alb_target_group.internal-alb-tg,
+    # aws_alb_listener_rule.alb-http-listener-rule,
+    aws_alb_listener_rule.int-alb-http-listener-rule,
+    # aws_alb_listener_rule.alb-https-listener-rule,
+    aws_alb_listener_rule.int-alb-https-listener-rule
+  ]
 
   # tags = {
   #   Terraform = "true"

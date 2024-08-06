@@ -39,6 +39,6 @@ resource "aws_route53_record" "gp2gp_messenger_cert_validation_record" {
 }
 
 resource "aws_acm_certificate_validation" "gp2gp_messenger_cert_validation" {
-  certificate_arn = aws_acm_certificate.gp2gp_messenger_cert.arn
+  certificate_arn         = aws_acm_certificate.gp2gp_messenger_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.gp2gp_messenger_cert_validation_record : record.fqdn]
 }

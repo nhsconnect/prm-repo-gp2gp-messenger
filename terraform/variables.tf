@@ -4,7 +4,7 @@ variable "region" {
 }
 
 variable "repo_name" {
-  type = string
+  type    = string
   default = "prm-deductions-gp2gp-messenger"
 }
 
@@ -22,12 +22,12 @@ variable "service_desired_count" {}
 variable "alb_deregistration_delay" {}
 
 variable "log_level" {
-type = string
-default = "debug"
+  type    = string
+  default = "debug"
 }
 
 variable "grant_access_through_vpn" {}
-variable "allow_vpn_to_ecs_tasks" { default=false }
+variable "allow_vpn_to_ecs_tasks" { default = false }
 
 variable "spine_org_code" {}
 

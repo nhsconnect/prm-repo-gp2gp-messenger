@@ -1,5 +1,4 @@
 import axios from 'axios';
-import adapter from 'axios/lib/adapters/http';
 import { config } from '../config';
 
 process.on('unhandledRejection', console.warn);
@@ -86,7 +85,7 @@ const getAndValidatePatientPdsDetails = async nhsNumber => {
       headers: {
         Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
       },
-      adapter
+      adapter: 'http'
     }
   );
   expect(pdsResponse.status).toBe(200);
@@ -113,7 +112,7 @@ const updateAndValidatePatientOdsCode = async (
       headers: {
         Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
       },
-      adapter
+      adapter: 'http'
     }
   );
 

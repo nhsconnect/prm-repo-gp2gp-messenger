@@ -25,7 +25,7 @@ describe('app integration', () => {
         'Interaction-ID': 'QUPA_IN000008UK02',
         'Ods-Code': 'YES',
         'from-asid': DEFAULT_SENDING_ASID,
-        'wait-for-response': false
+        'wait-for-response': 'false'
       };
 
       const mhsOutboundScope = nock(host, { reqheaders: mhsOutboundHeaders })
@@ -70,7 +70,7 @@ describe('app integration', () => {
         'Correlation-ID': conversationId,
         'Ods-Code': odsCode,
         'from-asid': DEFAULT_SENDING_ASID,
-        'wait-for-response': false
+        'wait-for-response': 'false'
       };
 
       const mockFhirResponse = {
@@ -138,7 +138,7 @@ describe('app integration', () => {
         'Correlation-ID': conversationId,
         'Ods-Code': gpOdsCode,
         'from-asid': DEFAULT_SENDING_ASID,
-        'wait-for-response': false
+        'wait-for-response': 'false'
       };
 
       const mockFhirResponse = {
