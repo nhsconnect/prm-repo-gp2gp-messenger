@@ -14,4 +14,4 @@ alb_deregistration_delay = 15
 log_level = "info"
 
 grant_access_through_vpn = true
-spine_org_code = "YES"
+spine_org_code           = "YES"

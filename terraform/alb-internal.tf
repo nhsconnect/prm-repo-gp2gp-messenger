@@ -19,8 +19,8 @@ data "aws_ssm_parameter" "alb_access_logs_bucket" {
 }
 
 resource "aws_alb" "alb-internal" {
-  name            = "${var.environment}-${var.component_name}-alb-int"
-  subnets         = split(",", data.aws_ssm_parameter.private_subnets.value)
+  name    = "${var.environment}-${var.component_name}-alb-int"
+  subnets = split(",", data.aws_ssm_parameter.private_subnets.value)
   security_groups = [
     aws_security_group.gp2gp_messenger_alb.id,
     aws_security_group.alb_to_gp2gp_messenger_ecs.id,
@@ -28,14 +28,14 @@ resource "aws_alb" "alb-internal" {
     aws_security_group.vpn_to_gp2gp_messenger.id,
     aws_security_group.gocd_to_gp2gp_messenger.id
   ]
-  internal = true
+  internal                   = true
   drop_invalid_header_fields = true
   enable_deletion_protection = true
 
   access_logs {
-    bucket = data.aws_ssm_parameter.alb_access_logs_bucket.value
+    bucket  = data.aws_ssm_parameter.alb_access_logs_bucket.value
     enabled = true
-    prefix = "gp2gp-messenger"
+    prefix  = "gp2gp-messenger"
   }
 
   tags = {
@@ -80,11 +80,11 @@ resource "aws_alb_listener" "int-alb-listener-https" {
 }
 
 resource "aws_alb_target_group" "internal-alb-tg" {
-  name        = "${var.environment}-${var.component_name}-int-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
-  target_type = "ip"
+  name                 = "${var.environment}-${var.component_name}-int-tg"
+  port                 = 3000
+  protocol             = "HTTP"
+  vpc_id               = data.aws_ssm_parameter.deductions_private_vpc_id.value
+  target_type          = "ip"
   deregistration_delay = var.alb_deregistration_delay
 
   health_check {
@@ -98,7 +98,7 @@ resource "aws_alb_target_group" "internal-alb-tg" {
 
   tags = {
     Environment = var.environment
-    CreatedBy = var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 
@@ -146,7 +146,7 @@ resource "aws_security_group" "gp2gp_messenger_alb" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   tags = {
-    Name = "${var.environment}-alb-${var.component_name}"
+    Name        = "${var.environment}-alb-${var.component_name}"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -158,15 +158,15 @@ resource "aws_security_group" "alb_to_gp2gp_messenger_ecs" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   egress {
-    description = "Allow outbound connections to GP2GP Messenger ECS Task"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description     = "Allow outbound connections to GP2GP Messenger ECS Task"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
     security_groups = [aws_security_group.ecs-tasks-sg.id]
   }
 
   tags = {
-    Name = "${var.environment}-alb-to-${var.component_name}-ecs"
+    Name        = "${var.environment}-alb-to-${var.component_name}-ecs"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -178,15 +178,15 @@ resource "aws_security_group" "service_to_gp2gp_messenger" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   tags = {
-    Name = "${var.environment}-service-to-${var.component_name}-sg"
+    Name        = "${var.environment}-service-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_ssm_parameter" "service_to_gp2gp_messenger" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/service-to-gp2gp-messenger-sg-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/service-to-gp2gp-messenger-sg-id"
+  type  = "String"
   value = aws_security_group.service_to_gp2gp_messenger.id
   tags = {
     CreatedBy   = var.repo_name
@@ -200,21 +200,21 @@ resource "aws_security_group" "vpn_to_gp2gp_messenger" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   tags = {
-    Name = "${var.environment}-vpn-to-${var.component_name}-sg"
+    Name        = "${var.environment}-vpn-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_security_group_rule" "vpn_to_gp2gp_messenger" {
-  count       = var.grant_access_through_vpn ? 1 : 0
-  type        = "ingress"
-  description = "Allow vpn to access GP2GP Messenger ALB"
-  protocol    = "tcp"
-  from_port   = 443
-  to_port     = 443
+  count                    = var.grant_access_through_vpn ? 1 : 0
+  type                     = "ingress"
+  description              = "Allow vpn to access GP2GP Messenger ALB"
+  protocol                 = "tcp"
+  from_port                = 443
+  to_port                  = 443
   source_security_group_id = data.aws_ssm_parameter.vpn_sg_id.value
-  security_group_id = aws_security_group.vpn_to_gp2gp_messenger.id
+  security_group_id        = aws_security_group.vpn_to_gp2gp_messenger.id
 }
 
 resource "aws_security_group" "gocd_to_gp2gp_messenger" {
@@ -223,15 +223,15 @@ resource "aws_security_group" "gocd_to_gp2gp_messenger" {
   vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {
-    description = "Allow gocd to access GP2GP Messenger ALB"
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
+    description     = "Allow gocd to access GP2GP Messenger ALB"
+    protocol        = "tcp"
+    from_port       = 443
+    to_port         = 443
     security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
   }
 
   tags = {
-    Name = "${var.environment}-gocd-to-${var.component_name}-sg"
+    Name        = "${var.environment}-gocd-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -246,17 +246,17 @@ data "aws_ssm_parameter" "gocd_sg_id" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "alb_http_errors" {
-  alarm_name                = "${var.repo_name} 5xx errors"
-  comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = "1"
-  metric_name               = "HTTPCode_Target_5XX_Count"
-  namespace                 = "AWS/ApplicationELB"
-  period                    = "60"
-  statistic                 = "Average"
-  threshold                 = "1"
-  alarm_description         = "This metric monitors number of 5xx http status codes associated with ${var.repo_name}"
-  treat_missing_data        = "notBreaching"
-  dimensions                = {
+  alarm_name          = "${var.repo_name} 5xx errors"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "1"
+  metric_name         = "HTTPCode_Target_5XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "1"
+  alarm_description   = "This metric monitors number of 5xx http status codes associated with ${var.repo_name}"
+  treat_missing_data  = "notBreaching"
+  dimensions = {
     LoadBalancer = aws_alb.alb-internal.arn_suffix
   }
 }
