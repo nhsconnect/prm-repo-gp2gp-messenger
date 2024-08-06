@@ -63,9 +63,9 @@ jobs:
       - name: Setup Terraform variables
         id: vars
         run: |-
-          IMAGE_TAG=$(aws ecr describe-images --repository-name ${{ secrets.ECR_REPOSITORY_NAME }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          IMAGE_TAG=$(aws ecr describe-images --repository-name ${{ secrets.ECR_REPOSITORY_NAME }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]')
           cat > pipeline.auto.tfvars <<EOF
-          task_image_tag = "$IMAGE_TAG"
+          task_image_tag = $IMAGE_TAG
           EOF
 
       - name: terraform plan
