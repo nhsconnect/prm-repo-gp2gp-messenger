@@ -5,7 +5,7 @@ import { buildEhrAcknowledgementPayload } from '../../../templates/generate-ehr-
 import { getPracticeAsid } from '../../../services/fhir/sds-fhir-client';
 import { sendMessage } from '../../../services/mhs/mhs-outbound-client';
 import { logError, logInfo } from '../../../middleware/logging';
-import {AcknowledgementErrorCode} from "../../../constants/enums";
+import { AcknowledgementErrorCode } from '../../../constants/enums';
 
 jest.mock('../../../middleware/logging');
 jest.mock('../../../middleware/auth');
