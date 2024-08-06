@@ -1,5 +1,4 @@
 import axios from 'axios';
-import adapter from 'axios/lib/adapters/http';
 import { config } from '../config';
 
 const TIMEOUT_30_S = 30000;
@@ -44,7 +43,7 @@ describe('POST /health-record-requests/:nhsNumber', () => {
           headers: {
             Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
-          adapter
+          adapter: 'http'
         })
       ).resolves.toEqual(
         expect.objectContaining({

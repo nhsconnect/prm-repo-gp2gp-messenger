@@ -1,5 +1,4 @@
 import axios from 'axios';
-import adapter from 'axios/lib/adapters/http';
 import { config } from '../config';
 import { testData } from './test-data';
 
@@ -15,7 +14,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
           headers: {
             Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
-          adapter
+          adapter: 'http'
         })
       ).resolves.toEqual(
         expect.objectContaining({
@@ -36,7 +35,7 @@ describe('End to end test of /patient-demographics/:nhsNumber', () => {
           headers: {
             Authorization: config.e2eTestAuthorizationKeysForGp2gpMessenger
           },
-          adapter
+          adapter: 'http'
         })
       ).rejects.toEqual(Error('Request failed with status code 503'));
     },
