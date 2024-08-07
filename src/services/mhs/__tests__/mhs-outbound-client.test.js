@@ -7,6 +7,7 @@ import generatePdsRetrievalQuery from '../../../templates/generate-pds-retrieval
 import testData from '../../../templates/__tests__/testData.json';
 import { sendMessage, stripXMLMessage } from '../mhs-outbound-client';
 import { sendToQueue } from '../../sqs/sqs-client';
+import expect from 'expect';
 
 jest.mock('axios');
 jest.mock('../../../config/logging');
@@ -366,9 +367,21 @@ describe('stripXMLMessage', () => {
     expect(stripXMLMessage(pdsRetrievalQuery).match(/> +</g)).toBe(null);
   });
 
-  it('should trim the message', async () => {
+  it('should trim the whitespace at the beginning and end of the message', async () => {
+    // given
     const pdsRetrievalQuery = await generatePdsRetrievalQuery(pdsQueryArguments);
-    expect(stripXMLMessage(` ${pdsRetrievalQuery}     `).match(/^ +| +$/)).toBe(null);
+    const XMLWithLeadingAndTrailingWhitespace = ` ${pdsRetrievalQuery}     `;
+    // identifies trailing whitespace, content, and leading whitespace in 3 capture groups
+    const whitespaceRegex = '^(s*)(.*?)(s*)$';
+
+    // when
+    const strippedXML = stripXMLMessage(XMLWithLeadingAndTrailingWhitespace);
+    const regexMatches = strippedXML.match(whitespaceRegex);
+
+    // then
+    expect(regexMatches[1]).toBe('');
+    expect(regexMatches[2]).not.toBe(''); // should be pdsRetrievalQuery with new lines stripped
+    expect(regexMatches[3]).toBe('');
   });
 
   it('should remove new lines (/n) and carriage return characters (/r)', async () => {

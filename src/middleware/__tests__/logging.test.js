@@ -44,7 +44,7 @@ describe('logging', () => {
       };
 
       eventFinished(mockReq, mockRes);
-      expect(logger.info).toBeCalledTimes(1);
+      expect(logger.info).toBeCalledTimes(2);
     });
 
     it('should log with level error if status code is not successful', () => {

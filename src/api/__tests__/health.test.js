@@ -9,19 +9,19 @@ jest.mock('../../middleware/logging');
 // Mocked so need to get real for expectedHealthCheckBase ??
 describe('GET /health', () => {
   it('should return 200 and the response from getHealthCheck', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase()));
 
     request(app)
       .get('/health')
       .expect(200)
       .expect(res => {
-        expect(res.body).toEqual(expectedHealthCheckBase(true));
+        expect(res.body).toEqual(expectedHealthCheckBase());
       })
       .end(done);
   });
 
   it('should call health check service with no parameters', done => {
-    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase(true)));
+    getHealthCheck.mockReturnValue(Promise.resolve(expectedHealthCheckBase()));
 
     request(app)
       .get('/health')

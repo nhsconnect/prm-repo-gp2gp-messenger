@@ -25,7 +25,7 @@ export const sendContinueMessage = async (req, res) => {
 
   try {
     const practiceAsid = await getPracticeAsid(gpOdsCode, serviceId);
-    const message = await generateContinueRequest({
+    const message = generateContinueRequest({
       messageId,
       receivingAsid: practiceAsid,
       sendingAsid: config.repoAsid,
