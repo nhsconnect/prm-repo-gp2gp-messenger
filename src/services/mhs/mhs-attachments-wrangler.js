@@ -88,7 +88,7 @@ async function extractManifestReferences(mhsJsonMessage) {
 }
 
 function extractDescription(attachmentReference) {
-  const description = attachmentReference.Description.innerText;
+  const description = encodeURIComponent(attachmentReference.Description.innerText);
   return description;
 }
 
