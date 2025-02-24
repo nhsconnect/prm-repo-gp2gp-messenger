@@ -27,7 +27,7 @@
     "url": "git+https://github.com/nhsconnect/prm-deductions-gp2gp-messenger.git"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.470.0",
+    "@aws-sdk/client-sqs": "^3.750.0",
     "@babel/runtime": "^7.17.8",
     "aws-sdk": "^2.1354.0",
     "axios": "^1.7.2",
