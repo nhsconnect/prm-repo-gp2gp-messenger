@@ -63,7 +63,7 @@
     "jest-when": "^3.5.1",
     "nock": "^13.2.4",
     "npm-force-resolutions": "0.0.10",
-    "prettier": "^2.6.0",
+    "prettier": "^3.5.3",
     "supertest": "^6.3.3"
   },
   "jest": {
