@@ -120,9 +120,14 @@ const odsCodeNotInSafeList = (
   logInfo(
     'process only safe listed ODS code toggle is : ' + requestEhrOnlyForSafeListedOdsCodesToggle
   );
-  if (requestEhrOnlyForSafeListedOdsCodesToggle) {
-    const caseInsensitiveOdsCode = new RegExp(practiceOdsCode, 'i');
-    return !caseInsensitiveOdsCode.test(safeListedOdsCodes);
-  }
-  return false;
+  if (!requestEhrOnlyForSafeListedOdsCodesToggle) return false;
+
+  return Array.isArray(safeListedOdsCodes)
+    ? !safeListedOdsCodes.some(safeListedOdsCode =>
+        compareOdsCodesCaseInsensitive(safeListedOdsCode, practiceOdsCode)
+      )
+    : !compareOdsCodesCaseInsensitive(safeListedOdsCodes, practiceOdsCode);
 };
+
+const compareOdsCodesCaseInsensitive = (odsCode1, odsCode2) =>
+  odsCode1.toLowerCase() === odsCode2.toLowerCase();

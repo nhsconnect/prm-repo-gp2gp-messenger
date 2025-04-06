@@ -42,20 +42,30 @@ XmlParser.prototype.findFirst = function (key) {
   return foundAll[0];
 };
 
+/**
+ * recursively search the XML to find a key (to a maximum depth), all values that are found will be returned as an array
+ */
 const searchData = (object, key, maxDepth, found = []) => {
   let param;
 
+  // if we've recursed deeply enough for maxDepth to have been reached, return
   if (maxDepth-- === 0) {
     return found;
   }
 
+  // if we've found the key we're looking for, add the associated value(s) to 'found'
   if (key in object) {
-    Array.isArray(object[key]) ? found.push(...object[key]) : found.push(object[key]);
+    const value = object[key];
+
+    Array.isArray(value)
+      ? found.push(...value)
+      : found.push(value);
   }
 
+  // for each child node of this one, recurse
   for (param in object) {
     if (Object.prototype.hasOwnProperty.call(object, param) && typeof object[param] === 'object') {
-      found.concat(searchData(object[param], key, maxDepth, found));
+      searchData(object[param], key, maxDepth, found);
     }
   }
 
