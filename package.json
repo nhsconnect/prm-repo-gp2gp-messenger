@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.470.0",
-    "@babel/runtime": "^7.17.8",
+    "@babel/runtime": "^7.27.1",
     "aws-sdk": "^2.1354.0",
     "axios": "^1.7.2",
     "dateformat": "^4.6.3",
