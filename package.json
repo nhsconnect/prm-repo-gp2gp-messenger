@@ -41,7 +41,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
-    "npm-audit-resolver": "3.0.0-7",
+    "npm-audit-resolver": "3.0.0-9",
     "swagger-ui-express": "^4.3.0",
     "traverse": "^0.6.6",
     "uuid": "^8.3.2",
